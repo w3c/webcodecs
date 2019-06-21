@@ -1,0 +1,194 @@
+[Constructor(MediaStreamTrack track)]
+interface AudioTrackReader {
+  readonly attribute ReadableStream readable; // of DecodedAudioPacket
+}
+
+interface DecodedAudioPacket {
+  readonly attribute MediaTime timestamp;
+  // Sample count == duration.value
+  // Sample rate == duration.scale
+  readonly attribute MediaTime duration;
+  readonly attribute unsigned long channelCount
+}
+
+[Constructor(AudioEncoderParams params)]
+interface AudioEncoder {
+  void setParameters(AudioEncoderParams params);
+  readonly attribute WritableStream writable; // DecodedAudioPacket
+  readonly attribute ReadableStream readable; // EncodedAudioPacket
+}
+
+dictionary AudioEncoderParams {
+   DOMString mimeType;
+
+  // not supported by all codecs
+  // null/unset means use the codec default
+  unsigned long? bitsPerSecond;  
+
+  // codec-specific
+  // null/unset means use the codec default
+  unsigned long? complexity;
+
+  // probably opus-specific
+  bool fec = false;  // enabled or not
+  bool dtx = false;  // enabled or not
+  bool cbr = false;  // cbr or not (vbr if not)
+  bool speechMode = false;  // speech-specific mode or not
+} 
+
+[Constructor(BufferSource data, MediaTime timestamp)]
+interface EncodedAudioPacket {
+  readonly attribute MediaTime timestamp;
+  readonly attribute Uint8Array data;
+}
+
+[Constructor(AudioDecoderParams params)]
+interface AudioDecoder {
+  readonly attribute WritableStream writable; // EncodedAudioPacket
+  readonly attribute ReadableStream readable; // DecodedAudioPacket
+  attribute EventHandler onerror;
+}
+
+dictionary AudioDecoderParams {
+  DOMString codec;  // For example, "opus"
+
+  // Defaults are codec-specific
+  unsigned long? sampleRate;  
+  unsigned long? channelCount;
+
+  // Optional byte data required to initialize audio decoders
+  // such as Vorbis codebooks.
+  BufferSource? extraData;
+  // Duration decoder must decode before the decoded data is valid
+  MediaTime? seekPreRoll;
+  // Duration decoder should discard before returning decoded data.     
+  // Can include both decoder delay as well as padding added during    
+  // encoding.
+  MediaTime? codecDelay;
+} 
+
+[Constructor()]
+interface AudioTrackWriter {
+  readonly attribute WritableStream writable; // of DecodedAudioPacket
+  readonly attribute MediaStreamTrack track;
+}
+
+
+[Constructor(MediaStreamTrack track)]
+interface VideoTrackReader {
+  readonly attribute ReadableStream readable; // of DecodedVideoFrame
+}
+
+interface DecodedVideoFrame {
+  readonly attribute MediaTime timestamp;
+  readonly attribute long width;
+  readonly attribute long height;
+}
+
+[Constructor(VideoEncoderParams params)]
+interface VideoEncoder {
+    void setParameters(VideoEncoderParams params);
+    void generateKeyFrame(optional sequence<DOMString> layerIds);
+    readonly attribute WritableStream writable; // DecodedVideoFrame
+    readonly attribute ReadableStream readable; // EncodedVideoFrame
+    attribute EventHandler onerror;
+}
+
+dictionary VideoEncoderParams {
+  // Cannot be changed once set
+  DOMString mimeType;
+
+  // Can be used to initialize the encoder faster
+  // than waiting for the first frame
+  unsigned long? expectedWidth;
+  unsigned long? expectedHeight;  
+
+  // unset/null means the encoder will pick
+  // target will be exceeded for key frames
+  unsigned long bitsPerSecond;
+
+  VideoEncodeContentMode contentMode;
+
+  sequence<VideoEncodeLayer> layers;
+} 
+
+
+enum VideoEncodeContentMode {
+  "screen"  // For screen sharing/recording
+  "default"  // Everything else
+}
+
+dictionary VideoEncodeLayer {
+  // Referenced in .dependsOn and EncodedVideoFrame.encoded.layerId
+  DOMString id;
+
+  // Identifies the temporal slots this layer applies to
+  // For example, with two temporal layers, typically one
+  // Layer will have [0] and one [1].
+  // But in more complex patterns with 4 temporal slots
+  // One layer might fit in [0], another [2], and another [1, 3]
+
+  sequence<unsigned long> temporalSlots;
+
+  // The layer IDs of the layers this layer depends on.
+  // Note that you likely want a layer to depend on itself
+  // Otherwise, a base layer would be all key frames.
+  sequence<DOMString> dependsOn;
+
+  // How much to scale down resolution before encoding
+  double scaleDownBy;
+
+  // If unset, the codec will guess how much you want
+  // (Diving up the total bitrate between the layers based on size 
+  // and framerate)
+  unsigned long? bitsPerSecond;
+}
+
+[Constructor(BufferSource data, MediaTime timestamp)]
+interface EncodedVideoFrame {
+  readonly attribute Uint8Array data;
+  readonly attribute MediaTime timestamp;
+  // Info provided as a result from the encoder
+  // Not needed as input to a decoder
+  readonly attribute VideoEncodeResult? encoded;
+}
+
+interface VideoEncodeResult {
+  // If using multiple layers, which layer is it?
+  readonly attribute DOMString? layerId;
+  // Whether or not it's a key frame meaning it depends on 
+  // no other frames
+  readonly attribute bool keyFrame;
+}
+
+[Constructor(VideoDecoderParams params)]
+interface VideoDecoder {
+  readonly attribute WritableStream writable; // EncodedVideoFrame
+  readonly attribute ReadableStream readable; // DecodedVideoFrame
+  attribute EventHandler onerror;
+}
+
+dictionary VideoDecoderParams {
+  DOMString mimeType;
+
+  // Can be used to initialize the decoder faster
+  // than waiting for the first frame
+  unsigned long long? expectedWidth;
+  unsigned long long? expectedHeight;  
+
+  // Optional byte data required to initialize video decoders
+  // such as H264 with SPS and PPS.
+  BufferSource? extraData;
+} 
+
+[Constructor()]
+interface VideoTrackWriter {
+  readonly attribute WritableStream writable; // of DecodedVideoFrame
+  readonly attribute MediaStreamTrack track;
+}
+
+[Constructor(unsigned long long value, unsigned long long scale)]
+interface MediaTime {
+  readonly attribute unsigned long long value; 
+  readonly attribute unsigned long long scale;
+}
