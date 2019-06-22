@@ -20,5 +20,5 @@ It's great for:
 - Cloud gaming
 - Media file editing and transcoding
 
-See the [explainer](https://github.com/pthatcher/web-codecs/blob/master/explainer.md) for more info.
+See the [explainer](https://github.com/pthatcherg/web-codecs/blob/master/explainer.md) for more info.
 
