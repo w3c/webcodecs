@@ -162,7 +162,7 @@ const videoDecoder = new VideoDecoder({codec: "h264"});
 const videoEncoder = new VideoEncoder({
   codec: "vp8", bitsPerSecond: 1000000
 });
-dumxer.video
+demuxer.video
   .pipeThrough(videoDecoder)
   .pipeThrough(videoEncoder)
   .pipeTo(muxer.video);
