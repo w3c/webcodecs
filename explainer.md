@@ -51,7 +51,7 @@ Provide web apps with efficient access to built-in (software and hardware) media
   - control over buffer behavior
   - spatial and temporal scalability
 - Decoded and encoding images
-- Reencoding input media in order to merge many encoded media streams into one encoded media stream.
+- Reencoding multiple input media streams in order to merge many encoded media streams into one encoded media stream.
 
 
 ## Proposed solutions
