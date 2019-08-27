@@ -36,7 +36,6 @@ Provide web apps with efficient access to built-in (software and hardware) media
 ## Non-goals
 
 - Direct APIs for media containers (muxers/demuxers)
-- Access to raw (not encoded) video (WebAudio provides raw access for audio)
 - Writing codecs in JavaScript or WebAssembly
 
 
@@ -261,8 +260,56 @@ videoElem.srcObject = mediaStream;
 
 ```
 
-## Detailed design discussion
+### Example of transcoding an image
 
+```javascript
+// App-specific input and output
+const input = ...;  // Reads container from source (like a file)
+const output = ...;  // Writes container to source (like a file)
+
+const imageDecoder = new imageDecoder({codec: "png"});
+const imageEncoder = new imageEncoder({codec: "jpeg"});
+
+const decoded = await imageDecoder.decode(input);
+const encoded = await imageEncoder.encode(decoded);
+encoded.readable.pipeTo(output);
+
+const canvas = ...;
+canvas.getContext('2d').putImageData(decoded, 0, 0);
+
+```
+
+### Example of transcoding or offline encode/decode
+
+```javascript
+// App-specific sources and sinks of media 
+const input = ...;  // Reads container from source (like a file)
+const demuxer = ...;  // Reads container into frames
+const muxer = ...;  // Writes frames into container
+const output = ...;  // Writes container to source (like a file)
+
+const audioDecoder = new AudioDecoder({codec: "aac"});
+const audioEncoder = new AudioEncoder({
+  codec: "opus", 
+  bitsPerSecond: 60000
+});
+demuxer.audio
+  .pipeThrough(audioDecoder)
+  .pipeThrough(audioEncoder)
+  .pipeTo(muxer.audio);
+
+const videoDecoder = new VideoDecoder({codec: "h264"});
+const videoEncoder = new VideoEncoder({
+  codec: "vp8", bitsPerSecond: 1000000
+});
+demuxer.video
+  .pipeThrough(videoDecoder)
+  .pipeThrough(videoEncoder)
+  .pipeTo(muxer.video);
+
+input.readable.pipeInto(demuxer.writable);
+muxer.readable.pipeInto(output.writable);
+```
 
 ## Alternative designs considered
 
