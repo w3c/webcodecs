@@ -62,7 +62,7 @@ We build on top of [WHATWG Streams](https://streams.spec.whatwg.org/) (in partic
 
 An **AudioTrackReader** converts a MediaStreamTrack into a ReadableStream of DecodedAudioPacket.
 
-An **AudioEncoder** is a TransformStream from DecodeAudioPacket to EncodedAudioPacket.
+An **AudioEncoder** is a TransformStream from DecodedAudioPacket to EncodedAudioPacket.
 
 An **AudioDecoder** is a TransformStream from EncodedAudioPacket to DecodedAudioPacket.
 
@@ -70,11 +70,15 @@ An **AudioTrackWriter** converts a WritableStream of DecodedAudioPacket into a M
 
 A **VideoTrackReader** converts a MediaStreamTrack into a ReadableStream of DecodedVideoFrame.
 
-A **VideoEncoder** is a TransformStream from DecodeVideoFrame to EncodedVideoFrame.
+A **VideoEncoder** is a TransformStream from DecodedVideoFrame to EncodedVideoFrame.
 
 A **VideoDecoder** is a TransformStream from EncodedVideoFrame to DecodedVideoFrame.
 
 A **VideoTrackWriter** converts a WritableStream of DecodedVideoFrame into a MediaStreamTrack.
+
+An **ImageEncoder** encodes a single image from [ImageData](http://developer.mozilla.org/en-US/docs/Web/API/ImageData) to EncodedImageData.
+
+An **ImageDecoder** decodes a single image from EncodedImageData to [ImageData](http://developer.mozilla.org/en-US/docs/Web/API/ImageData).
 
 ## Examples
 ### Example of decode for low-latency live streaming or cloud gaming 
@@ -267,8 +271,8 @@ videoElem.srcObject = mediaStream;
 const input = ...;  // Reads container from source (like a file)
 const output = ...;  // Writes container to source (like a file)
 
-const imageDecoder = new imageDecoder({codec: "png"});
-const imageEncoder = new imageEncoder({codec: "jpeg"});
+const imageDecoder = new ImageDecoder({codec: "png"});
+const imageEncoder = new ImageEncoder({codec: "jpeg"});
 
 const decoded = await imageDecoder.decode(input);
 const encoded = await imageEncoder.encode(decoded);
