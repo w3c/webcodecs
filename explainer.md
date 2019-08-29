@@ -76,6 +76,10 @@ A **VideoDecoder** is a TransformStream from EncodedVideoFrame to DecodedVideoFr
 
 A **VideoTrackWriter** converts a WritableStream of DecodedVideoFrame into a MediaStreamTrack.
 
+A **Compressor** is a TransformStream from byte to byte.
+
+A **Decompressor** is a TransformStream from byte to byte.
+
 ## Examples
 ### Example of decode for low-latency live streaming or cloud gaming 
 
@@ -309,6 +313,20 @@ demuxer.video
 
 input.readable.pipeInto(demuxer.writable);
 muxer.readable.pipeInto(output.writable);
+```
+
+### Example of general compression
+
+```
+const source = new ReadableStream(arrayBuffer);
+const decompressor = new Decompressor({codec: "gzip"});
+const compressor = new Compressor({codec: "zip"});
+const sink = new WritableStream(...);
+
+source
+  .pipeThrough(decompressor)
+  .pipeThrough(compressor)
+  .pipeTo(sink);
 ```
 
 ## Alternative designs considered

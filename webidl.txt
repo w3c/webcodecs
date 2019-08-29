@@ -213,3 +213,29 @@ interface EncodedImageData {
 partial interface ImageData {
   readonly attribute ReadableStream readable; // of bytes
 }
+
+dictionary CompressorParams {
+  DOMString codec;  // For example, "gzip"
+
+  // Codec specific params.
+  ...
+}
+
+[Constructor(CompressorParams params)]
+interface Compressor {
+  readonly attribute WritableStream writable;  // of bytes
+  readonly attribute ReadableStream readable;  // of bytes
+}
+
+dictionary DecompressorParams {
+  DOMString codec;  // For example, "gzip"
+
+  // Codec specific params.
+  ...
+}
+
+[Constructor(DecompressorParams params)]
+interface Decompressor {
+  readonly attribute WritableStream writable;  // of bytes
+  readonly attribute ReadableStream readable;  // of bytes
+}
