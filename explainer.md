@@ -90,7 +90,7 @@ const videoElem = ...;
 transport.readable.pipeTo(demuxer.writable);
 
 const audioDecoder = new AudioDecoder({codec: "opus"});
-const audioWriter = new AudioTrackWriter();
+const audioTrackWriter = new AudioTrackWriter();
 demuxer.audio
   .pipeThrough(audioBuffer)
   .pipeThrough(audioDecoder)
@@ -239,7 +239,7 @@ const videoElem = ...;
 transport.readable.pipeTo(demuxer.writable);
 
 const audioDecoder = new AudioDecoder({codec: "opus"});
-const audioWriter = new AudioTrackWriter();
+const audioTrackWriter = new AudioTrackWriter();
 demuxer.audio
   .pipeThrough(audioDecryptor)
   .pipeThrough(audioBuffer)
