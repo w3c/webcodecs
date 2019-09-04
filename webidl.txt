@@ -3,29 +3,63 @@
 // TODO(when writing spec):
 // - Specify that encoding and decoding must happen off the main thread.
 
-[Constructor(MediaStreamTrack track)]
-interface AudioTrackReader {
-  readonly attribute ReadableStream readable; // of DecodedAudioPacket
+// Common definitions used for both audio and video.
+
+[Constructor(unsigned long long value, unsigned long long scale)]
+interface MediaTime {
+  readonly attribute unsigned long long value; 
+  readonly attribute unsigned long long scale;
 }
 
-interface DecodedAudioPacket {
-  readonly attribute MediaTime timestamp;
-  // Sample count == duration.value
-  // Sample rate == duration.scale
-  readonly attribute MediaTime duration;
-  readonly attribute unsigned long channelCount
+
+// Audio encoder and decoder interfaces.
+
+dictionary AudioCodecParameters {
+  DOMString codec;
+
+  // Defaults are codec-specific
+  unsigned long? sampleRate;
+  unsigned long? channelCount;
 }
 
-[Constructor(AudioEncoderParams params)]
+[Constructor(AudioDecoderInit init)]
+interface AudioDecoder {
+  readonly attribute WritableStream writable;  // AudioDecoderInput
+  readonly attribute ReadableStream readable;  // AudioDecoderOutput
+}
+
+[Constructor(AudioEncoderInit init)]
 interface AudioEncoder {
-  void setParameters(AudioEncoderParams params);
-  readonly attribute WritableStream writable; // DecodedAudioPacket
-  readonly attribute ReadableStream readable; // EncodedAudioPacket
+  readonly attribute WritableStream writable;  // AudioEncoderInput
+  readonly attribute ReadableStream readable;  // AudioEncoderOutput
 }
 
-dictionary AudioEncoderParams {
-   DOMString mimeType;
+dictionary AudioDecoderInit : AudioCodecParameters {
+  // Optional byte data required to initialize audio decoders
+  // such as Vorbis codebooks.
+  BufferSource? extraData;
+  // Duration decoder must decode before the decoded data is valid
+  MediaTime? seekPreRoll;
+  // Duration decoder should discard before returning decoded data.     
+  // Can include both decoder delay as well as padding added during    
+  // encoding.
+  MediaTime? codecDelay;
+} 
 
+dictionary AudioDecoderInput {
+  Uint8Array data;
+  MediaTime timestamp;
+}
+
+dictionary AudioDecoderOutput {
+  AudioBuffer buffer;
+  // TODO: decode stats.
+}
+
+dictionary AudioEncoderStaticSettings {
+}
+
+dictionary AudioEncoderDynamicSettings {
   // not supported by all codecs
   // null/unset means use the codec default
   unsigned long? bitsPerSecond;  
@@ -39,83 +73,74 @@ dictionary AudioEncoderParams {
   bool dtx = false;  // enabled or not
   bool cbr = false;  // cbr or not (vbr if not)
   bool speechMode = false;  // speech-specific mode or not
-} 
-
-[Constructor(BufferSource data, MediaTime timestamp)]
-interface EncodedAudioPacket {
-  readonly attribute MediaTime timestamp;
-  readonly attribute Uint8Array data;
 }
 
-[Constructor(AudioDecoderParams params)]
-interface AudioDecoder {
-  readonly attribute WritableStream writable; // EncodedAudioPacket
-  readonly attribute ReadableStream readable; // DecodedAudioPacket
-  attribute EventHandler onerror;
+dictionary AudioEncoderSettings : AudioEncoderStaticSettings, AudioEncoderDynamicSettings {
 }
 
-dictionary AudioDecoderParams {
-  DOMString codec;  // For example, "opus"
+dictionary AudioEncoderInit : AudioCodecParameters {
+  AudioEncoderSettings? settings;
+}
 
-  // Defaults are codec-specific
-  unsigned long? sampleRate;  
-  unsigned long? channelCount;
+dictionary AudioEncoderInput {
+  MediaTime timestamp;
+  ArrayBuffer buffer;
+  AudioEncoderDynamicSettings changeSettings;
+}
 
-  // Optional byte data required to initialize audio decoders
-  // such as Vorbis codebooks.
-  BufferSource? extraData;
-  // Duration decoder must decode before the decoded data is valid
-  MediaTime? seekPreRoll;
-  // Duration decoder should discard before returning decoded data.     
-  // Can include both decoder delay as well as padding added during    
-  // encoding.
-  MediaTime? codecDelay;
-} 
-
-[Constructor()]
-interface AudioTrackWriter {
-  readonly attribute WritableStream writable; // of DecodedAudioPacket
-  readonly attribute MediaStreamTrack track;
+dictionary AudioEncoderOutput {
+  Uint8Array data;
+  MediaTime timestamp;
+  // TODO: encode stats.
 }
 
 
-[Constructor(MediaStreamTrack track)]
-interface VideoTrackReader {
-  readonly attribute ReadableStream readable; // of DecodedVideoFrame
-}
+// Video encoder and decoder interfaces.
 
-interface DecodedVideoFrame {
+interface VideoFrame {
   readonly attribute MediaTime timestamp;
   readonly attribute ImageData imageData;
 }
 
-[Constructor(VideoEncoderParams params)]
-interface VideoEncoder {
-    void setParameters(VideoEncoderParams params);
-    void generateKeyFrame(optional sequence<DOMString> layerIds);
-    readonly attribute WritableStream writable; // DecodedVideoFrame
-    readonly attribute ReadableStream readable; // EncodedVideoFrame
-    attribute EventHandler onerror;
+dictionary VideoCodecParameters {
+  DOMString codec;
+
+  // For VP9:
+  DOMString? profile;
 }
 
-dictionary VideoEncoderParams {
-  // Cannot be changed once set
-  DOMString mimeType;
+[Constructor(VideoDecoderInit init)]
+interface VideoDecoder {
+  readonly attribute WritableStream writable;  // VideoDecoderInput
+  readonly attribute ReadableStream readable;  // VideoDecoderOutput
+}
 
-  // Can be used to initialize the encoder faster
+[Constructor(VideoEncoderInit init)]
+interface VideoEncoder {
+  readonly attribute WritableStream writable;  // VideoEncoderInput
+  readonly attribute ReadableStream readable;  // VideoEncoderOutput
+}
+
+dictionary VideoDecoderInit : VideoCodecParameters {
+  // Optional byte data required to initialize video decoders
+  // such as H264 with SPS and PPS.
+  BufferSource? extraData;
+
+  // Can be used to initialize the decoder faster
   // than waiting for the first frame
-  unsigned long? expectedWidth;
-  unsigned long? expectedHeight;  
+  unsigned long long? expectedWidth;
+  unsigned long long? expectedHeight;  
+}
 
-  // unset/null means the encoder will pick
-  // target will be exceeded for key frames
-  unsigned long bitsPerSecond;
+dictionary VideoDecoderInput {
+  Uint8Array data;
+  MediaTime timestamp;
+}
 
-  VideoEncodeContentMode contentMode;
-
-  sequence<VideoEncodeLayer> layers;
-} 
-
+dictionary VideoDecoderOutput {
+  VideoFrame frame;
+  // TODO: add decode stats.
+}
 
 enum VideoEncodeContentMode {
   "screen"  // For screen sharing/recording
@@ -148,51 +173,72 @@ dictionary VideoEncodeLayer {
   unsigned long? bitsPerSecond;
 }
 
-[Constructor(BufferSource data, MediaTime timestamp)]
-interface EncodedVideoFrame {
-  readonly attribute Uint8Array data;
-  readonly attribute MediaTime timestamp;
-  // Info provided as a result from the encoder
-  // Not needed as input to a decoder
-  readonly attribute VideoEncodeResult? encoded;
+dictionary VideoEncoderStaticSettings {
+  // Can be used to initialize the encoder faster
+  // than waiting for the first frame
+  unsigned long? expectedWidth;
+  unsigned long? expectedHeight;  
+
+  sequence<VideoEncodeLayer> layers;
 }
 
-interface VideoEncodeResult {
+dictionary VideoEncoderDynamicSettings {
+  // unset/null means the encoder will pick
+  // target will be exceeded for key frames
+  unsigned long long? targetBitRate;
+
+  VideoEncodeContentMode contentMode;
+
+  // If true, the next compatible image will be encoded as a key frame.
+  boolean? requestKeyFrame;
+}
+
+dictionary VideoEncoderSettings : VideoEncoderStaticCodecSettings, VideoEncoderDynamicCodecSettings {
+}
+
+dictionary VideoEncoderInit : VideoCodecParameters {
+  VideoEncoderSettings settings;
+}
+
+dictionary VideoEncoderInput {
+  VideoFrame frame;
+  VideoEncoderDynamicSettings changeSettings;
+}
+
+dictionary VideoEncoderOutput {
+  Uint8Array data;
+  MediaTime timestamp;
+
   // If using multiple layers, which layer is it?
-  readonly attribute DOMString? layerId;
+  DOMString? layerId;
   // Whether or not it's a key frame meaning it depends on 
   // no other frames
-  readonly attribute bool keyFrame;
+  boolean keyFrame;
+
+  // TODO: per-frame encode stats.
 }
 
-[Constructor(VideoDecoderParams params)]
-interface VideoDecoder {
-  readonly attribute WritableStream writable; // EncodedVideoFrame
-  readonly attribute ReadableStream readable; // DecodedVideoFrame
-  attribute EventHandler onerror;
+
+// MediaStreamTrack integration.
+
+[Constructor(MediaStreamTrack track)]
+interface AudioTrackReader {
+  readonly attribute ReadableStream readable; // of DecodedAudioPacket
 }
-
-dictionary VideoDecoderParams {
-  DOMString mimeType;
-
-  // Can be used to initialize the decoder faster
-  // than waiting for the first frame
-  unsigned long long? expectedWidth;
-  unsigned long long? expectedHeight;  
-
-  // Optional byte data required to initialize video decoders
-  // such as H264 with SPS and PPS.
-  BufferSource? extraData;
-} 
 
 [Constructor()]
-interface VideoTrackWriter {
-  readonly attribute WritableStream writable; // of DecodedVideoFrame
+interface AudioTrackWriter {
+  readonly attribute WritableStream writable; // of DecodedAudioPacket
   readonly attribute MediaStreamTrack track;
 }
 
-[Constructor(unsigned long long value, unsigned long long scale)]
-interface MediaTime {
-  readonly attribute unsigned long long value; 
-  readonly attribute unsigned long long scale;
+[Constructor(MediaStreamTrack track)]
+interface VideoTrackReader {
+  readonly attribute ReadableStream readable; // of VideoFrame
+}
+
+[Constructor()]
+interface VideoTrackWriter {
+  readonly attribute WritableStream writable;  // VideoFrame
+  readonly attribute MediaStreamTrack track;
 }
