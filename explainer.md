@@ -261,25 +261,6 @@ videoElem.srcObject = mediaStream;
 
 ```
 
-### Example of transcoding an image
-
-```javascript
-// App-specific input and output
-const input = ...;  // Reads container from source (like a file)
-const output = ...;  // Writes container to source (like a file)
-
-const imageDecoder = new imageDecoder({codec: "png"});
-const imageEncoder = new imageEncoder({codec: "jpeg"});
-
-const decoded = await imageDecoder.decode(input);
-const encoded = await imageEncoder.encode(decoded);
-encoded.readable.pipeTo(output);
-
-const canvas = ...;
-canvas.getContext('2d').putImageData(decoded, 0, 0);
-
-```
-
 ### Example of transcoding or offline encode/decode
 
 ```javascript
