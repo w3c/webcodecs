@@ -82,6 +82,7 @@ A **VideoTrackWriter** converts a WritableStream of DecodedVideoFrame into a Med
 
 ```javascript
 const transport = ...;  // Source of muxed/serialized messsages
+// App-specific serialization/containerization code not provided by browser
 const demuxer = ...;  // Transforms to demuxed/deserialized frames
 const audioBuffer = ...;  // TransformStream that buffers frames
 const videoBuffer = ...;
@@ -115,6 +116,7 @@ videoElem.srcObject = mediaStream;
 // App-specific tracks, muxer, and transport
 const audioTrack = ...;
 const videoTrack = ...;
+// App-specific serialization/containerization code not provided by browser
 const muxer = ...;  // Serializes frames for transport
 const transport = ...;  // Sends muxed frames to server
 
@@ -144,9 +146,10 @@ muxer.readable.pipeTo(transport.writable);
 ```javascript
 // App-specific sources and sinks of media 
 const input = ...;  // Reads container from source (like a file)
+const output = ...;  // Writes container to source (like a file)
+// App-specific containerization code not provided by browser
 const demuxer = ...;  // Reads container into frames
 const muxer = ...;  // Writes frames into container
-const output = ...;  // Writes container to source (like a file)
 
 const audioDecoder = new AudioDecoder({codec: "aac"});
 const audioEncoder = new AudioEncoder({
@@ -179,6 +182,7 @@ const audioTrack = ...;
 const videoTrack = ...;
 const audioEncryptor = ...;  // TransformStream that encrypts encoded media
 const videoEncryptor = ...;
+// App-specific containerization code not provided by browser
 const muxer = ...;  // Transforms frames into muxed messages
 const transport = ...;  // Sink of encrypted, muxed messages
 
@@ -229,6 +233,7 @@ muxer.readable.pipeTo(transport.writable);
 
 // Receiver has app-specific decryptor and buffering behavior
 const transport = ...;  // Source of encrypted, muxed messsages
+// App-specific containerization code not provided by browser
 const demuxer = ...;  // Transforms muxed messages to demuxed frames
 const audioDecryptor = ...;  // TransformStream that decrypts frames
 const videoDecryptor = ...;
@@ -264,11 +269,13 @@ videoElem.srcObject = mediaStream;
 ### Example of transcoding or offline encode/decode
 
 ```javascript
-// App-specific sources and sinks of media 
+// App-specific sources and sinks of media
 const input = ...;  // Reads container from source (like a file)
+const output = ...;  // Writes container to source (like a file)
+// App-specific containerization code (not provided by browser)
 const demuxer = ...;  // Reads container into frames
 const muxer = ...;  // Writes frames into container
-const output = ...;  // Writes container to source (like a file)
+
 
 const audioDecoder = new AudioDecoder({codec: "aac"});
 const audioEncoder = new AudioEncoder({
