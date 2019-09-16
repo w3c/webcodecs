@@ -1,7 +1,5 @@
 # WebCodecs Explainer
 
-Updated: June 2019
-
 ## Problem and Motivation
 
 There are many Web APIs that use media codecs internally to support APIs for particular uses:
