@@ -300,6 +300,18 @@ input.readable.pipeInto(demuxer.writable);
 muxer.readable.pipeInto(output.writable);
 ```
 
+## Detailed design discussion
+
+### Execution environment
+
+Encoder and decoder objects can be instantiated on the main thread and on dedicated workers. Additionally, the ReadableStream and WritableStream components of each object can be transferred to other contexts (utilizing the [transferable stream][transferable-streams] infrastructure).
+
+Encode and decode operations can be very computationally expensive. As such, user agents must perform the operations asynchronously with the JavaScript which initiates the operation. The execution environment of the codec implementation is defined by the user agent. Some possibilities include: sequentially or in parallel on an internal thread pool, or on a hardware acceleration unit (e.g., a GPU).
+
+By building on the Streams infrastructure, WebCodecs allows the user agent to optimize the transfer of chunks between JavaScript and internal execution environments. The user agent should take great care to efficiently handle expensive resources (e.g., video frame contents, GPU resource handles).
+
+[transferable-streams]: https://github.com/whatwg/streams/blob/master/transferable-streams-explainer.md
+
 ## Alternative designs considered
 
 Media Source Extensions (MSE) is already used widely for low-latency streaming.  However, there are some problems:
