@@ -300,6 +300,63 @@ input.readable.pipeInto(demuxer.writable);
 muxer.readable.pipeInto(output.writable);
 ```
 
+## Detailed design discussion
+
+### Codec configuration
+
+Many codecs and encoder/decoder implementations are highly configurable. WebCodecs intends to support most of the configuration options available in codecs today to efficiently allow for advanced use cases.
+
+Configuration options are classified into two types:
+- **Parameters** are metadata required to construct a compliant bitstream. These are required when constructing the encoder/decoder and cannot be changed. For example, the VP9 profile.
+- **Settings** are configuration options that influence the behavior of the encoder but do not change the type of bitstream produced. For example, target bitrate.
+
+Settings are further classified into two types:
+- **Static settings** must be specified when constructing the encoder and cannot be changed without reinitializing the encoder.
+- **Dynamic settings** apply to the lifetime of the encoder and can be changed at any point. Dynamic settings must be lightweight and not require reinitializing the encoder (concretely, does not require a new key frame to be produced).
+
+WebCodecs will maintain a standard definition of parameters for each supported codec. Additionally, the specification will establish common encoder settings that apply across codecs and implementation. However, we expect many settings will be implementation-specific. These will be available behind a feature detection and configuration API (TODO: sketch this).
+
+#### Configuration examples
+
+Both encoder and decoder constructors take in the codec name and required parameters. Encoders additionally take in a dictionary of codec settings.
+
+```javascript
+const encoder = new VideoEncoder({
+  codec: 'VP9',
+  profile: '1',
+  settings: {
+    targetBitRate: 80_000,
+  },
+});
+```
+
+Codec settings can be changed on-the-fly by bundling the changed settings with the next media chunk. The changed settings will be applied before encoding chunk and apply to subsequent chunks.
+
+```javascript
+const encoder = new VideoEncoder(...);
+const writer = encoder.writable.getWriter();
+writer.write({
+  imageData: ...,
+  timestamp: ...,
+  changeSettings: {
+    targetBitRate: 50_000,
+  },
+});
+```
+
+```javascript
+const encoder = new VideoEncoder(...);
+const writer = encoder.writable.getWriter();
+writer.write({
+  imageData: ...,
+  timestamp: ...,
+  changeSettings: {
+    // |imageData| or the next compatible image will be encoded as a key frame.
+    requestKeyFrame: true,
+  },
+});
+```
+
 ## Alternative designs considered
 
 Media Source Extensions (MSE) is already used widely for low-latency streaming.  However, there are some problems:
