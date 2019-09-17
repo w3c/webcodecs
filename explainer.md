@@ -79,136 +79,152 @@ A **VideoTrackWriter** converts a WritableStream of DecodedVideoFrame into a Med
 ### Example of decode for low-latency live streaming or cloud gaming 
 
 ```javascript
-const transport = ...;  // Source of muxed/serialized messsages
-// App-specific serialization/containerization code not provided by browser
-const demuxer = ...;  // Transforms to demuxed/deserialized frames
-const audioBuffer = ...;  // TransformStream that buffers frames
-const videoBuffer = ...;
+// The app provides ReadableStreams of encoded audio and video
+// in the form of byte arrays defined by a codec such as vp8 or opus
+// (not in a media container such as mp4 or webm).
+const {encodedAudio, encodedVideo} = ...;
+// The app also provides an element to render the decoded media
 const videoElem = ...;
 
-transport.readable.pipeTo(demuxer.writable);
-
-const audioDecoder = new AudioDecoder({codec: 'opus'});
-const audioTrackWriter = new AudioTrackWriter();
-demuxer.audio
-    .pipeThrough(audioBuffer)
-    .pipeThrough(audioDecoder)
-    .pipeTo(audioTrackWriter.writable);
-
-const videoDecoder = new VideoDecoder({codec: 'vp8'});
+// To render to an element, the ReadableStream of decoded audio and video
+// must be converted to a MediaStream using TrackWriters.
 const videoWriter = new VideoTrackWriter();
-demuxer.video
-    .pipeThrough(videoBuffer)
-    .pipeThrough(videoDecoder)
-    .pipeTo(videoTrackWriter.writable);
-
+const audioWriter = new AudioTrackWriter();
 videoElem.srcObject = new MediaStream([audioWriter.track, videoWriter.track]);
+
+// Finally the decoders are created and the encoded media is piped through the decoder
+// and into the TrackerWriters which conver them into MediaStreamTracks
+const audioDecoder = new AudioDecoder({codec: 'opus'});
+const videoDecoder = new VideoDecoder({codec: 'vp8'});
+encodedAudio.pipeThrough(audioDecoder).pipeTo(audioWriter.writable);
+encodedVideo.pipeThrough(videoDecoder).pipeTo(videoWriter.writable);
 ```
 
 ### Example of encode for live streaming upload
 
 ```javascript
-// App-specific tracks, muxer, and transport
-const audioTrack = ...;
-const videoTrack = ...;
-// App-specific serialization/containerization code not provided by browser
-const muxer = ...;  // Serializes frames for transport
-const transport = ...;  // Sends muxed frames to server
+// The app provides sources of audio and video, perhaps from getUserMedia.
+const {audioTrack, videoTrack} = ...;
+// The app also provides a way to serizlize/containerize encoded media and upload it.
+// The browser provides the app byte arrays defined by a codec such as vp8 or opus
+// (not in a media container such as mp4 or webm).
+function muxAndSend(encodedAudio, encodedVideo) { ... };
 
-const audioTrackReader = new AudioTrackReader(audioTrack);
+// First, the tracks are converted to ReadableStreams of encoded audio and video.
+const audio = (new AudioTrackReader(audioTrack)).readable;
+const video = (new VideoTrackReader(videoTrack)).readable;
+
+// Lastly, build the encoders and pass media through them
 const audioEncoder = new AudioEncoder({
   codec: 'opus',
   settings: {
     targetBitRate: 60_000,
   },
 });
-audioTrackReader.readable
-    .pipeThrough(audioEncoder)
-    .pipeTo(muxer.audio);
-
-const videoTrackReader = new VideoTrackReader(videoTrack);
 const videoEncoder = new VideoEncoder({
   codec: 'vp8', 
   settings: {
     targetBitRate: 1_000_000
   },
 });
-videoTrackReader.readable
-    .pipeThrough(videoEncoder)
-    .pipeTo(muxer.video);
+// TODO: Example of putting dynamic settings in media flow
+const encodedAudio = audio.pipeThrough(audioEncoder);
+const encodedVideo = video.pipeThrough(videoEncoder);
 
-muxer.readable.pipeTo(transport.writable);
-
+muxAndSend(encodedAudio, encodedVideo);
 ```
 
 ### Example of transcoding or offline encode/decode
 
 ```javascript
-// App-specific sources and sinks of media 
-const input = ...;  // Reads container from source (like a file)
-const output = ...;  // Writes container to source (like a file)
-// App-specific containerization code not provided by browser
-const demuxer = ...;  // Reads container into frames
-const muxer = ...;  // Writes frames into container
+// App provides a way to demux (decontainerize) and mux (containerize) media
+function demux(input) { ... }
+function mux(audio, video) { ... }
+const input = ...;
 
 const audioDecoder = new AudioDecoder({codec: 'aac'});
+const videoDecoder = new VideoDecoder({codec: 'h264'});
+
 const audioEncoder = new AudioEncoder({
   codec: 'opus', 
   settings: {
     targetBitRate: 60_000,
   },
 });
-demuxer.audio
-    .pipeThrough(audioDecoder)
-    .pipeThrough(audioEncoder)
-    .pipeTo(muxer.audio);
-
-const videoDecoder = new VideoDecoder({codec: 'h264'});
 const videoEncoder = new VideoEncoder({
   codec: 'vp8',
   settings: {
     bitsPerSecond: 1_000_000,
   },
 });
-demuxer.video
-  .pipeThrough(videoDecoder)
-  .pipeThrough(videoEncoder)
-  .pipeTo(muxer.video);
 
-input.readable.pipeInto(demuxer.writable);
-muxer.readable.pipeInto(output.writable);
+const {audioIn, videoIn} = demux(input);
+const audioOut = audioIn.pipeThrough(audioDecoder).pipeThrough(audioEncoder);
+const videoOut = videoIn.pipeThrough(videoDecoder).pipeThrough(videoEncoder);
+const output = mux(audioOut, videoOut);
+
 ```
 
-### Example of advanced real-time communication
+### Example of real-time communication
 
 ```javascript
-// Sender has app-specific encryptor and transport
-const audioTrack = ...;
-const videoTrack = ...;
-const audioEncryptor = ...;  // TransformStream that encrypts encoded media
-const videoEncryptor = ...;
-// App-specific containerization code not provided by browser
-const muxer = ...;  // Transforms frames into muxed messages
-const transport = ...;  // Sink of encrypted, muxed messages
+// The app provides sources of audio and video, perhaps from getUserMedia.
+const {audioTrack, videoTrack} = ...;
+// The app also provides ways to send audio and video frames.
+function sendMedia(encodedAudio, encodedVideo) { ... };
 
-const audioTrackReader = new AudioTrackReader(audioTrack);
+// First, the tracks are converted to ReadableStreams of encoded audio and video.
+const audio = (new AudioTrackReader(audioTrack)).readable;
+const video = (new VideoTrackReader(videoTrack)).readable;
+
+// Next, build the encoders and pass media through them
 const audioEncoder = new AudioEncoder({
-  codec: 'opus', 
+  codec: 'opus',
   settings: {
     targetBitRate: 60_000,
   },
 });
-audioTrackReader.readable
-    .pipeThrough(audioEncoder)
-    .pipeThrough(audioEncryptor)
-    .pipeThrough(muxer)
-    .pipeTo(transport.writable);
-
-const videoTrackReader = new VideoTrackReader(videoTrack);
 const videoEncoder = new VideoEncoder({
-  codec: 'vp9', 
+  codec: 'vp8',
   settings: {
-    bitsPerSecond: 1000000,
+    bitsPerSecond: 1_000_000,
+  },
+});
+// TODO: Example of putting dynamic settings in media flow
+const encodedAudio = audio.pipeThrough(audioEncoder);
+const encodedVideo = video.pipeThrough(videoEncoder);
+
+// Then send the encoded audio and video
+sendMedia(encodedAudio, encodedVideo);
+
+// On the receive side, encoded media is likely received
+// from an out-of-order p2p transport and then put into a buffer.
+// The output of that buffer is the source of encoded audio and video here.
+const {encodedAudio, encodedVideo} = ...;
+
+// To render to an element, the ReadableStream of decoded audio and video
+// must be converted to a MediaStream using TrackWriters.
+const videoWriter = new VideoTrackWriter();
+const audioWriter = new AudioTrackWriter();
+videoElem.srcObject = new MediaStream([audioWriter.track, videoWriter.track]);
+
+// Finally the decoders are created and the encoded media is piped through the decoder
+// and into the TrackerWriters which conver them into MediaStreamTracks
+const audioDecoder = new AudioDecoder({codec: 'opus'});
+const videoDecoder = new VideoDecoder({codec: 'vp8'});
+encodedAudio.pipeThrough(audioDecoder).pipeTo(audioWriter.writable);
+encodedVideo.pipeThrough(videoDecoder).pipeTo(videoWriter.writable);
+```
+
+### Example of real-time communication using SVC
+
+The same as above, but with fancier codec parameters:
+
+```javascript
+const videoEncoder = new VideoEncoder({
+  codec: 'vp9',
+  settings: {
+    bitsPerSecond: 1_000_000,
     // Two spatial layers with two temporal layers each
     layers: [{
       // Quarter size base layer
@@ -232,83 +248,6 @@ const videoEncoder = new VideoEncoder({
     }],
   },
 });
-videoTrackReader.readable
-    .pipeThrough(videoEncoder)
-    .pipeThrough(videoEncryptor)
-    .pipeThrough(muxer.video)
-
-muxer.readable.pipeTo(transport.writable);
-
-
-// Receiver has app-specific decryptor and buffering behavior
-const transport = ...;  // Source of encrypted, muxed messsages
-// App-specific containerization code not provided by browser
-const demuxer = ...;  // Transforms muxed messages to demuxed frames
-const audioDecryptor = ...;  // TransformStream that decrypts frames
-const videoDecryptor = ...;
-const audioBuffer = ...;  // TransformStream that buffers frames
-const videoBuffer = ...;
-const videoElem = ...;
-
-transport.readable.pipeTo(demuxer.writable);
-
-const audioDecoder = new AudioDecoder({codec: 'opus'});
-const audioTrackWriter = new AudioTrackWriter();
-demuxer.audio
-    .pipeThrough(audioDecryptor)
-    .pipeThrough(audioBuffer)
-    .pipeThrough(audioDecoder)
-    .pipeTo(audioTrackWriter.writable);
-
-const videoDecoder = new videoDecoder({codec: 'vp8'});
-const videoWriter = new VideoTrackWriter();
-demuxer.video
-    .pipeThrough(videoDecryptor)
-    .pipeThrough(videoBuffer)
-    .pipeThrough(videoDecoder)
-    .pipeTo(videoTrackWriter.writable);
-
-videoElem.srcObject = new MediaStream([audioWriter.track, videoWriter.track]);
-
-```
-
-### Example of transcoding or offline encode/decode
-
-```javascript
-// App-specific sources and sinks of media
-const input = ...;  // Reads container from source (like a file)
-const output = ...;  // Writes container to source (like a file)
-// App-specific containerization code (not provided by browser)
-const demuxer = ...;  // Reads container into frames
-const muxer = ...;  // Writes frames into container
-
-
-const audioDecoder = new AudioDecoder({codec: 'aac'});
-const audioEncoder = new AudioEncoder({
-  codec: 'opus', 
-  settings: {
-    targetBitRate: 60_000
-  },
-});
-demuxer.audio
-    .pipeThrough(audioDecoder)
-    .pipeThrough(audioEncoder)
-    .pipeTo(muxer.audio);
-
-const videoDecoder = new VideoDecoder({codec: 'h264'});
-const videoEncoder = new VideoEncoder({
-  codec: 'vp8',
-  settings: {
-    bitsPerSecond: 1_000_000,
-  },
-});
-demuxer.video
-    .pipeThrough(videoDecoder)
-    .pipeThrough(videoEncoder)
-    .pipeTo(muxer.video);
-
-input.readable.pipeInto(demuxer.writable);
-muxer.readable.pipeInto(output.writable);
 ```
 
 ## Detailed design discussion
