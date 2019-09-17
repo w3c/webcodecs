@@ -88,24 +88,21 @@ const videoElem = ...;
 
 transport.readable.pipeTo(demuxer.writable);
 
-const audioDecoder = new AudioDecoder({codec: "opus"});
+const audioDecoder = new AudioDecoder({codec: 'opus'});
 const audioTrackWriter = new AudioTrackWriter();
 demuxer.audio
-  .pipeThrough(audioBuffer)
-  .pipeThrough(audioDecoder)
-  .pipeTo(audioTrackWriter.writable);
+    .pipeThrough(audioBuffer)
+    .pipeThrough(audioDecoder)
+    .pipeTo(audioTrackWriter.writable);
 
-const videoDecoder = new VideoDecoder({codec: "vp8"});
+const videoDecoder = new VideoDecoder({codec: 'vp8'});
 const videoWriter = new VideoTrackWriter();
 demuxer.video
-  .pipeThrough(videoBuffer)
-  .pipeThrough(videoDecoder)
-  .pipeTo(videoTrackWriter.writable);
+    .pipeThrough(videoBuffer)
+    .pipeThrough(videoDecoder)
+    .pipeTo(videoTrackWriter.writable);
 
-const mediaStream = new MediaStream();
-mediaStream.addTrack(audioWriter.track);
-mediaStream.addTrack(videoWriter.track);
-videoElem.srcObject = mediaStream;
+videoElem.srcObject = new MediaStream([audioWriter.track, videoWriter.track]);
 ```
 
 ### Example of encode for live streaming upload
@@ -120,20 +117,25 @@ const transport = ...;  // Sends muxed frames to server
 
 const audioTrackReader = new AudioTrackReader(audioTrack);
 const audioEncoder = new AudioEncoder({
-  codec: "opus", bitsPerSecond: 60000
+  codec: 'opus',
+  settings: {
+    targetBitRate: 60_000,
+  },
 });
 audioTrackReader.readable
-  .pipeThrough(audioEncoder)
-  .pipeTo(muxer.audio);
+    .pipeThrough(audioEncoder)
+    .pipeTo(muxer.audio);
 
 const videoTrackReader = new VideoTrackReader(videoTrack);
 const videoEncoder = new VideoEncoder({
-  codec: "vp8", 
-  bitsPerSecond: 1000000
+  codec: 'vp8', 
+  settings: {
+    targetBitRate: 1_000_000
+  },
 });
 videoTrackReader.readable
-  .pipeThrough(videoEncoder)
-  .pipeTo(muxer.video);
+    .pipeThrough(videoEncoder)
+    .pipeTo(muxer.video);
 
 muxer.readable.pipeTo(transport.writable);
 
@@ -149,19 +151,24 @@ const output = ...;  // Writes container to source (like a file)
 const demuxer = ...;  // Reads container into frames
 const muxer = ...;  // Writes frames into container
 
-const audioDecoder = new AudioDecoder({codec: "aac"});
+const audioDecoder = new AudioDecoder({codec: 'aac'});
 const audioEncoder = new AudioEncoder({
-  codec: "opus", 
-  bitsPerSecond: 60000
+  codec: 'opus', 
+  settings: {
+    targetBitRate: 60_000,
+  },
 });
 demuxer.audio
-  .pipeThrough(audioDecoder)
-  .pipeThrough(audioEncoder)
-  .pipeTo(muxer.audio);
+    .pipeThrough(audioDecoder)
+    .pipeThrough(audioEncoder)
+    .pipeTo(muxer.audio);
 
-const videoDecoder = new VideoDecoder({codec: "h264"});
+const videoDecoder = new VideoDecoder({codec: 'h264'});
 const videoEncoder = new VideoEncoder({
-  codec: "vp8", bitsPerSecond: 1000000
+  codec: 'vp8',
+  settings: {
+    bitsPerSecond: 1_000_000,
+  },
 });
 demuxer.video
   .pipeThrough(videoDecoder)
@@ -186,45 +193,49 @@ const transport = ...;  // Sink of encrypted, muxed messages
 
 const audioTrackReader = new AudioTrackReader(audioTrack);
 const audioEncoder = new AudioEncoder({
-  codec: "opus", 
-  bitsPerSecond: 60000
+  codec: 'opus', 
+  settings: {
+    targetBitRate: 60_000,
+  },
 });
 audioTrackReader.readable
-  .pipeThrough(audioEncoder)
-  .pipeThrough(audioEncryptor)
-  .pipeThrough(muxer)
-  .pipeTo(transport.writable);
+    .pipeThrough(audioEncoder)
+    .pipeThrough(audioEncryptor)
+    .pipeThrough(muxer)
+    .pipeTo(transport.writable);
 
 const videoTrackReader = new VideoTrackReader(videoTrack);
 const videoEncoder = new VideoEncoder({
-  codec: "vp9", 
-  bitsPerSecond: 1000000,
-  // Two spatial layers with two temporal layers each
-  layers: [{
-    // Quarter size base layer
-    id: "p0",
-    temporalSlots: [0],
-    scaleDownBy: 2,
-    dependsOn: ["p0"],
-  }, {
-    id: "p1"
-    temporalSlots: [1],
-    scaleDownBy: 2,
-    dependsOn: ["p0"],
-  }, {
-    id: "s0",
-    temporalSlots: [0],
-    dependsOn: ["p0", "s0"],
-  }, {
-    id: "s1",
-    temporalSlots: [1],
-    dependsOn: ["p1", "s0", "s1"]
-  }]
+  codec: 'vp9', 
+  settings: {
+    bitsPerSecond: 1000000,
+    // Two spatial layers with two temporal layers each
+    layers: [{
+      // Quarter size base layer
+      id: 'p0',
+      temporalSlots: [0],
+      scaleDownBy: 2,
+      dependsOn: ['p0'],
+    }, {
+      id: 'p1'
+      temporalSlots: [1],
+      scaleDownBy: 2,
+      dependsOn: ['p0'],
+    }, {
+      id: 's0',
+      temporalSlots: [0],
+      dependsOn: ['p0', 's0'],
+    }, {
+      id: 's1',
+      temporalSlots: [1],
+      dependsOn: ['p1', 's0', 's1'],
+    }],
+  },
 });
 videoTrackReader.readable
-  .pipeThrough(videoEncoder)
-  .pipeThrough(videoEncryptor)
-  .pipeThrough(muxer.video)
+    .pipeThrough(videoEncoder)
+    .pipeThrough(videoEncryptor)
+    .pipeThrough(muxer.video)
 
 muxer.readable.pipeTo(transport.writable);
 
@@ -241,26 +252,23 @@ const videoElem = ...;
 
 transport.readable.pipeTo(demuxer.writable);
 
-const audioDecoder = new AudioDecoder({codec: "opus"});
+const audioDecoder = new AudioDecoder({codec: 'opus'});
 const audioTrackWriter = new AudioTrackWriter();
 demuxer.audio
-  .pipeThrough(audioDecryptor)
-  .pipeThrough(audioBuffer)
-  .pipeThrough(audioDecoder)
-  .pipeTo(audioTrackWriter.writable);
+    .pipeThrough(audioDecryptor)
+    .pipeThrough(audioBuffer)
+    .pipeThrough(audioDecoder)
+    .pipeTo(audioTrackWriter.writable);
 
-const videoDecoder = new videoDecoder({codec: "vp8"});
+const videoDecoder = new videoDecoder({codec: 'vp8'});
 const videoWriter = new VideoTrackWriter();
 demuxer.video
-  .pipeThrough(videoDecryptor)
-  .pipeThrough(videoBuffer)
-  .pipeThrough(videoDecoder)
-  .pipeTo(videoTrackWriter.writable);
+    .pipeThrough(videoDecryptor)
+    .pipeThrough(videoBuffer)
+    .pipeThrough(videoDecoder)
+    .pipeTo(videoTrackWriter.writable);
 
-const mediaStream = new MediaStream();
-mediaStream.addTrack(audioWriter.track);
-mediaStream.addTrack(videoWriter.track);
-videoElem.srcObject = mediaStream;
+videoElem.srcObject = new MediaStream([audioWriter.track, videoWriter.track]);
 
 ```
 
@@ -275,24 +283,29 @@ const demuxer = ...;  // Reads container into frames
 const muxer = ...;  // Writes frames into container
 
 
-const audioDecoder = new AudioDecoder({codec: "aac"});
+const audioDecoder = new AudioDecoder({codec: 'aac'});
 const audioEncoder = new AudioEncoder({
-  codec: "opus", 
-  bitsPerSecond: 60000
+  codec: 'opus', 
+  settings: {
+    targetBitRate: 60_000
+  },
 });
 demuxer.audio
-  .pipeThrough(audioDecoder)
-  .pipeThrough(audioEncoder)
-  .pipeTo(muxer.audio);
+    .pipeThrough(audioDecoder)
+    .pipeThrough(audioEncoder)
+    .pipeTo(muxer.audio);
 
-const videoDecoder = new VideoDecoder({codec: "h264"});
+const videoDecoder = new VideoDecoder({codec: 'h264'});
 const videoEncoder = new VideoEncoder({
-  codec: "vp8", bitsPerSecond: 1000000
+  codec: 'vp8',
+  settings: {
+    bitsPerSecond: 1_000_000,
+  },
 });
 demuxer.video
-  .pipeThrough(videoDecoder)
-  .pipeThrough(videoEncoder)
-  .pipeTo(muxer.video);
+    .pipeThrough(videoDecoder)
+    .pipeThrough(videoEncoder)
+    .pipeTo(muxer.video);
 
 input.readable.pipeInto(demuxer.writable);
 muxer.readable.pipeInto(output.writable);
