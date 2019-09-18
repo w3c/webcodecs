@@ -93,7 +93,7 @@ const audioWriter = new AudioTrackWriter();
 videoElem.srcObject = new MediaStream([audioWriter.track, videoWriter.track]);
 
 // Finally the decoders are created and the encoded media is piped through the decoder
-// and into the TrackerWriters which conver them into MediaStreamTracks
+// and into the TrackerWriters which converts them into MediaStreamTracks.
 const audioDecoder = new AudioDecoder({codec: 'opus'});
 const videoDecoder = new VideoDecoder({codec: 'vp8'});
 encodedAudio.pipeThrough(audioDecoder).pipeTo(audioWriter.writable);
@@ -105,16 +105,16 @@ encodedVideo.pipeThrough(videoDecoder).pipeTo(videoWriter.writable);
 ```javascript
 // The app provides sources of audio and video, perhaps from getUserMedia.
 const {audioTrack, videoTrack} = ...;
-// The app also provides a way to serizlize/containerize encoded media and upload it.
+// The app also provides a way to serialize/containerize encoded media and upload it.
 // The browser provides the app byte arrays defined by a codec such as vp8 or opus
 // (not in a media container such as mp4 or webm).
 function muxAndSend(encodedAudio, encodedVideo) { ... };
 
-// First, the tracks are converted to ReadableStreams of encoded audio and video.
+// First, the tracks are converted to ReadableStreams of unencoded audio and video.
 const audio = (new AudioTrackReader(audioTrack)).readable;
 const video = (new VideoTrackReader(videoTrack)).readable;
 
-// Lastly, build the encoders and pass media through them
+// Lastly, build the encoders and pass media through them.
 const audioEncoder = new AudioEncoder({
   codec: 'opus',
   settings: {
@@ -137,7 +137,7 @@ muxAndSend(encodedAudio, encodedVideo);
 ### Example of transcoding or offline encode/decode
 
 ```javascript
-// App provides a way to demux (decontainerize) and mux (containerize) media
+// App provides a way to demux (decontainerize) and mux (containerize) media.
 function demux(input) { ... }
 function mux(audio, video) { ... }
 const input = ...;
@@ -170,10 +170,10 @@ const output = mux(audioOut, videoOut);
 ```javascript
 // The app provides sources of audio and video, perhaps from getUserMedia.
 const {audioTrack, videoTrack} = ...;
-// The app also provides ways to send audio and video frames.
+// The app also provides ways to send encoded audio and video bitstream.
 function sendMedia(encodedAudio, encodedVideo) { ... };
 
-// First, the tracks are converted to ReadableStreams of encoded audio and video.
+// First, the tracks are converted to ReadableStreams of framed bitstream chunks.
 const audio = (new AudioTrackReader(audioTrack)).readable;
 const video = (new VideoTrackReader(videoTrack)).readable;
 
@@ -209,7 +209,7 @@ const audioWriter = new AudioTrackWriter();
 videoElem.srcObject = new MediaStream([audioWriter.track, videoWriter.track]);
 
 // Finally the decoders are created and the encoded media is piped through the decoder
-// and into the TrackerWriters which conver them into MediaStreamTracks
+// and into the TrackerWriters which converts them into MediaStreamTracks.
 const audioDecoder = new AudioDecoder({codec: 'opus'});
 const videoDecoder = new VideoDecoder({codec: 'vp8'});
 encodedAudio.pipeThrough(audioDecoder).pipeTo(audioWriter.writable);
