@@ -13,8 +13,40 @@ Abstract: WebCodecs is a flexible web API for encoding and decoding audio and vi
 !Version History: <a href="https://github.com/wicg/web-codecs/commits">https://github.com/wicg/web-codecs/commits</a>
 </pre>
 
-<h2 id="introduction">Introduction</h2>
+<section class='non-normative'>
+  <h2 id='introduction'>Introduction</h2>
+  <em>This section is non-normative</em>
+  <p>
+    The introduction has not yet been written.
+  </p>
+  <p class='note'>
+    NOTE: The interfaces that follow are a work in progress.
+  </p>
+</section>
 
-<em>This section is non-normative</em>
+<section>
+  <h2 id='video-decoder-interface'>VideoDecoder Interface</h2>
+  <pre class='idl'>
+    [Exposed=(Window)]
+    interface VideoDecoder {
+        constructor();
+        Promise&lt;void&gt; Initialize(VideoDecoderInitParameters params);
+        Promise&lt;void&gt; Flush();
+        void Close();
 
-The specification work has not started yet.
+        readonly attribute WritableStream writable;  // of EncodedVideoFrame
+        readonly attribute ReadableStream readable;  // of VideoFrame
+    };
+  </pre>
+  <pre class='idl'>
+    [Exposed=(Window)]
+    dictionary VideoDecoderInitParameters {
+      required DOMString codec;
+      required DOMString profile;
+
+      // These are the "coded size", not the "visible size"
+      required unsigned long width;
+      required unsigned long height;
+    };
+  </pre>
+</section>
