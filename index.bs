@@ -7,6 +7,7 @@ Shortname: web-codecs
 Level: 1
 Group: wicg
 Editor: Chris Cunningham, w3cid 114832, Google Inc. https://google.com/
+Editor: Paul Adenot, w3cid 62410, Mozilla https://www.mozilla.org/
 Abstract: WebCodecs is a flexible web API for encoding and decoding audio and video.
 !Participate: <a href="https://github.com/wicg/web-codecs">Git Repository.</a>
 !Participate: <a href="https://github.com/wicg/web-codecs/issues/new">File an issue.</a>
@@ -29,7 +30,6 @@ Abstract: WebCodecs is a flexible web API for encoding and decoding audio and vi
   <pre class='idl'>
     [Exposed=(Window)]
     interface VideoDecoder {
-        constructor();
         Promise&lt;void&gt; Initialize(VideoDecoderInitParameters params);
         Promise&lt;void&gt; Flush();
         void Close();
@@ -47,6 +47,42 @@ Abstract: WebCodecs is a flexible web API for encoding and decoding audio and vi
       // These are the "coded size", not the "visible size"
       required unsigned long width;
       required unsigned long height;
+    };
+  </pre>
+</section>
+
+<section>
+  <h2 id='video-encoder-interface'>VideoEncoder Interface</h2>
+  <pre class='idl'>
+    [Exposed=(Window)]
+    interface VideoEncoder {
+      Promise&lt;void&gt; Initialize(VideoEncoderInitParameters params);
+      void Close();
+
+      readonly attribute WritableStream writable;  // of VideoFrame
+      readonly attribute ReadableStream readable;  // of EncodedVideoFrame
+    };
+  </pre>
+  <pre class='idl'>
+    enum VideoEncoderHardwareMode {
+      "hardware",
+      "software"
+    };
+  </pre>
+  <pre class='idl'>
+    [Exposed=(Window)]
+    dictionary VideoEncoderInitParameters {
+      required VideoEncoderHardwareMode hardware_mode;
+      required DOMString codec;
+      required DOMString profile;
+
+      required unsigned long visible_width;
+      required unsigned long visible_height;
+
+      required unsigned long bitsPerSecond;
+      required double framesPerSecond;
+
+      required double maxFramesBetweenKeyFrames;
     };
   </pre>
 </section>
