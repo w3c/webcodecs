@@ -11,11 +11,11 @@ There are many Web APIs that use media codecs internally to support APIs for par
 But there’s no general way to flexibly configure and use these media codecs. Because of this, many web applications have resorted to implementing media codecs in JavaScript or WebAssembly, despite the disadvantages:
 - Increased bandwidth to download codecs already in the browser.
 - Reduced performance
-- Reduced power efficiency 
+- Reduced power efficiency
 
 They do so perhaps because each particular Web API that has codecs internally has limitations that are difficult for certain use cases:
 - WebAudio allows decoding a media file (in the form of a binary buffer) into PCM, but it needs to be a media file that is valid and complete. It does not support streaming of the data. It does not offer progress information. There is of course no support for video, and no support for encoding.
-- MediaRecorder allows encoding a MediaStream that has audio and video tracks. There is crude control over some parameters (bits per second, mimetype with codec string), but it’s very high level. It does not support faster-than-realtime encoding. Not suitable for low latency encoding as the output can be buffered.  Encoded bitstream is wrapped in a container which adds overhead for use cases which need their own container format. A number of things are unclear: what happens during under-runs, what happens when the encoding speed is too slow for real-time. It’s very nice for basic uses, but lacks a lot of features.  
+- MediaRecorder allows encoding a MediaStream that has audio and video tracks. There is crude control over some parameters (bits per second, mimetype with codec string), but it’s very high level. It does not support faster-than-realtime encoding. Not suitable for low latency encoding as the output can be buffered.  Encoded bitstream is wrapped in a container which adds overhead for use cases which need their own container format. A number of things are unclear: what happens during under-runs, what happens when the encoding speed is too slow for real-time. It’s very nice for basic uses, but lacks a lot of features.
 - WebRTC PeerConnection allows encoding and decoding of network RTP streams, and has high coupling to other WebRTC and MediaStream APIs, it can’t be used realistically for anything else. It is also very opaque.  JavaScript cannot access the encoded data.
 - HTMLMediaElement and Media Source Extensions allow decoding media in real time, while streaming compressed data. There is very little flexibility on the video and audio output (canvas can be used to adjust the video, but it’s not very efficient).  There is very little control over the speed of decoding, the only possibility is via playbackRate, which applies pitch compensation to the audio. There is no way to be notified that a new image has been decoded, no way to decide how much to decode in advance. There is no way to decode image data as fast as the host can and run computation on the data. Encoded bitstream must be given in a specific container format which adds overhead for use cases which have their own container format not native to the browser.
 
@@ -43,7 +43,7 @@ Provide web apps with efficient access to built-in (software and hardware) media
 - Cloud gaming
 - Live stream uploading
 - Non-realtime encoding/decoding/transcoding, such as for local file editing
-- Advanced Real-time Communications: 
+- Advanced Real-time Communications:
   - e2e encryption
   - control over buffer behavior
   - spatial and temporal scalability
@@ -55,28 +55,28 @@ Provide web apps with efficient access to built-in (software and hardware) media
 
 We build on top of [WHATWG Streams](https://streams.spec.whatwg.org/) (in particular [TransformStreams](https://streams.spec.whatwg.org/#ts-class)) and [MediaStreamTracks](https://www.w3.org/TR/mediacapture-streams/#dom-mediastreamtrack).
 
-**EncodedAudioPacket**s and **EncodedVideoFrame**s provide access to codec-specific encoded media bytes so they may be transported, saved, etc.
+**EncodedAudioChunk**s and **EncodedVideoChunk**s provide access to codec-specific encoded media bytes so they may be transported, saved, etc.
 
-**DecodedAudioPacket**s and **DecodedVideoFrame**s provide opaque handles for passing to/from other APIs (such as to/from MediaStreamTracks).   
+**AudioPacket**s and **VideoFrame**s may be passed opaque handles to other APIs (such as to/from MediaStreamTracks). Alternatively, AudioPacket may expose an [AudioBuffer](https://webaudio.github.io/web-audio-api/#audiobuffer) for rendering via [AudioWorklet](https://webaudio.github.io/web-audio-api/#audioworklet), while VideoFrame may expose an ImageBitmap for efficient rendering to canvas.
 
-An **AudioTrackReader** converts a MediaStreamTrack into a ReadableStream of DecodedAudioPacket.
+An **AudioTrackReader** converts a MediaStreamTrack into a ReadableStream of AudioPacket.
 
-An **AudioEncoder** is a TransformStream from DecodeAudioPacket to EncodedAudioPacket.
+An **AudioEncoder** is a TransformStream from AudioPacket to EncodedAudioChunk.
 
-An **AudioDecoder** is a TransformStream from EncodedAudioPacket to DecodedAudioPacket.
+An **AudioDecoder** is a TransformStream from EncodedAudioChunk to AudioPacket.
 
-An **AudioTrackWriter** converts a WritableStream of DecodedAudioPacket into a MediaStreamTrack.
+An **AudioTrackWriter** converts a WritableStream of AudioPacket into a MediaStreamTrack.
 
-A **VideoTrackReader** converts a MediaStreamTrack into a ReadableStream of DecodedVideoFrame.
+A **VideoTrackReader** converts a MediaStreamTrack into a ReadableStream of VideoFrame.
 
-A **VideoEncoder** is a TransformStream from DecodeVideoFrame to EncodedVideoFrame.
+A **VideoEncoder** is a TransformStream from VideoFrame to EncodedVideoChunk.
 
-A **VideoDecoder** is a TransformStream from EncodedVideoFrame to DecodedVideoFrame.
+A **VideoDecoder** is a TransformStream from EncodedVideoChunk to VideoFrame.
 
-A **VideoTrackWriter** converts a WritableStream of DecodedVideoFrame into a MediaStreamTrack.
+A **VideoTrackWriter** converts a WritableStream of VideoFrame into a MediaStreamTrack.
 
 ## Examples
-### Example of decode for low-latency live streaming or cloud gaming 
+### Example of decode and rendering via \*TrackWriters for low-latency live streaming or cloud gaming
 
 ```javascript
 // The app provides ReadableStreams of encoded audio and video
@@ -100,6 +100,41 @@ encodedAudio.pipeThrough(audioDecoder).pipeTo(audioWriter.writable);
 encodedVideo.pipeThrough(videoDecoder).pipeTo(videoWriter.writable);
 ```
 
+### Example of video rendering to Canvas (also for low-latency live streaming or cloud gaming)
+
+
+```javascript
+// App defines a simple WritableSink that renders new frames as soon as they arrive.
+class CanvasRendererSink {
+  constructor(canvas) {
+    this._context = canvas.getContext('bitmaprenderer');
+  }
+
+  write(videoFrame) {
+    _context.transferFromImageBitmap(videoFrame.image);
+    return Promise.resolve();
+  }
+}
+
+// The app provides ReadableStreams of encoded video
+// in the form of byte arrays defined by a codec such as vp8
+// (not in a media container such as mp4 or webm).
+const {encodedVideo} = ...;
+
+// App sets up canvas on the page for use by the rendering sink.
+const canvas = document.getElementById("canvas");
+
+// Wrap the rendering sink in a writable stream so it can be connected to the graph.
+const renderingStream = new WritableStream(new CanvasRendererSink(canvas));
+
+// Construct the decoder and connect the pipes!
+const videoDecoder = new VideoDecoder({codec: 'vp8'});
+encodedVideo.pipeThrough(videoDecoder).pipeTo(renderingStream);
+
+```
+
+
+
 ### Example of encode for live streaming upload
 
 ```javascript
@@ -122,7 +157,7 @@ const audioEncoder = new AudioEncoder({
   },
 });
 const videoEncoder = new VideoEncoder({
-  codec: 'vp8', 
+  codec: 'vp8',
   settings: {
     targetBitRate: 1_000_000
   },
@@ -146,7 +181,7 @@ const audioDecoder = new AudioDecoder({codec: 'aac'});
 const videoDecoder = new VideoDecoder({codec: 'h264'});
 
 const audioEncoder = new AudioEncoder({
-  codec: 'opus', 
+  codec: 'opus',
   settings: {
     targetBitRate: 60_000,
   },
