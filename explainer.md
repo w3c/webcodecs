@@ -53,11 +53,11 @@ Provide web apps with efficient access to built-in (software and hardware) media
 
 ## Proposed solutions
 
-We build on top of [WHATWG Streams](https://streams.spec.whatwg.org/) (in particular [TransformStreams](https://streams.spec.whatwg.org/#ts-class)) and [MediaStreamTracks](https://www.w3.org/TR/mediacapture-streams/#dom-mediastreamtrack).
+We build on top of [WHATWG Streams](https://streams.spec.whatwg.org/) (in particular [TransformStreams](https://streams.spec.whatwg.org/#ts-class)) and integrate with [MediaStreamTracks](https://www.w3.org/TR/mediacapture-streams/#dom-mediastreamtrack).
 
 **EncodedAudioChunk**s and **EncodedVideoChunk**s provide access to codec-specific encoded media bytes so they may be transported, saved, etc.
 
-**AudioPacket**s and **VideoFrame**s may be passed opaque handles to other APIs (such as to/from MediaStreamTracks). Alternatively, AudioPacket may expose an [AudioBuffer](https://webaudio.github.io/web-audio-api/#audiobuffer) for rendering via [AudioWorklet](https://webaudio.github.io/web-audio-api/#audioworklet), while VideoFrame may expose an ImageBitmap for efficient rendering to canvas.
+**AudioPacket** may expose an [AudioBuffer](https://webaudio.github.io/web-audio-api/#audiobuffer) for rendering via [AudioWorklet](https://webaudio.github.io/web-audio-api/#audioworklet), while **VideoFrame** may expose an ImageBitmap for efficient rendering to canvas. Alternatively, AudioPackets and VideoFrames may be passed as opaque handles to other APIs (such as to/from MediaStreamTracks).
 
 An **AudioTrackReader** converts a MediaStreamTrack into a ReadableStream of AudioPacket.
 
@@ -76,32 +76,7 @@ A **VideoDecoder** is a TransformStream from EncodedVideoChunk to VideoFrame.
 A **VideoTrackWriter** converts a WritableStream of VideoFrame into a MediaStreamTrack.
 
 ## Examples
-### Example of decode and rendering via \*TrackWriters for low-latency live streaming or cloud gaming
-
-```javascript
-// The app provides ReadableStreams of encoded audio and video
-// in the form of byte arrays defined by a codec such as vp8 or opus
-// (not in a media container such as mp4 or webm).
-const {encodedAudio, encodedVideo} = ...;
-// The app also provides an element to render the decoded media
-const videoElem = ...;
-
-// To render to an element, the ReadableStream of decoded audio and video
-// must be converted to a MediaStream using TrackWriters.
-const videoWriter = new VideoTrackWriter();
-const audioWriter = new AudioTrackWriter();
-videoElem.srcObject = new MediaStream([audioWriter.track, videoWriter.track]);
-
-// Finally the decoders are created and the encoded media is piped through the decoder
-// and into the TrackerWriters which converts them into MediaStreamTracks.
-const audioDecoder = new AudioDecoder({codec: 'opus'});
-const videoDecoder = new VideoDecoder({codec: 'vp8'});
-encodedAudio.pipeThrough(audioDecoder).pipeTo(audioWriter.writable);
-encodedVideo.pipeThrough(videoDecoder).pipeTo(videoWriter.writable);
-```
-
-### Example of video rendering to Canvas (also for low-latency live streaming or cloud gaming)
-
+### Example of video rendering to Canvas for low-latency live streaming or cloud gaming
 
 ```javascript
 // App defines a simple WritableSink that renders new frames as soon as they arrive.
@@ -133,6 +108,29 @@ encodedVideo.pipeThrough(videoDecoder).pipeTo(renderingStream);
 
 ```
 
+### Example of decode and rendering via TrackWriters (also for low-latency live streaming or cloud gaming)
+
+```javascript
+// The app provides ReadableStreams of encoded audio and video
+// in the form of byte arrays defined by a codec such as vp8 or opus
+// (not in a media container such as mp4 or webm).
+const {encodedAudio, encodedVideo} = ...;
+// The app also provides an element to render the decoded media
+const videoElem = ...;
+
+// To render to an element, the ReadableStream of decoded audio and video
+// must be converted to a MediaStream using TrackWriters.
+const videoWriter = new VideoTrackWriter();
+const audioWriter = new AudioTrackWriter();
+videoElem.srcObject = new MediaStream([audioWriter.track, videoWriter.track]);
+
+// Finally the decoders are created and the encoded media is piped through the decoder
+// and into the TrackerWriters which converts them into MediaStreamTracks.
+const audioDecoder = new AudioDecoder({codec: 'opus'});
+const videoDecoder = new VideoDecoder({codec: 'vp8'});
+encodedAudio.pipeThrough(audioDecoder).pipeTo(audioWriter.writable);
+encodedVideo.pipeThrough(videoDecoder).pipeTo(videoWriter.writable);
+```
 
 
 ### Example of encode for live streaming upload
