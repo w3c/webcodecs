@@ -1,3 +1,4 @@
+
 # WebCodecs Explainer
 
 ## Problem and Motivation
@@ -39,7 +40,7 @@ Provide web apps with efficient access to built-in (software and hardware) media
 
 ## Key use-cases
 
-- Extremely low latency live streaming (<3s delay)
+- Extremely low latency live streaming (< 3s delay)
 - Cloud gaming
 - Live stream uploading
 - Non-realtime encoding/decoding/transcoding, such as for local file editing
@@ -48,205 +49,281 @@ Provide web apps with efficient access to built-in (software and hardware) media
   - control over buffer behavior
   - spatial and temporal scalability
 - Decoded and encoding images
-- Reencoding multiple input media streams in order to merge many encoded media streams into one encoded media stream.
+- Re-encoding multiple input media streams in order to merge many encoded media streams into one encoded media stream.
 
 
 ## Proposed solutions
 
-We build on top of [WHATWG Streams](https://streams.spec.whatwg.org/) (in particular [TransformStreams](https://streams.spec.whatwg.org/#ts-class)) and integrate with [MediaStreamTracks](https://www.w3.org/TR/mediacapture-streams/#dom-mediastreamtrack).
+The WebCodecs interface is modeled on well known platform and software codec APIs. This affords the full power of the underlying platform codecs and is intuitive for authors with experience in developing media applications.
 
-**EncodedAudioChunk**s and **EncodedVideoChunk**s provide access to codec-specific encoded media bytes so they may be transported, saved, etc.
+Core interfaces include
 
-**AudioPacket** may expose an [AudioBuffer](https://webaudio.github.io/web-audio-api/#audiobuffer) for rendering via [AudioWorklet](https://webaudio.github.io/web-audio-api/#audioworklet), while **VideoFrame** may expose an ImageBitmap for efficient rendering to canvas. Alternatively, AudioPackets and VideoFrames may be passed as opaque handles to other APIs (such as to/from MediaStreamTracks).
+-   **EncodedAudioChunks** and **EncodedVideoChunks** contain codec-specific encoded media bytes.
 
-An **AudioTrackReader** converts a MediaStreamTrack into a ReadableStream of AudioPacket.
+-   **AudioPacket** contains decoded audio data. It will provide an [AudioBuffer](https://webaudio.github.io/web-audio-api/#audiobuffer) for rendering via [AudioWorklet](https://webaudio.github.io/web-audio-api/#audioworklet).
 
-An **AudioEncoder** is a TransformStream from AudioPacket to EncodedAudioChunk.
+-   **VideoFrame** contains decoded video data. It will provide an [ImageBitmap](https://html.spec.whatwg.org/multipage/imagebitmap-and-animations.html#imagebitmap) for manipulating in WebGL, including rendering to Canvas.
 
-An **AudioDecoder** is a TransformStream from EncodedAudioChunk to AudioPacket.
+-   An **AudioEncoder** encodes AudioPackets to produce EncodedAudioChunks.
 
-An **AudioTrackWriter** converts a WritableStream of AudioPacket into a MediaStreamTrack.
+-   A **VideoEncoder** encodes VideoFrames to produce EncodedVideoChunks.
 
-A **VideoTrackReader** converts a MediaStreamTrack into a ReadableStream of VideoFrame.
+-   An **AudioDecoder** decodes EncodedAudioChunks to produce AudioPackets.
 
-A **VideoEncoder** is a TransformStream from VideoFrame to EncodedVideoChunk.
+-   A **VideoDecoder** decodes EncodedVideoChunks to produce VideoFrames.
 
-A **VideoDecoder** is a TransformStream from EncodedVideoChunk to VideoFrame.
 
-A **VideoTrackWriter** converts a WritableStream of VideoFrame into a MediaStreamTrack.
+WebCodecs will also define mechanisms for importing content from getUserMedia().
+
+-   An **AudioTrackReader** converts an audio MediaStreamTrack into a ReadableStream of AudioPacket.
+
+-   A **VideoTrackReader** converts a video MediaStreamTrack into a ReadableStream of VideoFrame.
 
 ## Examples
-### Example of video rendering to Canvas for low-latency live streaming or cloud gaming
+### Example of video rendering to Canvas for extremely low-latency streaming (e.g. cloud gaming)
 
 ```javascript
-// App defines a simple WritableSink that renders new frames as soon as they arrive.
-class CanvasRendererSink {
-  constructor(canvas) {
-    this._context = canvas.getContext('bitmaprenderer');
-  }
+// The app provides error handling.
+function onDecoderError(error) { ... }
 
-  write(videoFrame) {
-    _context.transferFromImageBitmap(videoFrame.image);
-    return Promise.resolve();
-  }
+// App provides stream of encoded chunks to decoder.
+function streamEncodedChunks(decodeCallback) { ... }
+
+// The document contains a canvas for displaying VideoFrames.
+const canvasElement = document.getElementById("canvas");
+const canvasContext = canvasElement.getContext('bitmaprenderer');
+
+function paintFrameToCanvas(videoFrame) {
+  // Paint every video frame ASAP for lowest latency.
+  canvasContext.transferFromImageBitmap(videoFrame.image);
 }
 
-// The app provides ReadableStreams of encoded video
-// in the form of byte arrays defined by a codec such as vp8
-// (not in a media container such as mp4 or webm).
-const {encodedVideo} = ...;
+const videoDecoder = new VideoDecoder({
+  output: paintFrameToCanvas,
+  error: onDecoderError
+});
 
-// App sets up canvas on the page for use by the rendering sink.
-const canvas = document.getElementById("canvas");
+videoDecoder.configure({codec: 'vp8'}).then((supported) => {
+  // More elaborate fallback recommended.
+  if (!supported)
+    return;
 
-// Wrap the rendering sink in a writable stream so it can be connected to the graph.
-const renderingStream = new WritableStream(new CanvasRendererSink(canvas));
-
-// Construct the decoder and connect the pipes!
-const videoDecoder = new VideoDecoder({codec: 'vp8'});
-encodedVideo.pipeThrough(videoDecoder).pipeTo(renderingStream);
+  // The app fetches VP8 chunks, feeding one at time to the
+  // provided callback for decoding.
+  streamEncodedChunks(function(newChunk) {
+    videoDecoder.decode(newChunk);
+  });
+});
 
 ```
-
-### Example of decode and rendering via TrackWriters (also for low-latency live streaming or cloud gaming)
-
-```javascript
-// The app provides ReadableStreams of encoded audio and video
-// in the form of byte arrays defined by a codec such as vp8 or opus
-// (not in a media container such as mp4 or webm).
-const {encodedAudio, encodedVideo} = ...;
-// The app also provides an element to render the decoded media
-const videoElem = ...;
-
-// To render to an element, the ReadableStream of decoded audio and video
-// must be converted to a MediaStream using TrackWriters.
-const videoWriter = new VideoTrackWriter();
-const audioWriter = new AudioTrackWriter();
-videoElem.srcObject = new MediaStream([audioWriter.track, videoWriter.track]);
-
-// Finally the decoders are created and the encoded media is piped through the decoder
-// and into the TrackerWriters which converts them into MediaStreamTracks.
-const audioDecoder = new AudioDecoder({codec: 'opus'});
-const videoDecoder = new VideoDecoder({codec: 'vp8'});
-encodedAudio.pipeThrough(audioDecoder).pipeTo(audioWriter.writable);
-encodedVideo.pipeThrough(videoDecoder).pipeTo(videoWriter.writable);
-```
-
 
 ### Example of encode for live streaming upload
 
 ```javascript
 // The app provides sources of audio and video, perhaps from getUserMedia.
 const {audioTrack, videoTrack} = ...;
-// The app also provides a way to serialize/containerize encoded media and upload it.
+
+// The app provides a way to serialize/containerize encoded media and upload it.
 // The browser provides the app byte arrays defined by a codec such as vp8 or opus
 // (not in a media container such as mp4 or webm).
-function muxAndSend(encodedAudio, encodedVideo) { ... };
+function muxAndSend(encodedChunk) { ... };
+
+// The app provides error handling (e.g. shutdown w/ UI message)
+function onEncoderError(error) { ... }
+
+// Helper to feed raw media to encoders as fast as possible.
+function readAndEncode(reader, encoder) {
+  reader.read().then((result) => {
+    // App handling for stream closure.
+    if (result.done)
+      return;
+
+    // Encode!
+    encoder.encode(result.value);
+
+    // Keep reading until the stream closes.
+    readAndEncode(reader, encoder);
+  }
+}
 
 // First, the tracks are converted to ReadableStreams of unencoded audio and video.
 const audio = (new AudioTrackReader(audioTrack)).readable;
 const video = (new VideoTrackReader(videoTrack)).readable;
 
-// Lastly, build the encoders and pass media through them.
+// Then build and configure the encoders.
 const audioEncoder = new AudioEncoder({
+  output: muxAndSend,
+  error: onEncoderError,
+});
+const audioPromise = audioEnocer.configure({
   codec: 'opus',
-  settings: {
-    targetBitRate: 60_000,
-  },
+  tuning: {
+    bitrate: 60_000,
+  }
 });
 const videoEncoder = new VideoEncoder({
-  codec: 'vp8',
-  settings: {
-    targetBitRate: 1_000_000
-  },
+  output: muxAndSend,
+  error: onEncoderError,
 });
-// TODO: Example of putting dynamic settings in media flow
-const encodedAudio = audio.pipeThrough(audioEncoder);
-const encodedVideo = video.pipeThrough(videoEncoder);
+const videoPromise = videoEncoder.configure({
+  codec : 'vp8',
+  tuning: {
+    bitrate: 1_000_000,
+    framerate: 24,
+    width: 1024,
+    height: 768
+  }
+});
 
-muxAndSend(encodedAudio, encodedVideo);
+let values = await Promise.all([audioPromise, videoPromise]);
+
+// Ensure all configurations supported.
+if (!values.every((value) => { return value.supported; }))
+  return;
+
+// Finally, feed the encoders data from the track readers.
+readAndEncode(audio.getReader(), audioEcoder);
+readAndEncode(video.getReader(), videoEncoder);
 ```
 
 ### Example of transcoding or offline encode/decode
 
 ```javascript
-// App provides a way to demux (decontainerize) and mux (containerize) media.
-function demux(input) { ... }
-function mux(audio, video) { ... }
-const input = ...;
+// App demuxes (decontainerizes) input and makes repeated calls to the provided
+// callbacks to feed the decoders.
+function streamEncodedChunks(decodeAudioCallback, decodeVideoCallback) { ... }
 
-const audioDecoder = new AudioDecoder({codec: 'aac'});
-const videoDecoder = new VideoDecoder({codec: 'h264'});
+// App provides a way to demux  and mux (containerize) media.
+function muxAudio(encodedChunk) { ... }
+function muxVideo(encodedChunk) { ... }
 
-const audioEncoder = new AudioEncoder({
-  codec: 'opus',
-  settings: {
-    targetBitRate: 60_000,
-  },
-});
-const videoEncoder = new VideoEncoder({
-  codec: 'vp8',
-  settings: {
-    bitsPerSecond: 1_000_000,
-  },
-});
+// The app provides error handling (e.g. shutdown w/ UI message)
+function onCodecError(error) { ... }
 
-const {audioIn, videoIn} = demux(input);
-const audioOut = audioIn.pipeThrough(audioDecoder).pipeThrough(audioEncoder);
-const videoOut = videoIn.pipeThrough(videoDecoder).pipeThrough(videoEncoder);
-const output = mux(audioOut, videoOut);
+// Returns an object { audioEncoder, videoEncoder }.
+// Encoded outputs sent immediately to app provided muxer.
+async function buildAndConfigureEncoders() {
+  // Build encoders.
+  let audioEncoder = new AudioEncoder({ output: muxAudio, error: onCodecError });
+  let videoEncoder = new VideoEncoder({ output: muxVideo, error: onCodecError });
 
+  // Configure and reset if not supported. More sophisticated fallback recommended.
+  if (!await audioEncoder.configure({ codec: 'opus', ... });
+    audioEncoder = null;
+  if (!await videoEncoder.configure({ codec : 'vp8', ... });
+    videoEncoder = null;
+
+  return { audioEncoder: audioEncoder, videoEncoder: videoEncoder };
+}
+
+// Returns an object { audioDecoder, videoDecoder }.
+// Decoded outputs sent immediately to the coresponding encoder for re-encoding.
+async function buildAndConfigureDecoders(audioEncoder, videoEncoder) {
+  // Bind encode callbacks.
+  const reEncodeAudio = audioEncoder.encode.bind(audioEncoder);
+  const reEncodeVideo = videoEncode.encode.bind(videoEncoder);
+
+  // Build decoders.
+  const audioDecoder = new AudioDecoder({ output: reEncodeAudio, error: onCodecError });
+  const videoDecoder = new VideoDecoder({ output: reEncodeVideo, error: onCodecError });
+
+  // Configure and reset if not supported. More sophisticated fallback recommended.
+  if (!await audioDecoder.configure({ codec: 'aac', ... }))
+    audioDecoder = null;
+  if (!await videoDecoder.configure({ codec : 'avc1.42001e', ... }))
+    videoDecoder = null;
+
+  return { audioDecoder: audioDecoder, videoDecoder: videoDecoder};
+}
+
+// Setup encoders.
+let { audioEncoder, videoEncoder } = await buildAndConfigureEncoders();
+
+// App handles unsupported configuration.
+if (audioEncoder == null || videoEncoder == null)
+  return;
+
+// Setup decoders. Provide encoders to receive decoded output.
+let { audioDecoder, videoDecoder } = await buildAndConfigureDecoders(audioEncoder, videoEncoder);
+
+// App handles unsupported configuration.
+if (audioDecoder == null || videoDecoder == null)
+  return;
+
+// Start streaming encoded chunks to the decoders, repeatedly calling
+// the provided callbacks for each chunk.
+// Decoded output will be fed to encoders for re-encoding.
+// Encoded output will be fed to muxer.
+streamEncodedChunks(audioDecoder.decode.bind(audioDecoder),
+          videoDecoder.decode.bind(videoDecoder));
 ```
 
 ### Example of real-time communication
 
 ```javascript
-// The app provides sources of audio and video, perhaps from getUserMedia.
+// The app provides sources of audio and video, perhaps from getUserMedia().
 const {audioTrack, videoTrack} = ...;
 // The app also provides ways to send encoded audio and video bitstream.
-function sendMedia(encodedAudio, encodedVideo) { ... };
-
-// First, the tracks are converted to ReadableStreams of framed bitstream chunks.
-const audio = (new AudioTrackReader(audioTrack)).readable;
-const video = (new VideoTrackReader(videoTrack)).readable;
-
-// Next, build the encoders and pass media through them
-const audioEncoder = new AudioEncoder({
-  codec: 'opus',
-  settings: {
-    targetBitRate: 60_000,
-  },
-});
-const videoEncoder = new VideoEncoder({
-  codec: 'vp8',
-  settings: {
-    bitsPerSecond: 1_000_000,
-  },
-});
-// TODO: Example of putting dynamic settings in media flow
-const encodedAudio = audio.pipeThrough(audioEncoder);
-const encodedVideo = video.pipeThrough(videoEncoder);
-
-// Then send the encoded audio and video
-sendMedia(encodedAudio, encodedVideo);
+function sendAudio(encodedAudio) { ... };
+function sendVideo(encodedVideo) { ... };
 
 // On the receive side, encoded media is likely received
 // from an out-of-order p2p transport and then put into a buffer.
 // The output of that buffer is the source of encoded audio and video here.
-const {encodedAudio, encodedVideo} = ...;
+function streamEncodedChunks(decodeAudioCallback, decodeVideoCallback) { ... }
 
-// To render to an element, the ReadableStream of decoded audio and video
-// must be converted to a MediaStream using TrackWriters.
-const videoWriter = new VideoTrackWriter();
-const audioWriter = new AudioTrackWriter();
-videoElem.srcObject = new MediaStream([audioWriter.track, videoWriter.track]);
+// App rendering audio in AudioWorklet
+// TODO(chcunningham): source a demo.
+function renderInAudioWorklet(audioPacket) { ... }
 
-// Finally the decoders are created and the encoded media is piped through the decoder
-// and into the TrackerWriters which converts them into MediaStreamTracks.
-const audioDecoder = new AudioDecoder({codec: 'opus'});
-const videoDecoder = new VideoDecoder({codec: 'vp8'});
-encodedAudio.pipeThrough(audioDecoder).pipeTo(audioWriter.writable);
-encodedVideo.pipeThrough(videoDecoder).pipeTo(videoWriter.writable);
+// See definition from earlier example.
+function paintFrameToCanvas(videoFrame) { ... }
+
+// Returns an object { audioEncoder, videoEncoder }.
+// Encoded outputs sent immediately to app provided muxer.
+async function buildAndConfigureEncoders() {
+    // Encoded outputs immmediately sent on the wire.
+  let audioEncoder = new AudioEncoder({ output: sendAudio, error: onCodecError });
+  let videoEncoder = new VideoEncoder({ output: sendVideo, error: onCodecError });
+
+  // Rest matches earlier example.
+  ...
+}
+
+// Returns an object { audioDecoder, videoDecoder }.
+// Decoded outputs rendered immediately.
+async function buildAndConfigureDecoders(audioEncoder, videoEncoder) {
+  // Build decoders.
+  const audioDecoder = new AudioDecoder({ output: paintToCanvas, error: onCodecError });
+  const videoDecoder = new VideoDecoder({ output: renderInAudioWorklet, error: onCodecError });
+
+  // Rest matches earlier example.
+  ...
+}
+
+// Setup the encoders and check for unsupported configuration.
+let { audioEncoder, videoEncoder } = buildAndConfigureEncoders();
+if (audioEncoder == null || videoEncoder == null)
+  return;  // More elaborate fallback recommended.
+
+// Convert the camera tracks to ReadableStreams of framed bitstream chunks.
+const audio = (new AudioTrackReader(audioTrack)).readable;
+const video = (new VideoTrackReader(videoTrack)).readable;
+
+// Feed the encoders data from the track readers. Encoded outputs are
+// immediately sent on the wire. See readAndEncode() definition from
+// earlier examples.
+readAndEncode(audio.getReader(), audioEcoder);
+readAndEncode(video.getReader(), videoEncoder);
+
+// Setup decoders and check for unsupported configuration.
+let { audioDecoder, videoDecoder } = buildAndConfigureDecoders();
+if (audioDecoder == null || videoDecoder == null)
+  return;  // More elaborate fallback recommended.
+
+// Start streaming encoded data, repeatedly calling decode callbacks for each chunk.
+streamEncodedChunks(audioDecoder.decode.bind(audioDecoder),
+          videoDecoder.decode.bind(videoDecoder));
 ```
 
 ### Example of real-time communication using SVC
@@ -254,12 +331,16 @@ encodedVideo.pipeThrough(videoDecoder).pipeTo(videoWriter.writable);
 The same as above, but with fancier codec parameters:
 
 ```javascript
-const videoEncoder = new VideoEncoder({
-  codec: 'vp9',
-  settings: {
-    bitsPerSecond: 1_000_000,
-    // Two spatial layers with two temporal layers each
-    layers: [{
+videoEncoder.configure({
+  codec : 'vp9',
+  tuning: {
+    bitrate: 1_000_000,
+    framerate: 24,
+    width: 1024,
+    height: 768
+  }
+  // Two spatial layers with two temporal layers each
+  layers: [{
       // Quarter size base layer
       id: 'p0',
       temporalSlots: [0],
@@ -279,7 +360,6 @@ const videoEncoder = new VideoEncoder({
       temporalSlots: [1],
       dependsOn: ['p1', 's0', 's1'],
     }],
-  },
 });
 ```
 
@@ -287,78 +367,40 @@ const videoEncoder = new VideoEncoder({
 
 ### Execution environment
 
-Encoder and decoder objects can be instantiated on the main thread and on dedicated workers. Additionally, the ReadableStream and WritableStream components of each object can be transferred to other contexts (utilizing the [transferable stream][transferable-streams] infrastructure).
+Encoder and decoder objects can be instantiated on the main thread and on dedicated workers. Codec inputs and outputs can be transferred between contexts using postMessage(). Transfer serialization will be implemented with move semantics and avoid copies.
 
 Encode and decode operations can be very computationally expensive. As such, user agents must perform the operations asynchronously with the JavaScript which initiates the operation. The execution environment of the codec implementation is defined by the user agent. Some possibilities include: sequentially or in parallel on an internal thread pool, or on a hardware acceleration unit (e.g., a GPU).
 
 By building on the Streams infrastructure, WebCodecs allows the user agent to optimize the transfer of chunks between JavaScript and internal execution environments. The user agent should take great care to efficiently handle expensive resources (e.g., video frame contents, GPU resource handles).
-
-[transferable-streams]: https://github.com/whatwg/streams/blob/master/transferable-streams-explainer.md
 
 ### Codec configuration
 
 Many codecs and encoder/decoder implementations are highly configurable. WebCodecs intends to support most of the configuration options available in codecs today to efficiently allow for advanced use cases.
 
 Configuration options are classified into two types:
-- **Parameters** are metadata required to construct a compliant bitstream. These are required when constructing the encoder/decoder and cannot be changed. For example, the VP9 profile.
-- **Settings** are configuration options that influence the behavior of the encoder but do not change the type of bitstream produced. For example, target bitrate.
-
-Settings are further classified into two types:
-- **Static settings** must be specified when constructing the encoder and cannot be changed without reinitializing the encoder.
-- **Dynamic settings** apply to the lifetime of the encoder and can be changed at any point. Dynamic settings must be lightweight and not require reinitializing the encoder (concretely, does not require a new key frame to be produced).
+- **Options** are metadata required to construct a compliant bitstream (for example, the codec name and profile). These are required when configuring the encoder/decoder and cannot be changed without again calling configure(). Reconfiguration will internally reset the codec, aborting any pending outputs. Callers can avoid having outputs aborted by first flushing (flush()) the codec.
+- **Tunings** influence the behavior of the codec but do not change the type of bitstream produced (for example, the target bitrate). A new tuning can be provided at any time by calling tune() without disrupting pending outputs. The new tuning is applied as soon as possible (ideally on the next processed input).
 
 WebCodecs will maintain a standard definition of parameters for each supported codec. Additionally, the specification will establish common encoder settings that apply across codecs and implementation. However, we expect many settings will be implementation-specific. These will be available behind a feature detection and configuration API (TODO: sketch this).
 
-#### Configuration examples
-
-Both encoder and decoder constructors take in the codec name and required parameters. Encoders additionally take in a dictionary of codec settings.
-
-```javascript
-const encoder = new VideoEncoder({
-  codec: 'VP9',
-  profile: '1',
-  settings: {
-    targetBitRate: 80_000,
-  },
-});
-```
-
-Codec settings can be changed on-the-fly by bundling the changed settings with the next media chunk. The changed settings will be applied before encoding chunk and apply to subsequent chunks.
-
-```javascript
-const encoder = new VideoEncoder(...);
-const writer = encoder.writable.getWriter();
-writer.write({
-  imageData: ...,
-  timestamp: ...,
-  changeSettings: {
-    targetBitRate: 50_000,
-  },
-});
-```
-
-```javascript
-const encoder = new VideoEncoder(...);
-const writer = encoder.writable.getWriter();
-writer.write({
-  imageData: ...,
-  timestamp: ...,
-  changeSettings: {
-    // |imageData| or the next compatible image will be encoded as a key frame.
-    requestKeyFrame: true,
-  },
-});
-```
-
 ## Alternative designs considered
 
-Media Source Extensions (MSE) is already used widely for low-latency streaming.  However, there are some problems:
+### Media Source Extensions (MSE)
+
+MSE is already used widely for low-latency streaming.  However, there are some problems:
 - The way to trigger "low-latency mode" is implicit, not standardized, and not supported by all major browsers
 - Applications must work around the default "stop on underrun" behavior of MSE.
 - Applications must containerize input before adding it to the buffer
 - Applications that do not want history for seeking (cloud gaming) must work to remove/disable it.
 - Applications do not have easy access to the decoded output (for uses other than rendering, such a transcoding).
+All of these things could be fixed by adding expanding the MSE API to explicitly support low-latency controls. But this would only solve decode side of the equation, not the encode side.
 
-All of these things could be fixed by adding expanding the MSE API to explicitly support low-latency controls.
+### Integrating with WhatWG Streams
 
-But the would only solve decode side of the equation, not the encode side.
+An earlier design defined Encoders and Decoders as TrasformStreams from the WhatWG Streams specification. This is an appealing model; codecs are conceptually transformers with a stream of inputs and outputs. But implementing basic codec controls (configure, flush, reset) on top of Streams led to complicated designs and we were not able to hide that complexity from users (more details [here](https://docs.google.com/document/d/10S-p3Ob5snRMjBqpBf5oWn6eYij1vos7cujHoOCCCAw/edit?usp=sharing)). We've opted to instead define the codec interfaces as described above. Users can wrap these interfaces in Streams when desired.
+
+## Future considerations
+
+Earlier proposals defined AudioTrackWriter and VideoTrackWriter as a means of feeding decoded media to `<video>` for presentation. Most prospective users have indicated they prefer to manage presentation via Canvas, so `<video>` presentation has been deprioritized for now.
+
+Another future idea is to expose a codec "worklet", where users could implement their own codec for use inside the existing media pipeline. For example, a WASM decoder could be used in combination with existing MSE and `<video>` APIs.
