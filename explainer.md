@@ -54,15 +54,15 @@ Provide web apps with efficient access to built-in (software and hardware) media
 
 ## Proposed solutions
 
-The WebCodecs interface is modeled on well known platform and software codec APIs. This affords the full power of the underlying platform codecs and is intuitive for authors with experience in developing media applications.
+The WebCodecs interface is modeled on well known platform and software codec APIs. This API shape is time-tested and intuitive for authors with experience in developing media applications.
 
 Core interfaces include
 
 -   **EncodedAudioChunks** and **EncodedVideoChunks** contain codec-specific encoded media bytes.
 
--   **AudioPacket** contains decoded audio data. It will provide an [AudioBuffer](https://webaudio.github.io/web-audio-api/#audiobuffer) for rendering via [AudioWorklet](https://webaudio.github.io/web-audio-api/#audioworklet).
+-   **AudioPacket** contains decoded audio data. It will provide an [AudioBuffer](https://webaudio.github.io/web-audio-api/#audiobuffer) for rendering via Audio[AudioWorklet](https://webaudio.github.io/web-audio-api/#audioworklet).
 
--   **VideoFrame** contains decoded video data. It will provide an [ImageBitmap](https://html.spec.whatwg.org/multipage/imagebitmap-and-animations.html#imagebitmap) for manipulating in WebGL, including rendering to Canvas.
+-   **VideoFrame** contains decoded video data. It will provide an [ImageBitmap](https://html.spec.whatwg.org/multipage/imagebitmap-and-animations.html#imagebitmap) for manipulating in WebGL, including rendering to Canvas. It should eventually also [provide access to YUV data](https://github.com/WICG/web-codecs/issues/30), but the design is still TBD.
 
 -   An **AudioEncoder** encodes AudioPackets to produce EncodedAudioChunks.
 
@@ -103,16 +103,14 @@ const videoDecoder = new VideoDecoder({
   error: onDecoderError
 });
 
-videoDecoder.configure({codec: 'vp8'}).then((supported) => {
-  // More elaborate fallback recommended.
-  if (!supported)
-    return;
-
-  // The app fetches VP8 chunks, feeding one at time to the
-  // provided callback for decoding.
-  streamEncodedChunks(function(newChunk) {
-    videoDecoder.decode(newChunk);
-  });
+videoDecoder.configure({codec: 'vp8'}).then(() => {
+  // The app fetches VP8 chunks, feeding each chunk to the decode
+  // callback as fast as possible. Real apps must also monitor
+  // decoder backpressure to ensure the decoder is keeping up.
+  streamEncodedChunks(videoDecoder.decode.bind(videoDecoder));
+}).catch(() => {
+  // App provides fallback logic when config not supported.
+  ...
 });
 
 ```
@@ -175,11 +173,12 @@ const videoPromise = videoEncoder.configure({
   }
 });
 
-let values = await Promise.all([audioPromise, videoPromise]);
-
-// Ensure all configurations supported.
-if (!values.every((value) => { return value.supported; }))
+try {
+  let values = await Promise.all([audioPromise, videoPromise]);
+} catch (exception) {
+  // Configuration not supported. More elaborate fallback recommended.
   return;
+}
 
 // Finally, feed the encoders data from the track readers.
 readAndEncode(audio.getReader(), audioEcoder);
@@ -208,10 +207,16 @@ async function buildAndConfigureEncoders() {
   let videoEncoder = new VideoEncoder({ output: muxVideo, error: onCodecError });
 
   // Configure and reset if not supported. More sophisticated fallback recommended.
-  if (!await audioEncoder.configure({ codec: 'opus', ... });
+  try {
+    await audioEncoder.configure({ codec: 'opus', ... });
+  } catch (exception) {
     audioEncoder = null;
-  if (!await videoEncoder.configure({ codec : 'vp8', ... });
+  }
+  try {
+    await videoEncoder.configure({ codec : 'vp8', ... });
+  } catch (exception) {
     videoEncoder = null;
+  }
 
   return { audioEncoder: audioEncoder, videoEncoder: videoEncoder };
 }
@@ -228,10 +233,16 @@ async function buildAndConfigureDecoders(audioEncoder, videoEncoder) {
   const videoDecoder = new VideoDecoder({ output: reEncodeVideo, error: onCodecError });
 
   // Configure and reset if not supported. More sophisticated fallback recommended.
-  if (!await audioDecoder.configure({ codec: 'aac', ... }))
+  try {
+    await audioDecoder.configure({ codec: 'aac', ... });
+  } catch (exception) {
     audioDecoder = null;
-  if (!await videoDecoder.configure({ codec : 'avc1.42001e', ... }))
+  }
+  try {
+    await videoDecoder.configure({ codec : 'avc1.42001e', ... });
+  } catch (exception) {
     videoDecoder = null;
+  }
 
   return { audioDecoder: audioDecoder, videoDecoder: videoDecoder};
 }
