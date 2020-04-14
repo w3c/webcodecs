@@ -95,7 +95,7 @@ const canvasContext = canvasElement.getContext('bitmaprenderer');
 
 function paintFrameToCanvas(videoFrame) {
   // Paint every video frame ASAP for lowest latency.
-  canvasContext.transferFromImageBitmap(videoFrame.image);
+  canvasContext.transferFromImageBitmap(videoFrame.transferToImageBitmap());
 }
 
 const videoDecoder = new VideoDecoder({
