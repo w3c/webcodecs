@@ -60,7 +60,7 @@ Core interfaces include
 
 -   **EncodedAudioChunks** and **EncodedVideoChunks** contain codec-specific encoded media bytes.
 
--   **AudioPacket** contains decoded audio data. It will provide an [AudioBuffer](https://webaudio.github.io/web-audio-api/#audiobuffer) for rendering via Audio[AudioWorklet](https://webaudio.github.io/web-audio-api/#audioworklet).
+-   **AudioPacket** contains decoded audio data. It will provide an [AudioBuffer](https://webaudio.github.io/web-audio-api/#audiobuffer) for rendering via [AudioWorklet](https://webaudio.github.io/web-audio-api/#audioworklet).
 
 -   **VideoFrame** contains decoded video data. It will provide an [ImageBitmap](https://html.spec.whatwg.org/multipage/imagebitmap-and-animations.html#imagebitmap) for manipulating in WebGL, including rendering to Canvas. It should eventually also [provide access to YUV data](https://github.com/WICG/web-codecs/issues/30), but the design is still TBD.
 
