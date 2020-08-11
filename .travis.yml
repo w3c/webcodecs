@@ -1,0 +1,24 @@
+language: generic # don't install any environment
+script:
+- make ci
+
+branches:
+  only:
+  - master
+
+before_deploy:
+- openssl aes-256-cbc -K $encrypted_0dd42dbca4c2_key -iv $encrypted_0dd42dbca4c2_iv
+  -in deploy_key.enc -out ~\/.ssh/deploy_key -d
+
+deploy:
+  provider: pages
+  local_dir: out
+  deploy_key: deploy_key
+  edge:
+    branch: master
+
+notifications:
+  email:
+    on_success: never
+    on_failure: always
+
