@@ -13,7 +13,7 @@ Abstract: This specification defines interfaces for encoding and decoding audio
 Abstract: and video. It also includes an interface for retrieving raw video
 Abstract: frames from MediaStreamStracks.
 
-Markup Shorthands:css no, markdown yes
+Markup Shorthands:css no, markdown yes, dfn yes
 !Participate: <a href="https://github.com/wicg/web-codecs">Git Repository.</a>
 !Participate: <a href="https://github.com/wicg/web-codecs/issues/new">File an issue.</a>
 !Version History: <a href="https://github.com/wicg/web-codecs/commits">https://github.com/wicg/web-codecs/commits</a>
@@ -404,8 +404,8 @@ Methods {#audioencoder-methods}
     copy, should call frame.clone() prior to calling encode().
 
     When invoked, run these steps:
-    1. If the value of |frame's| {{[[detached]]}} internal slot is true, throw a
-        {{TypeError}}.
+    1. If the value of |frame|'s {{AudioFrame/[[detached]]}} internal slot is
+        true, throw a {{TypeError}}.
     2. Let |output algorithm| be the <a>EncodedAudioChunk Output algorithm</a>.
     3. Run the <a>Encode Frame</a> algorithm with |frame| and
         |output algorithm|.
@@ -526,8 +526,8 @@ Methods {#videoencoder-methods}
     copy, should call frame.clone() prior to calling encode().
 
     When invoked, run these steps:
-    1. If the value of |frame's| {{[[detached]]}} internal slot is true, throw a
-        {{TypeError}}.
+    1. If the value of |frame|'s {{VideoFrame/[[detached]]}} internal slot is
+        true, throw a {{TypeError}}.
     2. Let |output algorithm| be the <a>EncodedVideoChunk Output algorithm</a>.
     3. Run the <a>Encode Frame</a> algorithm with |frame| and
         |output algorithm|.
@@ -709,7 +709,7 @@ Running a control message to configure the encoder means running these steps:
 --------------------------------------------------------------------------------------------
 Run these steps:
 1. If `state` is not `"configured"`, throw an {{InvalidStateError}}.
-2. If the value of |frames| <strong>\[\[detached\]\]</strong> internal slot is
+2. If the value of |frames| <strong>\[[detached]]</strong> internal slot is
     true, throw a {{TypeError}}.
 3. Let |frameClone| hold the result of running the <a>Clone Frame</a> algorithm
     with |frame|.
@@ -1181,7 +1181,7 @@ dictionary AudioFrameInit {
 
 ### Internal Slots ###{#audioframe-internal-slots}
 <dl>
-  <dt>[[<dfn for=AudioFrame>detached</dfn>]]</dt>
+  <dt><dfn attribute for=AudioFrame>\[[detached]]</dfn></dt>
   <dd>
     Boolean indicating whether close() was invoked and underlying resources
         have been released.
@@ -1196,7 +1196,7 @@ dictionary AudioFrameInit {
 1. Let |frame| be a new {{AudioFrame}} object.
 2. Assign init.timestamp to frame.timestamp.
 3. Assign init.buffer to frame.buffer.
-4. Assign false to the [[<a>detached</a>]] internal slot.
+<!-- 4. Assign false to the {{AudioFrame/[[foo]]}} internal slot. -->
 5. Return |frame|.
 
 
@@ -1216,7 +1216,7 @@ dictionary AudioFrameInit {
   <dd>
     Immediately frees system resources. When invoked, run these steps:
     1. Release system resources for buffer and set its value to null.
-    2. Assign true to the [[<a>detached</a>]] internal slot.
+    2. Assign true to the {{AudioFrame/[[detached]]}} internal slot.
 
     NOTE: This section needs work. We should use the name and semantics of
         VideoFrame destroy(). Similarly, we should add clone() to make a deep
@@ -1232,11 +1232,9 @@ VideoFrame Interface {#videoframe-interface}
 [Exposed=(Window,Worker)]
 interface VideoFrame {
   constructor(ImageBitmap imageBitmap, VideoFrameInit frameInit);
-
-  <!-- try a typedef here -->
-  <!-- constructor(PixelFormat pixelFormat, Sequence<Plane or PlaneInit> planes,
+  constructor(PixelFormat pixelFormat, sequence<(Plane or PlaneInit)> planes,
               VideoFrameInit frameInit);
- -->
+
   readonly attribute PixelFormat format;
   readonly attribute FrozenArray<Plane> planes;
   readonly attribute unsigned long codedWidth;
@@ -1247,9 +1245,8 @@ interface VideoFrame {
   readonly attribute unsigned long cropHeight;
   readonly attribute unsigned long displayWidth;
   readonly attribute unsigned long displayHeight;
-  <!-- readonly unsigned long long? duration; -->
-  <!-- readonly unsigned long long? timestamp; -->
-  // TODO: color space metadata.
+  readonly attribute unsigned long long? duration;
+  readonly attribute unsigned long long? timestamp;
 
   void destroy();
   VideoFrame clone();
@@ -1276,7 +1273,7 @@ dictionary VideoFrameInit {
 
 ### Internal Slots ###{#videoframe-internal-slots}
 <dl>
-  <dt>[[<dfn for=VideoFrame>detached</dfn>]]</dt>
+  <dt><dfn attribute for=VideoFrame>\[[detached]]</dfn></dt>
   <dd>
     Boolean indicating whether {{destroy()}} was invoked and underlying
         resources have been released.
@@ -1295,27 +1292,26 @@ NOTE: this section needs work. Current wording assumes a VideoFrame can always
     returns a Promise containing a new VideoFrame for which the
     copies/translations are performed.
 
-<dfn constructor for=VideoFrame title="VideoFrame(init)">
+<dfn constructor for=VideoFrame title="VideoFrame(imageBitmap, frameInit)">
   VideoFrame(imageBitmap, frameInit)
 </dfn>
-Constructs a {{VideoFrame}} from an {{ImageBitmap}}.
-
-1. If |init| is not a <a>valid VideoFrameInit</a>, throw a {{TypeError}}.
-2. If the value of |imageBitmap's| [[ Detached ]] internal slot is set to true,
-    then throw an "InvalidStateError" DOMException.
-3. Let |frame| be a new VideoFrame.
-4. Assign false to frame’s [[{{detached}}]] internal slot.
-5. Use a copy of the pixel data in imageBitmap to initialize to following
+1. If |frameInit| is not a <a>valid VideoFrameInit</a>, throw a {{TypeError}}.
+2. If the value of |imageBitmap|'s' {{ImageBitmap/[[Detached]]}} internal slot
+    is set to true, then throw an {{InvalidStateError}} DOMException.
+3. Let |frame| be a new {{VideoFrame}}.
+4. Assign false to |frame|’s {{VideoFrame/[[detached]]}} internal slot.
+5. Use a copy of the pixel data in |imageBitmap| to initialize to following
     frame attributes:
     1. Initialize frame.pixelFormat be the underlying format of imageBitmap.
     2. Initialize frame.planes to describe the arrangement of memory of the
         copied pixel data.
-    3. Assign regions of the copied pixel data to [[plane buffer]] internal slot
-        of each plane as appropriate for the pixel format.
+    3. Assign regions of the copied pixel data to the
+        {{VideoFrame/[[plane buffer]]}} internal slot of each plane as
+        appropriate for the pixel format.
     4. Initialize frame.codedWidth and frame.codedHeight describe the width and
         height of the imageBitamp prior to any cropping or aspect ratio
         adjustments.
-6. Use frameInit to initialize the remaining frame attributes:
+6. Use |frameInit| to initialize the remaining frame attributes:
     1. If frameInit.cropLeft is present, initialize it frame.cropLeft.
         Otherwise, default frame.cropLeft to zero.
     2. If frameInit.cropTop is present, initialize it to frame.cropTop.
@@ -1334,6 +1330,91 @@ Constructs a {{VideoFrame}} from an {{ImageBitmap}}.
         Otherwise, default frame.duration to null.
     8. If frameInit.timestamp is present, initialize it to frame.timestamp.
         Otherwise default frame.timestamp to null.
-7. Return frame.
+7. Return |frame|.
 
+<dfn constructor for=VideoFrame title="VideoFrame(pixelFormat, planes, frameInit)">
+  VideoFrame(pixelFormat, planes, frameInit)
+</dfn>
+1. If either {{VideoFrameInit/codedWidth}} or {{VideoFrameInit/codedHeight}} is
+    not present in |frameInit|, throw a {{TypeError}}.
+2. If |frameInit| is not a <a>valid VideoFrameInit</a>, throw a {{TypeError}}.
+3. If the length of |planes| is incompatible with the given pixelFormat, throw a
+    TypeError.
+4. Let |frame| be a new {{VideoFrame}} object.
+5. Assign false to |frame|’s {{VideoFrame/[[detached]]}} internal slot.
+6. Assign init.pixelFormat to frame.pixelFormat.
+7. For each element |p| in |planes|:
+    1. If |p| is a {{Plane}}, append a copy of p to frame.planes. Continue
+        processing the next element.
+    2. If |p| is a {{PlaneInit}}, append a new {{Plane}} |q| to frame.planes
+        initialized as follows:
+        1. Let |sourceOffset| be p.srcOffset if present, or otherwise default to
+            zero.
+        2. Assign a copy of p.length bytes from p.src, starting at
+            p.sourceOffset, to q's [[plane buffer]] internal slot.
 
+        NOTE: the samples should be copied exactly, but the user agent may add
+            row padding as needed to improve memory alignment.
+
+        3. Assign the width of each row in [[plane buffer]], including any
+            padding, to  q.stride.
+        4. Assign p.rows to q.rows.
+        5. Assign the product of (q.rows * q.stride) to q.length
+8. Assign frameInit.codedWidth to frame.codedWidth.
+9. Assign frameInit.codedHeight to frame.codedHeight.
+10. If frameInit.cropLeft is present, assign it frame.cropLeft. Otherwise,
+    default frame.cropLeft to zero.
+11. If frameInit.cropTop is present, assign it to frame.cropTop. Otherwise,
+    default frame.cropTop to zero.
+12. If frameInit.cropWidth is present, assign it to frame.cropWidth. Otherwise,
+    default frame.cropWidth to frame.codedWidth.
+13. If frameInit.cropHeight is present, assign it to frame.cropHeight.
+    Otherwise, default frame.cropHeight to frame.codedHeight.
+14. If frameInit.displayWidth is present, assign it to frame.displayWidth.
+    Otherwise, default frame.displayWidth to frame.codedWidth.
+15. If frameInit.displayHeight is present, assign it to frame.displayHeight.
+    Otherwise, default frame.displayHeight to frame.codedHeight.
+16. If frameInit.duration is present, assign it to frame.duration. Otherwise,
+    default frame.duration to null.
+17. If frameInit.timestamp is present, assign it to frame.timestamp. Otherwise
+    default frame.timestamp to null.
+18. Return frame.
+
+### Attributes ###{#videoframe-attributes}
+<dl>
+  <dt><dfn attribute for=VideoFrame>timestamp</dfn></dt>
+  <dd>
+    The presentation timestamp, given in microseconds. The timestamp is copied
+        from the EncodedVideoChunk corresponding to this VideoFrame.
+  </dd>
+  <dt><dfn attribute for=VideoFrame>duration</dfn></dt>
+  <dd>
+    The presentation duration, given in microseconds. The duration is copied from
+        the EncodedVideoChunk corresponding to this VideoFrame.
+  </dd>
+  <dt><dfn attribute for=VideoFrame>format</dfn></dt>
+  <dd>
+    Describes the arrangement of bytes in each plane as well as the number and
+        order of the planes.
+  </dd>
+  <dt><dfn attribute for=VideoFrame>planes</dfn></dt>
+  <dd>
+      Holds pixel data data, laid out as described by format and Plane attributes.
+  </dd>
+  <dt><dfn attribute for=VideoFrame>codedWidth</dfn></dt>
+  <dd>Width of the VideoFrame in pixels, prior to any cropping or aspect ratio adjustments.</dd>
+  <dt><dfn attribute for=VideoFrame>codedHeight</dfn></dt>
+  <dd>Height of the VideoFrame in pixels, prior to any cropping or aspect ratio adjustments.</dd>
+  <dt><dfn attribute for=VideoFrame>cropLeft</dfn></dt>
+  <dd>The number of pixels to remove from the left of the VideoFrame, prior to aspect ratio adjustments.</dd>
+  <dt><dfn attribute for=VideoFrame>cropTop</dfn></dt>
+  <dd>The number of pixels to remove from the top of the VideoFrame, prior to aspect ratio adjustments.</dd>
+  <dt><dfn attribute for=VideoFrame>cropWidth</dfn></dt>
+  <dd>The width of pixels to include in the crop, starting from cropLeft.</dd>
+  <dt><dfn attribute for=VideoFrame>cropHeight</dfn></dt>
+  <dd>The height of pixels to include in the crop, starting from cropLeft.</dd>
+  <dt><dfn attribute for=VideoFrame>displayWidth</dfn>
+  <dd>Width of the VideoFrame when displayed.</dd>
+  <dt><dfn attribute for=VideoFrame>displayHeight</dfn></dt>
+  <dd>Height of the VideoFrame when displayed.</dd>
+</dl>
