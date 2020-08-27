@@ -27,6 +27,26 @@ spec: media-source; urlPrefix: https://www.w3.org/TR/media-source/
 spec: html; urlPrefix: https://html.spec.whatwg.org/multipage/;
     type: method
         for: HTMLMediaElement; text: canPlayType(); url: #dom-navigator-canplaytype
+    type: attribute
+        for: PlatformObject; text: [[Detached]]; url: structured-data.html#detached
+    type: attribute
+        for: ImageBitmap; text: resizeWidth; url:#dom-imagebitmapoptions-resizewidth
+    type: attribute
+        for: ImageBitmap; text: resizeHeight; url:#dom-imagebitmapoptions-resizeheight
+
+spec: mediacapture-streams; urlPrefix: https://www.w3.org/TR/mediacapture-streams/
+    type: method
+        for: mediaDevices; text: getUserMedia(); url: #dom-mediadevices-getusermedia
+
+spec: mediacapture-screen-share; urlPrefix: https://w3c.github.io/mediacapture-screen-share/
+    type: method
+        for: mediaDevices; text: getDisplayMedia(); url: #dom-mediadevices-getdisplaymedia
+
+spec: mediacapture-main; urlPrefix: https://w3c.github.io/mediacapture-main/
+    type: enum-value
+        for:MediaStreamTrackState; text: live; url: #idl-def-MediaStreamTrackState.live
+    type: enum-value
+        for:MediaStreamTrackState; text: ended; url: #idl-def-MediaStreamTrackState.ended
 </pre>
 
 
@@ -52,19 +72,22 @@ mechanisms.
 Each codec has a single <dfn>control message queue</dfn> that is a list of
 <dfn>control messages</dfn>.
 
-<dfn lt="Enqueues a control message|Queue a control message">Queuing a control message</dfn>
-    means adding the message to the end of a codec’s <a>control message queue</a>.
-    Invoking codec methods will often queue a control message to schedule work.
+<dfn lt="Enqueues a control message|Queue a control message">Queuing a control
+    message</dfn>
+    means adding the message to the end of a codec’s <a>control
+    message queue</a>. Invoking codec methods will often queue a control message
+    to schedule work.
 
-<dfn lt="running a control message|control message steps">Running a control message</dfn> means executing
-a sequence of steps specified by the method that enqueued the message.
+<dfn lt="running a control message|control message steps">Running a control
+    message</dfn> means executing a sequence of steps specified by the method
+    that enqueued the message.
 
 Control messages in a control message queue are ordered by time of insertion.
 The oldest message is therefore the one at the front of the control message
 queue.
 
-<dfn lf="run the control message processing loop">Running the control message processing loop</dfn> means executing these
-steps.
+<dfn lt="Run the control message processing loop">Running the control message
+    processing loop</dfn> means executing these steps.
 1. While the control message queue is not empty
     1. Let |front message| be the next oldest <a>control message</a>
     2. If |front message| cannot be executed now, return.
@@ -190,7 +213,7 @@ Methods {#audiodecoder-methods}
     When invoked, run the <a>Reset</a> algorithm.
   </dd>
 
-  <dt><df method for=AudioDecoder>close()</df></dt>
+  <dt><dfn method for=AudioDecoder>close()</df></dt>
   <dd>
     Immediately aborts all pending work and releases system resources. Close is
     permanent.
@@ -244,9 +267,9 @@ Constructors {#videodecoder-constructors}
   VideoDecoder(init)
 </dfn>
 1. Let d be a new VideoDecoder object.
-2. Assign init.output to the [[output callback]] internal slot.
-3. Assign init.error to the [[error callback]] internal slot.
-4. Assign "unconfigured" to d.state.
+2. Assign `init.output` to the [[output callback]] internal slot.
+3. Assign `init.error` to the [[error callback]] internal slot.
+4. Assign "unconfigured" to `d.state`.
 5. Return d.
 
 Attributes {#videodecoder-attributes}
@@ -308,7 +331,7 @@ Methods {#videodecoder-methods}
     When invoked, run the <a>Reset</a> algorithm.
   </dd>
 
-  <dt><df method for=VideoDecoder>close()</df></dt>
+  <dt><dfn method for=VideoDecoder>close()</df></dt>
   <dd>
     Immediately aborts all pending work and releases system resources. Close is
     permanent.
@@ -361,9 +384,9 @@ Constructors {#audioencoder-constructors}
   AudioEncoder(init)
 </dfn>
 1. Let e be a new AudioEncoder object.
-2. Assign init.output to the [[output callback]] internal slot.
-3. Assign init.error to the [[error callback]] internal slot.
-4. Assign "unconfigured" to e.state.
+2. Assign `init.output` to the [[output callback]] internal slot.
+3. Assign `init.error` to the [[error callback]] internal slot.
+4. Assign "unconfigured" to `e.state`.
 5. Return e.
 
 Attributes {#audioencoder-attributes}
@@ -401,7 +424,7 @@ Methods {#audioencoder-methods}
     <a>Enqueues a control message</a> to encode the given |frame|.
 
     NOTE: This method will destroy the VideoFrame. Authors who wish to retain a
-    copy, should call frame.clone() prior to calling encode().
+    copy, should call `frame.clone()` prior to calling encode().
 
     When invoked, run these steps:
     1. If the value of |frame|'s {{AudioFrame/[[detached]]}} internal slot is
@@ -430,7 +453,7 @@ Methods {#audioencoder-methods}
     When invoked, run the <a>Reset</a> algorithm.
   </dd>
 
-  <dt><df method for=AudioEncoder>close()</df></dt>
+  <dt><dfn method for=AudioEncoder>close()</df></dt>
   <dd>
     Immediately aborts all pending work and releases system resources. Close is
     permanent.
@@ -483,9 +506,9 @@ Constructors {#videoencoder-constructors}
   VideoEncoder(init)
 </dfn>
 1. Let e be a new VideoEncoder object.
-2. Assign init.output to the [[output callback]] internal slot.
-3. Assign init.error to the [[error callback]] internal slot.
-4. Assign "unconfigured" to e.state.
+2. Assign `init.output` to the [[output callback]] internal slot.
+3. Assign `init.error` to the [[error callback]] internal slot.
+4. Assign "unconfigured" to `e.state`.
 5. Return e.
 
 Attributes {#videoencoder-attributes}
@@ -523,7 +546,7 @@ Methods {#videoencoder-methods}
     <a>Enqueues a control message</a> to encode the given |frame|.
 
     NOTE: This method will destroy the VideoFrame. Authors who wish to retain a
-    copy, should call frame.clone() prior to calling encode().
+    copy, should call `frame.clone()` prior to calling encode().
 
     When invoked, run these steps:
     1. If the value of |frame|'s {{VideoFrame/[[detached]]}} internal slot is
@@ -552,7 +575,7 @@ Methods {#videoencoder-methods}
     When invoked, run the <a>Reset</a> algorithm.
   </dd>
 
-  <dt><df method for=VideoEncoder>close()</df></dt>
+  <dt><dfn method for=VideoEncoder>close()</df></dt>
   <dd>
     Immediately aborts all pending work and releases system resources. Close is
     permanent.
@@ -713,7 +736,7 @@ Run these steps:
     `true`, throw a {{TypeError}}.
 3. Let |frameClone| hold the result of running the <a>Clone Frame</a> algorithm
     with |frame|.
-4. Destroy the original |frame| by invoking frame.destroy().
+4. Destroy the original |frame| by invoking `frame.destroy()`.
 5. Increment `encodeQueueSize`.
 6. <a>Queue a control message</a> to encode |frameClone| with |options| and
     |output algorithm|.
@@ -790,12 +813,13 @@ NOTE: There is no unified specification for codec strings. Each codec has its
 NOTE: Some valid examples include:
     'vp8', 'vp09.00.10.08', 'avc1.4D401E', 'opus', 'mp4a.40.2', 'flac'
 
-    Invalid examples include:
-    'video/webm; codecs="vp8"' (invalid to supply full mimetype; valid as just 'vp8')
-    'codecs="opus"' (invalid to include codecs= prefix)
-    ‘flac,vorbis’ (describes more than one codec)
-    ‘vp9’ (ambiguous about profile and level)
-    'video/mp4' (describes a container, not a codec)
+    Invalid examples include:<br>
+    'video/webm; codecs="vp8"' (invalid to supply full mimetype; valid as just
+        'vp8')<br>
+    'codecs="opus"' (invalid to include codecs= prefix)<br>
+    ‘flac,vorbis’ (describes more than one codec)<br>
+    ‘vp9’ (ambiguous about profile and level)<br>
+    'video/mp4' (describes a container, not a codec)<br>
 
 
 <dfn>AudioDecoderConfig</dfn>{#audio-decoder-config}
@@ -856,12 +880,18 @@ dictionary VideoDecoderConfig {
 
 To check if a {{VideoDecoderConfig}} is a <dfn>valid VideoDecoderConfig</dfn>,
 run these steps:
-1. If {{VideoDecoderConfig/codec}} is not a <a>valid codec string</a>, return `false`.
-2. If {{VideoDecoderConfig/codedWidth}} = 0 or {{VideoDecoderConfig/codedHeight}} = 0, return `false`.
-3. If {{VideoDecoderConfig/cropWidth}} = 0 or {{VideoDecoderConfig/cropHeight}} = 0, return `false`.
-4. If {{VideoDecoderConfig/cropTop}} + {{VideoDecoderConfig/cropHeight}} >= {{VideoDecoderConfig/codedHeight}}, return `false`.
-5. If {{VideoDecoderConfig/cropLeft}} + {{VideoDecoderConfig/cropWidth}} >= {{VideoDecoderConfig/codedWidth}}, return `false`.
-6. If {{VideoDecoderConfig/displayWidth}} = 0 or {{VideoDecoderConfig/displayHeight}} = 0, return `false`.
+1. If {{VideoDecoderConfig/codec}} is not a <a>valid codec string</a>, return
+    `false`.
+2. If {{VideoDecoderConfig/codedWidth}} = 0 or
+    {{VideoDecoderConfig/codedHeight}} = 0, return `false`.
+3. If {{VideoDecoderConfig/cropWidth}} = 0 or {{VideoDecoderConfig/cropHeight}}
+    = 0, return `false`.
+4. If {{VideoDecoderConfig/cropTop}} + {{VideoDecoderConfig/cropHeight}} >=
+    {{VideoDecoderConfig/codedHeight}}, return `false`.
+5. If {{VideoDecoderConfig/cropLeft}} + {{VideoDecoderConfig/cropWidth}} >=
+    {{VideoDecoderConfig/codedWidth}}, return `false`.
+6. If {{VideoDecoderConfig/displayWidth}} = 0 or
+    {{VideoDecoderConfig/displayHeight}} = 0, return `false`.
 7. Return `true`.
 
 <dl>
@@ -939,7 +969,8 @@ dictionary AudioEncoderConfig {
 
 To check if an {{AudioEncoderConfig}} is a <dfn>valid AudioEncoderConfig</dfn>,
 run these steps:
-1. If {{AudioEncoderConfig/codec}} is not a <a>valid codec string</a>, return `false`.
+1. If {{AudioEncoderConfig/codec}} is not a <a>valid codec string</a>, return
+    `false`.
 2. Return `true`.
 
 <dl>
@@ -967,10 +998,12 @@ dictionary VideoEncoderConfig {
 </xmp>
 </pre>
 
-To check if a {{VideoEncoderConfig}} is a <dfn>valid VideoEncoderConfig</dfn>, run
-these steps:
-1. If {{VideoEncoderConfig/codec}} is not a <a>valid codec string</a>, return `false`.
-2. If {{VideoEncoderConfig/width}} = 0 or {{VideoEncoderConfig/height}} = 0, return `false`.
+To check if a {{VideoEncoderConfig}} is a <dfn>valid VideoEncoderConfig</dfn>,
+    run these steps:
+1. If {{VideoEncoderConfig/codec}} is not a <a>valid codec string</a>, return
+    `false`.
+2. If {{VideoEncoderConfig/width}} = 0 or {{VideoEncoderConfig/height}} = 0,
+    return `false`.
 4. Return `true`.
 
 <dl>
@@ -1068,9 +1101,9 @@ enum EncodedAudioChunkType {
   EncodedAudioChunk(init)
 </dfn>
 1. Let |chunk| be a new {{EncodedAudioChunk}} object, initialized as follows
-    1. Assign init.type to chunk.type.
-    2. Assign init.timestamp to chunk.timestamp.
-    3. Assign a copy of init.data to chunk.data.
+    1. Assign `init.type` to `chunk.type`.
+    2. Assign `init.timestamp` to `chunk.timestamp`.
+    3. Assign a copy of `init.data` to `chunk.data`.
 5. Return |chunk|.
 
 ### Attributes ### {#encodedaudiochunk-attributes}
@@ -1117,11 +1150,11 @@ enum EncodedVideoChunkType {
   EncodedVideoChunk(init)
 </dfn>
 1. Let |chunk| be a new {{EncodedVideoChunk}} object, initialized as follows
-    1. Assign init.type to chunk type.
-    2. Assign init.timestamp to chunk.timestamp.
-    3. If duration is present in init, assign init.duration to chunk.duration.
-        Otherwise, assign null to chunk.duration.
-2. Assign a copy of init.data to chunk.data.
+    1. Assign `init.type` to chunk type.
+    2. Assign `init.timestamp` to `chunk.timestamp`.
+    3. If duration is present in init, assign `init.duration` to
+        `chunk.duration`. Otherwise, assign null to `chunk.duration`.
+2. Assign a copy of `init.data` to `chunk.data`.
 3. Return |chunk|.
 
 ### Attributes ### {#encodedvideochunk-attributes}
@@ -1180,9 +1213,9 @@ dictionary AudioFrameInit {
   AudioFrame(init)
 </dfn>
 1. Let |frame| be a new {{AudioFrame}} object.
-2. Assign init.timestamp to frame.timestamp.
-3. Assign init.buffer to frame.buffer.
-<!-- 4. Assign `false` to the {{AudioFrame/[[foo]]}} internal slot. -->
+2. Assign `init.timestamp` to `frame.timestamp`.
+3. Assign `init.buffer` to `frame.buffer`.
+4. Assign `false` to the {{AudioFrame/[[detached]]}} internal slot.
 5. Return |frame|.
 
 
@@ -1274,48 +1307,49 @@ NOTE: this section needs work. Current wording assumes a VideoFrame can always
     conversion to an allowed pixel format requires expensive copies and
     translation. When this occurs, we should allow planes to be null and format
     to be “opaque” to avoid early optimization. We should make conversion
-    explicit and user controlled by offering a videoFrame.convertTo(format) that
-    returns a Promise containing a new VideoFrame for which the
+    explicit and user controlled by offering a `videoFrame.convertTo(format)`
+    that returns a Promise containing a new VideoFrame for which the
     copies/translations are performed.
 
 <dfn constructor for=VideoFrame title="VideoFrame(imageBitmap, frameInit)">
   VideoFrame(imageBitmap, frameInit)
 </dfn>
 1. If |frameInit| is not a <a>valid VideoFrameInit</a>, throw a {{TypeError}}.
-2. If the value of |imageBitmap|'s' {{ImageBitmap/[[Detached]]}} internal slot
-    is set to `true`, then throw an {{InvalidStateError}} DOMException.
+2. If the value of |imageBitmap|'s' {{PlatformObject/[[Detached]]}} internal
+    slot is set to `true`, then throw an {{InvalidStateError}} DOMException.
 3. Let |frame| be a new {{VideoFrame}}.
 4. Assign `false` to |frame|’s {{VideoFrame/[[detached]]}} internal slot.
 5. Use a copy of the pixel data in |imageBitmap| to initialize to following
     frame attributes:
-    1. Initialize frame.pixelFormat be the underlying format of imageBitmap.
-    2. Initialize frame.planes to describe the arrangement of memory of the
+    1. Initialize `frame.pixelFormat` be the underlying format of imageBitmap.
+    2. Initialize `frame.planes` to describe the arrangement of memory of the
         copied pixel data.
     3. Assign regions of the copied pixel data to the
         {{Plane/[[plane buffer]]}} internal slot of each plane as
         appropriate for the pixel format.
-    4. Initialize frame.codedWidth and frame.codedHeight describe the width and
-        height of the imageBitamp prior to any cropping or aspect ratio
+    4. Initialize `frame.codedWidth` and `frame.codedHeight` describe the width
+        and height of the imageBitamp prior to any cropping or aspect ratio
         adjustments.
 6. Use |frameInit| to initialize the remaining frame attributes:
-    1. If frameInit.cropLeft is present, initialize it frame.cropLeft.
-        Otherwise, default frame.cropLeft to zero.
-    2. If frameInit.cropTop is present, initialize it to frame.cropTop.
-        Otherwise, default frame.cropTop to zero.
-    3. If frameInit.cropWidth is present, initialize it to frame.cropWidth.
-        Otherwise, default frame.cropWidth to frame.codedWidth.
-    4. If frameInit.cropHeight is present, initialize it to frame.cropHeight.
-        Otherwise, default frame.cropHeight to frame.codedHeight.
-    5. If frameInit.displayWidth is present, initialize it to
-        frame.displayWidth. Otherwise, default frame.displayWidth to
-        frame.codedWidth.
-    6. If frameInit.displayHeight is present, initialize it to
-        frame.displayHeight. Otherwise, default frame.displayHeight to
-        frame.codedHeight.
-    7. If frameInit.duration is present, initialize it to frame.duration.
-        Otherwise, default frame.duration to null.
-    8. If frameInit.timestamp is present, initialize it to frame.timestamp.
-        Otherwise default frame.timestamp to null.
+    1. If `frameInit.cropLeft` is present, initialize it `frame.cropLeft`.
+        Otherwise, default `frame.cropLeft` to zero.
+    2. If `frameInit.cropTop` is present, initialize it to `frame.cropTop`.
+        Otherwise, default `frame.cropTop` to zero.
+    3. If `frameInit.cropWidth` is present, initialize it to `frame.cropWidth`.
+        Otherwise, default `frame.cropWidth` to `frame.codedWidth`.
+    4. If `frameInit.cropHeight` is present, initialize it to
+        `frame.cropHeight`. Otherwise, default `frame.cropHeight` to
+        `frame.codedHeight`.
+    5. If `frameInit.displayWidth` is present, initialize it to
+        `frame.displayWidth`. Otherwise, default `frame.displayWidth` to
+        `frame.codedWidth`.
+    6. If `frameInit.displayHeight` is present, initialize it to
+        `frame.displayHeight`. Otherwise, default `frame.displayHeight` to
+        `frame.codedHeight`.
+    7. If `frameInit.duration` is present, initialize it to `frame.duration`.
+        Otherwise, default `frame.duration` to null.
+    8. If `frameInit.timestamp` is present, initialize it to `frame.timestamp`.
+        Otherwise default `frame.timestamp` to null.
 7. Return |frame|.
 
 <dfn constructor for=VideoFrame title="VideoFrame(pixelFormat, planes, frameInit)">
@@ -1328,39 +1362,39 @@ NOTE: this section needs work. Current wording assumes a VideoFrame can always
     TypeError.
 4. Let |frame| be a new {{VideoFrame}} object.
 5. Assign `false` to |frame|’s {{VideoFrame/[[detached]]}} internal slot.
-6. Assign init.pixelFormat to frame.pixelFormat.
+6. Assign `init.pixelFormat` to `frame.pixelFormat`.
 7. For each element |p| in |planes|:
-    1. If |p| is a {{Plane}}, append a copy of p to frame.planes. Continue
+    1. If |p| is a {{Plane}}, append a copy of p to `frame.planes`. Continue
         processing the next element.
-    2. If |p| is a {{PlaneInit}}, append a new {{Plane}} <var ignore>q</var> to frame.planes
-        initialized as follows:
-        2. Assign a copy of p.src to q's [[plane buffer]] internal slot.
+    2. If |p| is a {{PlaneInit}}, append a new {{Plane}} <var ignore>q</var> to
+        `frame.planes` initialized as follows:
+        2. Assign a copy of `p.src` to q's [[plane buffer]] internal slot.
 
         NOTE: the samples should be copied exactly, but the user agent may add
             row padding as needed to improve memory alignment.
 
         3. Assign the width of each row in [[plane buffer]], including any
-            padding, to  q.stride.
-        4. Assign p.rows to q.rows.
-        5. Assign the product of (q.rows * q.stride) to q.length
-8. Assign frameInit.codedWidth to frame.codedWidth.
-9. Assign frameInit.codedHeight to frame.codedHeight.
-10. If frameInit.cropLeft is present, assign it frame.cropLeft. Otherwise,
-    default frame.cropLeft to zero.
-11. If frameInit.cropTop is present, assign it to frame.cropTop. Otherwise,
-    default frame.cropTop to zero.
-12. If frameInit.cropWidth is present, assign it to frame.cropWidth. Otherwise,
-    default frame.cropWidth to frame.codedWidth.
-13. If frameInit.cropHeight is present, assign it to frame.cropHeight.
-    Otherwise, default frame.cropHeight to frame.codedHeight.
-14. If frameInit.displayWidth is present, assign it to frame.displayWidth.
-    Otherwise, default frame.displayWidth to frame.codedWidth.
-15. If frameInit.displayHeight is present, assign it to frame.displayHeight.
-    Otherwise, default frame.displayHeight to frame.codedHeight.
-16. If frameInit.duration is present, assign it to frame.duration. Otherwise,
-    default frame.duration to null.
-17. If frameInit.timestamp is present, assign it to frame.timestamp. Otherwise
-    default frame.timestamp to null.
+            padding, to  `q.stride`.
+        4. Assign `p.rows` to `q.rows`.
+        5. Assign the product of (`q.rows` * `q.stride)` to `q.length`
+8. Assign `frameInit.codedWidth` to `frame.codedWidth`.
+9. Assign `frameInit.codedHeight` to `frame.codedHeight`.
+10. If `frameInit.cropLeft` is present, assign it `frame.cropLeft`. Otherwise,
+    default `frame.cropLeft` to zero.
+11. If `frameInit.cropTop` is present, assign it to `frame.cropTop`. Otherwise,
+    default `frame.cropTop` to zero.
+12. If `frameInit.cropWidth` is present, assign it to `frame.cropWidth`.
+    Otherwise, default `frame.cropWidth` to `frame.codedWidth`.
+13. If `frameInit.cropHeight` is present, assign it to `frame.cropHeight`.
+    Otherwise, default `frame.cropHeight` to `frame.codedHeight`.
+14. If `frameInit.displayWidth` is present, assign it to `frame.displayWidth`.
+    Otherwise, default `frame.displayWidth` to `frame.codedWidth`.
+15. If `frameInit.displayHeight` is present, assign it to `frame.displayHeight`.
+    Otherwise, default `frame.displayHeight` to `frame.codedHeight`.
+16. If `frameInit.duration` is present, assign it to `frame.duration`.
+    Otherwise, default `frame.duration` to null.
+17. If `frameInit.timestamp` is present, assign it to `frame.timestamp`.
+    Otherwise, default `frame.timestamp` to null.
 18. Return frame.
 
 ### Attributes ###{#videoframe-attributes}
@@ -1372,8 +1406,8 @@ NOTE: this section needs work. Current wording assumes a VideoFrame can always
   </dd>
   <dt><dfn attribute for=VideoFrame>duration</dfn></dt>
   <dd>
-    The presentation duration, given in microseconds. The duration is copied from
-        the EncodedVideoChunk corresponding to this VideoFrame.
+    The presentation duration, given in microseconds. The duration is copied
+        from the EncodedVideoChunk corresponding to this VideoFrame.
   </dd>
   <dt><dfn attribute for=VideoFrame>format</dfn></dt>
   <dd>
@@ -1454,11 +1488,12 @@ When invoked, run these steps:
 2. If either |options|'s {{ImageBitmapOptions/resizeWidth}} or
     {{ImageBitmap/resizeHeight}} is present and is 0, then return |p| rejected
     with an {{InvalidStateError}} {{DOMException}}.
-3. If the <a>this'</a> {{VideoFrame/[[detached]]}} internal slot is set to `true`,
-    then return |p| rejected with an {{InvalidStateError}} {{DOMException}}.
+3. If the <a>this'</a> {{VideoFrame/[[detached]]}} internal slot is set to
+    `true`, then return |p| rejected with an {{InvalidStateError}}
+    {{DOMException}}.
 4. Let |imageBitmap| be a new {{ImageBitmap}} object.
 5. Set |imageBitmap|'s bitmap data to a copy of the {{VideoFrame}} pixel data,
-    at the frame's intrinsic width and intrinsic height (i.e., after any
+    at the frame's intrinsic width and intrinsic height (`i.e`., after any
     aspect-ratio correction has been applied), cropped to the source rectangle
     with formatting.
 6. If the origin of |imageBitmap|'s image is not same origin with entry settings
@@ -1470,11 +1505,16 @@ When invoked, run these steps:
 ### Algorithms ###{#videoframe-algorithms}
 To check if a {{VideoDecoderConfig}} is a <dfn>valid VideoFrameInit</dfn>,
 run these steps:
-1. If {{VideoFrameInit/codedWidth}} = 0 or {{VideoFrameInit/codedHeight}} = 0, return `false`.
-2. If {{VideoFrameInit/cropWidth}} = 0 or {{VideoFrameInit/cropHeight}} = 0, return `false`.
-3. If {{VideoFrameInit/cropTop}} + {{VideoFrameInit/cropHeight}} >= {{VideoFrameInit/codedHeight}}, return `false`.
-4. If {{VideoFrameInit/cropLeft}} + {{VideoFrameInit/cropWidth}} >= {{VideoFrameInit/codedWidth}}, return `false`.
-5. If {{VideoFrameInit/displayWidth}} = 0 or {{VideoFrameInit/displayHeight}} = 0, return `false`.
+1. If {{VideoFrameInit/codedWidth}} = 0 or {{VideoFrameInit/codedHeight}} = 0,
+    return `false`.
+2. If {{VideoFrameInit/cropWidth}} = 0 or {{VideoFrameInit/cropHeight}} = 0,
+    return `false`.
+3. If {{VideoFrameInit/cropTop}} + {{VideoFrameInit/cropHeight}} >=
+    {{VideoFrameInit/codedHeight}}, return `false`.
+4. If {{VideoFrameInit/cropLeft}} + {{VideoFrameInit/cropWidth}} >=
+    {{VideoFrameInit/codedWidth}}, return `false`.
+5. If {{VideoFrameInit/displayWidth}} = 0 or
+    {{VideoFrameInit/displayHeight}} = 0, return `false`.
 6. Return `true`.
 
 
@@ -1538,7 +1578,8 @@ Copies the plane data into dst.
 When invoked, run these steps:
 1. If {{Plane/[[parent frame]]}} has been destroyed, throw an
     {{InvalidStateError}}.
-2. If {{Plane/length}} is greater than |dst.byteLength|, throw a {{TypeError}}.
+2. If {{Plane/length}} is greater than |`dst.byteLength`|, throw a
+    {{TypeError}}.
 3. Copy the {{Plane/[[plane buffer]]}} into <var ignore>dst</var>.
 
 
@@ -1590,7 +1631,7 @@ VideoTrackReader Interface{#videotrackreader-interface}
 =======================================================
 {{VideoTrackReader}} emits {{VideoFrame}}s from a {{MediaStreamTrack}}. Authors
 may use this interface to manipulate, render, or encode streams from
-{{getUserMedia()}} and {{getDisplayMedia()}}.
+{{mediaDevices/getUserMedia()}} and {{mediaDevices/getDisplayMedia()}}.
 
 <pre class='idl'>
 <xmp>
@@ -1660,7 +1701,8 @@ Constructors{#videotrackreader-constructors}
 1. If `track.kind` is not `"video"`, throw a {{TypeError}}.
 2. If `track.readyState` is `"ended"`, throw an {{InvalidStateError}}.
 3. Let |reader| be a new {{VideoTrackReader}} object.
-4. Assign <var ignore>track</var> to the {{VideoTrackReader/[[track]]}} internal slot.
+4. Assign <var ignore>track</var> to the {{VideoTrackReader/[[track]]}} internal
+    slot.
 5. Assign `"stopped"` to `reader.readyState`.
 6. Return |reader|.
 
@@ -1698,7 +1740,8 @@ When invoked, run these steps:
 1. If {{VideoTrackReader/readyState}} is not `"stopped"`, throw an
     {{InvalidStateError}}.
 2. Assign `"started"` to {{VideoTrackReader/readyState}}.
-3. Assign <var ignore>callback</var> to the {{VideoTrackReader/[[callback]]}} internal slot.
+3. Assign <var ignore>callback</var> to the {{VideoTrackReader/[[callback]]}}
+    internal slot.
 4. In parallel, run the <a>track monitor</a>.
 
 <dfn method for=VideoTrackReader>stop()</dfn>
@@ -1747,17 +1790,18 @@ While `[[track]].readyState` is "live", for each new picture that arrives in
 
 
 3. Let |frameInit| be an {{VideoFrameInit}} with the following keys:
-    1. Let <var ignore>timestamp</var> and <var ignore>duration</var> be the presentation timestamp and
-        (optionally) presentation duration as determined by the
-        {{VideoTrackReader/[[track]]}} source.
-    2. Let <var ignore>codedWidth</var> and <var ignore>codedHeight> be the width and height of the decoded
-        video frame in pixels, prior to any cropping or aspect ratio
-        adjustments.
-    3. Let <var ignore>cropLeft</var>, <var ignore>cropTop</var>, <var ignore>cropWidth</var>, and <var ignore>cropHeight</var> be the crop
-        region of the decoded video frame in pixels, prior to any aspect ratio
-        adjustments.
-    4. Let <<var ignore>displayWidth</var> and <<var ignore>displayHeight</var> be the display size of the decoded
-        video frame in pixels.
+    1. Let <var ignore>timestamp</var> and <var ignore>duration</var> be the
+        presentation timestamp and (optionally) presentation duration as
+        determined by the {{VideoTrackReader/[[track]]}} source.
+    2. Let <var ignore>codedWidth</var> and <var ignore>codedHeight> be the
+        width and height of the decoded video frame in pixels, prior to any
+        cropping or aspect ratio adjustments.
+    3. Let <var ignore>cropLeft</var>, <var ignore>cropTop</var>,
+        <var ignore>cropWidth</var>, and <var ignore>cropHeight</var> be the
+        crop region of the decoded video frame in pixels, prior to any aspect
+        ratio adjustments.
+    4. Let <<var ignore>displayWidth</var> and <<var ignore>displayHeight</var>
+        be the display size of the decoded video frame in pixels.
 4. Let |frame| be a {{VideoFrame}}, constructed with |pixelFormat|,
         |planes|, and |frameInit|.
 5. Invoke {{VideoTrackReader/[[callback]]}} with |frame|.
