@@ -56,14 +56,14 @@ Each codec has a single <dfn>control message queue</dfn> that is a list of
     means adding the message to the end of a codec’s <a>control message queue</a>.
     Invoking codec methods will often queue a control message to schedule work.
 
-<dfn lt="control message steps">Running a control message</dfn> means executing
+<dfn lt="running a control message|control message steps">Running a control message</dfn> means executing
 a sequence of steps specified by the method that enqueued the message.
 
 Control messages in a control message queue are ordered by time of insertion.
 The oldest message is therefore the one at the front of the control message
 queue.
 
-<dfn>Running the control message processing loop</dfn> means executing these
+<dfn lf="run the control message processing loop">Running the control message processing loop</dfn> means executing these
 steps.
 1. While the control message queue is not empty
     1. Let |front message| be the next oldest <a>control message</a>
@@ -284,7 +284,7 @@ Methods {#videodecoder-methods}
     <a>Enqueues a control message</a> to decode the given |chunk|.
 
     When invoked, run these steps:
-    1. Let |output algorithm| be the <a>VideoFrame Output algorithm</a>.
+    1. Let |output algorithm| be the <a>VideoFrame Output</a> algorithm.
     2. Run the <a>Decode Chunk</a> algorithm with |chunk| and
         |output algorithm|.
   </dd>
@@ -405,8 +405,8 @@ Methods {#audioencoder-methods}
 
     When invoked, run these steps:
     1. If the value of |frame|'s {{AudioFrame/[[detached]]}} internal slot is
-        true, throw a {{TypeError}}.
-    2. Let |output algorithm| be the <a>EncodedAudioChunk Output algorithm</a>.
+        `true`, throw a {{TypeError}}.
+    2. Let |output algorithm| be the <a>EncodedAudioChunk Output</a> algorithm.
     3. Run the <a>Encode Frame</a> algorithm with |frame| and
         |output algorithm|.
   </dd>
@@ -527,8 +527,8 @@ Methods {#videoencoder-methods}
 
     When invoked, run these steps:
     1. If the value of |frame|'s {{VideoFrame/[[detached]]}} internal slot is
-        true, throw a {{TypeError}}.
-    2. Let |output algorithm| be the <a>EncodedVideoChunk Output algorithm</a>.
+        `true`, throw a {{TypeError}}.
+    2. Let |output algorithm| be the <a>EncodedVideoChunk Output</a> algorithm.
     3. Run the <a>Encode Frame</a> algorithm with |frame| and
         |output algorithm|.
   </dd>
@@ -584,7 +584,7 @@ Run the following steps:
 
 <a>Running a control message</a> to configure the decoder means running these
     steps:
-1. Assign <strong>[[codec implementation]]</strong> with an implementation
+1. Assign **[[codec implementation]]** with an implementation
     supporting |config|.
 
 
@@ -601,7 +601,7 @@ Running a control message to decode the chunk means running these steps:
 2. Let |codec implementation queue| be the result of starting a new <a>parallel
     queue</a>.
 3. Enqueue the following steps to |codec implementation queue|:
-    1. Attempt to use {{[[codec implementation]]}} to decode the chunk.
+    1. Attempt to use **[[codec implementation]]** to decode the chunk.
     2. If decoding results in an error, queue a task on the media element task
         source to run the <a>Codec Error</a> algorithm.
 4. Otherwise, for each output, queue a task on the media element task source to
@@ -623,7 +623,7 @@ Run these steps:
 
 Running a control message to flush the codec means running these steps
     with |promise| and |output algorithm|.
-1. Signal <strong>[[codec implementation]]</strong> to emit all pending outputs.
+1. Signal **[[codec implementation]]** to emit all pending outputs.
 2. For each output, run |output algorithm|.
 3. Resolve |promise|.
 
@@ -642,13 +642,13 @@ Run these steps:
 2. Let |buffer| be an {{AudioBuffer}} containing the decoded audio data.
 3. Let |frame| be an {{AudioFrame}} containing |buffer| and a timestamp for the
     output.
-4. Invoke <strong>[[output callback]]</strong> with frame.
+4. Invoke **[[output callback]]** with frame.
 
 <dfn>VideoFrame Output</dfn>{#video-frame-output-algorithm}
 -----------------------------------------------------------
 Run these steps:
 1. If state is not “configured”, abort the following steps.
-2. Let |planes| be a sequence of {{Planes}} containing the decoded video frame
+2. Let |planes| be a sequence of {{Plane}}s containing the decoded video frame
     data.
 3. Let |pixelFormat| be the {{PixelFormat}} of |planes|.
 4. Let |frameInit| be a {{VideoFrameInit}} with the following keys:
@@ -664,14 +664,14 @@ Run these steps:
         video frame in pixels.
 9. Let |frame| be a {{VideoFrame}}, constructed with |pixelFormat|, |planes|,
     and |frameInit|.
-10. Invoke <strong>[[output callback]]</strong> with |frame|.
+10. Invoke **[[output callback]]** with |frame|.
 
 <dfn>Reset</dfn>{#reset-algorithm}
 ----------------------------------
 Run these steps:
 1. If `state` is `“closed”`, throw an {{InvalidStateError}}.
 2. Set `state` to `“unconfigured”`.
-3. Signal <strong>[[codec implementation]]</strong> to cease producing output
+3. Signal **[[codec implementation]]** to cease producing output
     for the previous configuration.
 
 NOTE: Some tasks to emit outputs may already be queued in the event loop. These
@@ -687,9 +687,9 @@ NOTE: Some tasks to emit outputs may already be queued in the event loop. These
 Run these steps:
 1. Run the <a>Reset</a> algorithm.
 2. Set `state` to `“closed”`.
-3. Clear <strong>[[codec implementation]]</strong> and release associated system
+3. Clear **[[codec implementation]]** and release associated system
     resources.
-4. If |error| is set, invoke <strong>[[error callback]]</strong> with error.
+4. If |error| is set, invoke **[[error callback]]** with |error|.
 
 <dfn>Configure Encoder</dfn> (with config){#configure-encoder-algorithm}
 ------------------------------------------------------------------------
@@ -702,15 +702,15 @@ Run the following steps:
 5. <a>Run the control message processing loop</a>.
 
 Running a control message to configure the encoder means running these steps:
-1. Assign <strong>[[codec implementation]]</strong> with an implementation
+1. Assign **[[codec implementation]]** with an implementation
     supporting |config|.
 
 <dfn>Encode Frame</dfn> (with frame, options, and output algorithm){#encode-frame-algorithm}
 --------------------------------------------------------------------------------------------
 Run these steps:
 1. If `state` is not `"configured"`, throw an {{InvalidStateError}}.
-2. If the value of |frames| <strong>\[[detached]]</strong> internal slot is
-    true, throw a {{TypeError}}.
+2. If the value of |frame|'s **\[[detached]]** internal slot is
+    `true`, throw a {{TypeError}}.
 3. Let |frameClone| hold the result of running the <a>Clone Frame</a> algorithm
     with |frame|.
 4. Destroy the original |frame| by invoking frame.destroy().
@@ -724,7 +724,7 @@ Running a control message to encode the frame means running these steps.
 2. Let |codec implementation queue| be the result of starting a new
     <a>parallel queue</a>.
 3. Enqueue the following steps to |codec implementation queue|:
-    1. Attempt to use [[codec implementation]] and options to encode
+    1. Attempt to use **[[codec implementation]]** and options to encode
         |frameClone|.
     2. If encoding results in an error, queue a task on the media element task
         source to run the codec error algorithm.
@@ -813,8 +813,8 @@ dictionary AudioDecoderConfig {
 
 To check if an <a>AudioDecoderConfig</a> is a <dfn>valid
     AudioDecoderConfig</dfn>, run these steps:
-1. If codec is not a <a>valid codec string</a>, return false.
-2. Return true.
+1. If codec is not a <a>valid codec string</a>, return `false`.
+2. Return `true`.
 
 <dl>
   <dt><dfn dict-member for=AudioDecoderConfig>codec</dfn></dt>
@@ -856,13 +856,13 @@ dictionary VideoDecoderConfig {
 
 To check if a {{VideoDecoderConfig}} is a <dfn>valid VideoDecoderConfig</dfn>,
 run these steps:
-1. If {{codec}} is not a <a>valid codec string</a>, return false.
-2. If {{codedWidth}} = 0 or {{codedHeight}} = 0, return false.
-3. If {{cropWidth}} = 0 or {{cropHeight}} = 0, return false.
-4. If {{cropTop}} + {{cropHeight}} >= {{codedHeight}}, return false.
-5. If {{cropLeft}} + {{cropWidth}} >= {{codedWidth}}, return false.
-6. If {{displayWidth}} = 0 or {{displayHeight}} = 0, return false.
-7. Return true.
+1. If {{VideoDecoderConfig/codec}} is not a <a>valid codec string</a>, return `false`.
+2. If {{VideoDecoderConfig/codedWidth}} = 0 or {{VideoDecoderConfig/codedHeight}} = 0, return `false`.
+3. If {{VideoDecoderConfig/cropWidth}} = 0 or {{VideoDecoderConfig/cropHeight}} = 0, return `false`.
+4. If {{VideoDecoderConfig/cropTop}} + {{VideoDecoderConfig/cropHeight}} >= {{VideoDecoderConfig/codedHeight}}, return `false`.
+5. If {{VideoDecoderConfig/cropLeft}} + {{VideoDecoderConfig/cropWidth}} >= {{VideoDecoderConfig/codedWidth}}, return `false`.
+6. If {{VideoDecoderConfig/displayWidth}} = 0 or {{VideoDecoderConfig/displayHeight}} = 0, return `false`.
+7. Return `true`.
 
 <dl>
   <dt><dfn dict-member for=VideoDecoderConfig>codec</dfn></dt>
@@ -939,8 +939,8 @@ dictionary AudioEncoderConfig {
 
 To check if an {{AudioEncoderConfig}} is a <dfn>valid AudioEncoderConfig</dfn>,
 run these steps:
-1. If {{codec}} is not a <a>valid codec string</a>, return false.
-2. Return true.
+1. If {{AudioEncoderConfig/codec}} is not a <a>valid codec string</a>, return `false`.
+2. Return `true`.
 
 <dl>
   <dt><dfn dict-member for=AudioEncoderConfig>codec</dfn></dt>
@@ -961,38 +961,24 @@ run these steps:
 dictionary VideoEncoderConfig {
   required DOMString codec;
   unsigned long long bitrate;
-  required unsigned long cropWidth;
-  required unsigned long cropHeight;
-  unsigned long displayWidth;
-  unsigned long displayHeight;
+  required unsigned long width;
+  required unsigned long height;
 };
 </xmp>
 </pre>
 
-To check if a {{VideoDecoderConfig}} is a <a>valid VideoEncoderConfig</a>, run
+To check if a {{VideoEncoderConfig}} is a <dfn>valid VideoEncoderConfig</dfn>, run
 these steps:
-1. If {{codec}} is not a <a>valid codec string</a>, return false.
-2. If {{width}} = 0 or {{height}} = 0, return false.
-3. If {{displayWidth}} = 0 or {{displayHeight}} = 0, return false.
-4. Return true.
+1. If {{VideoEncoderConfig/codec}} is not a <a>valid codec string</a>, return `false`.
+2. If {{VideoEncoderConfig/width}} = 0 or {{VideoEncoderConfig/height}} = 0, return `false`.
+4. Return `true`.
 
 <dl>
-  <dt><dfn dict-member for=VideoEncoderConfig>cropWidth</dfn></dt>
+  <dt><dfn dict-member for=VideoEncoderConfig>width</dfn></dt>
   <dd>The expected cropWidth of input VideoFrames to encode.</dd>
 
-  <dt><dfn dict-member for=VideoEncoderConfig>cropHeight</dfn></dt>
+  <dt><dfn dict-member for=VideoEncoderConfig>height</dfn></dt>
   <dd>The expected cropHeight of input VideoFrames to encode.</dd>
-
-  <dt><dfn dict-member for=VideoEncoderConfig>displayWidth</dfn></dt>
-  <dd>
-      Width of the VideoFrame when displayed. Defaults to cropWidth if not present.
-  </dd>
-
-  <dt><dfn dict-member for=VideoEncoderConfig>displayHeight</dfn></dt>
-  <dd>
-    Height of the VideoFrame when displayed. Defaults to cropHeight if not
-      present.
-  </dd>
 </dl>
 
 
@@ -1059,7 +1045,7 @@ EncodedAudioChunk Interface {#encodedaudiochunk-interface}
 <xmp>
 interface EncodedAudioChunk {
   constructor(EncodedAudioChunkInit init);
-  readonly attribute EncodedChunkType type;
+  readonly attribute EncodedAudioChunkType type;
   readonly attribute unsigned long long timestamp;  // microseconds
   readonly attribute ArrayBuffer data;
 };
@@ -1196,7 +1182,7 @@ dictionary AudioFrameInit {
 1. Let |frame| be a new {{AudioFrame}} object.
 2. Assign init.timestamp to frame.timestamp.
 3. Assign init.buffer to frame.buffer.
-<!-- 4. Assign false to the {{AudioFrame/[[foo]]}} internal slot. -->
+<!-- 4. Assign `false` to the {{AudioFrame/[[foo]]}} internal slot. -->
 5. Return |frame|.
 
 
@@ -1216,7 +1202,7 @@ dictionary AudioFrameInit {
   <dd>
     Immediately frees system resources. When invoked, run these steps:
     1. Release system resources for buffer and set its value to null.
-    2. Assign true to the {{AudioFrame/[[detached]]}} internal slot.
+    2. Assign `true` to the {{AudioFrame/[[detached]]}} internal slot.
 
     NOTE: This section needs work. We should use the name and semantics of
         VideoFrame destroy(). Similarly, we should add clone() to make a deep
@@ -1297,16 +1283,16 @@ NOTE: this section needs work. Current wording assumes a VideoFrame can always
 </dfn>
 1. If |frameInit| is not a <a>valid VideoFrameInit</a>, throw a {{TypeError}}.
 2. If the value of |imageBitmap|'s' {{ImageBitmap/[[Detached]]}} internal slot
-    is set to true, then throw an {{InvalidStateError}} DOMException.
+    is set to `true`, then throw an {{InvalidStateError}} DOMException.
 3. Let |frame| be a new {{VideoFrame}}.
-4. Assign false to |frame|’s {{VideoFrame/[[detached]]}} internal slot.
+4. Assign `false` to |frame|’s {{VideoFrame/[[detached]]}} internal slot.
 5. Use a copy of the pixel data in |imageBitmap| to initialize to following
     frame attributes:
     1. Initialize frame.pixelFormat be the underlying format of imageBitmap.
     2. Initialize frame.planes to describe the arrangement of memory of the
         copied pixel data.
     3. Assign regions of the copied pixel data to the
-        {{VideoFrame/[[plane buffer]]}} internal slot of each plane as
+        {{Plane/[[plane buffer]]}} internal slot of each plane as
         appropriate for the pixel format.
     4. Initialize frame.codedWidth and frame.codedHeight describe the width and
         height of the imageBitamp prior to any cropping or aspect ratio
@@ -1341,17 +1327,14 @@ NOTE: this section needs work. Current wording assumes a VideoFrame can always
 3. If the length of |planes| is incompatible with the given pixelFormat, throw a
     TypeError.
 4. Let |frame| be a new {{VideoFrame}} object.
-5. Assign false to |frame|’s {{VideoFrame/[[detached]]}} internal slot.
+5. Assign `false` to |frame|’s {{VideoFrame/[[detached]]}} internal slot.
 6. Assign init.pixelFormat to frame.pixelFormat.
 7. For each element |p| in |planes|:
     1. If |p| is a {{Plane}}, append a copy of p to frame.planes. Continue
         processing the next element.
-    2. If |p| is a {{PlaneInit}}, append a new {{Plane}} |q| to frame.planes
+    2. If |p| is a {{PlaneInit}}, append a new {{Plane}} <var ignore>q</var> to frame.planes
         initialized as follows:
-        1. Let |sourceOffset| be p.srcOffset if present, or otherwise default to
-            zero.
-        2. Assign a copy of p.length bytes from p.src, starting at
-            p.sourceOffset, to q's [[plane buffer]] internal slot.
+        2. Assign a copy of p.src to q's [[plane buffer]] internal slot.
 
         NOTE: the samples should be copied exactly, but the user agent may add
             row padding as needed to improve memory alignment.
@@ -1441,10 +1424,10 @@ NOTE: Use clone() to create a deep copy. Cloned frames have their own lifetime
     and will not be affected by destroying the original frame.
 
 When invoked, run these steps:
-1. If {{VideoFrame/[[detached]]}} is true, throw an {{InvalidStateError}}.
-2. Remove all {{Planes}} from {{VideoFrame/planes}} and release associated
+1. If {{VideoFrame/[[detached]]}} is `true`, throw an {{InvalidStateError}}.
+2. Remove all {{Plane}}s from {{VideoFrame/planes}} and release associated
     memory.
-3. Assign true to the {{VideoFrame/[[detached]]}} internal slot.
+3. Assign `true` to the {{VideoFrame/[[detached]]}} internal slot.
 
 <dfn method for=VideoFrame>clone()</dfn>
 Creates a new {{VideoFrame}} with a separate lifetime containing a deep copy of
@@ -1456,7 +1439,7 @@ NOTE:  VideoFrames may require a large amount of memory. Use
     longer needed.
 
 When invoked, run the following steps:
-1. If the value of the {{VideoFrame/[[detatched]]}} slot is true, return a
+1. If the value of the {{VideoFrame/[[detached]]}} slot is `true`, return a
     Promise rejected with a newly created {{InvalidStateError}}.
 2. Let |p| be a new Promise.
 3. In parallel, resolve |p| with the result of running the <a>Clone Frame</a>
@@ -1471,7 +1454,7 @@ When invoked, run these steps:
 2. If either |options|'s {{ImageBitmapOptions/resizeWidth}} or
     {{ImageBitmap/resizeHeight}} is present and is 0, then return |p| rejected
     with an {{InvalidStateError}} {{DOMException}}.
-3. If the <a>this'</a> {{VideoFrame/[[detached]]}} internal slot is set to true,
+3. If the <a>this'</a> {{VideoFrame/[[detached]]}} internal slot is set to `true`,
     then return |p| rejected with an {{InvalidStateError}} {{DOMException}}.
 4. Let |imageBitmap| be a new {{ImageBitmap}} object.
 5. Set |imageBitmap|'s bitmap data to a copy of the {{VideoFrame}} pixel data,
@@ -1480,7 +1463,309 @@ When invoked, run these steps:
     with formatting.
 6. If the origin of |imageBitmap|'s image is not same origin with entry settings
     object's origin, then set the origin-clean flag of |imageBitmap|'s bitmap to
-    false.
+    `false`.
 7. Run this step in parallel:
   1. Resolve p with imageBitmap.
 
+### Algorithms ###{#videoframe-algorithms}
+To check if a {{VideoDecoderConfig}} is a <dfn>valid VideoFrameInit</dfn>,
+run these steps:
+1. If {{VideoFrameInit/codedWidth}} = 0 or {{VideoFrameInit/codedHeight}} = 0, return `false`.
+2. If {{VideoFrameInit/cropWidth}} = 0 or {{VideoFrameInit/cropHeight}} = 0, return `false`.
+3. If {{VideoFrameInit/cropTop}} + {{VideoFrameInit/cropHeight}} >= {{VideoFrameInit/codedHeight}}, return `false`.
+4. If {{VideoFrameInit/cropLeft}} + {{VideoFrameInit/cropWidth}} >= {{VideoFrameInit/codedWidth}}, return `false`.
+5. If {{VideoFrameInit/displayWidth}} = 0 or {{VideoFrameInit/displayHeight}} = 0, return `false`.
+6. Return `true`.
+
+
+Plane Interface {#plane-interface}
+----------------------------------
+A {{Plane}} acts like a thin wrapper around an {{ArrayBuffer}}, but may actually
+    be backed by a texture. {{Plane}}s hide any padding before the first sample
+    or after the last row.
+
+A {{Plane}} is solely constructed by its {{VideoFrame}}. During construction,
+    the User Agent may use knowledge of the frame’s {{PixelFormat}} to add
+    padding to the {{Plane}} to improve memory alignment.
+
+A {{Plane}} cannot be used after the {{VideoFrame}} is destroyed. A new
+    {{VideoFrame}} can be assembled from existing {{Plane}}s, and the new
+    {{VideoFrame}} will remain valid when the original is destroyed. This makes
+    it possible to efficiently add an alpha plane to an existing {{VideoFrame}}.
+
+
+<pre class='idl'>
+<xmp>
+interface Plane {
+  readonly attribute unsigned long stride;
+  readonly attribute unsigned long rows;
+  readonly attribute unsigned long length;
+
+  void readInto(ArrayBufferView dst);
+};
+
+dictionary PlaneInit {
+  required BufferSource src;
+  required unsigned long stride;
+  required unsigned long rows;
+};
+</xmp>
+</pre>
+
+### Internal Slots ###{#plane-internal-slots}
+<dl>
+  <dt><dfn attribute for=Plane>[[parent frame]]</dfn></dt>
+  <dd>Refers to the {{VideoFrame}} that constructed and owns this plane.</dd>
+  <dt><dfn attribute for=Plane>[[plane buffer]]</dfn></dt>
+  <dd>Internal storage for the plane’s pixel data.</dd>
+</dl>
+
+### Attributes ###{#plane-attributes}
+<dl>
+  <dt><dfn attribute for=Plane>stride</dfn></dt>
+  <dd>The width of each row including any padding.</dd>
+  <dt><dfn attribute for=Plane>rows</dfn></dt>
+  <dd>The number of rows.</dd>
+  <dt><dfn attribute for=Plane>length</dfn></dt>
+  <dd>The total byte length of the plane (stride * rows).</dd>
+</dl>
+
+### Methods ###{#plane-methods}
+<dfn method for=Plane>readInto(dst)</dfn>
+
+Copies the plane data into dst.
+
+When invoked, run these steps:
+1. If {{Plane/[[parent frame]]}} has been destroyed, throw an
+    {{InvalidStateError}}.
+2. If {{Plane/length}} is greater than |dst.byteLength|, throw a {{TypeError}}.
+3. Copy the {{Plane/[[plane buffer]]}} into <var ignore>dst</var>.
+
+
+Pixel Format{#pixel-format}
+---------------------------
+Pixel formats describe the arrangement of bytes in each plane as well as the
+number and order of the planes.
+
+NOTE: This section needs work. We expect to add more pixel formats and offer
+    much more verbose definitions. For now, please see
+    <a href="http://www.fourcc.org/pixel-format/yuv-i420/">
+    http://www.fourcc.org/pixel-format/yuv-i420/</a> for a more complete
+    description.
+
+<pre class='idl'>
+<xmp>
+enum PixelFormat {
+  "I420"
+};
+</xmp>
+</pre>
+
+<dl>
+  <dt><dfn enum-value for=PixelFormat>I420</dfn></dt>
+  <dd>
+    Planar 4:2:0 YUV.
+  </dd>
+</dl>
+
+
+Algorithms{#raw-media-algorithms}
+---------------------------------
+
+<dfn>Clone Frame</dfn>{#clone-frame} (with |frame|)
+1. Let cloneFrame be a new object of the same type as frame (either
+    {{AudioFrame}} or {{VideoFrame}}).
+2. Initialize each attribute and internal slot of clone with a copy of the value
+    from the corresponding attribute of this frame.
+
+NOTE: User Agents are encouraged to avoid expensive copies of large objects (for
+    instance, {{VideoFrame}} pixel data). Frame types are immutable, so the
+    above step may be implemented using memory sharing techniques such as
+    reference counting.
+
+3. Return cloneFrame.
+
+
+VideoTrackReader Interface{#videotrackreader-interface}
+=======================================================
+{{VideoTrackReader}} emits {{VideoFrame}}s from a {{MediaStreamTrack}}. Authors
+may use this interface to manipulate, render, or encode streams from
+{{getUserMedia()}} and {{getDisplayMedia()}}.
+
+<pre class='idl'>
+<xmp>
+[Exposed=Window]
+interface VideoTrackReader {
+  constructor(MediaStreamTrack track);
+
+  readonly attribute VideoTrackReaderState readyState;
+  attribute EventHandler onended;
+
+  void start(VideoFrameOutputCallback callback);
+  void stop();
+};
+
+enum VideoTrackReaderState {
+  "started",
+  "stopped",
+  "ended"
+};
+</xmp>
+</pre>
+
+VideoTrackReaderState Values{#videotrackreaderreadystate}
+--------------------------------------------------------------
+<dl>
+  <dt><dfn enum-value for=VideoTrackReaderState>started</dfn></dt>
+  <dd>
+    Indicates that the {{VideoTrackReader/[[track]]}} is
+        {{MediaStreamTrackState/live}} and {{VideoFrame}}s are being output to
+        the {{VideoTrackReader/[[callback]]}} provided to
+        {{VideoTrackReader/start()}}.
+
+  </dd>
+  <dt><dfn enum-value for=VideoTrackReaderState>stopped</dfn></dt>
+  <dd>
+    Indicates that the {{VideoTrackReader/[[track]]}} is
+        {{MediaStreamTrackState/live}}, but the
+        {{VideoTrackReader/[[callback]]}} is not set, so no {{VideoFrame}}s are
+        being output.
+  </dd>
+  <dt><dfn enum-value for=VideoTrackReaderState>ended</dfn></dt>
+  <dd>
+    Indicates that the {{VideoTrackReader/[[track]]}} is
+        {{MediaStreamTrackState/ended}} and this object can no longer be
+        {{VideoTrackReaderState/started}} nor {{VideoTrackReaderState/stopped}}.
+  </dd>
+</dl>
+
+Internal Slots {#videotrackreader-slots}
+----------------------------------------
+<dl>
+  <dt><dfn attribute for=VideoTrackReader>\[[track]]</dfn></dt>
+  <dd>The {{MediaStreamTrack}} provided at construction.</dd>
+  <dt><dfn attribute for=VideoTrackReader>\[[callback]]</dfn></dt>
+  <dd>
+    The {{VideoFrameOutputCallback}} assigned by the last call to
+      {{VideoTrackReader/start()}}.
+  </dd>
+</dl>
+
+
+Constructors{#videotrackreader-constructors}
+---------------------------------------------
+<dfn constructor for=VideoTrackReader title="VideoTrackReader(track)">
+  VideoTrackReader(track)
+</dfn>
+1. If `track.kind` is not `"video"`, throw a {{TypeError}}.
+2. If `track.readyState` is `"ended"`, throw an {{InvalidStateError}}.
+3. Let |reader| be a new {{VideoTrackReader}} object.
+4. Assign <var ignore>track</var> to the {{VideoTrackReader/[[track]]}} internal slot.
+5. Assign `"stopped"` to `reader.readyState`.
+6. Return |reader|.
+
+
+Attributes{#videotrackreader-attributes}
+----------------------------------------
+<dl>
+  <dt><dfn attribute for=VideoTrackReader>readyState</dfn></dt>
+  <dd>
+    Indicates the current state of the {{VideoTrackReader}} object.
+  </dd>
+  <dt><dfn attribute for=VideoTrackReader>onended</dfn></dt>
+  <dd>The event handler for the ended event.</dd>
+</dl>
+
+Event Summary{#videotrackreader-events}
+---------------------------------------
+<dl>
+  <dt><dfn event for=VideoTrackReader>ended</dfn></dt>
+  <dd>
+    Dispatched when the {{VideoTrackReader/[[track]]}}'s
+        {{VideoTrackReader/readyState}} becomes `"ended"`, indicating no further
+        {{VideoFrame}}s will be output.
+  </dd>
+</dl>
+
+
+Methods{#videotrackreader-methods}
+----------------------------------
+<dfn method for=VideoTrackReader>start(callback)</dfn>
+
+Starts calling the callback with {{VideoFrame}}s from the {{MediaStreamTrack}}.
+
+When invoked, run these steps:
+1. If {{VideoTrackReader/readyState}} is not `"stopped"`, throw an
+    {{InvalidStateError}}.
+2. Assign `"started"` to {{VideoTrackReader/readyState}}.
+3. Assign <var ignore>callback</var> to the {{VideoTrackReader/[[callback]]}} internal slot.
+4. In parallel, run the <a>track monitor</a>.
+
+<dfn method for=VideoTrackReader>stop()</dfn>
+
+Stops calling the {{VideoFrameOutputCallback}} with {{VideoFrame}}s from the
+    {{MediaStreamTrack}}.
+
+When invoked, run these steps:
+1. If readyState is not `"started"`, throw an {{InvalidStateError}}.
+2. Cease running the <a>track monitor</a>.
+3. Assign `"stopped"` to the {{VideoTrackReader/readyState}}.
+4. Assign `null` to the {{VideoTrackReader/[[callback]]}} internal slot.
+
+
+MediaStreamTrack Monitoring{#mediastreamtrack-monitoring}
+---------------------------------------------------------
+
+The <dfn>track monitor</dfn> may be started and stopped by the user to control
+the calling of the {{VideoFrameOutputCallback}}.
+
+<dfn>Running the track monitor</dfn> means monitoring
+{{VideoTrackReader/[[track]]}} for the arrival of new picture data as well as
+changes to `[[track]].readyState`.
+
+While `[[track]].readyState` is "live", for each new picture that arrives in
+{{VideoTrackReader/[[track]]}}, execute the following steps:
+
+    NOTE: Pictures that arrived prior to the start of this loop are not
+        considered.
+
+
+    NOTE: Video data in a MediaStreamTrack does not have a canonical binary
+        form. The user agent should tokenize "pictures" by discrete times of
+        capture. For example, if the source is a camera capturing 60 frames per
+        second, the UA should construct 60 corresponding VideoFrame's each
+        second.
+
+1. Let |planes| be a sequence of {{Plane}}s containing the picture data.
+2. Let |pixelFormat| be the {{PixelFormat}} of |planes|.
+
+    NOTE: This section needs work. The UA should avoid early optimizations to
+        convert between PixelFormats, but currently only a narrow set of formats
+        is defined in this spec. We should consider adding an "opaque" format
+        along with an API coverter API to make pixel format conversion
+        transparent to authors.
+
+
+3. Let |frameInit| be an {{VideoFrameInit}} with the following keys:
+    1. Let <var ignore>timestamp</var> and <var ignore>duration</var> be the presentation timestamp and
+        (optionally) presentation duration as determined by the
+        {{VideoTrackReader/[[track]]}} source.
+    2. Let <var ignore>codedWidth</var> and <var ignore>codedHeight> be the width and height of the decoded
+        video frame in pixels, prior to any cropping or aspect ratio
+        adjustments.
+    3. Let <var ignore>cropLeft</var>, <var ignore>cropTop</var>, <var ignore>cropWidth</var>, and <var ignore>cropHeight</var> be the crop
+        region of the decoded video frame in pixels, prior to any aspect ratio
+        adjustments.
+    4. Let <<var ignore>displayWidth</var> and <<var ignore>displayHeight</var> be the display size of the decoded
+        video frame in pixels.
+4. Let |frame| be a {{VideoFrame}}, constructed with |pixelFormat|,
+        |planes|, and |frameInit|.
+5. Invoke {{VideoTrackReader/[[callback]]}} with |frame|.
+
+If {{VideoTrackReader/[[track]]}}.readyState becomes `"ended"`,
+    <a>queue a task</a> on the media element task source to run the
+    following steps:
+
+1. Set {{VideoTrackReader/readyState}} to "ended".
+2. <a>Queue a task</a> on the media element task source to run a simple
+    event named {{VideoTrackReader/ended}} at the {{VideoTrackReader}}.
