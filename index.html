@@ -1470,7 +1470,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
   <div class="head">
    <p data-fill-with="logo"></p>
    <h1 class="p-name no-ref" id="title">WebCodecs</h1>
-   <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">Draft Community Group Report, <time class="dt-updated" datetime="2020-08-27">27 August 2020</time></span></h2>
+   <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">Draft Community Group Report, <time class="dt-updated" datetime="2020-08-28">28 August 2020</time></span></h2>
    <div data-fill-with="spec-metadata">
     <dl>
      <dt>This version:
@@ -1516,7 +1516,7 @@ frames from MediaStreamStracks.</p>
    <h2 class="no-num no-toc no-ref" id="contents">Table of Contents</h2>
    <ol class="toc" role="directory">
     <li><a href="#definitions"><span class="secno">1</span> <span class="content">Definitions</span></a>
-    <li><a href="#processing-model"><span class="secno">2</span> <span class="content">Processing Model</span></a>
+    <li><a href="#codec-processing-model"><span class="secno">2</span> <span class="content">Codec Processing Model</span></a>
     <li>
      <a href="#audiodecoder-interface"><span class="secno">3</span> <span class="content">AudioDecoder Interface</span></a>
      <ol class="toc">
@@ -1569,13 +1569,13 @@ frames from MediaStreamStracks.</p>
      <a href="#configurations"><span class="secno">8</span> <span class="content">Configurations</span></a>
      <ol class="toc">
       <li><a href="#config-codec-string"><span class="secno">8.1</span> <span class="content"><span>Codec String</span></span></a>
-      <li><a href="#audio-decoder-config"><span class="secno">8.2</span> <span class="content"><span>AudioDecoderConfig</span></span></a>
-      <li><a href="#video-decoder-config"><span class="secno">8.3</span> <span class="content"><span>VideoDecoderConfig</span></span></a>
-      <li><a href="#audio-encoder-config"><span class="secno">8.4</span> <span class="content"><span>AudioEncoderConfig</span></span></a>
-      <li><a href="#video-encoder-config"><span class="secno">8.5</span> <span class="content"><span>VideoEncoderConfig</span></span></a>
-      <li><a href="#video-encoder-options"><span class="secno">8.6</span> <span class="content"><span>VideoEncoderEncodeOptions</span></span></a>
-      <li><a href="#codec-state"><span class="secno">8.7</span> <span class="content"><span>CodecState</span></span></a>
-      <li><a href="#error-callback"><span class="secno">8.8</span> <span class="content"><span>WebCodecsErrorCallback</span></span></a>
+      <li><a href="#audio-decoder-config"><span class="secno">8.2</span> <span class="content">AudioDecoderConfig</span></a>
+      <li><a href="#video-decoder-config"><span class="secno">8.3</span> <span class="content">VideoDecoderConfig</span></a>
+      <li><a href="#audio-encoder-config"><span class="secno">8.4</span> <span class="content">AudioEncoderConfig</span></a>
+      <li><a href="#video-encoder-config"><span class="secno">8.5</span> <span class="content">VideoEncoderConfig</span></a>
+      <li><a href="#video-encoder-options"><span class="secno">8.6</span> <span class="content">VideoEncoderEncodeOptions</span></a>
+      <li><a href="#codec-state"><span class="secno">8.7</span> <span class="content">CodecState</span></a>
+      <li><a href="#error-callback"><span class="secno">8.8</span> <span class="content">WebCodecsErrorCallback</span></a>
      </ol>
     <li>
      <a href="#encoded-media-interfaces"><span class="secno">9</span> <span class="content">Encoded Media Interfaces (Chunks)</span></a>
@@ -1622,6 +1622,7 @@ frames from MediaStreamStracks.</p>
        </ol>
       <li><a href="#pixel-format"><span class="secno">10.4</span> <span class="content">Pixel Format</span></a>
       <li><a href="#raw-media-algorithms"><span class="secno">10.5</span> <span class="content">Algorithms</span></a>
+      <li><a href="#clone-frame-algo"><span class="secno">10.6</span> <span class="content"><span>Clone Frame</span> (with <var>frame</var>)</span></a>
      </ol>
     <li>
      <a href="#videotrackreader-interface"><span class="secno">11</span> <span class="content">VideoTrackReader Interface</span></a>
@@ -1661,7 +1662,7 @@ and VideoEncoder.</p>
     <dd data-md>
      <p>An encoded frame that does not depend on any other frames for decoding.</p>
    </dl>
-   <h2 class="heading settled" data-level="2" id="processing-model"><span class="secno">2. </span><span class="content">Processing Model</span><a class="self-link" href="#processing-model"></a></h2>
+   <h2 class="heading settled" data-level="2" id="codec-processing-model"><span class="secno">2. </span><span class="content">Codec Processing Model</span><a class="self-link" href="#codec-processing-model"></a></h2>
    <p>New codec tasks may be scheduled while previous tasks are still pending. For
 example, web authors may call <code>decode()</code> without waiting for the previous <code>decode()</code> to generate an output. This is facilitated by the following
 mechanisms.</p>
@@ -1706,11 +1707,11 @@ queue.</p>
   <c- b>readonly</c-> <c- b>attribute</c-> <a class="n" data-link-type="idl-name" href="#enumdef-codecstate" id="ref-for-enumdef-codecstate"><c- n>CodecState</c-></a> <a class="idl-code" data-link-type="attribute" data-readonly data-type="CodecState" href="#dom-audiodecoder-state" id="ref-for-dom-audiodecoder-state"><c- g>state</c-></a>;
   <c- b>readonly</c-> <c- b>attribute</c-> <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-long" id="ref-for-idl-long"><c- b>long</c-></a> <a class="idl-code" data-link-type="attribute" data-readonly data-type="long" href="#dom-audiodecoder-decodequeuesize" id="ref-for-dom-audiodecoder-decodequeuesize"><c- g>decodeQueueSize</c-></a>;
 
-  <a class="n" data-link-type="idl-name"><c- n>void</c-></a> <a class="idl-code" data-link-type="method" href="#dom-audiodecoder-configure" id="ref-for-dom-audiodecoder-configure"><c- g>configure</c-></a>(<a class="n" data-link-type="idl-name" href="#dictdef-audiodecoderconfig" id="ref-for-dictdef-audiodecoderconfig"><c- n>AudioDecoderConfig</c-></a> <dfn class="idl-code" data-dfn-for="AudioDecoder/configure(config)" data-dfn-type="argument" data-export id="dom-audiodecoder-configure-config-config"><code><c- g>config</c-></code><a class="self-link" href="#dom-audiodecoder-configure-config-config"></a></dfn>);
-  <a class="n" data-link-type="idl-name"><c- n>void</c-></a> <a class="idl-code" data-link-type="method" href="#dom-audiodecoder-decode" id="ref-for-dom-audiodecoder-decode"><c- g>decode</c-></a>(<a class="n" data-link-type="idl-name" href="#encodedaudiochunk" id="ref-for-encodedaudiochunk"><c- n>EncodedAudioChunk</c-></a> <dfn class="idl-code" data-dfn-for="AudioDecoder/decode(chunk)" data-dfn-type="argument" data-export id="dom-audiodecoder-decode-chunk-chunk"><code><c- g>chunk</c-></code><a class="self-link" href="#dom-audiodecoder-decode-chunk-chunk"></a></dfn>);
-  <c- b>Promise</c->&lt;<a class="n" data-link-type="idl-name"><c- n>void</c-></a>> <a class="idl-code" data-link-type="method" href="#dom-audiodecoder-flush" id="ref-for-dom-audiodecoder-flush"><c- g>flush</c-></a>();
-  <a class="n" data-link-type="idl-name"><c- n>void</c-></a> <a class="idl-code" data-link-type="method" href="#dom-audiodecoder-reset" id="ref-for-dom-audiodecoder-reset"><c- g>reset</c-></a>();
-  <a class="n" data-link-type="idl-name"><c- n>void</c-></a> <a class="idl-code" data-link-type="method" href="#dom-audiodecoder-close" id="ref-for-dom-audiodecoder-close"><c- g>close</c-></a>();
+  <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-undefined" id="ref-for-idl-undefined"><c- b>undefined</c-></a> <a class="idl-code" data-link-type="method" href="#dom-audiodecoder-configure" id="ref-for-dom-audiodecoder-configure"><c- g>configure</c-></a>(<a class="n" data-link-type="idl-name" href="#dictdef-audiodecoderconfig" id="ref-for-dictdef-audiodecoderconfig"><c- n>AudioDecoderConfig</c-></a> <dfn class="idl-code" data-dfn-for="AudioDecoder/configure(config)" data-dfn-type="argument" data-export id="dom-audiodecoder-configure-config-config"><code><c- g>config</c-></code><a class="self-link" href="#dom-audiodecoder-configure-config-config"></a></dfn>);
+  <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-undefined" id="ref-for-idl-undefined①"><c- b>undefined</c-></a> <a class="idl-code" data-link-type="method" href="#dom-audiodecoder-decode" id="ref-for-dom-audiodecoder-decode"><c- g>decode</c-></a>(<a class="n" data-link-type="idl-name" href="#encodedaudiochunk" id="ref-for-encodedaudiochunk"><c- n>EncodedAudioChunk</c-></a> <dfn class="idl-code" data-dfn-for="AudioDecoder/decode(chunk)" data-dfn-type="argument" data-export id="dom-audiodecoder-decode-chunk-chunk"><code><c- g>chunk</c-></code><a class="self-link" href="#dom-audiodecoder-decode-chunk-chunk"></a></dfn>);
+  <c- b>Promise</c->&lt;<a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-undefined" id="ref-for-idl-undefined②"><c- b>undefined</c-></a>> <a class="idl-code" data-link-type="method" href="#dom-audiodecoder-flush" id="ref-for-dom-audiodecoder-flush"><c- g>flush</c-></a>();
+  <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-undefined" id="ref-for-idl-undefined③"><c- b>undefined</c-></a> <a class="idl-code" data-link-type="method" href="#dom-audiodecoder-reset" id="ref-for-dom-audiodecoder-reset"><c- g>reset</c-></a>();
+  <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-undefined" id="ref-for-idl-undefined④"><c- b>undefined</c-></a> <a class="idl-code" data-link-type="method" href="#dom-audiodecoder-close" id="ref-for-dom-audiodecoder-close"><c- g>close</c-></a>();
 };
 
 <c- b>dictionary</c-> <dfn class="dfn-paneled idl-code" data-dfn-type="dictionary" data-export id="dictdef-audiodecoderinit"><code><c- g>AudioDecoderInit</c-></code></dfn> {
@@ -1718,16 +1719,16 @@ queue.</p>
   <c- b>required</c-> <a class="n" data-link-type="idl-name" href="#callbackdef-webcodecserrorcallback" id="ref-for-callbackdef-webcodecserrorcallback"><c- n>WebCodecsErrorCallback</c-></a> <dfn class="idl-code" data-dfn-for="AudioDecoderInit" data-dfn-type="dict-member" data-export data-type="WebCodecsErrorCallback " id="dom-audiodecoderinit-error"><code><c- g>error</c-></code><a class="self-link" href="#dom-audiodecoderinit-error"></a></dfn>;
 };
 
-<c- b>callback</c-> <dfn class="dfn-paneled idl-code" data-dfn-type="callback" data-export id="callbackdef-audioframeoutputcallback"><code><c- g>AudioFrameOutputCallback</c-></code></dfn> = <a class="n" data-link-type="idl-name"><c- n>void</c-></a>(<a class="n" data-link-type="idl-name" href="#audioframe" id="ref-for-audioframe"><c- n>AudioFrame</c-></a> <dfn class="idl-code" data-dfn-for="AudioFrameOutputCallback" data-dfn-type="argument" data-export id="dom-audioframeoutputcallback-output"><code><c- g>output</c-></code><a class="self-link" href="#dom-audioframeoutputcallback-output"></a></dfn>);
+<c- b>callback</c-> <dfn class="dfn-paneled idl-code" data-dfn-type="callback" data-export id="callbackdef-audioframeoutputcallback"><code><c- g>AudioFrameOutputCallback</c-></code></dfn> = <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-undefined" id="ref-for-idl-undefined⑤"><c- b>undefined</c-></a>(<a class="n" data-link-type="idl-name" href="#audioframe" id="ref-for-audioframe"><c- n>AudioFrame</c-></a> <dfn class="idl-code" data-dfn-for="AudioFrameOutputCallback" data-dfn-type="argument" data-export id="dom-audioframeoutputcallback-output"><code><c- g>output</c-></code><a class="self-link" href="#dom-audioframeoutputcallback-output"></a></dfn>);
 
 </pre>
    <h3 class="heading settled" data-level="3.1" id="audiodecoder-internal-slots"><span class="secno">3.1. </span><span class="content">Internal Slots</span><a class="self-link" href="#audiodecoder-internal-slots"></a></h3>
    <dl>
-    <dt><dfn data-dfn-for="AudoDecoder" data-dfn-type="dfn" data-noexport id="audodecoder-codec-implementation">[[codec implementation]]<a class="self-link" href="#audodecoder-codec-implementation"></a></dfn>
+    <dt><dfn class="idl-code" data-dfn-for="AudoDecoder" data-dfn-type="attribute" data-export id="dom-audodecoder-codec-implementation-slot"><code>[[codec implementation]]</code><a class="self-link" href="#dom-audodecoder-codec-implementation-slot"></a></dfn>
     <dd>Underlying decoder implementation provided by the User Agent.
-    <dt><dfn data-dfn-for="AudoDecoder" data-dfn-type="dfn" data-noexport id="audodecoder-output-callback">[[output callback]]<a class="self-link" href="#audodecoder-output-callback"></a></dfn>
+    <dt><dfn class="idl-code" data-dfn-for="AudoDecoder" data-dfn-type="attribute" data-export id="dom-audodecoder-output-callback-slot"><code>[[output callback]]</code><a class="self-link" href="#dom-audodecoder-output-callback-slot"></a></dfn>
     <dd>Callback given at construction for decoded outputs.
-    <dt><dfn data-dfn-for="AudoDecoder" data-dfn-type="dfn" data-noexport id="audodecoder-error-callback">[[error callback]]<a class="self-link" href="#audodecoder-error-callback"></a></dfn>
+    <dt><dfn class="idl-code" data-dfn-for="AudoDecoder" data-dfn-type="attribute" data-export id="dom-audodecoder-error-callback-slot"><code>[[error callback]]</code><a class="self-link" href="#dom-audodecoder-error-callback-slot"></a></dfn>
     <dd>Callback given at construction for decode errors.
    </dl>
    <h3 class="heading settled" data-level="3.2" id="audiodecoder-constructors"><span class="secno">3.2. </span><span class="content">Constructors</span><a class="self-link" href="#audiodecoder-constructors"></a></h3>
@@ -1804,11 +1805,11 @@ queue.</p>
   <c- b>readonly</c-> <c- b>attribute</c-> <a class="n" data-link-type="idl-name" href="#enumdef-codecstate" id="ref-for-enumdef-codecstate②"><c- n>CodecState</c-></a> <a class="idl-code" data-link-type="attribute" data-readonly data-type="CodecState" href="#dom-videodecoder-state" id="ref-for-dom-videodecoder-state"><c- g>state</c-></a>;
   <c- b>readonly</c-> <c- b>attribute</c-> <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-long" id="ref-for-idl-long②"><c- b>long</c-></a> <a class="idl-code" data-link-type="attribute" data-readonly data-type="long" href="#dom-videodecoder-decodequeuesize" id="ref-for-dom-videodecoder-decodequeuesize"><c- g>decodeQueueSize</c-></a>;
 
-  <a class="n" data-link-type="idl-name"><c- n>void</c-></a> <a class="idl-code" data-link-type="method" href="#dom-videodecoder-configure" id="ref-for-dom-videodecoder-configure"><c- g>configure</c-></a>(<a class="n" data-link-type="idl-name" href="#dictdef-videodecoderconfig" id="ref-for-dictdef-videodecoderconfig"><c- n>VideoDecoderConfig</c-></a> <dfn class="idl-code" data-dfn-for="VideoDecoder/configure(config)" data-dfn-type="argument" data-export id="dom-videodecoder-configure-config-config"><code><c- g>config</c-></code><a class="self-link" href="#dom-videodecoder-configure-config-config"></a></dfn>);
-  <a class="n" data-link-type="idl-name"><c- n>void</c-></a> <a class="idl-code" data-link-type="method" href="#dom-videodecoder-decode" id="ref-for-dom-videodecoder-decode"><c- g>decode</c-></a>(<a class="n" data-link-type="idl-name" href="#encodedvideochunk" id="ref-for-encodedvideochunk"><c- n>EncodedVideoChunk</c-></a> <dfn class="idl-code" data-dfn-for="VideoDecoder/decode(chunk)" data-dfn-type="argument" data-export id="dom-videodecoder-decode-chunk-chunk"><code><c- g>chunk</c-></code><a class="self-link" href="#dom-videodecoder-decode-chunk-chunk"></a></dfn>);
-  <c- b>Promise</c->&lt;<a class="n" data-link-type="idl-name"><c- n>void</c-></a>> <a class="idl-code" data-link-type="method" href="#dom-videodecoder-flush" id="ref-for-dom-videodecoder-flush"><c- g>flush</c-></a>();
-  <a class="n" data-link-type="idl-name"><c- n>void</c-></a> <a class="idl-code" data-link-type="method" href="#dom-videodecoder-reset" id="ref-for-dom-videodecoder-reset"><c- g>reset</c-></a>();
-  <a class="n" data-link-type="idl-name"><c- n>void</c-></a> <a class="idl-code" data-link-type="method" href="#dom-videodecoder-close" id="ref-for-dom-videodecoder-close"><c- g>close</c-></a>();
+  <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-undefined" id="ref-for-idl-undefined⑥"><c- b>undefined</c-></a> <a class="idl-code" data-link-type="method" href="#dom-videodecoder-configure" id="ref-for-dom-videodecoder-configure"><c- g>configure</c-></a>(<a class="n" data-link-type="idl-name" href="#dictdef-videodecoderconfig" id="ref-for-dictdef-videodecoderconfig"><c- n>VideoDecoderConfig</c-></a> <dfn class="idl-code" data-dfn-for="VideoDecoder/configure(config)" data-dfn-type="argument" data-export id="dom-videodecoder-configure-config-config"><code><c- g>config</c-></code><a class="self-link" href="#dom-videodecoder-configure-config-config"></a></dfn>);
+  <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-undefined" id="ref-for-idl-undefined⑦"><c- b>undefined</c-></a> <a class="idl-code" data-link-type="method" href="#dom-videodecoder-decode" id="ref-for-dom-videodecoder-decode"><c- g>decode</c-></a>(<a class="n" data-link-type="idl-name" href="#encodedvideochunk" id="ref-for-encodedvideochunk"><c- n>EncodedVideoChunk</c-></a> <dfn class="idl-code" data-dfn-for="VideoDecoder/decode(chunk)" data-dfn-type="argument" data-export id="dom-videodecoder-decode-chunk-chunk"><code><c- g>chunk</c-></code><a class="self-link" href="#dom-videodecoder-decode-chunk-chunk"></a></dfn>);
+  <c- b>Promise</c->&lt;<a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-undefined" id="ref-for-idl-undefined⑧"><c- b>undefined</c-></a>> <a class="idl-code" data-link-type="method" href="#dom-videodecoder-flush" id="ref-for-dom-videodecoder-flush"><c- g>flush</c-></a>();
+  <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-undefined" id="ref-for-idl-undefined⑨"><c- b>undefined</c-></a> <a class="idl-code" data-link-type="method" href="#dom-videodecoder-reset" id="ref-for-dom-videodecoder-reset"><c- g>reset</c-></a>();
+  <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-undefined" id="ref-for-idl-undefined①⓪"><c- b>undefined</c-></a> <a class="idl-code" data-link-type="method" href="#dom-videodecoder-close" id="ref-for-dom-videodecoder-close"><c- g>close</c-></a>();
 };
 
 <c- b>dictionary</c-> <dfn class="dfn-paneled idl-code" data-dfn-type="dictionary" data-export id="dictdef-videodecoderinit"><code><c- g>VideoDecoderInit</c-></code></dfn> {
@@ -1816,16 +1817,16 @@ queue.</p>
   <c- b>required</c-> <a class="n" data-link-type="idl-name" href="#callbackdef-webcodecserrorcallback" id="ref-for-callbackdef-webcodecserrorcallback①"><c- n>WebCodecsErrorCallback</c-></a> <dfn class="idl-code" data-dfn-for="VideoDecoderInit" data-dfn-type="dict-member" data-export data-type="WebCodecsErrorCallback " id="dom-videodecoderinit-error"><code><c- g>error</c-></code><a class="self-link" href="#dom-videodecoderinit-error"></a></dfn>;
 };
 
-<c- b>callback</c-> <dfn class="dfn-paneled idl-code" data-dfn-type="callback" data-export id="callbackdef-videoframeoutputcallback"><code><c- g>VideoFrameOutputCallback</c-></code></dfn> = <a class="n" data-link-type="idl-name"><c- n>void</c-></a>(<a class="n" data-link-type="idl-name" href="#videoframe" id="ref-for-videoframe"><c- n>VideoFrame</c-></a> <dfn class="idl-code" data-dfn-for="VideoFrameOutputCallback" data-dfn-type="argument" data-export id="dom-videoframeoutputcallback-output"><code><c- g>output</c-></code><a class="self-link" href="#dom-videoframeoutputcallback-output"></a></dfn>);
+<c- b>callback</c-> <dfn class="dfn-paneled idl-code" data-dfn-type="callback" data-export id="callbackdef-videoframeoutputcallback"><code><c- g>VideoFrameOutputCallback</c-></code></dfn> = <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-undefined" id="ref-for-idl-undefined①①"><c- b>undefined</c-></a>(<a class="n" data-link-type="idl-name" href="#videoframe" id="ref-for-videoframe"><c- n>VideoFrame</c-></a> <dfn class="idl-code" data-dfn-for="VideoFrameOutputCallback" data-dfn-type="argument" data-export id="dom-videoframeoutputcallback-output"><code><c- g>output</c-></code><a class="self-link" href="#dom-videoframeoutputcallback-output"></a></dfn>);
 
 </pre>
    <h3 class="heading settled" data-level="4.1" id="videodecoder-internal-slots"><span class="secno">4.1. </span><span class="content">Internal Slots</span><a class="self-link" href="#videodecoder-internal-slots"></a></h3>
    <dl>
-    <dt><dfn data-dfn-for="VideoDecoder" data-dfn-type="dfn" data-noexport id="videodecoder-codec-implementation">[[codec implementation]]<a class="self-link" href="#videodecoder-codec-implementation"></a></dfn>
+    <dt><dfn class="idl-code" data-dfn-for="VideoDecoder" data-dfn-type="attribute" data-export id="dom-videodecoder-codec-implementation-slot"><code>[[codec implementation]]</code><a class="self-link" href="#dom-videodecoder-codec-implementation-slot"></a></dfn>
     <dd>Underlying decoder implementation provided by the User Agent.
-    <dt><dfn data-dfn-for="VideoDecoder" data-dfn-type="dfn" data-noexport id="videodecoder-output-callback">[[output callback]]<a class="self-link" href="#videodecoder-output-callback"></a></dfn>
+    <dt><dfn class="idl-code" data-dfn-for="VideoDecoder" data-dfn-type="attribute" data-export id="dom-videodecoder-output-callback-slot"><code>[[output callback]]</code><a class="self-link" href="#dom-videodecoder-output-callback-slot"></a></dfn>
     <dd>Callback given at construction for decoded outputs.
-    <dt><dfn data-dfn-for="VideoDecoder" data-dfn-type="dfn" data-noexport id="videodecoder-error-callback">[[error callback]]<a class="self-link" href="#videodecoder-error-callback"></a></dfn>
+    <dt><dfn class="idl-code" data-dfn-for="VideoDecoder" data-dfn-type="attribute" data-export id="dom-videodecoder-error-callback-slot"><code>[[error callback]]</code><a class="self-link" href="#dom-videodecoder-error-callback-slot"></a></dfn>
     <dd>Callback given at construction for decode errors.
    </dl>
    <h3 class="heading settled" data-level="4.2" id="videodecoder-constructors"><span class="secno">4.2. </span><span class="content">Constructors</span><a class="self-link" href="#videodecoder-constructors"></a></h3>
@@ -1900,11 +1901,11 @@ queue.</p>
   <a class="idl-code" data-link-type="constructor" href="#dom-audioencoder-audioencoder" id="ref-for-dom-audioencoder-audioencoder"><c- g>constructor</c-></a>(<a class="n" data-link-type="idl-name" href="#dictdef-audioencoderinit" id="ref-for-dictdef-audioencoderinit"><c- n>AudioEncoderInit</c-></a> <dfn class="idl-code" data-dfn-for="AudioEncoder/AudioEncoder(init), AudioEncoder/constructor(init)" data-dfn-type="argument" data-export id="dom-audioencoder-audioencoder-init-init"><code><c- g>init</c-></code><a class="self-link" href="#dom-audioencoder-audioencoder-init-init"></a></dfn>);
   <c- b>readonly</c-> <c- b>attribute</c-> <a class="n" data-link-type="idl-name" href="#enumdef-codecstate" id="ref-for-enumdef-codecstate④"><c- n>CodecState</c-></a> <a class="idl-code" data-link-type="attribute" data-readonly data-type="CodecState" href="#dom-audioencoder-state" id="ref-for-dom-audioencoder-state"><c- g>state</c-></a>;
   <c- b>readonly</c-> <c- b>attribute</c-> <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-long" id="ref-for-idl-long④"><c- b>long</c-></a> <a class="idl-code" data-link-type="attribute" data-readonly data-type="long" href="#dom-audioencoder-encodequeuesize" id="ref-for-dom-audioencoder-encodequeuesize"><c- g>encodeQueueSize</c-></a>;
-  <a class="n" data-link-type="idl-name"><c- n>void</c-></a> <a class="idl-code" data-link-type="method" href="#dom-audioencoder-configure" id="ref-for-dom-audioencoder-configure"><c- g>configure</c-></a>(<a class="n" data-link-type="idl-name" href="#dictdef-audioencoderconfig" id="ref-for-dictdef-audioencoderconfig"><c- n>AudioEncoderConfig</c-></a> <dfn class="idl-code" data-dfn-for="AudioEncoder/configure(config)" data-dfn-type="argument" data-export id="dom-audioencoder-configure-config-config"><code><c- g>config</c-></code><a class="self-link" href="#dom-audioencoder-configure-config-config"></a></dfn>);
-  <a class="n" data-link-type="idl-name"><c- n>void</c-></a> <a class="idl-code" data-link-type="method" href="#dom-audioencoder-encode" id="ref-for-dom-audioencoder-encode"><c- g>encode</c-></a>(<a class="n" data-link-type="idl-name" href="#audioframe" id="ref-for-audioframe①"><c- n>AudioFrame</c-></a> <dfn class="idl-code" data-dfn-for="AudioEncoder/encode(frame)" data-dfn-type="argument" data-export id="dom-audioencoder-encode-frame-frame"><code><c- g>frame</c-></code><a class="self-link" href="#dom-audioencoder-encode-frame-frame"></a></dfn>);
-  <c- b>Promise</c->&lt;<a class="n" data-link-type="idl-name"><c- n>void</c-></a>> <a class="idl-code" data-link-type="method" href="#dom-audioencoder-flush" id="ref-for-dom-audioencoder-flush"><c- g>flush</c-></a>();
-  <a class="n" data-link-type="idl-name"><c- n>void</c-></a> <a class="idl-code" data-link-type="method" href="#dom-audioencoder-reset" id="ref-for-dom-audioencoder-reset"><c- g>reset</c-></a>();
-  <a class="n" data-link-type="idl-name"><c- n>void</c-></a> <a class="idl-code" data-link-type="method" href="#dom-audioencoder-close" id="ref-for-dom-audioencoder-close"><c- g>close</c-></a>();
+  <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-undefined" id="ref-for-idl-undefined①②"><c- b>undefined</c-></a> <a class="idl-code" data-link-type="method" href="#dom-audioencoder-configure" id="ref-for-dom-audioencoder-configure"><c- g>configure</c-></a>(<a class="n" data-link-type="idl-name" href="#dictdef-audioencoderconfig" id="ref-for-dictdef-audioencoderconfig"><c- n>AudioEncoderConfig</c-></a> <dfn class="idl-code" data-dfn-for="AudioEncoder/configure(config)" data-dfn-type="argument" data-export id="dom-audioencoder-configure-config-config"><code><c- g>config</c-></code><a class="self-link" href="#dom-audioencoder-configure-config-config"></a></dfn>);
+  <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-undefined" id="ref-for-idl-undefined①③"><c- b>undefined</c-></a> <a class="idl-code" data-link-type="method" href="#dom-audioencoder-encode" id="ref-for-dom-audioencoder-encode"><c- g>encode</c-></a>(<a class="n" data-link-type="idl-name" href="#audioframe" id="ref-for-audioframe①"><c- n>AudioFrame</c-></a> <dfn class="idl-code" data-dfn-for="AudioEncoder/encode(frame)" data-dfn-type="argument" data-export id="dom-audioencoder-encode-frame-frame"><code><c- g>frame</c-></code><a class="self-link" href="#dom-audioencoder-encode-frame-frame"></a></dfn>);
+  <c- b>Promise</c->&lt;<a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-undefined" id="ref-for-idl-undefined①④"><c- b>undefined</c-></a>> <a class="idl-code" data-link-type="method" href="#dom-audioencoder-flush" id="ref-for-dom-audioencoder-flush"><c- g>flush</c-></a>();
+  <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-undefined" id="ref-for-idl-undefined①⑤"><c- b>undefined</c-></a> <a class="idl-code" data-link-type="method" href="#dom-audioencoder-reset" id="ref-for-dom-audioencoder-reset"><c- g>reset</c-></a>();
+  <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-undefined" id="ref-for-idl-undefined①⑥"><c- b>undefined</c-></a> <a class="idl-code" data-link-type="method" href="#dom-audioencoder-close" id="ref-for-dom-audioencoder-close"><c- g>close</c-></a>();
 };
 
 <c- b>dictionary</c-> <dfn class="dfn-paneled idl-code" data-dfn-type="dictionary" data-export id="dictdef-audioencoderinit"><code><c- g>AudioEncoderInit</c-></code></dfn> {
@@ -1912,16 +1913,16 @@ queue.</p>
   <c- b>required</c-> <a class="n" data-link-type="idl-name" href="#callbackdef-webcodecserrorcallback" id="ref-for-callbackdef-webcodecserrorcallback②"><c- n>WebCodecsErrorCallback</c-></a> <dfn class="idl-code" data-dfn-for="AudioEncoderInit" data-dfn-type="dict-member" data-export data-type="WebCodecsErrorCallback " id="dom-audioencoderinit-error"><code><c- g>error</c-></code><a class="self-link" href="#dom-audioencoderinit-error"></a></dfn>;
 };
 
-<c- b>callback</c-> <dfn class="dfn-paneled idl-code" data-dfn-type="callback" data-export id="callbackdef-encodedaudiochunkoutputcallback"><code><c- g>EncodedAudioChunkOutputCallback</c-></code></dfn> = <a class="n" data-link-type="idl-name"><c- n>void</c-></a>(<a class="n" data-link-type="idl-name" href="#encodedaudiochunk" id="ref-for-encodedaudiochunk①"><c- n>EncodedAudioChunk</c-></a> <dfn class="idl-code" data-dfn-for="EncodedAudioChunkOutputCallback" data-dfn-type="argument" data-export id="dom-encodedaudiochunkoutputcallback-output"><code><c- g>output</c-></code><a class="self-link" href="#dom-encodedaudiochunkoutputcallback-output"></a></dfn>);
+<c- b>callback</c-> <dfn class="dfn-paneled idl-code" data-dfn-type="callback" data-export id="callbackdef-encodedaudiochunkoutputcallback"><code><c- g>EncodedAudioChunkOutputCallback</c-></code></dfn> = <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-undefined" id="ref-for-idl-undefined①⑦"><c- b>undefined</c-></a>(<a class="n" data-link-type="idl-name" href="#encodedaudiochunk" id="ref-for-encodedaudiochunk①"><c- n>EncodedAudioChunk</c-></a> <dfn class="idl-code" data-dfn-for="EncodedAudioChunkOutputCallback" data-dfn-type="argument" data-export id="dom-encodedaudiochunkoutputcallback-output"><code><c- g>output</c-></code><a class="self-link" href="#dom-encodedaudiochunkoutputcallback-output"></a></dfn>);
 
 </pre>
    <h3 class="heading settled" data-level="5.1" id="audioencoder-internal-slots"><span class="secno">5.1. </span><span class="content">Internal Slots</span><a class="self-link" href="#audioencoder-internal-slots"></a></h3>
    <dl>
-    <dt><dfn data-dfn-for="AudioEncoder" data-dfn-type="dfn" data-noexport id="audioencoder-codec-implementation">[[codec implementation]]<a class="self-link" href="#audioencoder-codec-implementation"></a></dfn>
+    <dt><dfn class="idl-code" data-dfn-for="AudioEncoder" data-dfn-type="attribute" data-export id="dom-audioencoder-codec-implementation-slot"><code>[[codec implementation]]</code><a class="self-link" href="#dom-audioencoder-codec-implementation-slot"></a></dfn>
     <dd>Underlying encoder implementation provided by the User Agent.
-    <dt><dfn data-dfn-for="AudioEncoder" data-dfn-type="dfn" data-noexport id="audioencoder-output-callback">[[output callback]]<a class="self-link" href="#audioencoder-output-callback"></a></dfn>
+    <dt><dfn class="idl-code" data-dfn-for="AudioEncoder" data-dfn-type="attribute" data-export id="dom-audioencoder-output-callback-slot"><code>[[output callback]]</code><a class="self-link" href="#dom-audioencoder-output-callback-slot"></a></dfn>
     <dd>Callback given at construction for encoded outputs.
-    <dt><dfn data-dfn-for="AudioEncoder" data-dfn-type="dfn" data-noexport id="audioencoder-error-callback">[[error callback]]<a class="self-link" href="#audioencoder-error-callback"></a></dfn>
+    <dt><dfn class="idl-code" data-dfn-for="AudioEncoder" data-dfn-type="attribute" data-export id="dom-audioencoder-error-callback-slot"><code>[[error callback]]</code><a class="self-link" href="#dom-audioencoder-error-callback-slot"></a></dfn>
     <dd>Callback given at construction for encode errors.
    </dl>
    <h3 class="heading settled" data-level="5.2" id="audioencoder-constructors"><span class="secno">5.2. </span><span class="content">Constructors</span><a class="self-link" href="#audioencoder-constructors"></a></h3>
@@ -2000,11 +2001,11 @@ queue.</p>
   <a class="idl-code" data-link-type="constructor" href="#dom-videoencoder-videoencoder" id="ref-for-dom-videoencoder-videoencoder"><c- g>constructor</c-></a>(<a class="n" data-link-type="idl-name" href="#dictdef-videoencoderinit" id="ref-for-dictdef-videoencoderinit"><c- n>VideoEncoderInit</c-></a> <dfn class="idl-code" data-dfn-for="VideoEncoder/VideoEncoder(init), VideoEncoder/constructor(init)" data-dfn-type="argument" data-export id="dom-videoencoder-videoencoder-init-init"><code><c- g>init</c-></code><a class="self-link" href="#dom-videoencoder-videoencoder-init-init"></a></dfn>);
   <c- b>readonly</c-> <c- b>attribute</c-> <a class="n" data-link-type="idl-name" href="#enumdef-codecstate" id="ref-for-enumdef-codecstate⑥"><c- n>CodecState</c-></a> <a class="idl-code" data-link-type="attribute" data-readonly data-type="CodecState" href="#dom-videoencoder-state" id="ref-for-dom-videoencoder-state"><c- g>state</c-></a>;
   <c- b>readonly</c-> <c- b>attribute</c-> <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-long" id="ref-for-idl-long⑥"><c- b>long</c-></a> <a class="idl-code" data-link-type="attribute" data-readonly data-type="long" href="#dom-videoencoder-encodequeuesize" id="ref-for-dom-videoencoder-encodequeuesize"><c- g>encodeQueueSize</c-></a>;
-  <a class="n" data-link-type="idl-name"><c- n>void</c-></a> <a class="idl-code" data-link-type="method" href="#dom-videoencoder-configure" id="ref-for-dom-videoencoder-configure"><c- g>configure</c-></a>(<a class="n" data-link-type="idl-name" href="#dictdef-videoencoderconfig" id="ref-for-dictdef-videoencoderconfig"><c- n>VideoEncoderConfig</c-></a> <dfn class="idl-code" data-dfn-for="VideoEncoder/configure(config)" data-dfn-type="argument" data-export id="dom-videoencoder-configure-config-config"><code><c- g>config</c-></code><a class="self-link" href="#dom-videoencoder-configure-config-config"></a></dfn>);
-  <a class="n" data-link-type="idl-name"><c- n>void</c-></a> <a class="idl-code" data-link-type="method" href="#dom-videoencoder-encode" id="ref-for-dom-videoencoder-encode"><c- g>encode</c-></a>(<a class="n" data-link-type="idl-name" href="#videoframe" id="ref-for-videoframe①"><c- n>VideoFrame</c-></a> <dfn class="idl-code" data-dfn-for="VideoEncoder/encode(frame, options), VideoEncoder/encode(frame)" data-dfn-type="argument" data-export id="dom-videoencoder-encode-frame-options-frame"><code><c- g>frame</c-></code><a class="self-link" href="#dom-videoencoder-encode-frame-options-frame"></a></dfn>, <c- b>optional</c-> <a class="n" data-link-type="idl-name" href="#dictdef-videoencoderencodeoptions" id="ref-for-dictdef-videoencoderencodeoptions"><c- n>VideoEncoderEncodeOptions</c-></a> <dfn class="idl-code" data-dfn-for="VideoEncoder/encode(frame, options), VideoEncoder/encode(frame)" data-dfn-type="argument" data-export id="dom-videoencoder-encode-frame-options-options"><code><c- g>options</c-></code><a class="self-link" href="#dom-videoencoder-encode-frame-options-options"></a></dfn> = {});
-  <c- b>Promise</c->&lt;<a class="n" data-link-type="idl-name"><c- n>void</c-></a>> <a class="idl-code" data-link-type="method" href="#dom-videoencoder-flush" id="ref-for-dom-videoencoder-flush"><c- g>flush</c-></a>();
-  <a class="n" data-link-type="idl-name"><c- n>void</c-></a> <a class="idl-code" data-link-type="method" href="#dom-videoencoder-reset" id="ref-for-dom-videoencoder-reset"><c- g>reset</c-></a>();
-  <a class="n" data-link-type="idl-name"><c- n>void</c-></a> <a class="idl-code" data-link-type="method" href="#dom-videoencoder-close" id="ref-for-dom-videoencoder-close"><c- g>close</c-></a>();
+  <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-undefined" id="ref-for-idl-undefined①⑧"><c- b>undefined</c-></a> <a class="idl-code" data-link-type="method" href="#dom-videoencoder-configure" id="ref-for-dom-videoencoder-configure"><c- g>configure</c-></a>(<a class="n" data-link-type="idl-name" href="#dictdef-videoencoderconfig" id="ref-for-dictdef-videoencoderconfig"><c- n>VideoEncoderConfig</c-></a> <dfn class="idl-code" data-dfn-for="VideoEncoder/configure(config)" data-dfn-type="argument" data-export id="dom-videoencoder-configure-config-config"><code><c- g>config</c-></code><a class="self-link" href="#dom-videoencoder-configure-config-config"></a></dfn>);
+  <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-undefined" id="ref-for-idl-undefined①⑨"><c- b>undefined</c-></a> <a class="idl-code" data-link-type="method" href="#dom-videoencoder-encode" id="ref-for-dom-videoencoder-encode"><c- g>encode</c-></a>(<a class="n" data-link-type="idl-name" href="#videoframe" id="ref-for-videoframe①"><c- n>VideoFrame</c-></a> <dfn class="idl-code" data-dfn-for="VideoEncoder/encode(frame, options), VideoEncoder/encode(frame)" data-dfn-type="argument" data-export id="dom-videoencoder-encode-frame-options-frame"><code><c- g>frame</c-></code><a class="self-link" href="#dom-videoencoder-encode-frame-options-frame"></a></dfn>, <c- b>optional</c-> <a class="n" data-link-type="idl-name" href="#dictdef-videoencoderencodeoptions" id="ref-for-dictdef-videoencoderencodeoptions"><c- n>VideoEncoderEncodeOptions</c-></a> <dfn class="idl-code" data-dfn-for="VideoEncoder/encode(frame, options), VideoEncoder/encode(frame)" data-dfn-type="argument" data-export id="dom-videoencoder-encode-frame-options-options"><code><c- g>options</c-></code><a class="self-link" href="#dom-videoencoder-encode-frame-options-options"></a></dfn> = {});
+  <c- b>Promise</c->&lt;<a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-undefined" id="ref-for-idl-undefined②⓪"><c- b>undefined</c-></a>> <a class="idl-code" data-link-type="method" href="#dom-videoencoder-flush" id="ref-for-dom-videoencoder-flush"><c- g>flush</c-></a>();
+  <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-undefined" id="ref-for-idl-undefined②①"><c- b>undefined</c-></a> <a class="idl-code" data-link-type="method" href="#dom-videoencoder-reset" id="ref-for-dom-videoencoder-reset"><c- g>reset</c-></a>();
+  <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-undefined" id="ref-for-idl-undefined②②"><c- b>undefined</c-></a> <a class="idl-code" data-link-type="method" href="#dom-videoencoder-close" id="ref-for-dom-videoencoder-close"><c- g>close</c-></a>();
 };
 
 <c- b>dictionary</c-> <dfn class="dfn-paneled idl-code" data-dfn-type="dictionary" data-export id="dictdef-videoencoderinit"><code><c- g>VideoEncoderInit</c-></code></dfn> {
@@ -2012,16 +2013,16 @@ queue.</p>
   <c- b>required</c-> <a class="n" data-link-type="idl-name" href="#callbackdef-webcodecserrorcallback" id="ref-for-callbackdef-webcodecserrorcallback③"><c- n>WebCodecsErrorCallback</c-></a> <dfn class="idl-code" data-dfn-for="VideoEncoderInit" data-dfn-type="dict-member" data-export data-type="WebCodecsErrorCallback " id="dom-videoencoderinit-error"><code><c- g>error</c-></code><a class="self-link" href="#dom-videoencoderinit-error"></a></dfn>;
 };
 
-<c- b>callback</c-> <dfn class="dfn-paneled idl-code" data-dfn-type="callback" data-export id="callbackdef-encodedvideochunkoutputcallback"><code><c- g>EncodedVideoChunkOutputCallback</c-></code></dfn> = <a class="n" data-link-type="idl-name"><c- n>void</c-></a>(<a class="n" data-link-type="idl-name" href="#encodedvideochunk" id="ref-for-encodedvideochunk①"><c- n>EncodedVideoChunk</c-></a> <dfn class="idl-code" data-dfn-for="EncodedVideoChunkOutputCallback" data-dfn-type="argument" data-export id="dom-encodedvideochunkoutputcallback-output"><code><c- g>output</c-></code><a class="self-link" href="#dom-encodedvideochunkoutputcallback-output"></a></dfn>);
+<c- b>callback</c-> <dfn class="dfn-paneled idl-code" data-dfn-type="callback" data-export id="callbackdef-encodedvideochunkoutputcallback"><code><c- g>EncodedVideoChunkOutputCallback</c-></code></dfn> = <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-undefined" id="ref-for-idl-undefined②③"><c- b>undefined</c-></a>(<a class="n" data-link-type="idl-name" href="#encodedvideochunk" id="ref-for-encodedvideochunk①"><c- n>EncodedVideoChunk</c-></a> <dfn class="idl-code" data-dfn-for="EncodedVideoChunkOutputCallback" data-dfn-type="argument" data-export id="dom-encodedvideochunkoutputcallback-output"><code><c- g>output</c-></code><a class="self-link" href="#dom-encodedvideochunkoutputcallback-output"></a></dfn>);
 
 </pre>
    <h3 class="heading settled" data-level="6.1" id="videoencoder-internal-slots"><span class="secno">6.1. </span><span class="content">Internal Slots</span><a class="self-link" href="#videoencoder-internal-slots"></a></h3>
    <dl>
-    <dt><dfn data-dfn-for="VideoEncoder" data-dfn-type="dfn" data-noexport id="videoencoder-codec-implementation">[[codec implementation]]<a class="self-link" href="#videoencoder-codec-implementation"></a></dfn>
+    <dt><dfn class="idl-code" data-dfn-for="VideoEncoder" data-dfn-type="attribute" data-export id="dom-videoencoder-codec-implementation-slot"><code>[[codec implementation]]</code><a class="self-link" href="#dom-videoencoder-codec-implementation-slot"></a></dfn>
     <dd>Underlying encoder implementation provided by the User Agent.
-    <dt><dfn data-dfn-for="VideoEncoder" data-dfn-type="dfn" data-noexport id="videoencoder-output-callback">[[output callback]]<a class="self-link" href="#videoencoder-output-callback"></a></dfn>
+    <dt><dfn class="idl-code" data-dfn-for="VideoEncoder" data-dfn-type="attribute" data-export id="dom-videoencoder-output-callback-slot"><code>[[output callback]]</code><a class="self-link" href="#dom-videoencoder-output-callback-slot"></a></dfn>
     <dd>Callback given at construction for encoded outputs.
-    <dt><dfn data-dfn-for="VideoEncoder" data-dfn-type="dfn" data-noexport id="videoencoder-error-callback">[[error callback]]<a class="self-link" href="#videoencoder-error-callback"></a></dfn>
+    <dt><dfn class="idl-code" data-dfn-for="VideoEncoder" data-dfn-type="attribute" data-export id="dom-videoencoder-error-callback-slot"><code>[[error callback]]</code><a class="self-link" href="#dom-videoencoder-error-callback-slot"></a></dfn>
     <dd>Callback given at construction for encode errors.
    </dl>
    <h3 class="heading settled" data-level="6.2" id="videoencoder-constructors"><span class="secno">6.2. </span><span class="content">Constructors</span><a class="self-link" href="#videoencoder-constructors"></a></h3>
@@ -2099,7 +2100,7 @@ queue.</p>
 Mentions of attributes and internal slots refer to members of the interface that
 owns the invoking method.</p>
    <h3 class="heading settled" data-level="7.1" id="configure-decoder-algorithm"><span class="secno">7.1. </span><span class="content"><dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="configure-decoder">Configure Decoder</dfn></span><a class="self-link" href="#configure-decoder-algorithm"></a></h3>
-    Given either an AudioDecoderConfig or VideoDecoderConfig <var>config</var>, this
+    Given either an <code class="idl"><a data-link-type="idl" href="#dictdef-audiodecoderconfig" id="ref-for-dictdef-audiodecoderconfig①">AudioDecoderConfig</a></code> or <code class="idl"><a data-link-type="idl" href="#dictdef-videodecoderconfig" id="ref-for-dictdef-videodecoderconfig①">VideoDecoderConfig</a></code> <var>config</var>, this
 algorithm attempts to select a codec implementation that supports <var>config</var>. 
    <p>Run the following steps:</p>
    <ol>
@@ -2351,7 +2352,7 @@ to run the provided output algorithm.</p>
     <li data-md>
      <p>Let <var>chunk</var> be a new <code class="idl"><a data-link-type="idl" href="#encodedaudiochunk" id="ref-for-encodedaudiochunk②">EncodedAudioChunk</a></code> constructed with <var>chunkInit</var>.</p>
     <li data-md>
-     <p>Invoke [[output callback]] with <var>chunk</var>.</p>
+     <p>Invoke <strong>[[output callback]]</strong> with <var>chunk</var>.</p>
    </ol>
    <h3 class="heading settled" data-level="7.12" id="encodedvideochunk-output-algorithm"><span class="secno">7.12. </span><span class="content"><dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="encodedvideochunk-output">EncodedVideoChunk Output</dfn></span><a class="self-link" href="#encodedvideochunk-output-algorithm"></a></h3>
     Run these steps: 
@@ -2373,10 +2374,10 @@ to run the provided output algorithm.</p>
     <li data-md>
      <p>Let <var>chunk</var> be a new <code class="idl"><a data-link-type="idl" href="#encodedvideochunk" id="ref-for-encodedvideochunk②">EncodedVideoChunk</a></code> constructed with <var>chunkInit</var>.</p>
     <li data-md>
-     <p>Invoke [[output callback]] with chunk.</p>
+     <p>Invoke <strong>[[output callback]]</strong> with chunk.</p>
    </ol>
    <h2 class="heading settled" data-level="8" id="configurations"><span class="secno">8. </span><span class="content">Configurations</span><a class="self-link" href="#configurations"></a></h2>
-   <h3 class="heading settled" data-level="8.1" id="config-codec-string"><span class="secno">8.1. </span><span class="content"><dfn data-dfn-type="dfn" data-noexport id="codec-string">Codec String<a class="self-link" href="#codec-string"></a></dfn></span><a class="self-link" href="#config-codec-string"></a></h3>
+   <h3 class="heading settled" data-level="8.1" id="config-codec-string"><span class="secno">8.1. </span><span class="content"><dfn data-dfn-type="dfn" data-export id="codec-string">Codec String<a class="self-link" href="#codec-string"></a></dfn></span><a class="self-link" href="#config-codec-string"></a></h3>
     In other media specifications, codec strings historically accompanied
     [[mime types]] as the “codecs=” parameter
     (<code class="idl"><a data-link-type="idl" href="https://www.w3.org/TR/media-source/#dom-mediasource-istypesupported" id="ref-for-dom-mediasource-istypesupported">isTypeSupported()</a></code>, <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/#dom-navigator-canplaytype" id="ref-for-dom-navigator-canplaytype">canPlayType()</a></code>).
@@ -2398,24 +2399,40 @@ to run the provided output algorithm.</p>
      <p>It is unambiguous about codec profile and level for codecs that define these
 concepts.</p>
    </ol>
-   <p class="note" role="note"><span>NOTE:</span> There is no unified specification for codec strings. Each codec has its
-    own unique string format, specified by the authors of the codec. Relevant
-    specifications include:</p>
-   <ul>
-    <li data-md>
-     <p>h264, aac - <a data-link-type="biblio" href="#biblio-rfc6381">[RFC6381]</a></p>
-    <li data-md>
-     <p>vp9 - https://www.webmproject.org/vp9/mp4/#codecs-parameter-string,</p>
-    <li data-md>
-     <p>hevc - ISO IEC 14496-15 dated 2012 or newer in the Annex E.3</p>
-    <li data-md>
-     <p>av1 - https://aomediacodec.github.io/av1-isobmff/#codecsparam,</p>
-   </ul>
-   <p class="note" role="note"><span>NOTE:</span> Some valid examples include:
-    'vp8', 'vp09.00.10.08', 'avc1.4D401E', 'opus', 'mp4a.40.2', 'flac'</p>
-   <p>Invalid examples include:<br> 'video/webm; codecs="vp8"' (invalid to supply full mimetype; valid as just
-        'vp8')<br> 'codecs="opus"' (invalid to include codecs= prefix)<br> ‘flac,vorbis’ (describes more than one codec)<br> ‘vp9’ (ambiguous about profile and level)<br> 'video/mp4' (describes a container, not a codec)<br></p>
-   <h3 class="heading settled" data-level="8.2" id="audio-decoder-config"><span class="secno">8.2. </span><span class="content"><dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="audiodecoderconfig">AudioDecoderConfig</dfn></span><a class="self-link" href="#audio-decoder-config"></a></h3>
+   <div class="note" role="note">
+     NOTE: There is no unified specification for codec strings. Each codec has its
+  own unique string format, specified by the authors of the codec. Relevant
+  specifications include: 
+    <ul>
+     <li data-md>
+      <p>h264, aac - <a data-link-type="biblio" href="#biblio-rfc6381">[RFC6381]</a></p>
+     <li data-md>
+      <p>vp9 - <a href="https://www.webmproject.org/vp9/mp4/#codecs-parameter-string"> https://www.webmproject.org/vp9/mp4/#codecs-parameter-string </a></p>
+     <li data-md>
+      <p>hevc - <a href="https://www.iso.org/standard/74429.html"> ISO IEC 14496-15 dated 2012 or newer in the Annex E.3 </a></p>
+     <li data-md>
+      <p>av1 - <a href="https://aomediacodec.github.io/av1-isobmff/#codecsparam"> https://aomediacodec.github.io/av1-isobmff/#codecsparam </a></p>
+    </ul>
+   </div>
+   <div class="note" role="note">
+     NOTE: Some valid examples include:
+'vp8', 'vp09.00.10.08', 'avc1.4D401E', 'opus', 'mp4a.40.2', 'flac' 
+    <p>Invalid examples include:<br></p>
+    <ul>
+     <li data-md>
+      <p>'video/webm; codecs="vp8"' (invalid to supply full mimetype; valid as just
+    'vp8')<br></p>
+     <li data-md>
+      <p>'codecs="opus"' (invalid to include codecs= prefix)<br></p>
+     <li data-md>
+      <p>‘flac,vorbis’ (describes more than one codec)<br></p>
+     <li data-md>
+      <p>‘vp9’ (ambiguous about profile and level)<br></p>
+     <li data-md>
+      <p>'video/mp4' (describes a container, not a codec)<br></p>
+    </ul>
+   </div>
+   <h3 class="heading settled" data-level="8.2" id="audio-decoder-config"><span class="secno">8.2. </span><span class="content">AudioDecoderConfig</span><a class="self-link" href="#audio-decoder-config"></a></h3>
 <pre class="idl highlight def"><c- b>dictionary</c-> <dfn class="dfn-paneled idl-code" data-dfn-type="dictionary" data-export id="dictdef-audiodecoderconfig"><code><c- g>AudioDecoderConfig</c-></code></dfn> {
   <c- b>required</c-> <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-DOMString" id="ref-for-idl-DOMString"><c- b>DOMString</c-></a> <a class="idl-code" data-link-type="dict-member" data-type="DOMString " href="#dom-audiodecoderconfig-codec" id="ref-for-dom-audiodecoderconfig-codec"><c- g>codec</c-></a>;
   <c- b>required</c-> <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-unsigned-long" id="ref-for-idl-unsigned-long"><c- b>unsigned</c-> <c- b>long</c-></a> <a class="idl-code" data-link-type="dict-member" data-type="unsigned long " href="#dom-audiodecoderconfig-samplerate" id="ref-for-dom-audiodecoderconfig-samplerate"><c- g>sampleRate</c-></a>;
@@ -2424,8 +2441,8 @@ concepts.</p>
 };
 
 </pre>
-   <p>To check if an <a data-link-type="dfn" href="#audiodecoderconfig" id="ref-for-audiodecoderconfig">AudioDecoderConfig</a> is a <dfn class="dfn-paneled" data-dfn-type="dfn" data-lt="valid AudioDecoderConfig" data-noexport id="valid-audiodecoderconfig">valid
-    AudioDecoderConfig</dfn>, run these steps:</p>
+   <p>To check if an <code class="idl"><a data-link-type="idl" href="#dictdef-audiodecoderconfig" id="ref-for-dictdef-audiodecoderconfig②">AudioDecoderConfig</a></code> is a <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="valid-audiodecoderconfig">valid AudioDecoderConfig</dfn>,
+    run these steps:</p>
    <ol>
     <li data-md>
      <p>If codec is not a <a data-link-type="dfn" href="#valid-codec-string" id="ref-for-valid-codec-string">valid codec string</a>, return <code>false</code>.</p>
@@ -2444,7 +2461,7 @@ concepts.</p>
       A sequence of codec specific bytes, commonly known as extradata. 
      <p class="note" role="note"><span>NOTE:</span> For example, the vorbis “code book”.</p>
    </dl>
-   <h3 class="heading settled" data-level="8.3" id="video-decoder-config"><span class="secno">8.3. </span><span class="content"><dfn data-dfn-type="dfn" data-noexport id="videodecoderconfig">VideoDecoderConfig<a class="self-link" href="#videodecoderconfig"></a></dfn></span><a class="self-link" href="#video-decoder-config"></a></h3>
+   <h3 class="heading settled" data-level="8.3" id="video-decoder-config"><span class="secno">8.3. </span><span class="content">VideoDecoderConfig</span><a class="self-link" href="#video-decoder-config"></a></h3>
 <pre class="idl highlight def"><c- b>dictionary</c-> <dfn class="dfn-paneled idl-code" data-dfn-type="dictionary" data-export id="dictdef-videodecoderconfig"><code><c- g>VideoDecoderConfig</c-></code></dfn> {
   <c- b>required</c-> <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-DOMString" id="ref-for-idl-DOMString②"><c- b>DOMString</c-></a> <a class="idl-code" data-link-type="dict-member" data-type="DOMString " href="#dom-videodecoderconfig-codec" id="ref-for-dom-videodecoderconfig-codec"><c- g>codec</c-></a>;
   <a class="n" data-link-type="idl-name" href="https://heycam.github.io/webidl/#BufferSource" id="ref-for-BufferSource②"><c- n>BufferSource</c-></a> <a class="idl-code" data-link-type="dict-member" data-type="BufferSource " href="#dom-videodecoderconfig-description" id="ref-for-dom-videodecoderconfig-description"><c- g>description</c-></a>;
@@ -2459,7 +2476,7 @@ concepts.</p>
 };
 
 </pre>
-   <p>To check if a <code class="idl"><a data-link-type="idl" href="#dictdef-videodecoderconfig" id="ref-for-dictdef-videodecoderconfig①">VideoDecoderConfig</a></code> is a <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="valid-videodecoderconfig">valid VideoDecoderConfig</dfn>,
+   <p>To check if a <code class="idl"><a data-link-type="idl" href="#dictdef-videodecoderconfig" id="ref-for-dictdef-videodecoderconfig②">VideoDecoderConfig</a></code> is a <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="valid-videodecoderconfig">valid VideoDecoderConfig</dfn>,
 run these steps:</p>
    <ol>
     <li data-md>
@@ -2509,7 +2526,7 @@ run these steps:</p>
     <dd> Height of the VideoFrame when displayed. Defaults to cropHeight if not
         present. 
    </dl>
-   <h3 class="heading settled" data-level="8.4" id="audio-encoder-config"><span class="secno">8.4. </span><span class="content"><dfn data-dfn-type="dfn" data-noexport id="audioencoderconfig">AudioEncoderConfig<a class="self-link" href="#audioencoderconfig"></a></dfn></span><a class="self-link" href="#audio-encoder-config"></a></h3>
+   <h3 class="heading settled" data-level="8.4" id="audio-encoder-config"><span class="secno">8.4. </span><span class="content">AudioEncoderConfig</span><a class="self-link" href="#audio-encoder-config"></a></h3>
 <pre class="idl highlight def"><c- b>dictionary</c-> <dfn class="dfn-paneled idl-code" data-dfn-type="dictionary" data-export id="dictdef-audioencoderconfig"><code><c- g>AudioEncoderConfig</c-></code></dfn> {
   <c- b>required</c-> <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-DOMString" id="ref-for-idl-DOMString④"><c- b>DOMString</c-></a> <a class="idl-code" data-link-type="dict-member" data-type="DOMString " href="#dom-audioencoderconfig-codec" id="ref-for-dom-audioencoderconfig-codec"><c- g>codec</c-></a>;
   <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-unsigned-long" id="ref-for-idl-unsigned-long②⓪"><c- b>unsigned</c-> <c- b>long</c-></a> <a class="idl-code" data-link-type="dict-member" data-type="unsigned long " href="#dom-audioencoderconfig-samplerate" id="ref-for-dom-audioencoderconfig-samplerate"><c- g>sampleRate</c-></a>;
@@ -2533,7 +2550,7 @@ run these steps:</p>
     <dt><dfn class="dfn-paneled idl-code" data-dfn-for="AudioEncoderConfig" data-dfn-type="dict-member" data-export id="dom-audioencoderconfig-numberofchannels"><code>numberOfChannels</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#idl-unsigned-long" id="ref-for-idl-unsigned-long②③">unsigned long</a></span>
     <dd>The number of audio channels.
    </dl>
-   <h3 class="heading settled" data-level="8.5" id="video-encoder-config"><span class="secno">8.5. </span><span class="content"><dfn data-dfn-type="dfn" data-noexport id="videoencoderconfig">VideoEncoderConfig<a class="self-link" href="#videoencoderconfig"></a></dfn></span><a class="self-link" href="#video-encoder-config"></a></h3>
+   <h3 class="heading settled" data-level="8.5" id="video-encoder-config"><span class="secno">8.5. </span><span class="content">VideoEncoderConfig</span><a class="self-link" href="#video-encoder-config"></a></h3>
 <pre class="idl highlight def"><c- b>dictionary</c-> <dfn class="dfn-paneled idl-code" data-dfn-type="dictionary" data-export id="dictdef-videoencoderconfig"><code><c- g>VideoEncoderConfig</c-></code></dfn> {
   <c- b>required</c-> <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-DOMString" id="ref-for-idl-DOMString⑥"><c- b>DOMString</c-></a> <dfn class="dfn-paneled idl-code" data-dfn-for="VideoEncoderConfig" data-dfn-type="dict-member" data-export data-type="DOMString " id="dom-videoencoderconfig-codec"><code><c- g>codec</c-></code></dfn>;
   <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-unsigned-long-long" id="ref-for-idl-unsigned-long-long"><c- b>unsigned</c-> <c- b>long</c-> <c- b>long</c-></a> <dfn class="idl-code" data-dfn-for="VideoEncoderConfig" data-dfn-type="dict-member" data-export data-type="unsigned long long " id="dom-videoencoderconfig-bitrate"><code><c- g>bitrate</c-></code><a class="self-link" href="#dom-videoencoderconfig-bitrate"></a></dfn>;
@@ -2559,7 +2576,7 @@ return <code>false</code>.</p>
     <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoEncoderConfig" data-dfn-type="dict-member" data-export id="dom-videoencoderconfig-height"><code>height</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#idl-unsigned-long" id="ref-for-idl-unsigned-long②⑦">unsigned long</a></span>
     <dd>The expected cropHeight of input VideoFrames to encode.
    </dl>
-   <h3 class="heading settled" data-level="8.6" id="video-encoder-options"><span class="secno">8.6. </span><span class="content"><dfn data-dfn-type="dfn" data-noexport id="videoencoderencodeoptions">VideoEncoderEncodeOptions<a class="self-link" href="#videoencoderencodeoptions"></a></dfn></span><a class="self-link" href="#video-encoder-options"></a></h3>
+   <h3 class="heading settled" data-level="8.6" id="video-encoder-options"><span class="secno">8.6. </span><span class="content">VideoEncoderEncodeOptions</span><a class="self-link" href="#video-encoder-options"></a></h3>
 <pre class="idl highlight def"><c- b>dictionary</c-> <dfn class="dfn-paneled idl-code" data-dfn-type="dictionary" data-export id="dictdef-videoencoderencodeoptions"><code><c- g>VideoEncoderEncodeOptions</c-></code></dfn> {
   <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-boolean" id="ref-for-idl-boolean"><c- b>boolean</c-></a> <a class="idl-code" data-link-type="dict-member" data-type="boolean " href="#dom-videoencoderencodeoptions-keyframe" id="ref-for-dom-videoencoderencodeoptions-keyframe"><c- g>keyFrame</c-></a>;
 };
@@ -2569,7 +2586,7 @@ return <code>false</code>.</p>
     <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoEncoderEncodeOptions" data-dfn-type="dict-member" data-export id="dom-videoencoderencodeoptions-keyframe"><code>keyFrame</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#idl-boolean" id="ref-for-idl-boolean①">boolean</a></span>
     <dd>Indicates whether the given frame MUST be encoded as a key frame.
    </dl>
-   <h3 class="heading settled" data-level="8.7" id="codec-state"><span class="secno">8.7. </span><span class="content"><dfn data-dfn-type="dfn" data-noexport id="codecstate">CodecState<a class="self-link" href="#codecstate"></a></dfn></span><a class="self-link" href="#codec-state"></a></h3>
+   <h3 class="heading settled" data-level="8.7" id="codec-state"><span class="secno">8.7. </span><span class="content">CodecState</span><a class="self-link" href="#codec-state"></a></h3>
 <pre class="idl highlight def"><c- b>enum</c-> <dfn class="dfn-paneled idl-code" data-dfn-type="enum" data-export id="enumdef-codecstate"><code><c- g>CodecState</c-></code></dfn> {
   <a class="idl-code" data-link-type="enum-value" href="#dom-codecstate-unconfigured" id="ref-for-dom-codecstate-unconfigured"><c- s>"unconfigured"</c-></a>,
   <a class="idl-code" data-link-type="enum-value" href="#dom-codecstate-configured" id="ref-for-dom-codecstate-configured"><c- s>"configured"</c-></a>,
@@ -2587,8 +2604,8 @@ return <code>false</code>.</p>
     <dd> The codec is no longer usable and underlying system resources have been
       released. 
    </dl>
-   <h3 class="heading settled" data-level="8.8" id="error-callback"><span class="secno">8.8. </span><span class="content"><dfn data-dfn-type="dfn" data-noexport id="webcodecserrorcallback">WebCodecsErrorCallback<a class="self-link" href="#webcodecserrorcallback"></a></dfn></span><a class="self-link" href="#error-callback"></a></h3>
-<pre class="idl highlight def"><c- b>callback</c-> <dfn class="dfn-paneled idl-code" data-dfn-type="callback" data-export id="callbackdef-webcodecserrorcallback"><code><c- g>WebCodecsErrorCallback</c-></code></dfn> = <a class="n" data-link-type="idl-name"><c- n>void</c-></a>(<a class="n" data-link-type="idl-name" href="https://heycam.github.io/webidl/#idl-DOMException" id="ref-for-idl-DOMException"><c- n>DOMException</c-></a> <dfn class="idl-code" data-dfn-for="WebCodecsErrorCallback" data-dfn-type="argument" data-export id="dom-webcodecserrorcallback-error"><code><c- g>error</c-></code><a class="self-link" href="#dom-webcodecserrorcallback-error"></a></dfn>);
+   <h3 class="heading settled" data-level="8.8" id="error-callback"><span class="secno">8.8. </span><span class="content">WebCodecsErrorCallback</span><a class="self-link" href="#error-callback"></a></h3>
+<pre class="idl highlight def"><c- b>callback</c-> <dfn class="dfn-paneled idl-code" data-dfn-type="callback" data-export id="callbackdef-webcodecserrorcallback"><code><c- g>WebCodecsErrorCallback</c-></code></dfn> = <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-undefined" id="ref-for-idl-undefined②④"><c- b>undefined</c-></a>(<a class="n" data-link-type="idl-name" href="https://heycam.github.io/webidl/#idl-DOMException" id="ref-for-idl-DOMException"><c- n>DOMException</c-></a> <dfn class="idl-code" data-dfn-for="WebCodecsErrorCallback" data-dfn-type="argument" data-export id="dom-webcodecserrorcallback-error"><code><c- g>error</c-></code><a class="self-link" href="#dom-webcodecserrorcallback-error"></a></dfn>);
 
 </pre>
    <h2 class="heading settled" data-level="9" id="encoded-media-interfaces"><span class="secno">9. </span><span class="content">Encoded Media Interfaces (Chunks)</span><a class="self-link" href="#encoded-media-interfaces"></a></h2>
@@ -2698,7 +2715,7 @@ return <code>false</code>.</p>
   <a class="idl-code" data-link-type="constructor" href="#dom-audioframe-audioframe" id="ref-for-dom-audioframe-audioframe"><c- g>constructor</c-></a>(<a class="n" data-link-type="idl-name" href="#dictdef-audioframeinit" id="ref-for-dictdef-audioframeinit"><c- n>AudioFrameInit</c-></a> <dfn class="idl-code" data-dfn-for="AudioFrame/AudioFrame(init), AudioFrame/constructor(init)" data-dfn-type="argument" data-export id="dom-audioframe-audioframe-init-init"><code><c- g>init</c-></code><a class="self-link" href="#dom-audioframe-audioframe-init-init"></a></dfn>);
   <c- b>readonly</c-> <c- b>attribute</c-> <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-unsigned-long-long" id="ref-for-idl-unsigned-long-long①⓪"><c- b>unsigned</c-> <c- b>long</c-> <c- b>long</c-></a> <a class="idl-code" data-link-type="attribute" data-readonly data-type="unsigned long long" href="#dom-audioframe-timestamp" id="ref-for-dom-audioframe-timestamp"><c- g>timestamp</c-></a>;
   <c- b>readonly</c-> <c- b>attribute</c-> <a class="n" data-link-type="idl-name" href="https://webaudio.github.io/web-audio-api/#audiobuffer" id="ref-for-audiobuffer①"><c- n>AudioBuffer</c-></a>? <a class="idl-code" data-link-type="attribute" data-readonly data-type="AudioBuffer?" href="#dom-audioframe-buffer" id="ref-for-dom-audioframe-buffer"><c- g>buffer</c-></a>;
-  <a class="n" data-link-type="idl-name"><c- n>void</c-></a> <a class="idl-code" data-link-type="method" href="#dom-audioframe-close" id="ref-for-dom-audioframe-close"><c- g>close</c-></a>();
+  <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-undefined" id="ref-for-idl-undefined②⑤"><c- b>undefined</c-></a> <a class="idl-code" data-link-type="method" href="#dom-audioframe-close" id="ref-for-dom-audioframe-close"><c- g>close</c-></a>();
 };
 
 <c- b>dictionary</c-> <dfn class="dfn-paneled idl-code" data-dfn-type="dictionary" data-export id="dictdef-audioframeinit"><code><c- g>AudioFrameInit</c-></code></dfn> {
@@ -2769,7 +2786,7 @@ return <code>false</code>.</p>
   <c- b>readonly</c-> <c- b>attribute</c-> <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-unsigned-long-long" id="ref-for-idl-unsigned-long-long①③"><c- b>unsigned</c-> <c- b>long</c-> <c- b>long</c-></a>? <a class="idl-code" data-link-type="attribute" data-readonly data-type="unsigned long long?" href="#dom-videoframe-duration" id="ref-for-dom-videoframe-duration"><c- g>duration</c-></a>;
   <c- b>readonly</c-> <c- b>attribute</c-> <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-unsigned-long-long" id="ref-for-idl-unsigned-long-long①④"><c- b>unsigned</c-> <c- b>long</c-> <c- b>long</c-></a>? <a class="idl-code" data-link-type="attribute" data-readonly data-type="unsigned long long?" href="#dom-videoframe-timestamp" id="ref-for-dom-videoframe-timestamp"><c- g>timestamp</c-></a>;
 
-  <a class="n" data-link-type="idl-name"><c- n>void</c-></a> <a class="idl-code" data-link-type="method" href="#dom-videoframe-destroy" id="ref-for-dom-videoframe-destroy"><c- g>destroy</c-></a>();
+  <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-undefined" id="ref-for-idl-undefined②⑥"><c- b>undefined</c-></a> <a class="idl-code" data-link-type="method" href="#dom-videoframe-destroy" id="ref-for-dom-videoframe-destroy"><c- g>destroy</c-></a>();
   <a class="n" data-link-type="idl-name" href="#videoframe" id="ref-for-videoframe⑤"><c- n>VideoFrame</c-></a> <a class="idl-code" data-link-type="method" href="#dom-videoframe-clone" id="ref-for-dom-videoframe-clone"><c- g>clone</c-></a>();
 
   <c- b>Promise</c->&lt;<a class="n" data-link-type="idl-name" href="https://html.spec.whatwg.org/multipage/imagebitmap-and-animations.html#imagebitmap" id="ref-for-imagebitmap①"><c- n>ImageBitmap</c-></a>> <a class="idl-code" data-link-type="method" href="#dom-videoframe-createimagebitmap" id="ref-for-dom-videoframe-createimagebitmap"><c- g>createImageBitmap</c-></a>(
@@ -3026,7 +3043,7 @@ object’s origin, then set the origin-clean flag of <var>imageBitmap</var>’s 
      <p>Resolve p with imageBitmap.</p>
    </ol>
    <h4 class="heading settled" data-level="10.2.5" id="videoframe-algorithms"><span class="secno">10.2.5. </span><span class="content">Algorithms</span><a class="self-link" href="#videoframe-algorithms"></a></h4>
-    To check if a <code class="idl"><a data-link-type="idl" href="#dictdef-videodecoderconfig" id="ref-for-dictdef-videodecoderconfig②">VideoDecoderConfig</a></code> is a <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="valid-videoframeinit">valid VideoFrameInit</dfn>,
+    To check if a <code class="idl"><a data-link-type="idl" href="#dictdef-videodecoderconfig" id="ref-for-dictdef-videodecoderconfig③">VideoDecoderConfig</a></code> is a <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="valid-videoframeinit">valid VideoFrameInit</dfn>,
 run these steps: 
    <ol>
     <li data-md>
@@ -3058,7 +3075,7 @@ return <code>false</code>.</p>
   <c- b>readonly</c-> <c- b>attribute</c-> <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-unsigned-long" id="ref-for-idl-unsigned-long⑤③"><c- b>unsigned</c-> <c- b>long</c-></a> <a class="idl-code" data-link-type="attribute" data-readonly data-type="unsigned long" href="#dom-plane-rows" id="ref-for-dom-plane-rows"><c- g>rows</c-></a>;
   <c- b>readonly</c-> <c- b>attribute</c-> <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-unsigned-long" id="ref-for-idl-unsigned-long⑤④"><c- b>unsigned</c-> <c- b>long</c-></a> <a class="idl-code" data-link-type="attribute" data-readonly data-type="unsigned long" href="#dom-plane-length" id="ref-for-dom-plane-length"><c- g>length</c-></a>;
 
-  <a class="n" data-link-type="idl-name"><c- n>void</c-></a> <a class="idl-code" data-link-type="method" href="#dom-plane-readinto" id="ref-for-dom-plane-readinto"><c- g>readInto</c-></a>(<a class="n" data-link-type="idl-name" href="https://heycam.github.io/webidl/#ArrayBufferView" id="ref-for-ArrayBufferView"><c- n>ArrayBufferView</c-></a> <dfn class="idl-code" data-dfn-for="Plane/readInto(dst)" data-dfn-type="argument" data-export id="dom-plane-readinto-dst-dst"><code><c- g>dst</c-></code><a class="self-link" href="#dom-plane-readinto-dst-dst"></a></dfn>);
+  <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-undefined" id="ref-for-idl-undefined②⑦"><c- b>undefined</c-></a> <a class="idl-code" data-link-type="method" href="#dom-plane-readinto" id="ref-for-dom-plane-readinto"><c- g>readInto</c-></a>(<a class="n" data-link-type="idl-name" href="https://heycam.github.io/webidl/#ArrayBufferView" id="ref-for-ArrayBufferView"><c- n>ArrayBufferView</c-></a> <dfn class="idl-code" data-dfn-for="Plane/readInto(dst)" data-dfn-type="argument" data-export id="dom-plane-readinto-dst-dst"><code><c- g>dst</c-></code><a class="self-link" href="#dom-plane-readinto-dst-dst"></a></dfn>);
 };
 
 <c- b>dictionary</c-> <dfn class="dfn-paneled idl-code" data-dfn-type="dictionary" data-export id="dictdef-planeinit"><code><c- g>PlaneInit</c-></code></dfn> {
@@ -3112,21 +3129,21 @@ number and order of the planes.
     <dd> Planar 4:2:0 YUV. 
    </dl>
    <h3 class="heading settled" data-level="10.5" id="raw-media-algorithms"><span class="secno">10.5. </span><span class="content">Algorithms</span><a class="self-link" href="#raw-media-algorithms"></a></h3>
-   <p><dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="clone-frame">Clone Frame</dfn>{#clone-frame} (with <var>frame</var>)</p>
+   <h3 class="heading settled" data-level="10.6" id="clone-frame-algo"><span class="secno">10.6. </span><span class="content"><dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="clone-frame">Clone Frame</dfn> (with <var>frame</var>)</span><a class="self-link" href="#clone-frame-algo"></a></h3>
    <ol>
     <li data-md>
-     <p>Let cloneFrame be a new object of the same type as frame (either <code class="idl"><a data-link-type="idl" href="#audioframe" id="ref-for-audioframe④">AudioFrame</a></code> or <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe①⑦">VideoFrame</a></code>).</p>
+     <p>Let <var>cloneFrame</var> be a new object of the same type as frame (either <code class="idl"><a data-link-type="idl" href="#audioframe" id="ref-for-audioframe④">AudioFrame</a></code> or <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe①⑦">VideoFrame</a></code>).</p>
     <li data-md>
      <p>Initialize each attribute and internal slot of clone with a copy of the value
 from the corresponding attribute of this frame.</p>
    </ol>
-   <p class="note" role="note"><span>NOTE:</span> User Agents are encouraged to avoid expensive copies of large objects (for
-    instance, <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe①⑧">VideoFrame</a></code> pixel data). Frame types are immutable, so the
+   <p class="note" role="note"><span>NOTE:</span> User Agents are encouraged to avoid expensive copies of large objects
+    (for instance, <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe①⑧">VideoFrame</a></code> pixel data). Frame types are immutable, so the
     above step may be implemented using memory sharing techniques such as
     reference counting.</p>
    <ol start="3">
     <li data-md>
-     <p>Return cloneFrame.</p>
+     <p>Return <var>cloneFrame</var>.</p>
    </ol>
    <h2 class="heading settled" data-level="11" id="videotrackreader-interface"><span class="secno">11. </span><span class="content">VideoTrackReader Interface</span><a class="self-link" href="#videotrackreader-interface"></a></h2>
     <code class="idl"><a data-link-type="idl" href="#videotrackreader" id="ref-for-videotrackreader">VideoTrackReader</a></code> emits <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe①⑨">VideoFrame</a></code>s from a <code class="idl"><a data-link-type="idl" href="https://www.w3.org/TR/mediacapture-streams/#dom-mediastreamtrack" id="ref-for-dom-mediastreamtrack">MediaStreamTrack</a></code>. Authors
@@ -3138,8 +3155,8 @@ may use this interface to manipulate, render, or encode streams from <code class
   <c- b>readonly</c-> <c- b>attribute</c-> <a class="n" data-link-type="idl-name" href="#enumdef-videotrackreaderstate" id="ref-for-enumdef-videotrackreaderstate"><c- n>VideoTrackReaderState</c-></a> <a class="idl-code" data-link-type="attribute" data-readonly data-type="VideoTrackReaderState" href="#dom-videotrackreader-readystate" id="ref-for-dom-videotrackreader-readystate"><c- g>readyState</c-></a>;
   <c- b>attribute</c-> <a class="n" data-link-type="idl-name" href="https://html.spec.whatwg.org/multipage/webappapis.html#eventhandler" id="ref-for-eventhandler"><c- n>EventHandler</c-></a> <a class="idl-code" data-link-type="attribute" data-type="EventHandler" href="#dom-videotrackreader-onended" id="ref-for-dom-videotrackreader-onended"><c- g>onended</c-></a>;
 
-  <a class="n" data-link-type="idl-name"><c- n>void</c-></a> <a class="idl-code" data-link-type="method" href="#dom-videotrackreader-start" id="ref-for-dom-videotrackreader-start"><c- g>start</c-></a>(<a class="n" data-link-type="idl-name" href="#callbackdef-videoframeoutputcallback" id="ref-for-callbackdef-videoframeoutputcallback①"><c- n>VideoFrameOutputCallback</c-></a> <dfn class="idl-code" data-dfn-for="VideoTrackReader/start(callback)" data-dfn-type="argument" data-export id="dom-videotrackreader-start-callback-callback"><code><c- g>callback</c-></code><a class="self-link" href="#dom-videotrackreader-start-callback-callback"></a></dfn>);
-  <a class="n" data-link-type="idl-name"><c- n>void</c-></a> <a class="idl-code" data-link-type="method" href="#dom-videotrackreader-stop" id="ref-for-dom-videotrackreader-stop"><c- g>stop</c-></a>();
+  <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-undefined" id="ref-for-idl-undefined②⑧"><c- b>undefined</c-></a> <a class="idl-code" data-link-type="method" href="#dom-videotrackreader-start" id="ref-for-dom-videotrackreader-start"><c- g>start</c-></a>(<a class="n" data-link-type="idl-name" href="#callbackdef-videoframeoutputcallback" id="ref-for-callbackdef-videoframeoutputcallback①"><c- n>VideoFrameOutputCallback</c-></a> <dfn class="idl-code" data-dfn-for="VideoTrackReader/start(callback)" data-dfn-type="argument" data-export id="dom-videotrackreader-start-callback-callback"><code><c- g>callback</c-></code><a class="self-link" href="#dom-videotrackreader-start-callback-callback"></a></dfn>);
+  <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-undefined" id="ref-for-idl-undefined②⑨"><c- b>undefined</c-></a> <a class="idl-code" data-link-type="method" href="#dom-videotrackreader-stop" id="ref-for-dom-videotrackreader-stop"><c- g>stop</c-></a>();
 };
 
 <c- b>enum</c-> <dfn class="dfn-paneled idl-code" data-dfn-type="enum" data-export id="enumdef-videotrackreaderstate"><code><c- g>VideoTrackReaderState</c-></code></dfn> {
@@ -3208,7 +3225,7 @@ slot.</p>
     <li data-md>
      <p>Assign <var>callback</var> to the <code class="idl"><a data-link-type="idl" href="#dom-videotrackreader-callback-slot" id="ref-for-dom-videotrackreader-callback-slot②">[[callback]]</a></code> internal slot.</p>
     <li data-md>
-     <p>In parallel, run the <a data-link-type="dfn" href="#track-monitor" id="ref-for-track-monitor">track monitor</a>.</p>
+     <p>In parallel, <a data-link-type="dfn" href="#running-the-track-monitor" id="ref-for-running-the-track-monitor">run the track monitor</a>.</p>
    </ol>
    <p><dfn class="dfn-paneled idl-code" data-dfn-for="VideoTrackReader" data-dfn-type="method" data-export id="dom-videotrackreader-stop"><code>stop()</code></dfn></p>
    <p>Stops calling the <code class="idl"><a data-link-type="idl" href="#callbackdef-videoframeoutputcallback" id="ref-for-callbackdef-videoframeoutputcallback③">VideoFrameOutputCallback</a></code> with <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe②④">VideoFrame</a></code>s from the <code class="idl"><a data-link-type="idl" href="https://www.w3.org/TR/mediacapture-streams/#dom-mediastreamtrack" id="ref-for-dom-mediastreamtrack④">MediaStreamTrack</a></code>.</p>
@@ -3217,18 +3234,21 @@ slot.</p>
     <li data-md>
      <p>If readyState is not <code>"started"</code>, throw an <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#invalidstateerror" id="ref-for-invalidstateerror①④">InvalidStateError</a></code>.</p>
     <li data-md>
-     <p>Cease running the <a data-link-type="dfn" href="#track-monitor" id="ref-for-track-monitor①">track monitor</a>.</p>
+     <p>Cease <a data-link-type="dfn" href="#running-the-track-monitor" id="ref-for-running-the-track-monitor①">running the track monitor</a>.</p>
     <li data-md>
      <p>Assign <code>"stopped"</code> to the <code class="idl"><a data-link-type="idl" href="#dom-videotrackreader-readystate" id="ref-for-dom-videotrackreader-readystate④">readyState</a></code>.</p>
     <li data-md>
      <p>Assign <code>null</code> to the <code class="idl"><a data-link-type="idl" href="#dom-videotrackreader-callback-slot" id="ref-for-dom-videotrackreader-callback-slot③">[[callback]]</a></code> internal slot.</p>
    </ol>
    <h3 class="heading settled" data-level="11.7" id="mediastreamtrack-monitoring"><span class="secno">11.7. </span><span class="content">MediaStreamTrack Monitoring</span><a class="self-link" href="#mediastreamtrack-monitoring"></a></h3>
-   <p>The <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="track-monitor">track monitor</dfn> may be started and stopped by the user to control
-the calling of the <code class="idl"><a data-link-type="idl" href="#callbackdef-videoframeoutputcallback" id="ref-for-callbackdef-videoframeoutputcallback④">VideoFrameOutputCallback</a></code>.</p>
-   <p><dfn data-dfn-type="dfn" data-noexport id="running-the-track-monitor">Running the track monitor<a class="self-link" href="#running-the-track-monitor"></a></dfn> means monitoring <code class="idl"><a data-link-type="idl" href="#dom-videotrackreader-track-slot" id="ref-for-dom-videotrackreader-track-slot⑤">[[track]]</a></code> for the arrival of new picture data as well as
-changes to <code>[[track]].readyState</code>.</p>
-   <p>While <code>[[track]].readyState</code> is "live", for each new picture that arrives in <code class="idl"><a data-link-type="idl" href="#dom-videotrackreader-track-slot" id="ref-for-dom-videotrackreader-track-slot⑥">[[track]]</a></code>, execute the following steps:</p>
+   <p>The <dfn data-dfn-type="dfn" data-export id="track-monitor">track monitor<a class="self-link" href="#track-monitor"></a></dfn> may be started and stopped by the user to
+    control the calling of the <code class="idl"><a data-link-type="idl" href="#callbackdef-videoframeoutputcallback" id="ref-for-callbackdef-videoframeoutputcallback④">VideoFrameOutputCallback</a></code>.</p>
+   <p><dfn class="dfn-paneled" data-dfn-type="dfn" data-lt="running the track monitor|run the track monitor" data-noexport id="running-the-track-monitor">Running the track
+    monitor</dfn> means monitoring <code class="idl"><a data-link-type="idl" href="#dom-videotrackreader-track-slot" id="ref-for-dom-videotrackreader-track-slot⑤">[[track]]</a></code> for the
+    arrival of new picture data as well as changes to <code>[[track]].readyState</code>.</p>
+   <p>While <code>[[track]].readyState</code> is <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/mediacapture-main/#idl-def-MediaStreamTrackState.live" id="ref-for-idl-def-MediaStreamTrackState.live②">live</a></code>, for each new
+    picture that arrives in <code class="idl"><a data-link-type="idl" href="#dom-videotrackreader-track-slot" id="ref-for-dom-videotrackreader-track-slot⑥">[[track]]</a></code>, execute the
+    following steps:</p>
    <p class="note" role="note"><span>NOTE:</span> Pictures that arrived prior to the start of this loop are not
         considered.</p>
    <p class="note" role="note"><span>NOTE:</span> Video data in a MediaStreamTrack does not have a canonical binary
@@ -3262,7 +3282,7 @@ cropping or aspect ratio adjustments.</var></p>
 crop region of the decoded video frame in pixels, prior to any aspect
 ratio adjustments.</p>
       <li data-md>
-       <p>Let &lt;<var>displayWidth</var> and &lt;<var>displayHeight</var> be the display size of the decoded video frame in pixels.</p>
+       <p>Let <var>displayWidth</var> and <var>displayHeight</var> be the display size of the decoded video frame in pixels.</p>
      </ol>
     <li data-md>
      <p>Let <var>frame</var> be a <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe②⑤">VideoFrame</a></code>, constructed with <var>pixelFormat</var>, <var>planes</var>, and <var>frameInit</var>.</p>
@@ -3429,21 +3449,11 @@ event named <code class="idl"><a data-link-type="idl" href="#eventdef-videotrack
   <h3 class="no-num no-ref heading settled" id="index-defined-here"><span class="content">Terms defined by this specification</span><a class="self-link" href="#index-defined-here"></a></h3>
   <ul class="index">
    <li><a href="#audiodecoder">AudioDecoder</a><span>, in §3</span>
-   <li>
-    AudioDecoderConfig
-    <ul>
-     <li><a href="#dictdef-audiodecoderconfig">(dictionary)</a><span>, in §8.2</span>
-     <li><a href="#audiodecoderconfig">definition of</a><span>, in §8.2</span>
-    </ul>
+   <li><a href="#dictdef-audiodecoderconfig">AudioDecoderConfig</a><span>, in §8.2</span>
    <li><a href="#dom-audiodecoder-audiodecoder">AudioDecoder(init)</a><span>, in §3.2</span>
    <li><a href="#dictdef-audiodecoderinit">AudioDecoderInit</a><span>, in §3</span>
    <li><a href="#audioencoder">AudioEncoder</a><span>, in §5</span>
-   <li>
-    AudioEncoderConfig
-    <ul>
-     <li><a href="#dictdef-audioencoderconfig">(dictionary)</a><span>, in §8.4</span>
-     <li><a href="#audioencoderconfig">definition of</a><span>, in §8.4</span>
-    </ul>
+   <li><a href="#dictdef-audioencoderconfig">AudioEncoderConfig</a><span>, in §8.4</span>
    <li><a href="#dom-audioencoder-audioencoder">AudioEncoder(init)</a><span>, in §5.2</span>
    <li><a href="#dictdef-audioencoderinit">AudioEncoderInit</a><span>, in §5</span>
    <li><a href="#audioframe">AudioFrame</a><span>, in §10.1</span>
@@ -3460,7 +3470,7 @@ event named <code class="idl"><a data-link-type="idl" href="#eventdef-videotrack
     </ul>
    <li><a href="#dom-videotrackreader-callback-slot">[[callback]]</a><span>, in §11.2</span>
    <li><a href="#dom-videoframe-clone">clone()</a><span>, in §10.2.4</span>
-   <li><a href="#clone-frame">Clone Frame</a><span>, in §10.5</span>
+   <li><a href="#clone-frame">Clone Frame</a><span>, in §10.6</span>
    <li><a href="#close">Close</a><span>, in §7.8</span>
    <li>
     close()
@@ -3485,17 +3495,12 @@ event named <code class="idl"><a data-link-type="idl" href="#eventdef-videotrack
    <li>
     [[codec implementation]]
     <ul>
-     <li><a href="#audioencoder-codec-implementation">dfn for AudioEncoder</a><span>, in §5.1</span>
-     <li><a href="#audodecoder-codec-implementation">dfn for AudoDecoder</a><span>, in §3.1</span>
-     <li><a href="#videodecoder-codec-implementation">dfn for VideoDecoder</a><span>, in §4.1</span>
-     <li><a href="#videoencoder-codec-implementation">dfn for VideoEncoder</a><span>, in §6.1</span>
+     <li><a href="#dom-audioencoder-codec-implementation-slot">attribute for AudioEncoder</a><span>, in §5.1</span>
+     <li><a href="#dom-audodecoder-codec-implementation-slot">attribute for AudoDecoder</a><span>, in §3.1</span>
+     <li><a href="#dom-videodecoder-codec-implementation-slot">attribute for VideoDecoder</a><span>, in §4.1</span>
+     <li><a href="#dom-videoencoder-codec-implementation-slot">attribute for VideoEncoder</a><span>, in §6.1</span>
     </ul>
-   <li>
-    CodecState
-    <ul>
-     <li><a href="#enumdef-codecstate">(enum)</a><span>, in §8.7</span>
-     <li><a href="#codecstate">definition of</a><span>, in §8.7</span>
-    </ul>
+   <li><a href="#enumdef-codecstate">CodecState</a><span>, in §8.7</span>
    <li><a href="#codec-string">Codec String</a><span>, in §8.1</span>
    <li>
     codedHeight
@@ -3677,10 +3682,10 @@ event named <code class="idl"><a data-link-type="idl" href="#eventdef-videotrack
    <li>
     [[error callback]]
     <ul>
-     <li><a href="#audioencoder-error-callback">dfn for AudioEncoder</a><span>, in §5.1</span>
-     <li><a href="#audodecoder-error-callback">dfn for AudoDecoder</a><span>, in §3.1</span>
-     <li><a href="#videodecoder-error-callback">dfn for VideoDecoder</a><span>, in §4.1</span>
-     <li><a href="#videoencoder-error-callback">dfn for VideoEncoder</a><span>, in §6.1</span>
+     <li><a href="#dom-audioencoder-error-callback-slot">attribute for AudioEncoder</a><span>, in §5.1</span>
+     <li><a href="#dom-audodecoder-error-callback-slot">attribute for AudoDecoder</a><span>, in §3.1</span>
+     <li><a href="#dom-videodecoder-error-callback-slot">attribute for VideoDecoder</a><span>, in §4.1</span>
+     <li><a href="#dom-videoencoder-error-callback-slot">attribute for VideoEncoder</a><span>, in §6.1</span>
     </ul>
    <li><a href="#flush">Flush</a><span>, in §7.3</span>
    <li>
@@ -3721,10 +3726,10 @@ event named <code class="idl"><a data-link-type="idl" href="#eventdef-videotrack
    <li>
     [[output callback]]
     <ul>
-     <li><a href="#audioencoder-output-callback">dfn for AudioEncoder</a><span>, in §5.1</span>
-     <li><a href="#audodecoder-output-callback">dfn for AudoDecoder</a><span>, in §3.1</span>
-     <li><a href="#videodecoder-output-callback">dfn for VideoDecoder</a><span>, in §4.1</span>
-     <li><a href="#videoencoder-output-callback">dfn for VideoEncoder</a><span>, in §6.1</span>
+     <li><a href="#dom-audioencoder-output-callback-slot">attribute for AudioEncoder</a><span>, in §5.1</span>
+     <li><a href="#dom-audodecoder-output-callback-slot">attribute for AudoDecoder</a><span>, in §3.1</span>
+     <li><a href="#dom-videodecoder-output-callback-slot">attribute for VideoDecoder</a><span>, in §4.1</span>
+     <li><a href="#dom-videoencoder-output-callback-slot">attribute for VideoEncoder</a><span>, in §6.1</span>
     </ul>
    <li><a href="#dom-plane-parent-frame-slot">[[parent frame]]</a><span>, in §10.3.1</span>
    <li><a href="#enumdef-pixelformat">PixelFormat</a><span>, in §10.4</span>
@@ -3751,8 +3756,9 @@ event named <code class="idl"><a data-link-type="idl" href="#eventdef-videotrack
      <li><a href="#dom-planeinit-rows">dict-member for PlaneInit</a><span>, in §10.3</span>
     </ul>
    <li><a href="#running-a-control-message">running a control message</a><span>, in §2</span>
-   <li><a href="#running-the-track-monitor">Running the track monitor</a><span>, in §11.7</span>
+   <li><a href="#running-the-track-monitor">running the track monitor</a><span>, in §11.7</span>
    <li><a href="#run-the-control-message-processing-loop">Run the control message processing loop</a><span>, in §2</span>
+   <li><a href="#running-the-track-monitor">run the track monitor</a><span>, in §11.7</span>
    <li>
     sampleRate
     <ul>
@@ -3811,27 +3817,12 @@ event named <code class="idl"><a data-link-type="idl" href="#eventdef-videotrack
    <li><a href="#valid-videoencoderconfig">valid VideoEncoderConfig</a><span>, in §8.5</span>
    <li><a href="#valid-videoframeinit">valid VideoFrameInit</a><span>, in §10.2.5</span>
    <li><a href="#videodecoder">VideoDecoder</a><span>, in §4</span>
-   <li>
-    VideoDecoderConfig
-    <ul>
-     <li><a href="#dictdef-videodecoderconfig">(dictionary)</a><span>, in §8.3</span>
-     <li><a href="#videodecoderconfig">definition of</a><span>, in §8.3</span>
-    </ul>
+   <li><a href="#dictdef-videodecoderconfig">VideoDecoderConfig</a><span>, in §8.3</span>
    <li><a href="#dom-videodecoder-videodecoder">VideoDecoder(init)</a><span>, in §4.2</span>
    <li><a href="#dictdef-videodecoderinit">VideoDecoderInit</a><span>, in §4</span>
    <li><a href="#videoencoder">VideoEncoder</a><span>, in §6</span>
-   <li>
-    VideoEncoderConfig
-    <ul>
-     <li><a href="#dictdef-videoencoderconfig">(dictionary)</a><span>, in §8.5</span>
-     <li><a href="#videoencoderconfig">definition of</a><span>, in §8.5</span>
-    </ul>
-   <li>
-    VideoEncoderEncodeOptions
-    <ul>
-     <li><a href="#dictdef-videoencoderencodeoptions">(dictionary)</a><span>, in §8.6</span>
-     <li><a href="#videoencoderencodeoptions">definition of</a><span>, in §8.6</span>
-    </ul>
+   <li><a href="#dictdef-videoencoderconfig">VideoEncoderConfig</a><span>, in §8.5</span>
+   <li><a href="#dictdef-videoencoderencodeoptions">VideoEncoderEncodeOptions</a><span>, in §8.6</span>
    <li><a href="#dom-videoencoder-videoencoder">VideoEncoder(init)</a><span>, in §6.2</span>
    <li><a href="#dictdef-videoencoderinit">VideoEncoderInit</a><span>, in §6</span>
    <li><a href="#videoframe">VideoFrame</a><span>, in §10.2</span>
@@ -3843,12 +3834,7 @@ event named <code class="idl"><a data-link-type="idl" href="#eventdef-videotrack
    <li><a href="#videotrackreader">VideoTrackReader</a><span>, in §11</span>
    <li><a href="#enumdef-videotrackreaderstate">VideoTrackReaderState</a><span>, in §11</span>
    <li><a href="#dom-videotrackreader-videotrackreader">VideoTrackReader(track)</a><span>, in §11.3</span>
-   <li>
-    WebCodecsErrorCallback
-    <ul>
-     <li><a href="#callbackdef-webcodecserrorcallback">(callback)</a><span>, in §8.8</span>
-     <li><a href="#webcodecserrorcallback">definition of</a><span>, in §8.8</span>
-    </ul>
+   <li><a href="#callbackdef-webcodecserrorcallback">WebCodecsErrorCallback</a><span>, in §8.8</span>
    <li><a href="#dom-videoencoderconfig-width">width</a><span>, in §8.5</span>
   </ul>
   <aside class="dfn-panel" data-for="term-for-eventhandler">
@@ -3924,6 +3910,7 @@ event named <code class="idl"><a data-link-type="idl" href="#eventdef-videotrack
    <a href="https://w3c.github.io/mediacapture-main/#idl-def-MediaStreamTrackState.live">https://w3c.github.io/mediacapture-main/#idl-def-MediaStreamTrackState.live</a><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-idl-def-MediaStreamTrackState.live">11.1. VideoTrackReaderState Values</a> <a href="#ref-for-idl-def-MediaStreamTrackState.live①">(2)</a>
+    <li><a href="#ref-for-idl-def-MediaStreamTrackState.live②">11.7. MediaStreamTrack Monitoring</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-dom-mediadevices-getdisplaymedia">
@@ -4076,6 +4063,20 @@ event named <code class="idl"><a data-link-type="idl" href="#eventdef-videotrack
     <li><a href="#ref-for-this">10.2.4. Methods</a> <a href="#ref-for-this①">(2)</a>
    </ul>
   </aside>
+  <aside class="dfn-panel" data-for="term-for-idl-undefined">
+   <a href="https://heycam.github.io/webidl/#idl-undefined">https://heycam.github.io/webidl/#idl-undefined</a><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-idl-undefined">3. AudioDecoder Interface</a> <a href="#ref-for-idl-undefined①">(2)</a> <a href="#ref-for-idl-undefined②">(3)</a> <a href="#ref-for-idl-undefined③">(4)</a> <a href="#ref-for-idl-undefined④">(5)</a> <a href="#ref-for-idl-undefined⑤">(6)</a>
+    <li><a href="#ref-for-idl-undefined⑥">4. VideoDecoder Interface</a> <a href="#ref-for-idl-undefined⑦">(2)</a> <a href="#ref-for-idl-undefined⑧">(3)</a> <a href="#ref-for-idl-undefined⑨">(4)</a> <a href="#ref-for-idl-undefined①⓪">(5)</a> <a href="#ref-for-idl-undefined①①">(6)</a>
+    <li><a href="#ref-for-idl-undefined①②">5. AudioEncoder Interface</a> <a href="#ref-for-idl-undefined①③">(2)</a> <a href="#ref-for-idl-undefined①④">(3)</a> <a href="#ref-for-idl-undefined①⑤">(4)</a> <a href="#ref-for-idl-undefined①⑥">(5)</a> <a href="#ref-for-idl-undefined①⑦">(6)</a>
+    <li><a href="#ref-for-idl-undefined①⑧">6. VideoEncoder Interface</a> <a href="#ref-for-idl-undefined①⑨">(2)</a> <a href="#ref-for-idl-undefined②⓪">(3)</a> <a href="#ref-for-idl-undefined②①">(4)</a> <a href="#ref-for-idl-undefined②②">(5)</a> <a href="#ref-for-idl-undefined②③">(6)</a>
+    <li><a href="#ref-for-idl-undefined②④">8.8. WebCodecsErrorCallback</a>
+    <li><a href="#ref-for-idl-undefined②⑤">10.1. AudioFrame Interface</a>
+    <li><a href="#ref-for-idl-undefined②⑥">10.2. VideoFrame Interface</a>
+    <li><a href="#ref-for-idl-undefined②⑦">10.3. Plane Interface</a>
+    <li><a href="#ref-for-idl-undefined②⑧">11. VideoTrackReader Interface</a> <a href="#ref-for-idl-undefined②⑨">(2)</a>
+   </ul>
+  </aside>
   <aside class="dfn-panel" data-for="term-for-idl-unsigned-long">
    <a href="https://heycam.github.io/webidl/#idl-unsigned-long">https://heycam.github.io/webidl/#idl-unsigned-long</a><b>Referenced in:</b>
    <ul>
@@ -4161,6 +4162,7 @@ event named <code class="idl"><a data-link-type="idl" href="#eventdef-videotrack
      <li><span class="dfn-paneled" id="term-for-idl-boolean" style="color:initial">boolean</span>
      <li><span class="dfn-paneled" id="term-for-idl-long" style="color:initial">long</span>
      <li><span class="dfn-paneled" id="term-for-this" style="color:initial">this</span>
+     <li><span class="dfn-paneled" id="term-for-idl-undefined" style="color:initial">undefined</span>
      <li><span class="dfn-paneled" id="term-for-idl-unsigned-long" style="color:initial">unsigned long</span>
      <li><span class="dfn-paneled" id="term-for-idl-unsigned-long-long" style="color:initial">unsigned long long</span>
     </ul>
@@ -4194,11 +4196,11 @@ event named <code class="idl"><a data-link-type="idl" href="#eventdef-videotrack
   <c- b>readonly</c-> <c- b>attribute</c-> <a class="n" data-link-type="idl-name" href="#enumdef-codecstate"><c- n>CodecState</c-></a> <a class="idl-code" data-link-type="attribute" data-readonly data-type="CodecState" href="#dom-audiodecoder-state"><c- g>state</c-></a>;
   <c- b>readonly</c-> <c- b>attribute</c-> <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-long"><c- b>long</c-></a> <a class="idl-code" data-link-type="attribute" data-readonly data-type="long" href="#dom-audiodecoder-decodequeuesize"><c- g>decodeQueueSize</c-></a>;
 
-  <a class="n" data-link-type="idl-name"><c- n>void</c-></a> <a class="idl-code" data-link-type="method" href="#dom-audiodecoder-configure"><c- g>configure</c-></a>(<a class="n" data-link-type="idl-name" href="#dictdef-audiodecoderconfig"><c- n>AudioDecoderConfig</c-></a> <a href="#dom-audiodecoder-configure-config-config"><code><c- g>config</c-></code></a>);
-  <a class="n" data-link-type="idl-name"><c- n>void</c-></a> <a class="idl-code" data-link-type="method" href="#dom-audiodecoder-decode"><c- g>decode</c-></a>(<a class="n" data-link-type="idl-name" href="#encodedaudiochunk"><c- n>EncodedAudioChunk</c-></a> <a href="#dom-audiodecoder-decode-chunk-chunk"><code><c- g>chunk</c-></code></a>);
-  <c- b>Promise</c->&lt;<a class="n" data-link-type="idl-name"><c- n>void</c-></a>> <a class="idl-code" data-link-type="method" href="#dom-audiodecoder-flush"><c- g>flush</c-></a>();
-  <a class="n" data-link-type="idl-name"><c- n>void</c-></a> <a class="idl-code" data-link-type="method" href="#dom-audiodecoder-reset"><c- g>reset</c-></a>();
-  <a class="n" data-link-type="idl-name"><c- n>void</c-></a> <a class="idl-code" data-link-type="method" href="#dom-audiodecoder-close"><c- g>close</c-></a>();
+  <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-undefined"><c- b>undefined</c-></a> <a class="idl-code" data-link-type="method" href="#dom-audiodecoder-configure"><c- g>configure</c-></a>(<a class="n" data-link-type="idl-name" href="#dictdef-audiodecoderconfig"><c- n>AudioDecoderConfig</c-></a> <a href="#dom-audiodecoder-configure-config-config"><code><c- g>config</c-></code></a>);
+  <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-undefined"><c- b>undefined</c-></a> <a class="idl-code" data-link-type="method" href="#dom-audiodecoder-decode"><c- g>decode</c-></a>(<a class="n" data-link-type="idl-name" href="#encodedaudiochunk"><c- n>EncodedAudioChunk</c-></a> <a href="#dom-audiodecoder-decode-chunk-chunk"><code><c- g>chunk</c-></code></a>);
+  <c- b>Promise</c->&lt;<a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-undefined"><c- b>undefined</c-></a>> <a class="idl-code" data-link-type="method" href="#dom-audiodecoder-flush"><c- g>flush</c-></a>();
+  <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-undefined"><c- b>undefined</c-></a> <a class="idl-code" data-link-type="method" href="#dom-audiodecoder-reset"><c- g>reset</c-></a>();
+  <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-undefined"><c- b>undefined</c-></a> <a class="idl-code" data-link-type="method" href="#dom-audiodecoder-close"><c- g>close</c-></a>();
 };
 
 <c- b>dictionary</c-> <a href="#dictdef-audiodecoderinit"><code><c- g>AudioDecoderInit</c-></code></a> {
@@ -4206,7 +4208,7 @@ event named <code class="idl"><a data-link-type="idl" href="#eventdef-videotrack
   <c- b>required</c-> <a class="n" data-link-type="idl-name" href="#callbackdef-webcodecserrorcallback"><c- n>WebCodecsErrorCallback</c-></a> <a data-type="WebCodecsErrorCallback " href="#dom-audiodecoderinit-error"><code><c- g>error</c-></code></a>;
 };
 
-<c- b>callback</c-> <a href="#callbackdef-audioframeoutputcallback"><code><c- g>AudioFrameOutputCallback</c-></code></a> = <a class="n" data-link-type="idl-name"><c- n>void</c-></a>(<a class="n" data-link-type="idl-name" href="#audioframe"><c- n>AudioFrame</c-></a> <a href="#dom-audioframeoutputcallback-output"><code><c- g>output</c-></code></a>);
+<c- b>callback</c-> <a href="#callbackdef-audioframeoutputcallback"><code><c- g>AudioFrameOutputCallback</c-></code></a> = <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-undefined"><c- b>undefined</c-></a>(<a class="n" data-link-type="idl-name" href="#audioframe"><c- n>AudioFrame</c-></a> <a href="#dom-audioframeoutputcallback-output"><code><c- g>output</c-></code></a>);
 
 
 [<a class="idl-code" data-link-type="extended-attribute" href="https://heycam.github.io/webidl/#Exposed"><c- g>Exposed</c-></a>=(<c- n>Window</c->,<c- n>Worker</c->)]
@@ -4216,11 +4218,11 @@ event named <code class="idl"><a data-link-type="idl" href="#eventdef-videotrack
   <c- b>readonly</c-> <c- b>attribute</c-> <a class="n" data-link-type="idl-name" href="#enumdef-codecstate"><c- n>CodecState</c-></a> <a class="idl-code" data-link-type="attribute" data-readonly data-type="CodecState" href="#dom-videodecoder-state"><c- g>state</c-></a>;
   <c- b>readonly</c-> <c- b>attribute</c-> <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-long"><c- b>long</c-></a> <a class="idl-code" data-link-type="attribute" data-readonly data-type="long" href="#dom-videodecoder-decodequeuesize"><c- g>decodeQueueSize</c-></a>;
 
-  <a class="n" data-link-type="idl-name"><c- n>void</c-></a> <a class="idl-code" data-link-type="method" href="#dom-videodecoder-configure"><c- g>configure</c-></a>(<a class="n" data-link-type="idl-name" href="#dictdef-videodecoderconfig"><c- n>VideoDecoderConfig</c-></a> <a href="#dom-videodecoder-configure-config-config"><code><c- g>config</c-></code></a>);
-  <a class="n" data-link-type="idl-name"><c- n>void</c-></a> <a class="idl-code" data-link-type="method" href="#dom-videodecoder-decode"><c- g>decode</c-></a>(<a class="n" data-link-type="idl-name" href="#encodedvideochunk"><c- n>EncodedVideoChunk</c-></a> <a href="#dom-videodecoder-decode-chunk-chunk"><code><c- g>chunk</c-></code></a>);
-  <c- b>Promise</c->&lt;<a class="n" data-link-type="idl-name"><c- n>void</c-></a>> <a class="idl-code" data-link-type="method" href="#dom-videodecoder-flush"><c- g>flush</c-></a>();
-  <a class="n" data-link-type="idl-name"><c- n>void</c-></a> <a class="idl-code" data-link-type="method" href="#dom-videodecoder-reset"><c- g>reset</c-></a>();
-  <a class="n" data-link-type="idl-name"><c- n>void</c-></a> <a class="idl-code" data-link-type="method" href="#dom-videodecoder-close"><c- g>close</c-></a>();
+  <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-undefined"><c- b>undefined</c-></a> <a class="idl-code" data-link-type="method" href="#dom-videodecoder-configure"><c- g>configure</c-></a>(<a class="n" data-link-type="idl-name" href="#dictdef-videodecoderconfig"><c- n>VideoDecoderConfig</c-></a> <a href="#dom-videodecoder-configure-config-config"><code><c- g>config</c-></code></a>);
+  <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-undefined"><c- b>undefined</c-></a> <a class="idl-code" data-link-type="method" href="#dom-videodecoder-decode"><c- g>decode</c-></a>(<a class="n" data-link-type="idl-name" href="#encodedvideochunk"><c- n>EncodedVideoChunk</c-></a> <a href="#dom-videodecoder-decode-chunk-chunk"><code><c- g>chunk</c-></code></a>);
+  <c- b>Promise</c->&lt;<a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-undefined"><c- b>undefined</c-></a>> <a class="idl-code" data-link-type="method" href="#dom-videodecoder-flush"><c- g>flush</c-></a>();
+  <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-undefined"><c- b>undefined</c-></a> <a class="idl-code" data-link-type="method" href="#dom-videodecoder-reset"><c- g>reset</c-></a>();
+  <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-undefined"><c- b>undefined</c-></a> <a class="idl-code" data-link-type="method" href="#dom-videodecoder-close"><c- g>close</c-></a>();
 };
 
 <c- b>dictionary</c-> <a href="#dictdef-videodecoderinit"><code><c- g>VideoDecoderInit</c-></code></a> {
@@ -4228,7 +4230,7 @@ event named <code class="idl"><a data-link-type="idl" href="#eventdef-videotrack
   <c- b>required</c-> <a class="n" data-link-type="idl-name" href="#callbackdef-webcodecserrorcallback"><c- n>WebCodecsErrorCallback</c-></a> <a data-type="WebCodecsErrorCallback " href="#dom-videodecoderinit-error"><code><c- g>error</c-></code></a>;
 };
 
-<c- b>callback</c-> <a href="#callbackdef-videoframeoutputcallback"><code><c- g>VideoFrameOutputCallback</c-></code></a> = <a class="n" data-link-type="idl-name"><c- n>void</c-></a>(<a class="n" data-link-type="idl-name" href="#videoframe"><c- n>VideoFrame</c-></a> <a href="#dom-videoframeoutputcallback-output"><code><c- g>output</c-></code></a>);
+<c- b>callback</c-> <a href="#callbackdef-videoframeoutputcallback"><code><c- g>VideoFrameOutputCallback</c-></code></a> = <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-undefined"><c- b>undefined</c-></a>(<a class="n" data-link-type="idl-name" href="#videoframe"><c- n>VideoFrame</c-></a> <a href="#dom-videoframeoutputcallback-output"><code><c- g>output</c-></code></a>);
 
 
 [<a class="idl-code" data-link-type="extended-attribute" href="https://heycam.github.io/webidl/#Exposed"><c- g>Exposed</c-></a>=(<c- n>Window</c->,<c- n>Worker</c->)]
@@ -4236,11 +4238,11 @@ event named <code class="idl"><a data-link-type="idl" href="#eventdef-videotrack
   <a class="idl-code" data-link-type="constructor" href="#dom-audioencoder-audioencoder"><c- g>constructor</c-></a>(<a class="n" data-link-type="idl-name" href="#dictdef-audioencoderinit"><c- n>AudioEncoderInit</c-></a> <a href="#dom-audioencoder-audioencoder-init-init"><code><c- g>init</c-></code></a>);
   <c- b>readonly</c-> <c- b>attribute</c-> <a class="n" data-link-type="idl-name" href="#enumdef-codecstate"><c- n>CodecState</c-></a> <a class="idl-code" data-link-type="attribute" data-readonly data-type="CodecState" href="#dom-audioencoder-state"><c- g>state</c-></a>;
   <c- b>readonly</c-> <c- b>attribute</c-> <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-long"><c- b>long</c-></a> <a class="idl-code" data-link-type="attribute" data-readonly data-type="long" href="#dom-audioencoder-encodequeuesize"><c- g>encodeQueueSize</c-></a>;
-  <a class="n" data-link-type="idl-name"><c- n>void</c-></a> <a class="idl-code" data-link-type="method" href="#dom-audioencoder-configure"><c- g>configure</c-></a>(<a class="n" data-link-type="idl-name" href="#dictdef-audioencoderconfig"><c- n>AudioEncoderConfig</c-></a> <a href="#dom-audioencoder-configure-config-config"><code><c- g>config</c-></code></a>);
-  <a class="n" data-link-type="idl-name"><c- n>void</c-></a> <a class="idl-code" data-link-type="method" href="#dom-audioencoder-encode"><c- g>encode</c-></a>(<a class="n" data-link-type="idl-name" href="#audioframe"><c- n>AudioFrame</c-></a> <a href="#dom-audioencoder-encode-frame-frame"><code><c- g>frame</c-></code></a>);
-  <c- b>Promise</c->&lt;<a class="n" data-link-type="idl-name"><c- n>void</c-></a>> <a class="idl-code" data-link-type="method" href="#dom-audioencoder-flush"><c- g>flush</c-></a>();
-  <a class="n" data-link-type="idl-name"><c- n>void</c-></a> <a class="idl-code" data-link-type="method" href="#dom-audioencoder-reset"><c- g>reset</c-></a>();
-  <a class="n" data-link-type="idl-name"><c- n>void</c-></a> <a class="idl-code" data-link-type="method" href="#dom-audioencoder-close"><c- g>close</c-></a>();
+  <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-undefined"><c- b>undefined</c-></a> <a class="idl-code" data-link-type="method" href="#dom-audioencoder-configure"><c- g>configure</c-></a>(<a class="n" data-link-type="idl-name" href="#dictdef-audioencoderconfig"><c- n>AudioEncoderConfig</c-></a> <a href="#dom-audioencoder-configure-config-config"><code><c- g>config</c-></code></a>);
+  <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-undefined"><c- b>undefined</c-></a> <a class="idl-code" data-link-type="method" href="#dom-audioencoder-encode"><c- g>encode</c-></a>(<a class="n" data-link-type="idl-name" href="#audioframe"><c- n>AudioFrame</c-></a> <a href="#dom-audioencoder-encode-frame-frame"><code><c- g>frame</c-></code></a>);
+  <c- b>Promise</c->&lt;<a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-undefined"><c- b>undefined</c-></a>> <a class="idl-code" data-link-type="method" href="#dom-audioencoder-flush"><c- g>flush</c-></a>();
+  <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-undefined"><c- b>undefined</c-></a> <a class="idl-code" data-link-type="method" href="#dom-audioencoder-reset"><c- g>reset</c-></a>();
+  <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-undefined"><c- b>undefined</c-></a> <a class="idl-code" data-link-type="method" href="#dom-audioencoder-close"><c- g>close</c-></a>();
 };
 
 <c- b>dictionary</c-> <a href="#dictdef-audioencoderinit"><code><c- g>AudioEncoderInit</c-></code></a> {
@@ -4248,7 +4250,7 @@ event named <code class="idl"><a data-link-type="idl" href="#eventdef-videotrack
   <c- b>required</c-> <a class="n" data-link-type="idl-name" href="#callbackdef-webcodecserrorcallback"><c- n>WebCodecsErrorCallback</c-></a> <a data-type="WebCodecsErrorCallback " href="#dom-audioencoderinit-error"><code><c- g>error</c-></code></a>;
 };
 
-<c- b>callback</c-> <a href="#callbackdef-encodedaudiochunkoutputcallback"><code><c- g>EncodedAudioChunkOutputCallback</c-></code></a> = <a class="n" data-link-type="idl-name"><c- n>void</c-></a>(<a class="n" data-link-type="idl-name" href="#encodedaudiochunk"><c- n>EncodedAudioChunk</c-></a> <a href="#dom-encodedaudiochunkoutputcallback-output"><code><c- g>output</c-></code></a>);
+<c- b>callback</c-> <a href="#callbackdef-encodedaudiochunkoutputcallback"><code><c- g>EncodedAudioChunkOutputCallback</c-></code></a> = <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-undefined"><c- b>undefined</c-></a>(<a class="n" data-link-type="idl-name" href="#encodedaudiochunk"><c- n>EncodedAudioChunk</c-></a> <a href="#dom-encodedaudiochunkoutputcallback-output"><code><c- g>output</c-></code></a>);
 
 
 [<a class="idl-code" data-link-type="extended-attribute" href="https://heycam.github.io/webidl/#Exposed"><c- g>Exposed</c-></a>=(<c- n>Window</c->,<c- n>Worker</c->)]
@@ -4256,11 +4258,11 @@ event named <code class="idl"><a data-link-type="idl" href="#eventdef-videotrack
   <a class="idl-code" data-link-type="constructor" href="#dom-videoencoder-videoencoder"><c- g>constructor</c-></a>(<a class="n" data-link-type="idl-name" href="#dictdef-videoencoderinit"><c- n>VideoEncoderInit</c-></a> <a href="#dom-videoencoder-videoencoder-init-init"><code><c- g>init</c-></code></a>);
   <c- b>readonly</c-> <c- b>attribute</c-> <a class="n" data-link-type="idl-name" href="#enumdef-codecstate"><c- n>CodecState</c-></a> <a class="idl-code" data-link-type="attribute" data-readonly data-type="CodecState" href="#dom-videoencoder-state"><c- g>state</c-></a>;
   <c- b>readonly</c-> <c- b>attribute</c-> <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-long"><c- b>long</c-></a> <a class="idl-code" data-link-type="attribute" data-readonly data-type="long" href="#dom-videoencoder-encodequeuesize"><c- g>encodeQueueSize</c-></a>;
-  <a class="n" data-link-type="idl-name"><c- n>void</c-></a> <a class="idl-code" data-link-type="method" href="#dom-videoencoder-configure"><c- g>configure</c-></a>(<a class="n" data-link-type="idl-name" href="#dictdef-videoencoderconfig"><c- n>VideoEncoderConfig</c-></a> <a href="#dom-videoencoder-configure-config-config"><code><c- g>config</c-></code></a>);
-  <a class="n" data-link-type="idl-name"><c- n>void</c-></a> <a class="idl-code" data-link-type="method" href="#dom-videoencoder-encode"><c- g>encode</c-></a>(<a class="n" data-link-type="idl-name" href="#videoframe"><c- n>VideoFrame</c-></a> <a href="#dom-videoencoder-encode-frame-options-frame"><code><c- g>frame</c-></code></a>, <c- b>optional</c-> <a class="n" data-link-type="idl-name" href="#dictdef-videoencoderencodeoptions"><c- n>VideoEncoderEncodeOptions</c-></a> <a href="#dom-videoencoder-encode-frame-options-options"><code><c- g>options</c-></code></a> = {});
-  <c- b>Promise</c->&lt;<a class="n" data-link-type="idl-name"><c- n>void</c-></a>> <a class="idl-code" data-link-type="method" href="#dom-videoencoder-flush"><c- g>flush</c-></a>();
-  <a class="n" data-link-type="idl-name"><c- n>void</c-></a> <a class="idl-code" data-link-type="method" href="#dom-videoencoder-reset"><c- g>reset</c-></a>();
-  <a class="n" data-link-type="idl-name"><c- n>void</c-></a> <a class="idl-code" data-link-type="method" href="#dom-videoencoder-close"><c- g>close</c-></a>();
+  <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-undefined"><c- b>undefined</c-></a> <a class="idl-code" data-link-type="method" href="#dom-videoencoder-configure"><c- g>configure</c-></a>(<a class="n" data-link-type="idl-name" href="#dictdef-videoencoderconfig"><c- n>VideoEncoderConfig</c-></a> <a href="#dom-videoencoder-configure-config-config"><code><c- g>config</c-></code></a>);
+  <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-undefined"><c- b>undefined</c-></a> <a class="idl-code" data-link-type="method" href="#dom-videoencoder-encode"><c- g>encode</c-></a>(<a class="n" data-link-type="idl-name" href="#videoframe"><c- n>VideoFrame</c-></a> <a href="#dom-videoencoder-encode-frame-options-frame"><code><c- g>frame</c-></code></a>, <c- b>optional</c-> <a class="n" data-link-type="idl-name" href="#dictdef-videoencoderencodeoptions"><c- n>VideoEncoderEncodeOptions</c-></a> <a href="#dom-videoencoder-encode-frame-options-options"><code><c- g>options</c-></code></a> = {});
+  <c- b>Promise</c->&lt;<a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-undefined"><c- b>undefined</c-></a>> <a class="idl-code" data-link-type="method" href="#dom-videoencoder-flush"><c- g>flush</c-></a>();
+  <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-undefined"><c- b>undefined</c-></a> <a class="idl-code" data-link-type="method" href="#dom-videoencoder-reset"><c- g>reset</c-></a>();
+  <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-undefined"><c- b>undefined</c-></a> <a class="idl-code" data-link-type="method" href="#dom-videoencoder-close"><c- g>close</c-></a>();
 };
 
 <c- b>dictionary</c-> <a href="#dictdef-videoencoderinit"><code><c- g>VideoEncoderInit</c-></code></a> {
@@ -4268,7 +4270,7 @@ event named <code class="idl"><a data-link-type="idl" href="#eventdef-videotrack
   <c- b>required</c-> <a class="n" data-link-type="idl-name" href="#callbackdef-webcodecserrorcallback"><c- n>WebCodecsErrorCallback</c-></a> <a data-type="WebCodecsErrorCallback " href="#dom-videoencoderinit-error"><code><c- g>error</c-></code></a>;
 };
 
-<c- b>callback</c-> <a href="#callbackdef-encodedvideochunkoutputcallback"><code><c- g>EncodedVideoChunkOutputCallback</c-></code></a> = <a class="n" data-link-type="idl-name"><c- n>void</c-></a>(<a class="n" data-link-type="idl-name" href="#encodedvideochunk"><c- n>EncodedVideoChunk</c-></a> <a href="#dom-encodedvideochunkoutputcallback-output"><code><c- g>output</c-></code></a>);
+<c- b>callback</c-> <a href="#callbackdef-encodedvideochunkoutputcallback"><code><c- g>EncodedVideoChunkOutputCallback</c-></code></a> = <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-undefined"><c- b>undefined</c-></a>(<a class="n" data-link-type="idl-name" href="#encodedvideochunk"><c- n>EncodedVideoChunk</c-></a> <a href="#dom-encodedvideochunkoutputcallback-output"><code><c- g>output</c-></code></a>);
 
 
 <c- b>dictionary</c-> <a href="#dictdef-audiodecoderconfig"><code><c- g>AudioDecoderConfig</c-></code></a> {
@@ -4320,7 +4322,7 @@ event named <code class="idl"><a data-link-type="idl" href="#eventdef-videotrack
 };
 
 
-<c- b>callback</c-> <a href="#callbackdef-webcodecserrorcallback"><code><c- g>WebCodecsErrorCallback</c-></code></a> = <a class="n" data-link-type="idl-name"><c- n>void</c-></a>(<a class="n" data-link-type="idl-name" href="https://heycam.github.io/webidl/#idl-DOMException"><c- n>DOMException</c-></a> <a href="#dom-webcodecserrorcallback-error"><code><c- g>error</c-></code></a>);
+<c- b>callback</c-> <a href="#callbackdef-webcodecserrorcallback"><code><c- g>WebCodecsErrorCallback</c-></code></a> = <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-undefined"><c- b>undefined</c-></a>(<a class="n" data-link-type="idl-name" href="https://heycam.github.io/webidl/#idl-DOMException"><c- n>DOMException</c-></a> <a href="#dom-webcodecserrorcallback-error"><code><c- g>error</c-></code></a>);
 
 
 <c- b>interface</c-> <a href="#encodedaudiochunk"><code><c- g>EncodedAudioChunk</c-></code></a> {
@@ -4369,7 +4371,7 @@ event named <code class="idl"><a data-link-type="idl" href="#eventdef-videotrack
   <a class="idl-code" data-link-type="constructor" href="#dom-audioframe-audioframe"><c- g>constructor</c-></a>(<a class="n" data-link-type="idl-name" href="#dictdef-audioframeinit"><c- n>AudioFrameInit</c-></a> <a href="#dom-audioframe-audioframe-init-init"><code><c- g>init</c-></code></a>);
   <c- b>readonly</c-> <c- b>attribute</c-> <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-unsigned-long-long"><c- b>unsigned</c-> <c- b>long</c-> <c- b>long</c-></a> <a class="idl-code" data-link-type="attribute" data-readonly data-type="unsigned long long" href="#dom-audioframe-timestamp"><c- g>timestamp</c-></a>;
   <c- b>readonly</c-> <c- b>attribute</c-> <a class="n" data-link-type="idl-name" href="https://webaudio.github.io/web-audio-api/#audiobuffer"><c- n>AudioBuffer</c-></a>? <a class="idl-code" data-link-type="attribute" data-readonly data-type="AudioBuffer?" href="#dom-audioframe-buffer"><c- g>buffer</c-></a>;
-  <a class="n" data-link-type="idl-name"><c- n>void</c-></a> <a class="idl-code" data-link-type="method" href="#dom-audioframe-close"><c- g>close</c-></a>();
+  <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-undefined"><c- b>undefined</c-></a> <a class="idl-code" data-link-type="method" href="#dom-audioframe-close"><c- g>close</c-></a>();
 };
 
 <c- b>dictionary</c-> <a href="#dictdef-audioframeinit"><code><c- g>AudioFrameInit</c-></code></a> {
@@ -4397,7 +4399,7 @@ event named <code class="idl"><a data-link-type="idl" href="#eventdef-videotrack
   <c- b>readonly</c-> <c- b>attribute</c-> <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-unsigned-long-long"><c- b>unsigned</c-> <c- b>long</c-> <c- b>long</c-></a>? <a class="idl-code" data-link-type="attribute" data-readonly data-type="unsigned long long?" href="#dom-videoframe-duration"><c- g>duration</c-></a>;
   <c- b>readonly</c-> <c- b>attribute</c-> <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-unsigned-long-long"><c- b>unsigned</c-> <c- b>long</c-> <c- b>long</c-></a>? <a class="idl-code" data-link-type="attribute" data-readonly data-type="unsigned long long?" href="#dom-videoframe-timestamp"><c- g>timestamp</c-></a>;
 
-  <a class="n" data-link-type="idl-name"><c- n>void</c-></a> <a class="idl-code" data-link-type="method" href="#dom-videoframe-destroy"><c- g>destroy</c-></a>();
+  <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-undefined"><c- b>undefined</c-></a> <a class="idl-code" data-link-type="method" href="#dom-videoframe-destroy"><c- g>destroy</c-></a>();
   <a class="n" data-link-type="idl-name" href="#videoframe"><c- n>VideoFrame</c-></a> <a class="idl-code" data-link-type="method" href="#dom-videoframe-clone"><c- g>clone</c-></a>();
 
   <c- b>Promise</c->&lt;<a class="n" data-link-type="idl-name" href="https://html.spec.whatwg.org/multipage/imagebitmap-and-animations.html#imagebitmap"><c- n>ImageBitmap</c-></a>> <a class="idl-code" data-link-type="method" href="#dom-videoframe-createimagebitmap"><c- g>createImageBitmap</c-></a>(
@@ -4424,7 +4426,7 @@ event named <code class="idl"><a data-link-type="idl" href="#eventdef-videotrack
   <c- b>readonly</c-> <c- b>attribute</c-> <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-unsigned-long"><c- b>unsigned</c-> <c- b>long</c-></a> <a class="idl-code" data-link-type="attribute" data-readonly data-type="unsigned long" href="#dom-plane-rows"><c- g>rows</c-></a>;
   <c- b>readonly</c-> <c- b>attribute</c-> <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-unsigned-long"><c- b>unsigned</c-> <c- b>long</c-></a> <a class="idl-code" data-link-type="attribute" data-readonly data-type="unsigned long" href="#dom-plane-length"><c- g>length</c-></a>;
 
-  <a class="n" data-link-type="idl-name"><c- n>void</c-></a> <a class="idl-code" data-link-type="method" href="#dom-plane-readinto"><c- g>readInto</c-></a>(<a class="n" data-link-type="idl-name" href="https://heycam.github.io/webidl/#ArrayBufferView"><c- n>ArrayBufferView</c-></a> <a href="#dom-plane-readinto-dst-dst"><code><c- g>dst</c-></code></a>);
+  <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-undefined"><c- b>undefined</c-></a> <a class="idl-code" data-link-type="method" href="#dom-plane-readinto"><c- g>readInto</c-></a>(<a class="n" data-link-type="idl-name" href="https://heycam.github.io/webidl/#ArrayBufferView"><c- n>ArrayBufferView</c-></a> <a href="#dom-plane-readinto-dst-dst"><code><c- g>dst</c-></code></a>);
 };
 
 <c- b>dictionary</c-> <a href="#dictdef-planeinit"><code><c- g>PlaneInit</c-></code></a> {
@@ -4446,8 +4448,8 @@ event named <code class="idl"><a data-link-type="idl" href="#eventdef-videotrack
   <c- b>readonly</c-> <c- b>attribute</c-> <a class="n" data-link-type="idl-name" href="#enumdef-videotrackreaderstate"><c- n>VideoTrackReaderState</c-></a> <a class="idl-code" data-link-type="attribute" data-readonly data-type="VideoTrackReaderState" href="#dom-videotrackreader-readystate"><c- g>readyState</c-></a>;
   <c- b>attribute</c-> <a class="n" data-link-type="idl-name" href="https://html.spec.whatwg.org/multipage/webappapis.html#eventhandler"><c- n>EventHandler</c-></a> <a class="idl-code" data-link-type="attribute" data-type="EventHandler" href="#dom-videotrackreader-onended"><c- g>onended</c-></a>;
 
-  <a class="n" data-link-type="idl-name"><c- n>void</c-></a> <a class="idl-code" data-link-type="method" href="#dom-videotrackreader-start"><c- g>start</c-></a>(<a class="n" data-link-type="idl-name" href="#callbackdef-videoframeoutputcallback"><c- n>VideoFrameOutputCallback</c-></a> <a href="#dom-videotrackreader-start-callback-callback"><code><c- g>callback</c-></code></a>);
-  <a class="n" data-link-type="idl-name"><c- n>void</c-></a> <a class="idl-code" data-link-type="method" href="#dom-videotrackreader-stop"><c- g>stop</c-></a>();
+  <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-undefined"><c- b>undefined</c-></a> <a class="idl-code" data-link-type="method" href="#dom-videotrackreader-start"><c- g>start</c-></a>(<a class="n" data-link-type="idl-name" href="#callbackdef-videoframeoutputcallback"><c- n>VideoFrameOutputCallback</c-></a> <a href="#dom-videotrackreader-start-callback-callback"><code><c- g>callback</c-></code></a>);
+  <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-undefined"><c- b>undefined</c-></a> <a class="idl-code" data-link-type="method" href="#dom-videotrackreader-stop"><c- g>stop</c-></a>();
 };
 
 <c- b>enum</c-> <a href="#enumdef-videotrackreaderstate"><code><c- g>VideoTrackReaderState</c-></code></a> {
@@ -4461,7 +4463,7 @@ event named <code class="idl"><a data-link-type="idl" href="#eventdef-videotrack
   <aside class="dfn-panel" data-for="control-message-queue">
    <b><a href="#control-message-queue">#control-message-queue</a></b><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-control-message-queue">2. Processing Model</a> <a href="#ref-for-control-message-queue①">(2)</a>
+    <li><a href="#ref-for-control-message-queue">2. Codec Processing Model</a> <a href="#ref-for-control-message-queue①">(2)</a>
     <li><a href="#ref-for-control-message-queue②">3.4. Methods</a> <a href="#ref-for-control-message-queue③">(2)</a>
     <li><a href="#ref-for-control-message-queue④">4.4. Methods</a> <a href="#ref-for-control-message-queue⑤">(2)</a>
     <li><a href="#ref-for-control-message-queue⑥">5.4. Methods</a> <a href="#ref-for-control-message-queue⑦">(2)</a>
@@ -4473,7 +4475,7 @@ event named <code class="idl"><a data-link-type="idl" href="#eventdef-videotrack
   <aside class="dfn-panel" data-for="control-messages">
    <b><a href="#control-messages">#control-messages</a></b><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-control-messages">2. Processing Model</a>
+    <li><a href="#ref-for-control-messages">2. Codec Processing Model</a>
     <li><a href="#ref-for-control-messages①">3.4. Methods</a> <a href="#ref-for-control-messages②">(2)</a>
     <li><a href="#ref-for-control-messages③">4.4. Methods</a> <a href="#ref-for-control-messages④">(2)</a>
     <li><a href="#ref-for-control-messages⑤">5.4. Methods</a> <a href="#ref-for-control-messages⑥">(2)</a>
@@ -4498,7 +4500,7 @@ event named <code class="idl"><a data-link-type="idl" href="#eventdef-videotrack
   <aside class="dfn-panel" data-for="running-a-control-message">
    <b><a href="#running-a-control-message">#running-a-control-message</a></b><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-running-a-control-message">2. Processing Model</a>
+    <li><a href="#ref-for-running-a-control-message">2. Codec Processing Model</a>
     <li><a href="#ref-for-running-a-control-message①">7.1. Configure Decoder</a>
    </ul>
   </aside>
@@ -4850,16 +4852,12 @@ event named <code class="idl"><a data-link-type="idl" href="#eventdef-videotrack
     <li><a href="#ref-for-valid-codec-string③">8.5. VideoEncoderConfig</a>
    </ul>
   </aside>
-  <aside class="dfn-panel" data-for="audiodecoderconfig">
-   <b><a href="#audiodecoderconfig">#audiodecoderconfig</a></b><b>Referenced in:</b>
-   <ul>
-    <li><a href="#ref-for-audiodecoderconfig">8.2. AudioDecoderConfig</a>
-   </ul>
-  </aside>
   <aside class="dfn-panel" data-for="dictdef-audiodecoderconfig">
    <b><a href="#dictdef-audiodecoderconfig">#dictdef-audiodecoderconfig</a></b><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-dictdef-audiodecoderconfig">3. AudioDecoder Interface</a>
+    <li><a href="#ref-for-dictdef-audiodecoderconfig①">7.1. Configure Decoder</a>
+    <li><a href="#ref-for-dictdef-audiodecoderconfig②">8.2. AudioDecoderConfig</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="valid-audiodecoderconfig">
@@ -4896,8 +4894,9 @@ event named <code class="idl"><a data-link-type="idl" href="#eventdef-videotrack
    <b><a href="#dictdef-videodecoderconfig">#dictdef-videodecoderconfig</a></b><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-dictdef-videodecoderconfig">4. VideoDecoder Interface</a>
-    <li><a href="#ref-for-dictdef-videodecoderconfig①">8.3. VideoDecoderConfig</a>
-    <li><a href="#ref-for-dictdef-videodecoderconfig②">10.2.5. Algorithms</a>
+    <li><a href="#ref-for-dictdef-videodecoderconfig①">7.1. Configure Decoder</a>
+    <li><a href="#ref-for-dictdef-videodecoderconfig②">8.3. VideoDecoderConfig</a>
+    <li><a href="#ref-for-dictdef-videodecoderconfig③">10.2.5. Algorithms</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="valid-videodecoderconfig">
@@ -5188,7 +5187,7 @@ event named <code class="idl"><a data-link-type="idl" href="#eventdef-videotrack
     <li><a href="#ref-for-audioframe①">5. AudioEncoder Interface</a>
     <li><a href="#ref-for-audioframe②">7.5. AudioFrame Output</a>
     <li><a href="#ref-for-audioframe③">10.1.2. Constructors</a>
-    <li><a href="#ref-for-audioframe④">10.5. Algorithms</a>
+    <li><a href="#ref-for-audioframe④">10.6. Clone Frame (with frame)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dictdef-audioframeinit">
@@ -5241,7 +5240,7 @@ event named <code class="idl"><a data-link-type="idl" href="#eventdef-videotrack
     <li><a href="#ref-for-videoframe⑧">10.2.4. Methods</a> <a href="#ref-for-videoframe⑨">(2)</a> <a href="#ref-for-videoframe①⓪">(3)</a>
     <li><a href="#ref-for-videoframe①①">10.3. Plane Interface</a> <a href="#ref-for-videoframe①②">(2)</a> <a href="#ref-for-videoframe①③">(3)</a> <a href="#ref-for-videoframe①④">(4)</a> <a href="#ref-for-videoframe①⑤">(5)</a>
     <li><a href="#ref-for-videoframe①⑥">10.3.1. Internal Slots</a>
-    <li><a href="#ref-for-videoframe①⑦">10.5. Algorithms</a> <a href="#ref-for-videoframe①⑧">(2)</a>
+    <li><a href="#ref-for-videoframe①⑦">10.6. Clone Frame (with frame)</a> <a href="#ref-for-videoframe①⑧">(2)</a>
     <li><a href="#ref-for-videoframe①⑨">11. VideoTrackReader Interface</a>
     <li><a href="#ref-for-videoframe②⓪">11.1. VideoTrackReaderState Values</a> <a href="#ref-for-videoframe②①">(2)</a>
     <li><a href="#ref-for-videoframe②②">11.5. Event Summary</a>
@@ -5601,10 +5600,10 @@ event named <code class="idl"><a data-link-type="idl" href="#eventdef-videotrack
     <li><a href="#ref-for-dom-videotrackreader-stop">11. VideoTrackReader Interface</a>
    </ul>
   </aside>
-  <aside class="dfn-panel" data-for="track-monitor">
-   <b><a href="#track-monitor">#track-monitor</a></b><b>Referenced in:</b>
+  <aside class="dfn-panel" data-for="running-the-track-monitor">
+   <b><a href="#running-the-track-monitor">#running-the-track-monitor</a></b><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-track-monitor">11.6. Methods</a> <a href="#ref-for-track-monitor①">(2)</a>
+    <li><a href="#ref-for-running-the-track-monitor">11.6. Methods</a> <a href="#ref-for-running-the-track-monitor①">(2)</a>
    </ul>
   </aside>
 <script>/* script-dfn-panel */
