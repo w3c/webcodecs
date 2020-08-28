@@ -61,8 +61,8 @@ Definitions {#definitions}
 :: An encoded frame that does not depend on any other frames for decoding.
 
 
-Processing Model {#processing-model}
-====================================
+Codec Processing Model {#codec-processing-model}
+================================================
 
 New codec tasks may be scheduled while previous tasks are still pending. For
 example, web authors may call `decode()` without waiting for the previous
@@ -116,11 +116,11 @@ interface AudioDecoder {
   readonly attribute CodecState state;
   readonly attribute long decodeQueueSize;
 
-  void configure(AudioDecoderConfig config);
-  void decode(EncodedAudioChunk chunk);
-  Promise<void> flush();
-  void reset();
-  void close();
+  undefined configure(AudioDecoderConfig config);
+  undefined decode(EncodedAudioChunk chunk);
+  Promise<undefined> flush();
+  undefined reset();
+  undefined close();
 };
 
 dictionary AudioDecoderInit {
@@ -128,18 +128,18 @@ dictionary AudioDecoderInit {
   required WebCodecsErrorCallback error;
 };
 
-callback AudioFrameOutputCallback = void(AudioFrame output);
+callback AudioFrameOutputCallback = undefined(AudioFrame output);
 </xmp>
 </pre>
 
 Internal Slots {#audiodecoder-internal-slots}
 ---------------------------------------------
 <dl>
-<dt><dfn for=AudoDecoder>[[codec implementation]]</dfn></dt>
+<dt><dfn attribute for=AudoDecoder>[[codec implementation]]</dfn></dt>
 <dd>Underlying decoder implementation provided by the User Agent.</dd>
-<dt><dfn for=AudoDecoder>[[output callback]]</dfn></dt>
+<dt><dfn attribute for=AudoDecoder>[[output callback]]</dfn></dt>
 <dd>Callback given at construction for decoded outputs.</dd>
-<dt><dfn for=AudoDecoder>[[error callback]]</dfn></dt>
+<dt><dfn attribute for=AudoDecoder>[[error callback]]</dfn></dt>
 <dd>Callback given at construction for decode errors.</dd>
 </dl>
 
@@ -234,11 +234,11 @@ interface VideoDecoder {
   readonly attribute CodecState state;
   readonly attribute long decodeQueueSize;
 
-  void configure(VideoDecoderConfig config);
-  void decode(EncodedVideoChunk chunk);
-  Promise<void> flush();
-  void reset();
-  void close();
+  undefined configure(VideoDecoderConfig config);
+  undefined decode(EncodedVideoChunk chunk);
+  Promise<undefined> flush();
+  undefined reset();
+  undefined close();
 };
 
 dictionary VideoDecoderInit {
@@ -246,18 +246,18 @@ dictionary VideoDecoderInit {
   required WebCodecsErrorCallback error;
 };
 
-callback VideoFrameOutputCallback = void(VideoFrame output);
+callback VideoFrameOutputCallback = undefined(VideoFrame output);
 </xmp>
 </pre>
 
 Internal Slots {#videodecoder-internal-slots}
 ---------------------------------------------
 <dl>
-<dt><dfn for=VideoDecoder>[[codec implementation]]</dfn></dt>
+<dt><dfn attribute for=VideoDecoder>[[codec implementation]]</dfn></dt>
 <dd>Underlying decoder implementation provided by the User Agent.</dd>
-<dt><dfn for=VideoDecoder>[[output callback]]</dfn></dt>
+<dt><dfn attribute for=VideoDecoder>[[output callback]]</dfn></dt>
 <dd>Callback given at construction for decoded outputs.</dd>
-<dt><dfn for=VideoDecoder>[[error callback]]</dfn></dt>
+<dt><dfn attribute for=VideoDecoder>[[error callback]]</dfn></dt>
 <dd>Callback given at construction for decode errors.</dd>
 </dl>
 
@@ -351,11 +351,11 @@ interface AudioEncoder {
   constructor(AudioEncoderInit init);
   readonly attribute CodecState state;
   readonly attribute long encodeQueueSize;
-  void configure(AudioEncoderConfig config);
-  void encode(AudioFrame frame);
-  Promise<void> flush();
-  void reset();
-  void close();
+  undefined configure(AudioEncoderConfig config);
+  undefined encode(AudioFrame frame);
+  Promise<undefined> flush();
+  undefined reset();
+  undefined close();
 };
 
 dictionary AudioEncoderInit {
@@ -363,18 +363,18 @@ dictionary AudioEncoderInit {
   required WebCodecsErrorCallback error;
 };
 
-callback EncodedAudioChunkOutputCallback = void(EncodedAudioChunk output);
+callback EncodedAudioChunkOutputCallback = undefined(EncodedAudioChunk output);
 </xmp>
 </pre>
 
 Internal Slots {#audioencoder-internal-slots}
 ---------------------------------------------
 <dl>
-<dt><dfn for=AudioEncoder>[[codec implementation]]</dfn></dt>
+<dt><dfn attribute for=AudioEncoder>[[codec implementation]]</dfn></dt>
 <dd>Underlying encoder implementation provided by the User Agent.</dd>
-<dt><dfn for=AudioEncoder>[[output callback]]</dfn></dt>
+<dt><dfn attribute for=AudioEncoder>[[output callback]]</dfn></dt>
 <dd>Callback given at construction for encoded outputs.</dd>
-<dt><dfn for=AudioEncoder>[[error callback]]</dfn></dt>
+<dt><dfn attribute for=AudioEncoder>[[error callback]]</dfn></dt>
 <dd>Callback given at construction for encode errors.</dd>
 </dl>
 
@@ -473,11 +473,11 @@ interface VideoEncoder {
   constructor(VideoEncoderInit init);
   readonly attribute CodecState state;
   readonly attribute long encodeQueueSize;
-  void configure(VideoEncoderConfig config);
-  void encode(VideoFrame frame, optional VideoEncoderEncodeOptions options = {});
-  Promise<void> flush();
-  void reset();
-  void close();
+  undefined configure(VideoEncoderConfig config);
+  undefined encode(VideoFrame frame, optional VideoEncoderEncodeOptions options = {});
+  Promise<undefined> flush();
+  undefined reset();
+  undefined close();
 };
 
 dictionary VideoEncoderInit {
@@ -485,18 +485,18 @@ dictionary VideoEncoderInit {
   required WebCodecsErrorCallback error;
 };
 
-callback EncodedVideoChunkOutputCallback = void(EncodedVideoChunk output);
+callback EncodedVideoChunkOutputCallback = undefined(EncodedVideoChunk output);
 </xmp>
 </pre>
 
 Internal Slots {#videoencoder-internal-slots}
 ---------------------------------------------
 <dl>
-<dt><dfn for=VideoEncoder>[[codec implementation]]</dfn></dt>
+<dt><dfn attribute for=VideoEncoder>[[codec implementation]]</dfn></dt>
 <dd>Underlying encoder implementation provided by the User Agent.</dd>
-<dt><dfn for=VideoEncoder>[[output callback]]</dfn></dt>
+<dt><dfn attribute for=VideoEncoder>[[output callback]]</dfn></dt>
 <dd>Callback given at construction for encoded outputs.</dd>
-<dt><dfn for=VideoEncoder>[[error callback]]</dfn></dt>
+<dt><dfn attribute for=VideoEncoder>[[error callback]]</dfn></dt>
 <dd>Callback given at construction for encode errors.</dd>
 </dl>
 
@@ -594,7 +594,7 @@ owns the invoking method.
 
 <dfn>Configure Decoder</dfn>{#configure-decoder-algorithm}
 ----------------------------------------------------------
-Given either an AudioDecoderConfig or VideoDecoderConfig |config|, this
+Given either an {{AudioDecoderConfig}} or {{VideoDecoderConfig}} |config|, this
 algorithm attempts to select a codec implementation that supports |config|.
 
 Run the following steps:
@@ -764,7 +764,7 @@ Run these steps:
     3. Let timestamp be the timestamp from the associated input AudioFrame.
     4. Let duration be the duration from the associated input AudioFrame.
 7. Let |chunk| be a new {{EncodedAudioChunk}} constructed with |chunkInit|.
-8. Invoke [[output callback]] with |chunk|.
+8. Invoke **[[output callback]]** with |chunk|.
 
 <dfn>EncodedVideoChunk Output</dfn>{#encodedvideochunk-output-algorithm}
 ------------------------------------------------------------------------
@@ -776,13 +776,13 @@ Run these steps:
     3. Let timestamp be the timestamp from the associated input {{VideoFrame}}.
     4. Let duration be the duration from the associated input {{VideoFrame}}.
 3. Let |chunk| be a new {{EncodedVideoChunk}} constructed with |chunkInit|.
-4. Invoke [[output callback]] with chunk.
+4. Invoke **[[output callback]]** with chunk.
 
 Configurations{#configurations}
 ===============================
 
-<dfn>Codec String</dfn>{#config-codec-string}
---------------------------------------------
+<dfn export>Codec String</dfn>{#config-codec-string}
+----------------------------------------------------
 In other media specifications, codec strings historically accompanied
     [[mime types]] as the “codecs=” parameter
     ({{MediaSource/isTypeSupported()}}, {{HTMLMediaElement/canPlayType()}}).
@@ -802,28 +802,44 @@ NOTE: Not a comma separated list.
     concepts.
 
 
-NOTE: There is no unified specification for codec strings. Each codec has its
-    own unique string format, specified by the authors of the codec. Relevant
-    specifications include:
-        * h264, aac - [[RFC6381]]
-        * vp9 - https://www.webmproject.org/vp9/mp4/#codecs-parameter-string,
-        * hevc - ISO IEC 14496-15 dated 2012 or newer in the Annex E.3
-        * av1 - https://aomediacodec.github.io/av1-isobmff/#codecsparam,
+<div class='note'>
+  NOTE: There is no unified specification for codec strings. Each codec has its
+  own unique string format, specified by the authors of the codec. Relevant
+  specifications include:
 
+  * h264, aac - [[RFC6381]]
+  * vp9 -
+      <a href="https://www.webmproject.org/vp9/mp4/#codecs-parameter-string">
+        https://www.webmproject.org/vp9/mp4/#codecs-parameter-string
+      </a>
+  * hevc -
+      <a href="https://www.iso.org/standard/74429.html">
+        ISO IEC 14496-15 dated 2012 or newer in the Annex E.3
+      </a>
+  * av1 -
+      <a href="https://aomediacodec.github.io/av1-isobmff/#codecsparam">
+        https://aomediacodec.github.io/av1-isobmff/#codecsparam
+      </a>
+
+</div>
+
+<div class='note'>
 NOTE: Some valid examples include:
-    'vp8', 'vp09.00.10.08', 'avc1.4D401E', 'opus', 'mp4a.40.2', 'flac'
+'vp8', 'vp09.00.10.08', 'avc1.4D401E', 'opus', 'mp4a.40.2', 'flac'
 
-    Invalid examples include:<br>
-    'video/webm; codecs="vp8"' (invalid to supply full mimetype; valid as just
+Invalid examples include:<br>
+  * 'video/webm; codecs="vp8"' (invalid to supply full mimetype; valid as just
         'vp8')<br>
-    'codecs="opus"' (invalid to include codecs= prefix)<br>
-    ‘flac,vorbis’ (describes more than one codec)<br>
-    ‘vp9’ (ambiguous about profile and level)<br>
-    'video/mp4' (describes a container, not a codec)<br>
+  * 'codecs="opus"' (invalid to include codecs= prefix)<br>
+  * ‘flac,vorbis’ (describes more than one codec)<br>
+  * ‘vp9’ (ambiguous about profile and level)<br>
+  * 'video/mp4' (describes a container, not a codec)<br>
+
+</div>
 
 
-<dfn>AudioDecoderConfig</dfn>{#audio-decoder-config}
-----------------------------------------------------
+AudioDecoderConfig{#audio-decoder-config}
+-----------------------------------------
 <pre class='idl'>
 <xmp>
 dictionary AudioDecoderConfig {
@@ -835,8 +851,8 @@ dictionary AudioDecoderConfig {
 </xmp>
 </pre>
 
-To check if an <a>AudioDecoderConfig</a> is a <dfn>valid
-    AudioDecoderConfig</dfn>, run these steps:
+To check if an {{AudioDecoderConfig}} is a <dfn>valid AudioDecoderConfig</dfn>,
+    run these steps:
 1. If codec is not a <a>valid codec string</a>, return `false`.
 2. Return `true`.
 
@@ -859,8 +875,8 @@ To check if an <a>AudioDecoderConfig</a> is a <dfn>valid
 </dl>
 
 
-<dfn>VideoDecoderConfig</dfn>{#video-decoder-config}
-----------------------------------------------------
+VideoDecoderConfig{#video-decoder-config}
+-----------------------------------------
 <pre class='idl'>
 <xmp>
 dictionary VideoDecoderConfig {
@@ -955,8 +971,8 @@ run these steps:
 </dl>
 
 
-<dfn>AudioEncoderConfig</dfn>{#audio-encoder-config}
-----------------------------------------------------
+AudioEncoderConfig{#audio-encoder-config}
+-----------------------------------------
 <pre class='idl'>
 <xmp>
 dictionary AudioEncoderConfig {
@@ -985,8 +1001,8 @@ run these steps:
 </dl>
 
 
-<dfn>VideoEncoderConfig</dfn>{#video-encoder-config}
-----------------------------------------------------
+VideoEncoderConfig{#video-encoder-config}
+-----------------------------------------
 <pre class='idl'>
 <xmp>
 dictionary VideoEncoderConfig {
@@ -1015,8 +1031,8 @@ To check if a {{VideoEncoderConfig}} is a <dfn>valid VideoEncoderConfig</dfn>,
 </dl>
 
 
-<dfn>VideoEncoderEncodeOptions</dfn>{#video-encoder-options}
-------------------------------------------------------------
+VideoEncoderEncodeOptions{#video-encoder-options}
+-------------------------------------------------
 
 <pre class='idl'>
 <xmp>
@@ -1032,8 +1048,8 @@ dictionary VideoEncoderEncodeOptions {
 </dl>
 
 
-<dfn>CodecState</dfn>{#codec-state}
------------------------------------
+CodecState{#codec-state}
+------------------------
 <pre class='idl'>
 <xmp>
 enum CodecState {
@@ -1059,11 +1075,11 @@ enum CodecState {
   </dd>
 </dl>
 
-<dfn>WebCodecsErrorCallback</dfn>{#error-callback}
---------------------------------------------------
+WebCodecsErrorCallback{#error-callback}
+---------------------------------------
 <pre class='idl'>
 <xmp>
-callback WebCodecsErrorCallback = void(DOMException error);
+callback WebCodecsErrorCallback = undefined(DOMException error);
 </xmp>
 </pre>
 
@@ -1096,7 +1112,7 @@ enum EncodedAudioChunkType {
 </xmp>
 </pre>
 
-### Constructors ### {#encodedaudiochunk-constructors}
+### Constructors ###{#encodedaudiochunk-constructors}
 <dfn constructor for=EncodedAudioChunk title="EncodedAudioChunk(init)">
   EncodedAudioChunk(init)
 </dfn>
@@ -1106,7 +1122,7 @@ enum EncodedAudioChunkType {
     3. Assign a copy of `init.data` to `chunk.data`.
 5. Return |chunk|.
 
-### Attributes ### {#encodedaudiochunk-attributes}
+### Attributes ###{#encodedaudiochunk-attributes}
 <dl>
   <dt><dfn attribute for=EncodedAudioChunk>type</dfn></dt>
   <dd>Describes whether the chunk is a key frame.</dd>
@@ -1145,7 +1161,7 @@ enum EncodedVideoChunkType {
 </xmp>
 </pre>
 
-### Constructors ### {#encodedvideochunk-constructors}
+### Constructors ###{#encodedvideochunk-constructors}
 <dfn constructor for=EncodedVideoChunk title="EncodedVideoChunk(init)">
   EncodedVideoChunk(init)
 </dfn>
@@ -1157,7 +1173,7 @@ enum EncodedVideoChunkType {
 2. Assign a copy of `init.data` to `chunk.data`.
 3. Return |chunk|.
 
-### Attributes ### {#encodedvideochunk-attributes}
+### Attributes ###{#encodedvideochunk-attributes}
 <dl>
   <dt><dfn attribute for=EncodedVideoChunk>type</dfn></dt>
   <dd>Describes whether the chunk is a key frame or not.</dd>
@@ -1188,7 +1204,7 @@ interface AudioFrame {
   constructor(AudioFrameInit init);
   readonly attribute unsigned long long timestamp;
   readonly attribute AudioBuffer? buffer;
-  void close();
+  undefined close();
 };
 
 dictionary AudioFrameInit {
@@ -1267,7 +1283,7 @@ interface VideoFrame {
   readonly attribute unsigned long long? duration;
   readonly attribute unsigned long long? timestamp;
 
-  void destroy();
+  undefined destroy();
   VideoFrame clone();
 
   Promise<ImageBitmap> createImageBitmap(
@@ -1541,7 +1557,7 @@ interface Plane {
   readonly attribute unsigned long rows;
   readonly attribute unsigned long length;
 
-  void readInto(ArrayBufferView dst);
+  undefined readInto(ArrayBufferView dst);
 };
 
 dictionary PlaneInit {
@@ -1612,19 +1628,19 @@ enum PixelFormat {
 
 Algorithms{#raw-media-algorithms}
 ---------------------------------
+<h3 id='clone-frame-algo'><dfn>Clone Frame</dfn> (with |frame|)</h3>
 
-<dfn>Clone Frame</dfn>{#clone-frame} (with |frame|)
-1. Let cloneFrame be a new object of the same type as frame (either
+1. Let |cloneFrame| be a new object of the same type as frame (either
     {{AudioFrame}} or {{VideoFrame}}).
 2. Initialize each attribute and internal slot of clone with a copy of the value
     from the corresponding attribute of this frame.
 
-NOTE: User Agents are encouraged to avoid expensive copies of large objects (for
-    instance, {{VideoFrame}} pixel data). Frame types are immutable, so the
+NOTE: User Agents are encouraged to avoid expensive copies of large objects
+    (for instance, {{VideoFrame}} pixel data). Frame types are immutable, so the
     above step may be implemented using memory sharing techniques such as
     reference counting.
 
-3. Return cloneFrame.
+3. Return |cloneFrame|.
 
 
 VideoTrackReader Interface{#videotrackreader-interface}
@@ -1642,8 +1658,8 @@ interface VideoTrackReader {
   readonly attribute VideoTrackReaderState readyState;
   attribute EventHandler onended;
 
-  void start(VideoFrameOutputCallback callback);
-  void stop();
+  undefined start(VideoFrameOutputCallback callback);
+  undefined stop();
 };
 
 enum VideoTrackReaderState {
@@ -1742,7 +1758,7 @@ When invoked, run these steps:
 2. Assign `"started"` to {{VideoTrackReader/readyState}}.
 3. Assign <var ignore>callback</var> to the {{VideoTrackReader/[[callback]]}}
     internal slot.
-4. In parallel, run the <a>track monitor</a>.
+4. In parallel, <a>run the track monitor</a>.
 
 <dfn method for=VideoTrackReader>stop()</dfn>
 
@@ -1751,7 +1767,7 @@ Stops calling the {{VideoFrameOutputCallback}} with {{VideoFrame}}s from the
 
 When invoked, run these steps:
 1. If readyState is not `"started"`, throw an {{InvalidStateError}}.
-2. Cease running the <a>track monitor</a>.
+2. Cease <a>running the track monitor</a>.
 3. Assign `"stopped"` to the {{VideoTrackReader/readyState}}.
 4. Assign `null` to the {{VideoTrackReader/[[callback]]}} internal slot.
 
@@ -1759,15 +1775,16 @@ When invoked, run these steps:
 MediaStreamTrack Monitoring{#mediastreamtrack-monitoring}
 ---------------------------------------------------------
 
-The <dfn>track monitor</dfn> may be started and stopped by the user to control
-the calling of the {{VideoFrameOutputCallback}}.
+The <dfn export>track monitor</dfn> may be started and stopped by the user to
+    control the calling of the {{VideoFrameOutputCallback}}.
 
-<dfn>Running the track monitor</dfn> means monitoring
-{{VideoTrackReader/[[track]]}} for the arrival of new picture data as well as
-changes to `[[track]].readyState`.
+<dfn lt="running the track monitor|run the track monitor">Running the track
+    monitor</dfn> means monitoring {{VideoTrackReader/[[track]]}} for the
+    arrival of new picture data as well as changes to `[[track]].readyState`.
 
-While `[[track]].readyState` is "live", for each new picture that arrives in
-{{VideoTrackReader/[[track]]}}, execute the following steps:
+While `[[track]].readyState` is {{MediaStreamTrackState/live}}, for each new
+    picture that arrives in {{VideoTrackReader/[[track]]}}, execute the
+    following steps:
 
     NOTE: Pictures that arrived prior to the start of this loop are not
         considered.
@@ -1800,7 +1817,7 @@ While `[[track]].readyState` is "live", for each new picture that arrives in
         <var ignore>cropWidth</var>, and <var ignore>cropHeight</var> be the
         crop region of the decoded video frame in pixels, prior to any aspect
         ratio adjustments.
-    4. Let <<var ignore>displayWidth</var> and <<var ignore>displayHeight</var>
+    4. Let <var ignore>displayWidth</var> and <var ignore>displayHeight</var>
         be the display size of the decoded video frame in pixels.
 4. Let |frame| be a {{VideoFrame}}, constructed with |pixelFormat|,
         |planes|, and |frameInit|.
