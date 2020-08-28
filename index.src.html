@@ -1322,7 +1322,7 @@ NOTE: this section needs work. Current wording assumes a VideoFrame can always
     underlying UA resources may be GPU backed or formatted in such a way that
     conversion to an allowed pixel format requires expensive copies and
     translation. When this occurs, we should allow planes to be null and format
-    to be “opaque” to aundefined early optimization. We should make conversion
+    to be “opaque” to avoid early optimization. We should make conversion
     explicit and user controlled by offering a `videoFrame.convertTo(format)`
     that returns a Promise containing a new VideoFrame for which the
     copies/translations are performed.
@@ -1635,7 +1635,7 @@ Algorithms{#raw-media-algorithms}
 2. Initialize each attribute and internal slot of clone with a copy of the value
     from the corresponding attribute of this frame.
 
-NOTE: User Agents are encouraged to aundefined expensive copies of large objects
+NOTE: User Agents are encouraged to avoid expensive copies of large objects
     (for instance, {{VideoFrame}} pixel data). Frame types are immutable, so the
     above step may be implemented using memory sharing techniques such as
     reference counting.
@@ -1799,7 +1799,7 @@ While `[[track]].readyState` is {{MediaStreamTrackState/live}}, for each new
 1. Let |planes| be a sequence of {{Plane}}s containing the picture data.
 2. Let |pixelFormat| be the {{PixelFormat}} of |planes|.
 
-    NOTE: This section needs work. The UA should aundefined early optimizations to
+    NOTE: This section needs work. The UA should avoid early optimizations to
         convert between PixelFormats, but currently only a narrow set of formats
         is defined in this spec. We should consider adding an "opaque" format
         along with an API coverter API to make pixel format conversion
