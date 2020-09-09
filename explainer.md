@@ -153,7 +153,7 @@ const audioEncoder = new AudioEncoder({
   output: muxAndSend,
   error: onEncoderError,
 });
-const audioPromise = audioEnocer.configure({
+const audioPromise = audioEncoder.configure({
   codec: 'opus',
   tuning: {
     bitrate: 60_000,
@@ -181,7 +181,7 @@ try {
 }
 
 // Finally, feed the encoders data from the track readers.
-readAndEncode(audio.getReader(), audioEcoder);
+readAndEncode(audio.getReader(), audioEncoder);
 readAndEncode(video.getReader(), videoEncoder);
 ```
 
@@ -324,7 +324,7 @@ const video = (new VideoTrackReader(videoTrack)).readable;
 // Feed the encoders data from the track readers. Encoded outputs are
 // immediately sent on the wire. See readAndEncode() definition from
 // earlier examples.
-readAndEncode(audio.getReader(), audioEcoder);
+readAndEncode(audio.getReader(), audioEncoder);
 readAndEncode(video.getReader(), videoEncoder);
 
 // Setup decoders and check for unsupported configuration.
