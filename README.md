@@ -1,5 +1,14 @@
 https://wicg.github.io/web-codecs/
 
+# Try it out in Chrome 86
+
+To try it on your machine, either
+* enable `chrome://flags/#enable-experimental-web-platform-features`, or 
+* pass `--enable-blink-features=WebCodecs` flag via the command line.
+
+To try it with real users, sign up for the origin trial here
+https://developers.chrome.com/origintrials/#/register_trial/-7811493553674125311
+
 # WebCodecs
 
 API that allows web applications to encode and decode audio and video
