@@ -2,12 +2,14 @@ https://wicg.github.io/web-codecs/
 
 # Try it out in Chrome 86
 
+Please see [this doc for current limitations](https://docs.google.com/document/d/1H1UHn3DIw-LOfBUdNUFR6l2-zSipXuHCVmhrwF3rR6w/edit).
+
 To try it on your machine, either
 * enable `chrome://flags/#enable-experimental-web-platform-features`, or 
 * pass `--enable-blink-features=WebCodecs` flag via the command line.
 
-To try it with real users, sign up for the origin trial here
-https://developers.chrome.com/origintrials/#/register_trial/-7811493553674125311
+To try it with real users, [sign up for the origin trial here](
+https://developers.chrome.com/origintrials/#/register_trial/-7811493553674125311).
 
 # WebCodecs
 
