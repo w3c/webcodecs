@@ -47,6 +47,9 @@ spec: mediacapture-main; urlPrefix: https://w3c.github.io/mediacapture-main/
         for:MediaStreamTrackState; text: live; url: #idl-def-MediaStreamTrackState.live
     type: enum-value
         for:MediaStreamTrackState; text: ended; url: #idl-def-MediaStreamTrackState.ended
+
+spec: mimesniff; urlPrefix: https://mimesniff.spec.whatwg.org/#
+    type: dfn; text: MIME type; url: mime-type
 </pre>
 
 
@@ -54,8 +57,8 @@ Definitions {#definitions}
 ==========================
 
 : Codec
-:: Refers generically to the types: AudioDecoder, AudioEncoder, VideoDecoder,
-    and VideoEncoder.
+:: Refers generically to an instance of AudioDecoder, AudioEncoder,
+    VideoDecoder, or VideoEncoder.
 
 : Key Frame
 :: An encoded frame that does not depend on any other frames for decoding.
@@ -73,8 +76,7 @@ Each codec has a single <dfn>control message queue</dfn> that is a list of
 <dfn>control messages</dfn>.
 
 <dfn lt="Enqueues a control message|Queue a control message">Queuing a control
-    message</dfn>
-    means adding the message to the end of a codec’s <a>control
+    message</dfn> means enqueing the message to the codec’s <a>control
     message queue</a>. Invoking codec methods will often queue a control message
     to schedule work.
 
@@ -82,14 +84,10 @@ Each codec has a single <dfn>control message queue</dfn> that is a list of
     message</dfn> means executing a sequence of steps specified by the method
     that enqueued the message.
 
-Control messages in a control message queue are ordered by time of insertion.
-The oldest message is therefore the one at the front of the control message
-queue.
-
 <dfn lt="Run the control message processing loop">Running the control message
     processing loop</dfn> means executing these steps.
 1. While the control message queue is not empty
-    1. Let |front message| be the next oldest <a>control message</a>
+    1. Let |front message| be the next dequeued <a>control message</a>
     2. If |front message| cannot be executed now, return.
 
         The User Agent must decide when further processing is blocked because of
@@ -98,7 +96,7 @@ queue.
             processing loop when the blockage is resolved.
 
         NOTE: a blocked processing loop is visible to authors via the
-            decodeQueueSize and encodeQueueSize attributes.
+            `decodeQueueSize` and `encodeQueueSize` attributes.
 
     3. Dequeue |front message| from the <a>control message queue</a>.
     4. Run the |front message| <a>control message steps</a>.
@@ -135,11 +133,11 @@ callback AudioFrameOutputCallback = undefined(AudioFrame output);
 Internal Slots {#audiodecoder-internal-slots}
 ---------------------------------------------
 <dl>
-<dt><dfn attribute for=AudoDecoder>[[codec implementation]]</dfn></dt>
+<dt><dfn attribute for=AudioDecoder>[[codec implementation]]</dfn></dt>
 <dd>Underlying decoder implementation provided by the User Agent.</dd>
-<dt><dfn attribute for=AudoDecoder>[[output callback]]</dfn></dt>
+<dt><dfn attribute for=AudioDecoder>[[output callback]]</dfn></dt>
 <dd>Callback given at construction for decoded outputs.</dd>
-<dt><dfn attribute for=AudoDecoder>[[error callback]]</dfn></dt>
+<dt><dfn attribute for=AudioDecoder>[[error callback]]</dfn></dt>
 <dd>Callback given at construction for decode errors.</dd>
 </dl>
 
@@ -148,9 +146,9 @@ Constructors {#audiodecoder-constructors}
 <dfn constructor for=AudioDecoder title="AudioDecoder(init)">
   AudioDecoder(init)
 </dfn>
-1. Let d be a new AudioDecoder object.
-2. Assign init.output to the [[output callback]] internal slot.
-3. Assign init.error to the [[error callback]] internal slot.
+1. Let d be a new {{AudioDecoder}} object.
+2. Assign init.output to the {{AudioDecoder/[[output callback]]}} internal slot.
+3. Assign init.error to the {{AudioDecoder/[[error callback]]}} internal slot.
 4. Assign "unconfigured" to d.state.
 4. Return d.
 
@@ -267,8 +265,8 @@ Constructors {#videodecoder-constructors}
   VideoDecoder(init)
 </dfn>
 1. Let d be a new VideoDecoder object.
-2. Assign `init.output` to the [[output callback]] internal slot.
-3. Assign `init.error` to the [[error callback]] internal slot.
+2. Assign `init.output` to the {{VideoDecoder/[[output callback]]}} internal slot.
+3. Assign `init.error` to the {{VideoDecoder/[[error callback]]}} internal slot.
 4. Assign "unconfigured" to `d.state`.
 5. Return d.
 
@@ -384,8 +382,8 @@ Constructors {#audioencoder-constructors}
   AudioEncoder(init)
 </dfn>
 1. Let e be a new AudioEncoder object.
-2. Assign `init.output` to the [[output callback]] internal slot.
-3. Assign `init.error` to the [[error callback]] internal slot.
+2. Assign `init.output` to the {{AudioEncoder/[[output callback]]}} internal slot.
+3. Assign `init.error` to the {{AudioEncoder/[[error callback]]}} internal slot.
 4. Assign "unconfigured" to `e.state`.
 5. Return e.
 
@@ -506,8 +504,8 @@ Constructors {#videoencoder-constructors}
   VideoEncoder(init)
 </dfn>
 1. Let e be a new VideoEncoder object.
-2. Assign `init.output` to the [[output callback]] internal slot.
-3. Assign `init.error` to the [[error callback]] internal slot.
+2. Assign `init.output` to the {{VideoEncoder/[[output callback]]}} internal slot.
+3. Assign `init.error` to the {{VideoEncoder/[[error callback]]}} internal slot.
 4. Assign "unconfigured" to `e.state`.
 5. Return e.
 
@@ -732,8 +730,6 @@ Running a control message to configure the encoder means running these steps:
 --------------------------------------------------------------------------------------------
 Run these steps:
 1. If `state` is not `"configured"`, throw an {{InvalidStateError}}.
-2. If the value of |frame|'s **\[[detached]]** internal slot is
-    `true`, throw a {{TypeError}}.
 3. Let |frameClone| hold the result of running the <a>Clone Frame</a> algorithm
     with |frame|.
 4. Destroy the original |frame| by invoking `frame.destroy()`.
@@ -783,16 +779,14 @@ Configurations{#configurations}
 
 <dfn export>Codec String</dfn>{#config-codec-string}
 ----------------------------------------------------
-In other media specifications, codec strings historically accompanied
-    [[mime types]] as the “codecs=” parameter
-    ({{MediaSource/isTypeSupported()}}, {{HTMLMediaElement/canPlayType()}}).
-    In this specification, encoded media is not containerized; hence, only the
-    value of the codecs parameter is accepted.
+In other media specifications, codec strings historically accompanied a
+    <a>MIME type</a> as the “codecs=” parameter
+    ({{MediaSource/isTypeSupported()}}, {{HTMLMediaElement/canPlayType()}})
+    [[RFC6381]]. In this specification, encoded media is not containerized; hence,
+    only the value of the codecs parameter is accepted.
 
 A <dfn>valid codec string</dfn> must meet the following conditions.
 1. Is valid per the relevant codec specification (see examples below).
-
-NOTE: This needs more work. We might consider a registry of specs/strings.
 
 2. It describes a single codec.
 
@@ -823,9 +817,14 @@ NOTE: Not a comma separated list.
 
 </div>
 
-<div class='note'>
-NOTE: Some valid examples include:
-'vp8', 'vp09.00.10.08', 'avc1.4D401E', 'opus', 'mp4a.40.2', 'flac'
+<div class='example'>
+Valid examples include:<br>
+  * 'vp8'
+  * 'vp09.00.10.08'
+  * 'avc1.4D401E',
+  * 'opus',
+  * 'mp4a.40.2',
+  * 'flac'
 
 Invalid examples include:<br>
   * 'video/webm; codecs="vp8"' (invalid to supply full mimetype; valid as just
@@ -1037,14 +1036,18 @@ VideoEncoderEncodeOptions{#video-encoder-options}
 <pre class='idl'>
 <xmp>
 dictionary VideoEncoderEncodeOptions {
-  boolean keyFrame;
+  boolean keyFrame = false;
 };
 </xmp>
 </pre>
 
 <dl>
   <dt><dfn dict-member for=VideoEncoderEncodeOptions>keyFrame</dfn></dt>
-  <dd>Indicates whether the given frame MUST be encoded as a key frame.</dd>
+  <dd>
+    A value of `true` indicates that the given frame MUST be encoded as a key
+    frame. A value of `false` indicates that the user agent has flexibility to
+    decide whether the frame will be encoded as a key frame.
+  </dd>
 </dl>
 
 
@@ -1470,6 +1473,9 @@ NOTE: this section needs work. Current wording assumes a VideoFrame can always
 Immediately frees system resources. Destruction applies to all references,
     including references that are serialized and passed across Realms.
 
+NOTE: Authors should take care to manage frame lifetimes by calling 
+    {{VideoFrame/destroy()}} immediately when frames are no longer needed.
+
 NOTE: Use clone() to create a deep copy. Cloned frames have their own lifetime
     and will not be affected by destroying the original frame.
 
@@ -1484,9 +1490,7 @@ Creates a new {{VideoFrame}} with a separate lifetime containing a deep copy of
     this frame’s resources.
 
 NOTE:  VideoFrames may require a large amount of memory. Use
-    {{VideoFrame/clone()}} sparingly. Authors should take care to manage frame
-    lifetimes by calling {{VideoFrame/destroy()}} immediately when frames are no
-    longer needed.
+    {{VideoFrame/clone()}} sparingly.
 
 When invoked, run the following steps:
 1. If the value of the {{VideoFrame/[[detached]]}} slot is `true`, return a
