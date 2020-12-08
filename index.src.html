@@ -50,6 +50,12 @@ spec: mediacapture-main; urlPrefix: https://w3c.github.io/mediacapture-main/
 
 spec: mimesniff; urlPrefix: https://mimesniff.spec.whatwg.org/#
     type: dfn; text: MIME type; url: mime-type
+
+spec: infra; urlPrefix: https://infra.spec.whatwg.org/#
+    type: dfn; text: queue; url: queues
+    type: dfn; text: enqueing; url: queue-enqueue;
+    type: dfn; text: dequeued; url: queue-dequeue;
+    type: dfn; text: empty; url: list-is-empty;
 </pre>
 
 
@@ -72,11 +78,11 @@ example, web authors may call `decode()` without waiting for the previous
 `decode()` to generate an output. This is facilitated by the following
 mechanisms.
 
-Each codec has a single <dfn>control message queue</dfn> that is a list of
-<dfn>control messages</dfn>.
+Each codec has a single <dfn>control message queue</dfn> that is a <a>queue</a>
+of <dfn>control messages</dfn>.
 
 <dfn lt="Enqueues a control message|Queue a control message">Queuing a control
-    message</dfn> means enqueing the message to the codec’s <a>control
+    message</dfn> means <a>enqueing</a> the message to the codec’s <a>control
     message queue</a>. Invoking codec methods will often queue a control message
     to schedule work.
 
@@ -86,8 +92,8 @@ Each codec has a single <dfn>control message queue</dfn> that is a list of
 
 <dfn lt="Run the control message processing loop">Running the control message
     processing loop</dfn> means executing these steps.
-1. While the control message queue is not empty
-    1. Let |front message| be the next dequeued <a>control message</a>
+1. While the control message queue is not <a>empty</a>
+    1. Let |front message| be the next <a>dequeued</a> <a>control message</a>
     2. If |front message| cannot be executed now, return.
 
         The User Agent must decide when further processing is blocked because of
@@ -730,13 +736,13 @@ Running a control message to configure the encoder means running these steps:
 --------------------------------------------------------------------------------------------
 Run these steps:
 1. If `state` is not `"configured"`, throw an {{InvalidStateError}}.
-3. Let |frameClone| hold the result of running the <a>Clone Frame</a> algorithm
+2. Let |frameClone| hold the result of running the <a>Clone Frame</a> algorithm
     with |frame|.
-4. Destroy the original |frame| by invoking `frame.destroy()`.
-5. Increment `encodeQueueSize`.
-6. <a>Queue a control message</a> to encode |frameClone| with |options| and
+3. Destroy the original |frame| by invoking `frame.destroy()`.
+4. Increment `encodeQueueSize`.
+5. <a>Queue a control message</a> to encode |frameClone| with |options| and
     |output algorithm|.
-7. Run the control message processing loop.
+6. Run the control message processing loop.
 
 Running a control message to encode the frame means running these steps.
 1. Decrement `encodeQueueSize`.
@@ -759,8 +765,8 @@ Run these steps:
     2. Let type be the EnocdedAudioChunkType of the encoded audio data.
     3. Let timestamp be the timestamp from the associated input AudioFrame.
     4. Let duration be the duration from the associated input AudioFrame.
-7. Let |chunk| be a new {{EncodedAudioChunk}} constructed with |chunkInit|.
-8. Invoke **[[output callback]]** with |chunk|.
+3. Let |chunk| be a new {{EncodedAudioChunk}} constructed with |chunkInit|.
+4. Invoke **[[output callback]]** with |chunk|.
 
 <dfn>EncodedVideoChunk Output</dfn>{#encodedvideochunk-output-algorithm}
 ------------------------------------------------------------------------
@@ -1473,7 +1479,7 @@ NOTE: this section needs work. Current wording assumes a VideoFrame can always
 Immediately frees system resources. Destruction applies to all references,
     including references that are serialized and passed across Realms.
 
-NOTE: Authors should take care to manage frame lifetimes by calling 
+NOTE: Authors should take care to manage frame lifetimes by calling
     {{VideoFrame/destroy()}} immediately when frames are no longer needed.
 
 NOTE: Use clone() to create a deep copy. Cloned frames have their own lifetime
