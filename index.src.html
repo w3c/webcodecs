@@ -107,6 +107,11 @@ of <dfn>control messages</dfn>.
     3. Dequeue |front message| from the <a>control message queue</a>.
     4. Run the |front message| <a>control message steps</a>.
 
+<dfn lt="Reset the control message queue">Resetting the control message
+    queue</dfn> means executing these steps:
+1. For each <a>control message</a> in the <a>control message queue</a>:
+    1. If a control message has an associated promise, reject the promise.
+    2. Remove the message from the queue.
 
 AudioDecoder Interface {#audiodecoder-interface}
 ================================================
@@ -185,7 +190,17 @@ Methods {#audiodecoder-methods}
     When invoked, run these steps:
     1. If |config| is not a <a>valid AudioDecoderConfig</a>, throw a
         {{TypeError}}.
-    2. Run the <a>Configure Decoder</a> algorithm with |config|.
+    2. If {{AudioDecoder/state}} is `“closed”`, throw an {{InvalidStateError}}.
+    3. If the user agent cannot provide a codec implementation to support
+        config, throw a {{NotSupportedError}}.
+    4. Set {{AudioDecoder/state}} to `"configured"`.
+    5. <a>Queue a control message</a> to configure the decoder with |config|.
+    6. <a>Run the control message processing loop</a>.
+
+    <a>Running a control message</a> to configure the decoder means running
+    these steps:
+    1. Assign {{AudioDecoder/[[codec implementation]]}} with an implementation
+        supporting |config|.
   </dd>
 
   <dt><dfn method for=AudioDecoder>decode(chunk)</dfn></dt>
@@ -193,9 +208,25 @@ Methods {#audiodecoder-methods}
     <a>Enqueues a control message</a> to decode the given |chunk|.
 
     When invoked, run these steps:
-    1. Let |output algorithm| be the <a>AudioFrame Output</a> algorithm.
-    2. Run the <a>Decode Chunk</a> algorithm with |chunk| and
-        |output algorithm|.
+    1. If {{AudioDecoder/state}} is not `"configured"`, throw an
+        {{InvalidStateError}}.
+    2. Increment {{AudioDecoder/decodeQueueSize}}.
+    3. <a>Queue a control message</a> to decode the |chunk|.
+    4. <a>Run the control message processing loop</a>.
+
+    Running a control message to decode the chunk means running these steps:
+    1. Decrement {{AudioDecoder/decodeQueueSize}}
+    2. Let |codec implementation queue| be the result of starting a new
+        <a>parallel queue</a>.
+    3. Enqueue the following steps to |codec implementation queue|:
+        1. Attempt to use {{AudioDecoder/[[codec implementation]]}} to decode
+            the chunk.
+        2. If decoding results in an error, queue a task on the media element
+            task source to run the <a>Close AudioDecoder</a> algorithm with
+            {{EncodingError}}.
+        3. Otherwise, for each decoded audio data |output|, queue a task on the
+            media element task source to run the <a>Output AudioFrame</a>
+            algorithm with |output|.
   </dd>
 
   <dt><dfn method for=AudioDecoder>flush()</dfn></dt>
@@ -204,8 +235,19 @@ Methods {#audiodecoder-methods}
     and emits all outputs.
 
     When invoked, run these steps:
-    1. Let |output algorithm| be the <a>AudioFrame Output</a> algorithm.
-    2. Run the <a>Flush</a> algorithm with |output algorithm|.
+    1. If {{AudioDecoder/state}} is not `"configured"`, return a Promise
+        rejected with a newly created {{InvalidStateError}}.
+    2. Let |promise| be a new Promise.
+    3. <a>Queue a control message</a> to flush the codec with |promise|.
+    4. Return |promise|.
+
+    Running a control message to flush the codec means running these steps
+        with |promise|.
+    1. Signal {{AudioDecoder/[[codec implementation]]}} to emit all pending
+        outputs.
+    2. For each decoded audio data |output|, queue a task on the media element
+        task source to run the <a>Output AudioFrame</a> algorithm with |output|.
+    3. Queue a task on the media element task source to run resolve |promise|.
   </dd>
 
   <dt><dfn method for=AudioDecoder>reset()</dfn></dt>
@@ -214,7 +256,7 @@ Methods {#audiodecoder-methods}
     <a>control messages</a> in the <a>control message queue</a>, and all pending
     callbacks.
 
-    When invoked, run the <a>Reset</a> algorithm.
+    When invoked, run the <a>Reset AudioDecoder</a> algorithm.
   </dd>
 
   <dt><dfn method for=AudioDecoder>close()</df></dt>
@@ -222,7 +264,40 @@ Methods {#audiodecoder-methods}
     Immediately aborts all pending work and releases system resources. Close is
     permanent.
 
-    When invoked, run the <a>Close</a> algorithm.
+    When invoked, run the <a>Close AudioDecoder</a> algorithm.
+  </dd>
+</dl>
+
+Algorithms {#audiodecoder-algorithms}
+-------------------------------------
+<dl>
+  <dt><dfn>Output AudioFrame</dfn> (with |output|)</dt>
+  <dd>
+    Run these steps:
+    1. Let |buffer| be an {{AudioBuffer}} containing the decoded audio data in
+        |output|.
+    2. Let |frame| be an {{AudioFrame}} containing |buffer| and a timestamp for
+        the output.
+    3. Invoke {{AudioDecoder/[[output callback]]}} with frame.
+  </dd>
+  <dt><dfn>Reset AudioDecoder</dfn></dt>
+  <dd>
+    Run these steps:
+    1. If {{AudioDecoder/state}} is `“closed”`, throw an {{InvalidStateError}}.
+    2. Set {{AudioDecoder/state}} to `“unconfigured”`.
+    3. Signal {{AudioDecoder/[[codec implementation]]}} to cease producing
+        output for the previous configuration.
+    4. <a>Reset the control message queue</a>.
+  </dd>
+  <dt><dfn>Close AudioDecoder</dfn> (with error)</dt>
+  <dd>
+    Run these steps:
+    1. Run the <a>Reset AudioDecoder</a> algorithm.
+    2. Set {{AudioDecoder/state}} to `“closed”`.
+    3. Clear {{AudioDecoder/[[codec implementation]]}} and release associated
+        system resources.
+    4. If |error| is set, invoke {{AudioDecoder/[[error callback]]}} with
+        |error|.
   </dd>
 </dl>
 
@@ -661,15 +736,6 @@ This algorithm fires the error callback and permanently closes the codec.
 Run these steps:
 1. Cease processing of <a>control message queue</a>.
 2. Run the <a>Close</a> algorithm with {{EncodingError}}.
-
-<dfn>AudioFrame Output</dfn>{#audio-frame-output-algorithm}
------------------------------------------------------------
-Run these steps:
-1. If `state` is not `“configured”`, abort the following steps.
-2. Let |buffer| be an {{AudioBuffer}} containing the decoded audio data.
-3. Let |frame| be an {{AudioFrame}} containing |buffer| and a timestamp for the
-    output.
-4. Invoke **[[output callback]]** with frame.
 
 <dfn>VideoFrame Output</dfn>{#video-frame-output-algorithm}
 -----------------------------------------------------------
