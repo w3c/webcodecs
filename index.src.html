@@ -717,8 +717,10 @@ VideoEncoder Interface {#videoencoder-interface}
 [Exposed=(Window,Worker)]
 interface VideoEncoder {
   constructor(VideoEncoderInit init);
+
   readonly attribute CodecState state;
   readonly attribute long encodeQueueSize;
+
   undefined configure(VideoEncoderConfig config);
   undefined encode(VideoFrame frame, optional VideoEncoderEncodeOptions options = {});
   Promise<undefined> flush();
@@ -784,7 +786,17 @@ Methods {#videoencoder-methods}
     When invoked, run these steps:
     1. If |config| is not a <a>valid VideoEncoderConfig</a>, throw a
         {{TypeError}}.
-    2. Run the <a>Configure Encoder</a> algorithm with |config|.
+    2. If {{VideoEncoder/state}} is `"closed"`, throw an {{InvalidStateError}}.
+    3. If the user agent cannot provide a codec implementation to support
+        |config|, throw a {{NotSupportedError}}.
+    4. Set {{VideoEncoder/state}} to `"configured"`.
+    5. <a>Queue a control message</a> to configure the encoder using |config|.
+    6. <a>Run the control message processing loop</a>.
+
+    Running a control message to configure the encoder means running these
+    steps:
+    1. Assign {{VideoEncoder/[[codec implementation]]}} with an implementation
+        supporting |config|.
   </dd>
 
   <dt><dfn method for=VideoEncoder>encode(frame, options)</dfn></dt>
@@ -797,9 +809,28 @@ Methods {#videoencoder-methods}
     When invoked, run these steps:
     1. If the value of |frame|'s {{VideoFrame/[[detached]]}} internal slot is
         `true`, throw a {{TypeError}}.
-    2. Let |output algorithm| be the <a>EncodedVideoChunk Output</a> algorithm.
-    3. Run the <a>Encode Frame</a> algorithm with |frame| and
-        |output algorithm|.
+    2. If {{VideoEncoder/state}} is not `"configured"`, throw an
+        {{InvalidStateError}}.
+    3. Let |frameClone| hold the result of running the <a>Clone Frame</a>
+        algorithm with |frame|.
+    4. Destroy the original |frame| by invoking `frame.destroy()`.
+    5. Increment {{VideoEncoder/encodeQueueSize}}.
+    6. <a>Queue a control message</a> to encode |frameClone|.
+    7. Run the control message processing loop.
+
+    Running a control message to encode the frame means running these steps.
+    1. Decrement {{VideoEncoder/encodeQueueSize}}.
+    2. Let |codec implementation queue| be the result of starting a new
+        <a>parallel queue</a>.
+    3. Enqueue the following steps to |codec implementation queue|:
+        1. Attempt to use {{VideoEncoder/[[codec implementation]]}} to encode
+            |frameClone| according to |options|.
+        2. If encoding results in an error, queue a task on the media element
+            task source to run the <a>Close VideoEncoder</a> algorithm with
+            {{EncodingError}}.
+        3. Otherwise, for each encoded video data |output|, queue a task on the
+            media element task source to run the <a>Output EncodedVideoChunk</a>
+            algorithm with |output|.
   </dd>
 
   <dt><dfn method for=VideoEncoder>flush()</dfn></dt>
@@ -808,8 +839,20 @@ Methods {#videoencoder-methods}
     and emits all outputs.
 
     When invoked, run these steps:
-    1. Let |output algorithm| be the <a>EncodedVideoChunk Output</a> algorithm.
-    2. Run the <a>Flush</a> algorithm with |output algorithm|.
+    1. If {{VideoEncoder/state}} is not `"configured"`, return a Promise
+        rejected with a newly created {{InvalidStateError}}.
+    2. Let |promise| be a new Promise.
+    3. <a>Queue a control message</a> to flush the codec with |promise|.
+    4. Return |promise|.
+
+    Running a control message to flush the codec means running these steps
+        with |promise|.
+    1. Signal {{VideoEncoder/[[codec implementation]]}} to emit all pending
+        outputs.
+    2. For each encoded video data |output|, queue a task on the media element
+        task source to run the <a>Output EncodedVideoChunk</a> algorithm with
+        |output|.
+    3. Queue a task on the media element task source to resolve |promise|.
   </dd>
 
   <dt><dfn method for=VideoEncoder>reset()</dfn></dt>
@@ -818,7 +861,7 @@ Methods {#videoencoder-methods}
     <a>control messages</a> in the <a>control message queue</a>, and all pending
     callbacks.
 
-    When invoked, run the <a>Reset</a> algorithm.
+    When invoked, run the <a>Reset VideoEncoder</a> algorithm.
   </dd>
 
   <dt><dfn method for=VideoEncoder>close()</df></dt>
@@ -826,111 +869,50 @@ Methods {#videoencoder-methods}
     Immediately aborts all pending work and releases system resources. Close is
     permanent.
 
-    When invoked, run the <a>Close</a> algorithm.
+    When invoked, run the <a>Close VideoEncoder</a> algorithm.
   </dd>
 </dl>
 
+Algorithms {#videoencoder-algorithms}
+-------------------------------------
+<dl>
+  <dt><dfn>Output EncodedVideoChunk</dfn> (with |output|)</dt>
+  <dd>
+    Run these steps:
+    1. Let |chunkInit| be an {{EncodedVideoChunkInit}} with the following keys:
+        1. Let {{EncodedVideoChunkInit/data}} contain the encoded video data
+            from |output|.
+        2. Let {{EncodedVideoChunkInit/type}} be the {{EncodedVideoChunkType}}
+            of |output|.
+        3. Let {{EncodedVideoChunkInit/timestamp}} be the
+            {{VideoFrame/timestamp}} from the {{VideoFrame}} associated with
+            |output|.
+        4. Let {{EncodedVideoChunkInit/duration}} be the {{VideoFrame/duration}}
+            from the {{VideoFrame}} associated with |output|.
+    2. Let |chunk| be a new {{EncodedVideoChunk}} constructed with |chunkInit|.
+    3. Invoke {{VideoEncoder/[[output callback]]}} with chunk.
+  </dd>
+  <dt><dfn>Reset VideoEncoder</dfn></dt>
+  <dd>
+    Run these steps:
+    1. If {{VideoEncoder/state}} is `“closed”`, throw an {{InvalidStateError}}.
+    2. Set {{VideoEncoder/state}} to `“unconfigured”`.
+    3. Signal {{VideoEncoder/[[codec implementation]]}} to cease producing
+        output for the previous configuration.
+    4. <a>Reset the control message queue</a>.
+  </dd>
+  <dt><dfn>Close VideoEncoder</dfn></dt>
+  <dd>
+    Run these steps:
+    1. Run the <a>Reset VideoEncoder</a> algorithm.
+    2. Set {{VideoEncoder/state}} to `“closed”`.
+    3. Clear {{VideoEncoder/[[codec implementation]]}} and release associated
+        system resources.
+    4. If |error| is set, invoke the {{VideoEncoder/[[error callback]]}} with
+        |error|.
+  </dd>
+</dl>
 
-Decoder and Encoder Algorithms {#decoder-and-encoder-algorithms}
-================================================================
-
-The following algorithms run in the scope of the methods that invoke them.
-Mentions of attributes and internal slots refer to members of the interface that
-owns the invoking method.
-
-<dfn>Flush</dfn>{#flush-algorithm}
-----------------------------------
-Given an |output algorithm|, this algorithm flushes all pending outputs to the
-    output callback.
-
-Run these steps:
-1. If `state` is not `"configured"`, return a Promise rejected with a newly
-    created {{InvalidStateError}}.
-2. Let |promise| be a new Promise.
-3. <a>Queue a control message</a> to flush the codec with |promise| and
-    |output algorithm|
-4. Return |promise|.
-
-Running a control message to flush the codec means running these steps
-    with |promise| and |output algorithm|.
-1. Signal **[[codec implementation]]** to emit all pending outputs.
-2. For each output, run |output algorithm|.
-3. Resolve |promise|.
-
-<dfn>Reset</dfn>{#reset-algorithm}
-----------------------------------
-Run these steps:
-1. If `state` is `“closed”`, throw an {{InvalidStateError}}.
-2. Set `state` to `“unconfigured”`.
-3. Signal **[[codec implementation]]** to cease producing output
-    for the previous configuration.
-
-NOTE: Some tasks to emit outputs may already be queued in the event loop. These
-    outputs will be dropped by the output algorithms, which abort if `state` is
-    not `“configured”`.
-
-4. For each <a>control message</a> in the <a>control message queue</a>:
-    1. If a control message has an associated promise, reject the promise.
-    2. Remove the message from the queue.
-
-<dfn>Close</dfn> (with error){#close-algorithm}
------------------------------------------------
-Run these steps:
-1. Run the <a>Reset</a> algorithm.
-2. Set `state` to `“closed”`.
-3. Clear **[[codec implementation]]** and release associated system
-    resources.
-4. If |error| is set, invoke **[[error callback]]** with |error|.
-
-<dfn>Configure Encoder</dfn> (with config){#configure-encoder-algorithm}
-------------------------------------------------------------------------
-Run the following steps:
-1. If `state` is `"closed"`, throw an {{InvalidStateError}}.
-2. If the user agent cannot provide a codec implementation to support |config|,
-    throw a {{NotSupportedError}}.
-3. Set `state` to `"configured"`.
-4. <a>Queue a control message</a> to configure the encoder using |config|.
-5. <a>Run the control message processing loop</a>.
-
-Running a control message to configure the encoder means running these steps:
-1. Assign **[[codec implementation]]** with an implementation
-    supporting |config|.
-
-<dfn>Encode Frame</dfn> (with frame, options, and output algorithm){#encode-frame-algorithm}
---------------------------------------------------------------------------------------------
-Run these steps:
-1. If `state` is not `"configured"`, throw an {{InvalidStateError}}.
-2. Let |frameClone| hold the result of running the <a>Clone Frame</a> algorithm
-    with |frame|.
-3. Destroy the original |frame| by invoking `frame.destroy()`.
-4. Increment `encodeQueueSize`.
-5. <a>Queue a control message</a> to encode |frameClone| with |options| and
-    |output algorithm|.
-6. Run the control message processing loop.
-
-Running a control message to encode the frame means running these steps.
-1. Decrement `encodeQueueSize`.
-2. Let |codec implementation queue| be the result of starting a new
-    <a>parallel queue</a>.
-3. Enqueue the following steps to |codec implementation queue|:
-    1. Attempt to use **[[codec implementation]]** and options to encode
-        |frameClone|.
-    2. If encoding results in an error, queue a task on the media element task
-        source to run the codec error algorithm.
-    3. Otherwise, for each output, queue a task on the media element task source
-        to run the provided output algorithm.
-
-<dfn>EncodedVideoChunk Output</dfn>{#encodedvideochunk-output-algorithm}
-------------------------------------------------------------------------
-Run these steps:
-1. If `state` is not `“configured”`, abort the following steps.
-2. Let |chunkInit| be an {{EncodedVideoChunkInit}} with the following keys:
-    1. Let data contain the encoded video data.
-    2. Let type be the {{EncodedVideoChunkType}} of the encoded video data.
-    3. Let timestamp be the timestamp from the associated input {{VideoFrame}}.
-    4. Let duration be the duration from the associated input {{VideoFrame}}.
-3. Let |chunk| be a new {{EncodedVideoChunk}} constructed with |chunkInit|.
-4. Invoke **[[output callback]]** with chunk.
 
 Configurations{#configurations}
 ===============================
