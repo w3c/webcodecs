@@ -733,7 +733,7 @@ dictionary VideoEncoderInit {
   required WebCodecsErrorCallback error;
 };
 
-callback EncodedVideoChunkOutputCallback = undefined(EncodedVideoChunk output);
+callback EncodedVideoChunkOutputCallback = undefined(EncodedVideoChunk output, VideoDecoderConfig? output_config);
 </xmp>
 </pre>
 
@@ -746,6 +746,13 @@ Internal Slots {#videoencoder-internal-slots}
 <dd>Callback given at construction for encoded outputs.</dd>
 <dt><dfn attribute for=VideoEncoder>[[error callback]]</dfn></dt>
 <dd>Callback given at construction for encode errors.</dd>
+<dt><dfn attribute for=VideoEncoder>[[active encoder config]]</dfn></dt>
+<dd>The {{VideoEncoderConfig}} that is actively applied.</dd>
+<dt><dfn attribute for=VideoEncoder>[[active output config]]</dfn></dt>
+<dd>
+  The {{VideoDecoderConfig}} that describes how to decode the most recently
+  emitted {{EncodedVideoChunk}}.
+</dd>
 </dl>
 
 Constructors {#videoencoder-constructors}
@@ -797,6 +804,7 @@ Methods {#videoencoder-methods}
     steps:
     1. Assign {{VideoEncoder/[[codec implementation]]}} with an implementation
         supporting |config|.
+    2. Set {{VideoEncoder/[[active encoder config]]}} to `config`.
   </dd>
 
   <dt><dfn method for=VideoEncoder>encode(frame, options)</dfn></dt>
@@ -829,8 +837,8 @@ Methods {#videoencoder-methods}
             task source to run the <a>Close VideoEncoder</a> algorithm with
             {{EncodingError}}.
         3. Otherwise, for each encoded video data |output|, queue a task on the
-            media element task source to run the <a>Output EncodedVideoChunk</a>
-            algorithm with |output|.
+            media element task source to run the <a>Output EncodedVideoChunk</a> algorithm with |output| and
+            {{VideoEncoder/[[active encoder config]]}}.
   </dd>
 
   <dt><dfn method for=VideoEncoder>flush()</dfn></dt>
@@ -851,7 +859,7 @@ Methods {#videoencoder-methods}
         outputs.
     2. For each encoded video data |output|, queue a task on the media element
         task source to run the <a>Output EncodedVideoChunk</a> algorithm with
-        |output|.
+        |output| and {{VideoEncoder/[[active encoder config]]}}.
     3. Queue a task on the media element task source to resolve |promise|.
   </dd>
 
@@ -876,10 +884,38 @@ Methods {#videoencoder-methods}
 Algorithms {#videoencoder-algorithms}
 -------------------------------------
 <dl>
-  <dt><dfn>Output EncodedVideoChunk</dfn> (with |output|)</dt>
+  <dt>
+    <dfn>Output EncodedVideoChunk</dfn> (with |output| and
+    <var ignore=''>encoder_config</var>)
+  </dt>
   <dd>
     Run these steps:
-    1. Let |chunkInit| be an {{EncodedVideoChunkInit}} with the following keys:
+    1. Let |output_config| be a {{VideoDecoderConfig}} that describes |output|.
+        Initialize |output_config| as follows:
+        1. Assign `encoder_config.codec` to `output_config.codec`.
+        2. Assign `encoder_config.cropWidth` to `output_config.cropWidth`.
+        3. Assign `encoder_config.cropHeight` to `output_config.cropHeight`.
+        4. Assign `encoder_config.dislayWidth` to `output_config.displayWidth`.
+        5. Assign `encoder_config.dislayHeight` to
+            `output_config.displayHeight`.
+        6. Assign the remaining keys of `output_config` as determined by
+            {{VideoEncoder/[[codec implementation]]}}. The user agent
+            must ensure that the configuration is completely described
+            such that |output_config| could be used to correctly decode
+            |output|.
+
+            NOTE: This includes supplying the
+                {{VideoDecoderConfig/description}} to describe codec
+                specific "extradata" like the avcC bytes for AVC.
+    2. If |output_config| matches {{VideoEncoder/[[active output config]]}}, set
+        |output_config| to null. Otherwise, set
+        {{VideoEncoder/[[active output config]]}} to |output_config|.
+
+        NOTE: The {{VideoDecoderConfig}} |output_config| will be `null`
+            if the configuration hasn't changed from previous outputs. The first
+            output will always include a non-null |output_config|.
+
+   3. Let |chunkInit| be an {{EncodedVideoChunkInit}} with the following keys:
         1. Let {{EncodedVideoChunkInit/data}} contain the encoded video data
             from |output|.
         2. Let {{EncodedVideoChunkInit/type}} be the {{EncodedVideoChunkType}}
@@ -889,17 +925,21 @@ Algorithms {#videoencoder-algorithms}
             |output|.
         4. Let {{EncodedVideoChunkInit/duration}} be the {{VideoFrame/duration}}
             from the {{VideoFrame}} associated with |output|.
-    2. Let |chunk| be a new {{EncodedVideoChunk}} constructed with |chunkInit|.
-    3. Invoke {{VideoEncoder/[[output callback]]}} with chunk.
+    4. Let |chunk| be a new {{EncodedVideoChunk}} constructed with |chunkInit|.
+    5. Invoke {{VideoEncoder/[[output callback]]}} with |chunk| and
+        |output_config|.
+
   </dd>
   <dt><dfn>Reset VideoEncoder</dfn></dt>
   <dd>
     Run these steps:
     1. If {{VideoEncoder/state}} is `“closed”`, throw an {{InvalidStateError}}.
     2. Set {{VideoEncoder/state}} to `“unconfigured”`.
-    3. Signal {{VideoEncoder/[[codec implementation]]}} to cease producing
+    3. Set {{VideoEncoder/[[active encoder config]]}} to `null`.
+    4. Set {{VideoEncoder/[[active output config]]}} to `null`.
+    5. Signal {{VideoEncoder/[[codec implementation]]}} to cease producing
         output for the previous configuration.
-    4. <a>Reset the control message queue</a>.
+    6. <a>Reset the control message queue</a>.
   </dd>
   <dt><dfn>Close VideoEncoder</dfn></dt>
   <dd>
@@ -1057,7 +1097,7 @@ run these steps:
   <dd>
     A sequence of codec specific bytes, commonly known as extradata.
 
-    NOTE: For example, the VP9 vpcC bytes.
+    NOTE: Examples include the VP9 vpcC bytes or the AVC avcC bytes.
   </dd>
 
   <dt><dfn dict-member for=VideoDecoderConfig>codedWidth</dfn></dt>
@@ -1086,13 +1126,13 @@ run these steps:
 
   <dt><dfn dict-member for=VideoDecoderConfig>cropWidth</dfn></dt>
   <dd>
-    The width of pixels to include in the crop, starting from cropLeft.
+    The width in pixels to include in the crop, starting from cropLeft.
         Defaults to codedWidth if not present.
   </dd>
 
   <dt><dfn dict-member for=VideoDecoderConfig>cropHeight</dfn></dt>
   <dd>
-    The height of pixels to include in the crop, starting from cropLeft.
+    The height in pixels to include in the crop, starting from cropLeft.
         Defaults to codedHeight if not present.
   </dd>
 
@@ -1147,8 +1187,10 @@ VideoEncoderConfig{#video-encoder-config}
 dictionary VideoEncoderConfig {
   required DOMString codec;
   unsigned long long bitrate;
-  required unsigned long width;
-  required unsigned long height;
+  required unsigned long cropWidth;
+  required unsigned long cropHeight;
+  unsigned long displayWidth;
+  unsigned long displayHeight;
 };
 </xmp>
 </pre>
@@ -1157,17 +1199,67 @@ To check if a {{VideoEncoderConfig}} is a <dfn>valid VideoEncoderConfig</dfn>,
     run these steps:
 1. If {{VideoEncoderConfig/codec}} is not a <a>valid codec string</a>, return
     `false`.
-2. If {{VideoEncoderConfig/width}} = 0 or {{VideoEncoderConfig/height}} = 0,
-    return `false`.
+2. If {{VideoEncoderConfig/cropWidth}} = 0 or {{VideoEncoderConfig/cropHeight}}
+    = 0, return `false`.
+3. If {{VideoEncoderConfig/displayWidth}} = 0 or
+    {{VideoEncoderConfig/displayHeight}} = 0, return `false`.
+
 4. Return `true`.
 
 <dl>
-  <dt><dfn dict-member for=VideoEncoderConfig>width</dfn></dt>
-  <dd>The expected cropWidth of input VideoFrames to encode.</dd>
+  <dt><dfn dict-member for=VideoEncoderConfig>cropWidth</dfn></dt>
+  <dd>
+    The encoded width of output {{EncodedVideoChunk}}s in pixels, prior to any
+    display aspect ratio adjustments.
 
-  <dt><dfn dict-member for=VideoEncoderConfig>height</dfn></dt>
-  <dd>The expected cropHeight of input VideoFrames to encode.</dd>
+    The encoder must scale any {{VideoFrame}} who's {{VideoFrame/cropWidth}}
+    differs from this value.
+  </dd>
+
+  <dt><dfn dict-member for=VideoEncoderConfig>cropHeight</dfn></dt>
+  <dd>
+    The encoded height of output {{EncodedVideoChunk}}s in pixels, prior to any
+    display aspect ratio adjustments.
+
+    The encoder must scale any {{VideoFrame}} who's {{VideoFrame/cropHeight}}
+    differs from this value.
+  </dd>
 </dl>
+
+<div class='note'>
+  NOTE: The {{VideoEncoder}} will scale, not crop, input {{VideoFrame}}s to the
+      specified {{VideoEncoderConfig/cropWidth}} and
+      {{VideoEncoderConfig/cropHeight}}.
+
+      The naming of {{VideoEncoderConfig/cropWidth}} and
+      {{VideoEncoderConfig/cropHeight}} reflects that the encoded chunks may be
+      decoded to produce {{VideoFrame}}s who's {{VideoFrame/cropWidth}}
+      and {{VideoFrame/cropHeight}} will match these values.
+</div>
+
+<dl>
+  <dt><dfn dict-member for=VideoEncoderConfig>displayWidth</dfn></dt>
+  <dd>
+    The intended display width of output {{EncodedVideoChunk}}s in pixels.
+    Defaults to {{VideoEncoderConfig/cropWidth}} if not present.
+  </dd>
+
+  <dt><dfn dict-member for=VideoEncoderConfig>displayHeight</dfn></dt>
+  <dd>
+    The intended display height of output {{EncodedVideoChunk}}s in pixels.
+    Defaults to {{VideoEncoderConfig/cropWidth}} if not present.
+  </dd>
+</dl>
+
+<div class='note'>
+  NOTE: Providing a {{VideoEncoderConfig/displayWidth}} or
+      {{VideoEncoderConfig/displayHeight}} that differs from the crop dimensions
+      signals that chunks should be scaled after decoding to arrive at the final
+      display aspect ratio.
+
+      For many codecs this is merely pass-through information, but some codecs
+      may optionally include display sizing in the bitstream.
+</div>
 
 
 VideoEncoderEncodeOptions{#video-encoder-options}
@@ -1309,7 +1401,7 @@ enum EncodedVideoChunkType {
   EncodedVideoChunk(init)
 </dfn>
 1. Let |chunk| be a new {{EncodedVideoChunk}} object, initialized as follows
-    1. Assign `init.type` to chunk type.
+    1. Assign `init.type` to `chunk.type`.
     2. Assign `init.timestamp` to `chunk.timestamp`.
     3. If duration is present in init, assign `init.duration` to
         `chunk.duration`. Otherwise, assign null to `chunk.duration`.
