@@ -69,6 +69,12 @@ Definitions {#definitions}
 : Key Frame
 :: An encoded frame that does not depend on any other frames for decoding.
 
+: <dfn>Internal Pending Output</dfn>
+:: Codec outputs such as {{VideoFrame}}s that currently reside in the internal
+    pipeline of the underlying codec implementation. The underlying codec
+    implementation may emit new outputs only when a new inputs are provided. The
+    underlying codec implementation must emit all outputs in response to a
+    flush.
 
 Codec Processing Model {#codec-processing-model}
 ================================================
@@ -87,14 +93,17 @@ of <dfn>control messages</dfn>.
     to schedule work.
 
 <dfn lt="running a control message|control message steps">Running a control
-    message</dfn> means executing a sequence of steps specified by the method
+    message</dfn> means performing a sequence of steps specified by the method
     that enqueued the message.
 
+The steps of a control message may depend on <dfn>injected state</dfn>, supplied
+by the method that enqueud the message.
+
 <dfn lt="Run the control message processing loop">Running the control message
-    processing loop</dfn> means executing these steps.
+    processing loop</dfn> means performing these steps.
 1. While the control message queue is not <a>empty</a>
     1. Let |front message| be the next <a>dequeued</a> <a>control message</a>
-    2. If |front message| cannot be executed now, return.
+    2. If |front message| cannot be performd now, return.
 
         The User Agent must decide when further processing is blocked because of
             ongoing work as an implementation detail (e.g. the underlying
@@ -108,9 +117,10 @@ of <dfn>control messages</dfn>.
     4. Run the |front message| <a>control message steps</a>.
 
 <dfn lt="Reset the control message queue">Resetting the control message
-    queue</dfn> means executing these steps:
+    queue</dfn> means performing these steps:
 1. For each <a>control message</a> in the <a>control message queue</a>:
-    1. If a control message has an associated promise, reject the promise.
+    1. If a control message's <a>injected state</a> includes a promise, reject
+        that promise.
     2. Remove the message from the queue.
 
 AudioDecoder Interface {#audiodecoder-interface}
@@ -214,7 +224,7 @@ Methods {#audiodecoder-methods}
     3. <a>Queue a control message</a> to decode the |chunk|.
     4. <a>Run the control message processing loop</a>.
 
-    Running a control message to decode the chunk means running these steps:
+    Running a control message to decode the chunk means performing these steps:
     1. Decrement {{AudioDecoder/decodeQueueSize}}
     2. Let |codec implementation queue| be the result of starting a new
         <a>parallel queue</a>.
@@ -235,16 +245,16 @@ Methods {#audiodecoder-methods}
     and emits all outputs.
 
     When invoked, run these steps:
-    1. If {{AudioDecoder/state}} is not `"configured"`, return a Promise
-        rejected with a newly created {{InvalidStateError}}.
+    1. If {{AudioDecoder/state}} is not `"configured"`, return
+        [=a promise rejected with=] {{InvalidStateError}} {{DOMException}}.
     2. Let |promise| be a new Promise.
     3. <a>Queue a control message</a> to flush the codec with |promise|.
     4. Return |promise|.
 
-    Running a control message to flush the codec means running these steps
+    Running a control message to flush the codec means performing these steps
         with |promise|.
-    1. Signal {{AudioDecoder/[[codec implementation]]}} to emit all pending
-        outputs.
+    1. Signal {{AudioDecoder/[[codec implementation]]}} to emit all <a>internal
+        pending outputs</a>.
     2. For each decoded audio data |output|, queue a task on the media element
         task source to run the <a>Output AudioFrame</a> algorithm with |output|.
     3. Queue a task on the media element task source to resolve |promise|.
@@ -296,8 +306,8 @@ Algorithms {#audiodecoder-algorithms}
     2. Set {{AudioDecoder/state}} to `“closed”`.
     3. Clear {{AudioDecoder/[[codec implementation]]}} and release associated
         system resources.
-    4. If |error| is set, invoke the {{AudioDecoder/[[error callback]]}} with
-        |error|.
+    4. If |error| is set, queue a task on the media element task source to
+        invoke the {{AudioDecoder/[[error callback]]}} with |error|.
   </dd>
 </dl>
 
@@ -402,7 +412,7 @@ Methods {#videodecoder-methods}
     3. <a>Queue a control message</a> to decode the |chunk|.
     4. <a>Run the control message processing loop</a>.
 
-    Running a control message to decode the chunk means running these steps:
+    Running a control message to decode the chunk means performing these steps:
     1. Decrement {{VideoDecoder/decodeQueueSize}}
     2. Let |codec implementation queue| be the result of starting a new
         <a>parallel queue</a>.
@@ -423,16 +433,16 @@ Methods {#videodecoder-methods}
     and emits all outputs.
 
     When invoked, run these steps:
-    1. If {{VideoDecoder/state}} is not `"configured"`, return a Promise
-        rejected with a newly created {{InvalidStateError}}.
+    1. If {{VideoDecoder/state}} is not `"configured"`, return
+        [=a promise rejected with=] {{InvalidStateError}} {{DOMException}}.
     2. Let |promise| be a new Promise.
     3. <a>Queue a control message</a> to flush the codec with |promise|.
     4. Return |promise|.
 
-    Running a control message to flush the codec means running these steps
+    Running a control message to flush the codec means performing these steps
         with |promise|.
-    1. Signal {{VideoDecoder/[[codec implementation]]}} to emit all pending
-        outputs.
+    1. Signal {{VideoDecoder/[[codec implementation]]}} to emit all <a>internal
+        pending outputs</a>.
     2. For each decoded video frame data |output|, queue a task on the media
         element task source to run the <a>Output VideoFrame</a> algorithm with
         |output|.
@@ -501,8 +511,8 @@ Algorithms {#videodecoder-algorithms}
     2. Set {{VideoDecoder/state}} to `“closed”`.
     3. Clear {{VideoDecoder/[[codec implementation]]}} and release associated
         system resources.
-    4. If |error| is set, invoke the {{VideoDecoder/[[error callback]]}} with
-        |error|.
+    4. If |error| is set, queue a task on the media element task source to
+        invoke the {{VideoDecoder/[[error callback]]}} with |error|.
   </dd>
 </dl>
 
@@ -591,7 +601,7 @@ Methods {#audioencoder-methods}
     5. <a>Queue a control message</a> to configure the encoder using |config|.
     6. <a>Run the control message processing loop</a>.
 
-    Running a control message to configure the encoder means running these
+    Running a control message to configure the encoder means performing these
     steps:
     1. Assign {{AudioEncoder/[[codec implementation]]}} with an implementation
         supporting |config|.
@@ -616,7 +626,7 @@ Methods {#audioencoder-methods}
     6. <a>Queue a control message</a> to encode |frameClone|.
     7. Run the control message processing loop.
 
-    Running a control message to encode the frame means running these steps.
+    Running a control message to encode the frame means performing these steps.
     1. Decrement {{AudioEncoder/encodeQueueSize}}.
     2. Let |codec implementation queue| be the result of starting a new
         <a>parallel queue</a>.
@@ -637,16 +647,16 @@ Methods {#audioencoder-methods}
     and emits all outputs.
 
     When invoked, run these steps:
-    1. If {{AudioEncoder/state}} is not `"configured"`, return a Promise
-        rejected with a newly created {{InvalidStateError}}.
+    1. If {{AudioEncoder/state}} is not `"configured"`, return
+        [=a promise rejected with=] {{InvalidStateError}} {{DOMException}}.
     2. Let |promise| be a new Promise.
     3. <a>Queue a control message</a> to flush the codec with |promise|.
     4. Return |promise|.
 
-    Running a control message to flush the codec means running these steps
+    Running a control message to flush the codec means performing these steps
         with |promise|.
-    1. Signal {{AudioEncoder/[[codec implementation]]}} to emit all pending
-        outputs.
+    1. Signal {{AudioEncoder/[[codec implementation]]}} to emit all <a>internal
+        pending outputs</a>.
     2. For each encoded audio data |output|, queue a task on the media element
         task source to run the <a>Output EncodedAudioChunk</a> algorithm with
         |output|.
@@ -704,8 +714,8 @@ Algorithms {#audioencoder-algorithms}
     2. Set {{AudioEncoder/state}} to `“closed”`.
     3. Clear {{AudioEncoder/[[codec implementation]]}} and release associated
         system resources.
-    4. If |error| is set, invoke the {{AudioEncoder/[[error callback]]}} with
-        |error|.
+    4. If |error| is set, queue a task on the media element task source to
+        invoke the {{AudioEncoder/[[error callback]]}} with |error|.
   </dd>
 </dl>
 
@@ -800,7 +810,7 @@ Methods {#videoencoder-methods}
     5. <a>Queue a control message</a> to configure the encoder using |config|.
     6. <a>Run the control message processing loop</a>.
 
-    Running a control message to configure the encoder means running these
+    Running a control message to configure the encoder means performing these
     steps:
     1. Assign {{VideoEncoder/[[codec implementation]]}} with an implementation
         supporting |config|.
@@ -826,7 +836,7 @@ Methods {#videoencoder-methods}
     6. <a>Queue a control message</a> to encode |frameClone|.
     7. Run the control message processing loop.
 
-    Running a control message to encode the frame means running these steps.
+    Running a control message to encode the frame means performing these steps.
     1. Decrement {{VideoEncoder/encodeQueueSize}}.
     2. Let |codec implementation queue| be the result of starting a new
         <a>parallel queue</a>.
@@ -847,16 +857,16 @@ Methods {#videoencoder-methods}
     and emits all outputs.
 
     When invoked, run these steps:
-    1. If {{VideoEncoder/state}} is not `"configured"`, return a Promise
-        rejected with a newly created {{InvalidStateError}}.
+    1. If {{VideoEncoder/state}} is not `"configured"`, return
+        [=a promise rejected with=] {{InvalidStateError}} {{DOMException}}.
     2. Let |promise| be a new Promise.
     3. <a>Queue a control message</a> to flush the codec with |promise|.
     4. Return |promise|.
 
-    Running a control message to flush the codec means running these steps
+    Running a control message to flush the codec means performing these steps
         with |promise|.
-    1. Signal {{VideoEncoder/[[codec implementation]]}} to emit all pending
-        outputs.
+    1. Signal {{VideoEncoder/[[codec implementation]]}} to emit all<a>internal
+        pending outputs</a>.
     2. For each encoded video data |output|, queue a task on the media element
         task source to run the <a>Output EncodedVideoChunk</a> algorithm with
         |output| and {{VideoEncoder/[[active encoder config]]}}.
@@ -948,8 +958,8 @@ Algorithms {#videoencoder-algorithms}
     2. Set {{VideoEncoder/state}} to `“closed”`.
     3. Clear {{VideoEncoder/[[codec implementation]]}} and release associated
         system resources.
-    4. If |error| is set, invoke the {{VideoEncoder/[[error callback]]}} with
-        |error|.
+    4. If |error| is set, queue a task on the media element task source to
+        invoke the {{VideoEncoder/[[error callback]]}} with |error|.
   </dd>
 </dl>
 
@@ -1730,8 +1740,8 @@ NOTE:  VideoFrames may require a large amount of memory. Use
     {{VideoFrame/clone()}} sparingly.
 
 When invoked, run the following steps:
-1. If the value of the {{VideoFrame/[[detached]]}} slot is `true`, return a
-    Promise rejected with a newly created {{InvalidStateError}}.
+1. If the value of the {{VideoFrame/[[detached]]}} slot is `true`, return
+    [=a promise rejected with=] {{InvalidStateError}} {{DOMException}}.
 2. Let |p| be a new Promise.
 3. In parallel, resolve |p| with the result of running the <a>Clone Frame</a>
     algorithm with <a>this</a>.
@@ -2024,7 +2034,7 @@ The <dfn export>track monitor</dfn> may be started and stopped by the user to
     arrival of new picture data as well as changes to `[[track]].readyState`.
 
 While `[[track]].readyState` is {{MediaStreamTrackState/live}}, for each new
-    picture that arrives in {{VideoTrackReader/[[track]]}}, execute the
+    picture that arrives in {{VideoTrackReader/[[track]]}}, perform the
     following steps:
 
     NOTE: Pictures that arrived prior to the start of this loop are not
