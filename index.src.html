@@ -1091,6 +1091,7 @@ dictionary VideoDecoderConfig {
   unsigned long cropHeight;
   unsigned long displayWidth;
   unsigned long displayHeight;
+  HardwareAcceleration acceleration = "allow";
 };
 </xmp>
 </pre>
@@ -1169,6 +1170,12 @@ run these steps:
     Height of the VideoFrame when displayed. Defaults to cropHeight if not
         present.
   </dd>
+
+  <dt><dfn dict-member for=VideoDecoderConfig>acceleration</dfn></dt>
+  <dd>
+    Configures hardware accleration for this codec. See
+    {{HardwareAcceleration}}.
+  </dd>
 </dl>
 
 
@@ -1213,6 +1220,7 @@ dictionary VideoEncoderConfig {
   required unsigned long cropHeight;
   unsigned long displayWidth;
   unsigned long displayHeight;
+  HardwareAcceleration acceleration = "allow";
 
   AvcEncoderConfig avc;
 };
@@ -1295,6 +1303,12 @@ To check if a {{VideoEncoderConfig}} is a <dfn>valid VideoEncoderConfig</dfn>,
 <dl>
   <dt><dfn dict-member for=VideoEncoderConfig>avc</dfn></dt>
   <dd>Contains codec specific configuration options for the AVC (H.264) codec.</dd>
+
+  <dt><dfn dict-member for=VideoEncoderConfig>acceleration</dfn></dt>
+  <dd>
+    Configures hardware accleration for this codec. See
+    {{HardwareAcceleration}}.
+  </dd>
 </dl>
 
 ### AvcEncoderConfig ### {#avc-encoder-config}
@@ -1350,6 +1364,45 @@ packaging the bitstream.
 
     NOTE: This format is commonly used in .MP4 files, where the player generally
         has random access to the media data.
+</dl>
+
+Hardware Acceleration{#hardware-acceleration}
+---------------------------------------------
+<pre class='idl'>
+<xmp>
+enum HardwareAcceleration {
+  "allow",
+  "deny",
+  "require",
+};
+</xmp>
+</pre>
+
+When supported, hardware acceleration offloads encoding or decoding to
+specialized hardware, reducing codec CPU usage and power consumption.
+
+<dl>
+  <dt><dfn enum-value for=HardwareAcceleration>allow</dfn></dt>
+  <dd>
+    Indicates that the user agent may use hardware acceleration if it is
+    available and compatible with other aspects of the codec configuration.
+  </dd>
+  <dt><dfn enum-value for=HardwareAcceleration>deny</dfn></dt>
+  <dd>
+    Indicates that the user agent must not use hardware acceleration.
+
+    NOTE: This will cause the configuration to be unsupported on platforms where
+    an unaccelerated codec is unavailable or is incompatible with other aspects
+    of the codec configuration.
+  </dd>
+  <dt><dfn enum-value for=HardwareAcceleration>require</dfn></dt>
+  <dd>
+    Indicates that the user agent must use hardware acceleration.
+
+    NOTE: This will cause the configuration to be unsupported on platforms where
+    an accelerated codec is unavailable or is incompatible with other aspects of
+    the codec configuration.
+  </dd>
 </dl>
 
 Configuration Equivalence{#config-equivalence}
