@@ -76,6 +76,18 @@ Definitions {#definitions}
     underlying codec implementation must emit all outputs in response to a
     flush.
 
+: <dfn lt="AVC">Advanced Video Coding (AVC)</dfn>
+:: Also known as H.264. Refers to the methods of video compression as defined by
+    [[!iso14496-10]].
+
+: <dfn lt="Picture Parameter Set (PPS)|PPS">Picture Parameter Set (PPS)</dfn>
+:: A set of parameters describing <a>AVC</a> coded pictures as defined by
+    [[!iso14496-10]].
+
+: <dfn lt="Sequence Parameter Set (SPS)|SPS">Sequence Parameter Set (SPS)</dfn>
+:: A set of parameters describing a sequence of <a>AVC</a> coded video as
+    defined by [[!iso14496-10]].
+
 Codec Processing Model {#codec-processing-model}
 ================================================
 
@@ -1047,7 +1059,7 @@ To check if an {{AudioDecoderConfig}} is a <dfn>valid AudioDecoderConfig</dfn>,
 
 <dl>
   <dt><dfn dict-member for=AudioDecoderConfig>codec</dfn></dt>
-  <dd>Contains a codec string describing the codec.</dd>
+  <dd>Contains a <a>codec string</a> describing the codec.</dd>
 
   <dt><dfn dict-member for=AudioDecoderConfig>sampleRate</dfn></dt>
   <dd>The number of frame samples per second.</dd>
@@ -1201,6 +1213,8 @@ dictionary VideoEncoderConfig {
   required unsigned long cropHeight;
   unsigned long displayWidth;
   unsigned long displayHeight;
+
+  AvcEncoderConfig avc;
 };
 </xmp>
 </pre>
@@ -1213,9 +1227,17 @@ To check if a {{VideoEncoderConfig}} is a <dfn>valid VideoEncoderConfig</dfn>,
     = 0, return `false`.
 3. If {{VideoEncoderConfig/displayWidth}} = 0 or
     {{VideoEncoderConfig/displayHeight}} = 0, return `false`.
+4. If {{VideoEncoderConfig/avc}} is present, but {{VideoEncoderConfig/codec}}
+    does not describe the <a>AVC</a> codec, per [[RFC6381]], return `false`.
 4. Return `true`.
 
 <dl>
+  <dt><dfn dict-member for=VideoEncoderConfig>codec</dfn></dt>
+  <dd>Contains a <a>codec string</a> describing the codec.</dd>
+
+  <dt><dfn dict-member for=VideoEncoderConfig>bitrate</dfn></dt>
+  <dd>The average bitrate of the encoded video given in units of bits per second.</dd>
+
   <dt><dfn dict-member for=VideoEncoderConfig>cropWidth</dfn></dt>
   <dd>
     The encoded width of output {{EncodedVideoChunk}}s in pixels, prior to any
@@ -1270,6 +1292,65 @@ To check if a {{VideoEncoderConfig}} is a <dfn>valid VideoEncoderConfig</dfn>,
       may optionally include display sizing in the bitstream.
 </div>
 
+<dl>
+  <dt><dfn dict-member for=VideoEncoderConfig>avc</dfn></dt>
+  <dd>Contains codec specific configuration options for the AVC (H.264) codec.</dd>
+</dl>
+
+### AvcEncoderConfig ### {#avc-encoder-config}
+<pre class='idl'>
+<xmp>
+dictionary AvcEncoderConfig {
+  AvcBitstreamFormat format = "avc";
+};
+</xmp>
+</pre>
+
+<dl>
+  <dt><dfn dict-member for=AvcEncoderConfig>format</dfn></dt>
+  <dd>
+    Configures the format of output <a>AVC</a> {{EncodedVideoChunk}}s. See
+    {{AvcBitstreamFormat}}.
+  </dd>
+</dl>
+
+#### AvcBitstreamFormat #### {#avc-bitstream-format}
+<pre class='idl'>
+<xmp>
+enum AvcBitstreamFormat {
+  "annexb",
+  "avc",
+};
+</xmp>
+</pre>
+The {{AvcBitstreamFormat}} determines the location of <a>Sequence Parameter
+Set (SPS)</a> and <a>Picture Parameter Set (PPS)</a> data, and mechanisms for
+packaging the bitstream.
+
+<dl>
+  <dt><dfn enum-value for=AvcBitstreamFormat>annexb</dfn></dt>
+  <dd>
+    This format is as described by [[!iso14496-10]], Annex B. Notably,
+    <a>SPS</a> and <a>PPS</a> data are included periodically throughout the
+    bitstream.
+
+    NOTE: This format is commonly used in live-streaming applications, where
+        including the SPS and PPS data periodically allows users to easily start
+        from the middle of the stream.
+  </dd>
+  <dt><dfn enum-value for=AvcBitstreamFormat>avc</dfn></dt>
+  <dd>
+    This format is as described by [[!iso14496-15]], Section 5. Notably,
+    <a>SPS</a> and <a>PPS</a> data are not included in the bitstream and are
+    instead passed out of band as a AVCDecoderConfigurationRecord as defined by
+    [[!iso14496-15]]. This structure is emitted via the
+    {{VideoEncoder/[[output callback]]}} as the
+    {{VideoDecoderConfig/description}} of the {{VideoDecoderConfig}}
+    |output_config|.
+
+    NOTE: This format is commonly used in .MP4 files, where the player generally
+        has random access to the media data.
+</dl>
 
 Configuration Equivalence{#config-equivalence}
 ----------------------------------------------
