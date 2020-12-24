@@ -62,7 +62,7 @@ spec: infra; urlPrefix: https://infra.spec.whatwg.org/#
 Definitions {#definitions}
 ==========================
 
-: Codec
+: <dfn>Codec</dfn>
 :: Refers generically to an instance of AudioDecoder, AudioEncoder,
     VideoDecoder, or VideoEncoder.
 
@@ -152,6 +152,8 @@ interface AudioDecoder {
   Promise<undefined> flush();
   undefined reset();
   undefined close();
+
+  static Promise<boolean> isConfigSupported(AudioDecoderConfig config);
 };
 
 dictionary AudioDecoderInit {
@@ -209,20 +211,27 @@ Methods {#audiodecoder-methods}
     <a>Enqueues a control message</a> to configure the audio decoder for
     decoding chunks as described by |config|.
 
+    NOTE: Authors should first check support by calling
+        {{AudioDecoder/isConfigSupported()}} with |config| to avoid error paths
+        in the steps below.
+
     When invoked, run these steps:
     1. If |config| is not a <a>valid AudioDecoderConfig</a>, throw a
         {{TypeError}}.
     2. If {{AudioDecoder/state}} is `“closed”`, throw an {{InvalidStateError}}.
-    3. If the user agent cannot provide a codec implementation to support
-        |config|, throw a {{NotSupportedError}}.
-    4. Set {{AudioDecoder/state}} to `"configured"`.
-    5. <a>Queue a control message</a> to configure the decoder with |config|.
-    6. <a>Run the control message processing loop</a>.
+    3. Set {{AudioDecoder/state}} to `"configured"`.
+    4. <a>Queue a control message</a> to configure the decoder with |config|.
+    5. <a>Run the control message processing loop</a>.
 
     <a>Running a control message</a> to configure the decoder means running
     these steps:
-    1. Assign {{AudioDecoder/[[codec implementation]]}} with an implementation
+    1. Let |supported| be the result of running the <a>Check Configuration 
+        Support</a> algorith with |config|. 
+    2. If |supported| is `true`, assign 
+        {{AudioDecoder/[[codec implementation]]}} with an implementation
         supporting |config|.
+    3. Otherwise, run the <a>Close AudioDecoder</a> algorithm with 
+        {{NotSupportedError}}.
   </dd>
 
   <dt><dfn method for=AudioDecoder>decode(chunk)</dfn></dt>
@@ -288,6 +297,17 @@ Methods {#audiodecoder-methods}
 
     When invoked, run the <a>Close AudioDecoder</a> algorithm.
   </dd>
+
+  <dt><dfn method for=AudioDecoder>isConfigSupported(config)</dfn></dt>
+  <dd>
+    When invoked, run these steps:
+    1. If |config| is not a <a>valid AudioDecoderConfig</a>, return
+        [=a promise rejected with=] {{TypeError}}.
+    2. Let |p| be a new Promise.
+    3. [=In parallel=], run the <a>Check Configuration Support</a> algorithm
+        with |config| and resolve |p| with its result.
+    4. Return  p.
+  </dd>
 </dl>
 
 Algorithms {#audiodecoder-algorithms}
@@ -340,6 +360,8 @@ interface VideoDecoder {
   Promise<undefined> flush();
   undefined reset();
   undefined close();
+
+  static Promise<boolean> isConfigSupported(VideoDecoderConfig config);
 };
 
 dictionary VideoDecoderInit {
@@ -397,20 +419,27 @@ Methods {#videodecoder-methods}
     <a>Enqueues a control message</a> to configure the video decoder for
     decoding chunks as described by |config|.
 
+    NOTE: Authors should first check support by calling
+        {{VideoDecoder/isConfigSupported()}} with |config| to avoid error paths
+        in the steps below.
+
     When invoked, run these steps:
     1. If |config| is not a <a>valid VideoDecoderConfig</a>, throw a
         {{TypeError}}.
     2. If {{VideoDecoder/state}} is `“closed”`, throw an {{InvalidStateError}}.
-    3. If the user agent cannot provide a codec implementation to support
-        |config|, throw a {{NotSupportedError}}.
-    4. Set {{VideoDecoder/state}} to `"configured"`.
-    5. <a>Queue a control message</a> to configure the decoder with |config|.
-    6. <a>Run the control message processing loop</a>.
+    3. Set {{VideoDecoder/state}} to `"configured"`.
+    4. <a>Queue a control message</a> to configure the decoder with |config|.
+    5. <a>Run the control message processing loop</a>.
 
     <a>Running a control message</a> to configure the decoder means running
     these steps:
-    1. Assign {{VideoDecoder/[[codec implementation]]}} with an implementation
+    1. Let |supported| be the result of running the <a>Check Configuration 
+        Support</a> algorith with |config|. 
+    2. If |supported| is `true`, assign 
+        {{VideoDecoder/[[codec implementation]]}} with an implementation
         supporting |config|.
+    3. Otherwise, run the <a>Close VideoDecoder</a> algorithm with 
+        {{NotSupportedError}}.
   </dd>
 
   <dt><dfn method for=VideoDecoder>decode(chunk)</dfn></dt>
@@ -476,6 +505,17 @@ Methods {#videodecoder-methods}
     permanent.
 
     When invoked, run the <a>Close VideoDecoder</a> algorithm.
+  </dd>
+  
+  <dt><dfn method for=VideoDecoder>isConfigSupported(config)</dfn></dt>
+  <dd>
+    When invoked, run these steps:
+    1. If |config| is not a <a>valid VideoDecoderConfig</a>, return
+        [=a promise rejected with=] {{TypeError}}.
+    2. Let |p| be a new Promise.
+    3. [=In parallel=], run the <a>Check Configuration Support</a> algorithm
+        with |config| and resolve |p| with its result.
+    4. Return  p.
   </dd>
 </dl>
 
@@ -546,6 +586,8 @@ interface AudioEncoder {
   Promise<undefined> flush();
   undefined reset();
   undefined close();
+
+  static Promise<boolean> isConfigSupported(AudioEncoderConfig config);
 };
 
 dictionary AudioEncoderInit {
@@ -603,20 +645,27 @@ Methods {#audioencoder-methods}
     <a>Enqueues a control message</a> to configure the audio encoder for
     decoding chunks as described by |config|.
 
+    NOTE: Authors should first check support by calling
+        {{AudioEncoder/isConfigSupported()}} with |config| to avoid error paths
+        in the steps below.
+
     When invoked, run these steps:
     1. If |config| is not a <a>valid AudioEncoderConfig</a>, throw a
         {{TypeError}}.
     2. If {{AudioEncoder/state}} is `"closed"`, throw an {{InvalidStateError}}.
-    3. If the user agent cannot provide a codec implementation to support
-        |config|, throw a {{NotSupportedError}}.
-    4. Set {{AudioEncoder/state}} to `"configured"`.
-    5. <a>Queue a control message</a> to configure the encoder using |config|.
-    6. <a>Run the control message processing loop</a>.
+    3. Set {{AudioEncoder/state}} to `"configured"`.
+    4. <a>Queue a control message</a> to configure the encoder using |config|.
+    5. <a>Run the control message processing loop</a>.
 
     Running a control message to configure the encoder means performing these
     steps:
-    1. Assign {{AudioEncoder/[[codec implementation]]}} with an implementation
+    1. Let |supported| be the result of running the <a>Check Configuration 
+        Support</a> algorith with |config|. 
+    2. If |supported| is `true`, assign 
+        {{AudioEncoder/[[codec implementation]]}} with an implementation
         supporting |config|.
+    3. Otherwise, run the <a>Close AudioEncoder</a> algorithm with 
+        {{NotSupportedError}}.
   </dd>
 
   <dt><dfn method for=AudioEncoder>encode(frame)</dfn></dt>
@@ -691,6 +740,17 @@ Methods {#audioencoder-methods}
 
     When invoked, run the <a>Close AudioEncoder</a> algorithm.
   </dd>
+
+  <dt><dfn method for=AudioEncoder>isConfigSupported(config)</dfn></dt>
+  <dd>
+    When invoked, run these steps:
+    1. If |config| is not a <a>valid AudioEncoderConfig</a>, return
+        [=a promise rejected with=] {{TypeError}}.
+    2. Let |p| be a new Promise.
+    3. [=In parallel=], run the <a>Check Configuration Support</a> algorithm
+        with |config| and resolve |p| with its result.
+    4. Return  p.
+  </dd>
 </dl>
 
 Algorithms {#audioencoder-algorithms}
@@ -748,6 +808,8 @@ interface VideoEncoder {
   Promise<undefined> flush();
   undefined reset();
   undefined close();
+
+  static Promise<boolean> isConfigSupported(VideoEncoderConfig config);
 };
 
 dictionary VideoEncoderInit {
@@ -812,20 +874,27 @@ Methods {#videoencoder-methods}
     <a>Enqueues a control message</a> to configure the video encoder for
     decoding chunks as described by |config|.
 
+    NOTE: Authors should first check support by calling
+        {{VideoEncoder/isConfigSupported()}} with |config| to avoid error paths
+        in the steps below.
+
     When invoked, run these steps:
     1. If |config| is not a <a>valid VideoEncoderConfig</a>, throw a
         {{TypeError}}.
     2. If {{VideoEncoder/state}} is `"closed"`, throw an {{InvalidStateError}}.
-    3. If the user agent cannot provide a codec implementation to support
-        |config|, throw a {{NotSupportedError}}.
-    4. Set {{VideoEncoder/state}} to `"configured"`.
-    5. <a>Queue a control message</a> to configure the encoder using |config|.
-    6. <a>Run the control message processing loop</a>.
+    3. Set {{VideoEncoder/state}} to `"configured"`.
+    4. <a>Queue a control message</a> to configure the encoder using |config|.
+    5. <a>Run the control message processing loop</a>.
 
     Running a control message to configure the encoder means performing these
     steps:
-    1. Assign {{VideoEncoder/[[codec implementation]]}} with an implementation
+    1. Let |supported| be the result of running the <a>Check Configuration 
+        Support</a> algorith with |config|. 
+    2. If |supported| is `true`, assign 
+        {{VideoEncoder/[[codec implementation]]}} with an implementation
         supporting |config|.
+    3. Otherwise, run the <a>Close VideoEncoder</a> algorithm with 
+        {{NotSupportedError}} and abort these steps.
     2. Set {{VideoEncoder/[[active encoder config]]}} to `config`.
   </dd>
 
@@ -900,6 +969,17 @@ Methods {#videoencoder-methods}
     permanent.
 
     When invoked, run the <a>Close VideoEncoder</a> algorithm.
+  </dd>
+
+  <dt><dfn method for=VideoEncoder>isConfigSupported(config)</dfn></dt>
+  <dd>
+    When invoked, run these steps:
+    1. If |config| is not a <a>valid VideoEncoderConfig</a>, return
+        [=a promise rejected with=] {{TypeError}}.
+    2. Let |p| be a new Promise.
+    3. [=In parallel=], run the <a>Check Configuration Support</a> algorithm
+        with |config| and resolve |p| with its result.
+    4. Return  p.
   </dd>
 </dl>
 
@@ -978,6 +1058,18 @@ Algorithms {#videoencoder-algorithms}
 
 Configurations{#configurations}
 ===============================
+
+<dfn>Check Configuration Support</dfn> (with |config|) {#config-support}
+------------------------------------------------------------------------
+1. If the user agent can provide a <a>codec</a> to support all entries of the
+    |config|, including applicable default values for keys that are not 
+    included, return `true`.
+
+    NOTE: The types {{AudioDecoderConfig}}, {{VideoDecoderConfig}},
+        {{AudioEncoderConfig}}, and {{VideoEncoderConfig}} each define their 
+        respective configuration entries and defaults.
+
+2. Otherwise, return false.
 
 <dfn export>Codec String</dfn>{#config-codec-string}
 ----------------------------------------------------
