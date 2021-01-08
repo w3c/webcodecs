@@ -76,6 +76,11 @@ Definitions {#definitions}
     underlying codec implementation must emit all outputs in response to a
     flush.
 
+: <dfn lt="system resources">Codec System Resources</dfn>
+:: Resources including CPU memory, GPU memory, mutexes, etc. which are
+    allocated by the User Agent as part of codec configuration or generation of
+    {{AudioFrame}} and {{VideoFrame}} objects.
+
 Codec Processing Model {#codec-processing-model}
 ================================================
 
@@ -200,7 +205,7 @@ Methods {#audiodecoder-methods}
     When invoked, run these steps:
     1. If |config| is not a <a>valid AudioDecoderConfig</a>, throw a
         {{TypeError}}.
-    2. If {{AudioDecoder/state}} is `“closed”`, throw an {{InvalidStateError}}.
+    2. If {{AudioDecoder/state}} is `"closed"`, throw an {{InvalidStateError}}.
     3. If the user agent cannot provide a codec implementation to support
         |config|, throw a {{NotSupportedError}}.
     4. Set {{AudioDecoder/state}} to `"configured"`.
@@ -271,8 +276,8 @@ Methods {#audiodecoder-methods}
 
   <dt><dfn method for=AudioDecoder>close()</df></dt>
   <dd>
-    Immediately aborts all pending work and releases system resources. Close is
-    permanent.
+    Immediately aborts all pending work and releases <a>system resources</a>.
+    Close is permanent.
 
     When invoked, run the <a>Close AudioDecoder</a> algorithm.
   </dd>
@@ -293,8 +298,8 @@ Algorithms {#audiodecoder-algorithms}
   <dt><dfn>Reset AudioDecoder</dfn></dt>
   <dd>
     Run these steps:
-    1. If {{AudioDecoder/state}} is `“closed”`, throw an {{InvalidStateError}}.
-    2. Set {{AudioDecoder/state}} to `“unconfigured”`.
+    1. If {{AudioDecoder/state}} is `"closed"`, throw an {{InvalidStateError}}.
+    2. Set {{AudioDecoder/state}} to `"unconfigured"`.
     3. Signal {{AudioDecoder/[[codec implementation]]}} to cease producing
         output for the previous configuration.
     4. <a>Reset the control message queue</a>.
@@ -303,9 +308,9 @@ Algorithms {#audiodecoder-algorithms}
   <dd>
     Run these steps:
     1. Run the <a>Reset AudioDecoder</a> algorithm.
-    2. Set {{AudioDecoder/state}} to `“closed”`.
+    2. Set {{AudioDecoder/state}} to `"closed"`.
     3. Clear {{AudioDecoder/[[codec implementation]]}} and release associated
-        system resources.
+        <a>system resources</a>.
     4. If |error| is set, queue a task on the media element task source to
         invoke the {{AudioDecoder/[[error callback]]}} with |error|.
   </dd>
@@ -388,7 +393,7 @@ Methods {#videodecoder-methods}
     When invoked, run these steps:
     1. If |config| is not a <a>valid VideoDecoderConfig</a>, throw a
         {{TypeError}}.
-    2. If {{VideoDecoder/state}} is `“closed”`, throw an {{InvalidStateError}}.
+    2. If {{VideoDecoder/state}} is `"closed"`, throw an {{InvalidStateError}}.
     3. If the user agent cannot provide a codec implementation to support
         |config|, throw a {{NotSupportedError}}.
     4. Set {{VideoDecoder/state}} to `"configured"`.
@@ -460,8 +465,8 @@ Methods {#videodecoder-methods}
 
   <dt><dfn method for=VideoDecoder>close()</df></dt>
   <dd>
-    Immediately aborts all pending work and releases system resources. Close is
-    permanent.
+    Immediately aborts all pending work and releases <a>system resources</a>.
+    Close is permanent.
 
     When invoked, run the <a>Close VideoDecoder</a> algorithm.
   </dd>
@@ -498,8 +503,8 @@ Algorithms {#videodecoder-algorithms}
   <dt><dfn>Reset VideoDecoder</dfn></dt>
   <dd>
     Run these steps:
-    1. If {{VideoDecoder/state}} is `“closed”`, throw an {{InvalidStateError}}.
-    2. Set {{VideoDecoder/state}} to `“unconfigured”`.
+    1. If {{VideoDecoder/state}} is `"closed"`, throw an {{InvalidStateError}}.
+    2. Set {{VideoDecoder/state}} to `"unconfigured"`.
     3. Signal {{VideoDecoder/[[codec implementation]]}} to cease producing
         output for the previous configuration.
     4. <a>Reset the control message queue</a>.
@@ -508,9 +513,9 @@ Algorithms {#videodecoder-algorithms}
   <dd>
     Run these steps:
     1. Run the <a>Reset VideoDecoder</a> algorithm.
-    2. Set {{VideoDecoder/state}} to `“closed”`.
+    2. Set {{VideoDecoder/state}} to `"closed"`.
     3. Clear {{VideoDecoder/[[codec implementation]]}} and release associated
-        system resources.
+        <a>system resources</a>.
     4. If |error| is set, queue a task on the media element task source to
         invoke the {{VideoDecoder/[[error callback]]}} with |error|.
   </dd>
@@ -674,8 +679,8 @@ Methods {#audioencoder-methods}
 
   <dt><dfn method for=AudioEncoder>close()</df></dt>
   <dd>
-    Immediately aborts all pending work and releases system resources. Close is
-    permanent.
+    Immediately aborts all pending work and releases <a>system resources</a>.
+    Close is permanent.
 
     When invoked, run the <a>Close AudioEncoder</a> algorithm.
   </dd>
@@ -701,8 +706,8 @@ Algorithms {#audioencoder-algorithms}
   <dt><dfn>Reset AudioEncoder</dfn></dt>
   <dd>
     Run these steps:
-    1. If {{AudioEncoder/state}} is `“closed”`, throw an {{InvalidStateError}}.
-    2. Set {{AudioEncoder/state}} to `“unconfigured”`.
+    1. If {{AudioEncoder/state}} is `"closed"`, throw an {{InvalidStateError}}.
+    2. Set {{AudioEncoder/state}} to `"unconfigured"`.
     3. Signal {{AudioEncoder/[[codec implementation]]}} to cease producing
         output for the previous configuration.
     4. <a>Reset the control message queue</a>.
@@ -711,9 +716,9 @@ Algorithms {#audioencoder-algorithms}
   <dd>
     Run these steps:
     1. Run the <a>Reset AudioEncoder</a> algorithm.
-    2. Set {{AudioEncoder/state}} to `“closed”`.
+    2. Set {{AudioEncoder/state}} to `"closed"`.
     3. Clear {{AudioEncoder/[[codec implementation]]}} and release associated
-        system resources.
+        <a>system resources</a>.
     4. If |error| is set, queue a task on the media element task source to
         invoke the {{AudioEncoder/[[error callback]]}} with |error|.
   </dd>
@@ -876,8 +881,8 @@ Methods {#videoencoder-methods}
 
   <dt><dfn method for=VideoEncoder>close()</df></dt>
   <dd>
-    Immediately aborts all pending work and releases system resources. Close is
-    permanent.
+    Immediately aborts all pending work and releases <a>system resources</a>.
+    Close is permanent.
 
     When invoked, run the <a>Close VideoEncoder</a> algorithm.
   </dd>
@@ -905,8 +910,8 @@ Algorithms {#videoencoder-algorithms}
   <dt><dfn>Reset VideoEncoder</dfn></dt>
   <dd>
     Run these steps:
-    1. If {{VideoEncoder/state}} is `“closed”`, throw an {{InvalidStateError}}.
-    2. Set {{VideoEncoder/state}} to `“unconfigured”`.
+    1. If {{VideoEncoder/state}} is `"closed"`, throw an {{InvalidStateError}}.
+    2. Set {{VideoEncoder/state}} to `"unconfigured"`.
     3. Signal {{VideoEncoder/[[codec implementation]]}} to cease producing
         output for the previous configuration.
     4. <a>Reset the control message queue</a>.
@@ -915,9 +920,9 @@ Algorithms {#videoencoder-algorithms}
   <dd>
     Run these steps:
     1. Run the <a>Reset VideoEncoder</a> algorithm.
-    2. Set {{VideoEncoder/state}} to `“closed”`.
+    2. Set {{VideoEncoder/state}} to `"closed"`.
     3. Clear {{VideoEncoder/[[codec implementation]]}} and release associated
-        system resources.
+        <a>system resources</a>.
     4. If |error| is set, queue a task on the media element task source to
         invoke the {{VideoEncoder/[[error callback]]}} with |error|.
   </dd>
@@ -930,7 +935,7 @@ Configurations{#configurations}
 <dfn export>Codec String</dfn>{#config-codec-string}
 ----------------------------------------------------
 In other media specifications, codec strings historically accompanied a
-    <a>MIME type</a> as the “codecs=” parameter
+    <a>MIME type</a> as the "codecs=" parameter
     ({{MediaSource/isTypeSupported()}}, {{HTMLMediaElement/canPlayType()}})
     [[RFC6381]]. In this specification, encoded media is not containerized; hence,
     only the value of the codecs parameter is accepted.
@@ -1019,7 +1024,7 @@ To check if an {{AudioDecoderConfig}} is a <dfn>valid AudioDecoderConfig</dfn>,
   <dd>
     A sequence of codec specific bytes, commonly known as extradata.
 
-    NOTE: For example, the vorbis “code book”.
+    NOTE: For example, the vorbis "code book".
   </dd>
 </dl>
 
@@ -1223,8 +1228,8 @@ enum CodecState {
   </dd>
   <dt><dfn enum-value for=CodecState>closed</dfn></dt>
   <dd>
-    The codec is no longer usable and underlying system resources have been
-      released.
+    The codec is no longer usable and underlying <a>system resources</a> have
+        been released.
   </dd>
 </dl>
 
@@ -1402,8 +1407,8 @@ dictionary AudioFrameInit {
 <dl>
   <dt><dfn method for=AudioFrame>close()</dfn></dt>
   <dd>
-    Immediately frees system resources. When invoked, run these steps:
-    1. Release system resources for buffer and set its value to null.
+    Immediately frees <a>system resources</a>. When invoked, run these steps:
+    1. Release <a>system resources</a> for buffer and set its value to null.
     2. Assign `true` to the {{AudioFrame/[[detached]]}} internal slot.
 
     NOTE: This section needs work. We should use the name and semantics of
@@ -1475,7 +1480,7 @@ NOTE: this section needs work. Current wording assumes a VideoFrame can always
     underlying UA resources may be GPU backed or formatted in such a way that
     conversion to an allowed pixel format requires expensive copies and
     translation. When this occurs, we should allow planes to be null and format
-    to be “opaque” to avoid early optimization. We should make conversion
+    to be "opaque" to avoid early optimization. We should make conversion
     explicit and user controlled by offering a `videoFrame.convertTo(format)`
     that returns a Promise containing a new VideoFrame for which the
     copies/translations are performed.
@@ -1620,8 +1625,9 @@ NOTE: this section needs work. Current wording assumes a VideoFrame can always
 
 ### Methods ###{#videoframe-methods}
 <dfn method for=VideoFrame>destroy()</dfn>
-Immediately frees system resources. Destruction applies to all references,
-    including references that are serialized and passed across Realms.
+Immediately frees <a>system resources</a>. Destruction applies to all
+    references, including references that are serialized and passed across
+    Realms.
 
 NOTE: Authors should take care to manage frame lifetimes by calling
     {{VideoFrame/destroy()}} immediately when frames are no longer needed.
