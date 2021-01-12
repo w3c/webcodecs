@@ -77,9 +77,11 @@ Definitions {#definitions}
     flush.
 
 : <dfn lt="system resources">Codec System Resources</dfn>
-:: Resources including CPU memory, GPU memory, mutexes, etc. which are
-    allocated by the User Agent as part of codec configuration or generation of
-    {{AudioFrame}} and {{VideoFrame}} objects.
+:: Resources including CPU memory, GPU memory, and exclusive handles to specific
+    decoding/encoding hardware that may be allocated by the User Agent as part
+    of codec configuration or generation of {{AudioFrame}} and {{VideoFrame}}
+    objects. Such resources may be quickly exhuasted and should be released
+    immediately when no longer in use.
 
 Codec Processing Model {#codec-processing-model}
 ================================================
@@ -102,13 +104,13 @@ of <dfn>control messages</dfn>.
     that enqueued the message.
 
 The steps of a control message may depend on <dfn>injected state</dfn>, supplied
-by the method that enqueud the message.
+by the method that enqueued the message.
 
 <dfn lt="Run the control message processing loop">Running the control message
     processing loop</dfn> means performing these steps.
 1. While the control message queue is not <a>empty</a>
     1. Let |front message| be the next <a>dequeued</a> <a>control message</a>
-    2. If |front message| cannot be performd now, return.
+    2. If |front message| cannot be performed now, return.
 
         The User Agent must decide when further processing is blocked because of
             ongoing work as an implementation detail (e.g. the underlying
