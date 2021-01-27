@@ -109,13 +109,14 @@ All steps in this specificaiton will run on either a [=control thread=] or
 a [=codec thread=].
 
 The <dfn>control thread</dfn> is the thread from which authors will construct
-and [=codec=] and invoke its methods. Invoking a codec's methods will typically
+a [=codec=] and invoke its methods. Invoking a codec's methods will typically
 result in the creation of [=control messages=] which are later executed on the
-[=codec thread=]. Each [=JavaScript realm=] has a separate control thread.
+[=codec thread=]. Each [=global object=] has a separate control thread.
 
 The <dfn>codec thread</dfn> is the thread from which a [=codec=] will
 [=dequeue=] [=control messages=] and execute their steps. Each [=codec=]
-instance has a separate codec thread.
+instance has a separate codec thread. The lifetime of a codec thread matches
+that of its associated [=codec=] instance.
 
 The [=control thread=] uses a traditional event loop, as described in [[!HTML]].
 
@@ -258,9 +259,11 @@ Methods {#audiodecoder-methods}
         {{EncodingError}}.
     3. Queue a task on the [=control thread=] event loop to decrement
         {{AudioDecoder/decodeQueueSize}}
-    4. Otherwise, for each decoded audio data |output|, queue a task on the
-        [=control thread=] event loop to run the <a>Output AudioFrame</a>
-        algorithm with |output|.
+    4. Let |decoded outputs| be a [=list=] of decoded audio data outputs emited
+        by {{AudioDecoder/[[codec implementation]]}}.
+    5. If |decoded outputs| is not empty, queue a task on the [=control thread=]
+        event loop to run the <a>Output AudioFrames</a> algorithm with
+        |decoded outputs|.
   </dd>
 
   <dt><dfn method for=AudioDecoder>flush()</dfn></dt>
@@ -279,10 +282,12 @@ Methods {#audiodecoder-methods}
         with |promise|.
     1. Signal {{AudioDecoder/[[codec implementation]]}} to emit all <a>internal
         pending outputs</a>.
-    2. For each decoded audio data |output|, queue a task on the
-        [=control thread=] event loop to run the <a>Output AudioFrame</a>
-        algorithm with |output|.
-    3. Queue a task on the [=control thread=] event loop to resolve |promise|.
+    2. Let |decoded outputs| be a [=list=] of decoded audio data outputs emited
+        by {{AudioDecoder/[[codec implementation]]}}.
+    3. If |decoded outputs| is not empty, queue a task on the [=control thread=]
+        event loop to run the <a>Output AudioFrames</a> algorithm with
+        |decoded outputs|.
+    4. Queue a task on the [=control thread=] event loop to resolve |promise|.
   </dd>
 
   <dt><dfn method for=AudioDecoder>reset()</dfn></dt>
@@ -306,14 +311,15 @@ Methods {#audiodecoder-methods}
 Algorithms {#audiodecoder-algorithms}
 -------------------------------------
 <dl>
-  <dt><dfn>Output AudioFrame</dfn> (with |output|)</dt>
+  <dt><dfn>Output AudioFrames</dfn> (with |outputs|)</dt>
   <dd>
     Run these steps:
-    1. Let |buffer| be an {{AudioBuffer}} containing the decoded audio data in
-        |output|.
-    2. Let |frame| be an {{AudioFrame}} containing |buffer| and a timestamp for
-        the output.
-    3. Invoke {{AudioDecoder/[[output callback]]}} with frame.
+    1. For each |output| in |outputs|:
+        1. Let |buffer| be an {{AudioBuffer}} containing the decoded audio data in
+            |output|.
+        2. Let |frame| be an {{AudioFrame}} containing |buffer| and a timestamp for
+            the output.
+        3. Invoke {{AudioDecoder/[[output callback]]}} with frame.
   </dd>
   <dt><dfn>Reset AudioDecoder</dfn></dt>
   <dd>
