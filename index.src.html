@@ -25,28 +25,26 @@ spec: media-source; urlPrefix: https://www.w3.org/TR/media-source/
         for: MediaSource; text: isTypeSupported(); url: #dom-mediasource-istypesupported
 
 spec: html; urlPrefix: https://html.spec.whatwg.org/multipage/;
-    type: method
-        for: HTMLMediaElement; text: canPlayType(); url: #dom-navigator-canplaytype
-    type: attribute
-        for: PlatformObject; text: [[Detached]]; url: structured-data.html#detached
-    type: attribute
-        for: ImageBitmap; text: resizeWidth; url:#dom-imagebitmapoptions-resizewidth
-    type: attribute
-        for: ImageBitmap; text: resizeHeight; url:#dom-imagebitmapoptions-resizeheight
+    for: HTMLMediaElement;
+        type: method; text: canPlayType(); url: #dom-navigator-canplaytype
+    for: PlatformObject;
+        type: attribute; text: [[Detached]]; url: structured-data.html#detached
+    for: ImageBitmap;
+        type: attribute; text: resizeWidth; url:#dom-imagebitmapoptions-resizewidth
+        type: attribute; text: resizeHeight; url:#dom-imagebitmapoptions-resizeheight
+    type: dfn; text: global object; url: webappapis.html#global-object
 
 spec: mediacapture-streams; urlPrefix: https://www.w3.org/TR/mediacapture-streams/
-    type: method
-        for: mediaDevices; text: getUserMedia(); url: #dom-mediadevices-getusermedia
+    for: mediaDevices;
+        type: method; text: getUserMedia(); url: #dom-mediadevices-getusermedia
 
 spec: mediacapture-screen-share; urlPrefix: https://w3c.github.io/mediacapture-screen-share/
-    type: method
-        for: mediaDevices; text: getDisplayMedia(); url: #dom-mediadevices-getdisplaymedia
+    for: mediaDevices; type: method; text: getDisplayMedia(); url: #dom-mediadevices-getdisplaymedia
 
 spec: mediacapture-main; urlPrefix: https://w3c.github.io/mediacapture-main/
-    type: enum-value
-        for:MediaStreamTrackState; text: live; url: #idl-def-MediaStreamTrackState.live
-    type: enum-value
-        for:MediaStreamTrackState; text: ended; url: #idl-def-MediaStreamTrackState.ended
+    for:MediaStreamTrackState;
+        type: enum-value; text: live; url: #idl-def-MediaStreamTrackState.live
+        type: enum-value; text: ended; url: #idl-def-MediaStreamTrackState.ended
 
 spec: mimesniff; urlPrefix: https://mimesniff.spec.whatwg.org/#
     type: dfn; text: MIME type; url: mime-type
@@ -56,6 +54,7 @@ spec: infra; urlPrefix: https://infra.spec.whatwg.org/#
     type: dfn; text: enqueing; url: queue-enqueue;
     type: dfn; text: dequeued; url: queue-dequeue;
     type: dfn; text: empty; url: list-is-empty;
+    type: dfn; text: list; url: lists;
 </pre>
 
 
@@ -91,11 +90,11 @@ Background {#processing-model-background}
 
 This section is non-normative.
 
-The codec interfaces described herein are designed such that new codec tasks may
-be scheduled while previous tasks are still pending. For example, web authors
-may call `decode()` without waiting for a previous `decode()` to complete.
-This is achieved by offloading underlying codec tasks to a separate thread for
-parallel execution.
+The codec interfaces defined by the specification designed such that new codec
+tasks may be scheduled while previous tasks are still pending. For example, web
+authors may call `decode()` without waiting for a previous `decode()` to
+complete. This is achieved by offloading underlying codec tasks to a separate
+thread for parallel execution.
 
 This section describes threading behaviors as they are visible from the
 perspective of web authors. Implementers may choose to use more or less threads
@@ -141,8 +140,8 @@ that enqueued the message. The steps of a control message may depend on
 
 <dfn lt="Reset the control message queue">Resetting the control message
     queue</dfn> means performing these steps:
-1. For each <a>control message</a> in the <a>control message queue</a>:
-    1. If a control message's <a>injected state</a> includes a promise, reject
+1. For each [=control message=] in the [=control message queue=]:
+    1. If a control message's [=injected state=] includes a promise, reject
         that promise.
     2. Remove the message from the queue.
 
@@ -227,15 +226,15 @@ Methods {#audiodecoder-methods}
     chunks as described by |config|.
 
     When invoked, run these steps:
-    1. If |config| is not a <a>valid AudioDecoderConfig</a>, throw a
+    1. If |config| is not a [=valid AudioDecoderConfig=], throw a
         {{TypeError}}.
     2. If {{AudioDecoder/state}} is `"closed"`, throw an {{InvalidStateError}}.
     3. If the user agent cannot provide a codec implementation to support
         |config|, throw a {{NotSupportedError}}.
     4. Set {{AudioDecoder/state}} to `"configured"`.
-    5. <a>Queue a control message</a> to configure the decoder with |config|.
+    5. [=Queue a control message=] to configure the decoder with |config|.
 
-    <a>Running a control message</a> to configure the decoder means running
+    [=Running a control message=] to configure the decoder means running
     these steps:
     1. Assign {{AudioDecoder/[[codec implementation]]}} with an implementation
         supporting |config|.
@@ -243,49 +242,49 @@ Methods {#audiodecoder-methods}
 
   <dt><dfn method for=AudioDecoder>decode(chunk)</dfn></dt>
   <dd>
-    <a>Enqueues a control message</a> to decode the given |chunk|.
+    [=Enqueues a control message=] to decode the given |chunk|.
 
     When invoked, run these steps:
-    1. If {{AudioDecoder/state}} is not `"configured"`, throw an
+    1. If {{VideoDecoder/state}} is not `"configured"`, throw an
         {{InvalidStateError}}.
-    2. Increment {{AudioDecoder/decodeQueueSize}}.
-    3. <a>Queue a control message</a> to decode the |chunk|.
+    2. Increment {{VideoDecoder/decodeQueueSize}}.
+    3. [=Queue a control message=] to decode the |chunk|.
 
     Running a control message to decode the chunk means performing these steps:
-    1. Attempt to use {{AudioDecoder/[[codec implementation]]}} to decode the
+    1. Attempt to use {{VideoDecoder/[[codec implementation]]}} to decode the
         chunk.
     2. If decoding results in an error, queue a task on the [=control thread=]
-        event loop to run the <a>Close AudioDecoder</a> algorithm with
+        event loop to run the [=Close VideoDecoder=] algorithm with
         {{EncodingError}}.
     3. Queue a task on the [=control thread=] event loop to decrement
-        {{AudioDecoder/decodeQueueSize}}
-    4. Let |decoded outputs| be a [=list=] of decoded audio data outputs emited
-        by {{AudioDecoder/[[codec implementation]]}}.
+        {{VideoDecoder/decodeQueueSize}}
+    4. Let |decoded outputs| be a [=list=] of decoded video data outputs emitted
+        by {{VideoDecoder/[[codec implementation]]}}.
     5. If |decoded outputs| is not empty, queue a task on the [=control thread=]
-        event loop to run the <a>Output AudioFrames</a> algorithm with
+        event loop to run the [=Output VideoFrames=] algorithm with
         |decoded outputs|.
   </dd>
 
   <dt><dfn method for=AudioDecoder>flush()</dfn></dt>
   <dd>
-    Completes all <a>control messages</a> in the <a>control message queue</a>
+    Completes all [=control messages=] in the [=control message queue=]
     and emits all outputs.
 
     When invoked, run these steps:
     1. If {{AudioDecoder/state}} is not `"configured"`, return
         [=a promise rejected with=] {{InvalidStateError}} {{DOMException}}.
     2. Let |promise| be a new Promise.
-    3. <a>Queue a control message</a> to flush the codec with |promise|.
+    3. [=Queue a control message=] to flush the codec with |promise|.
     4. Return |promise|.
 
     Running a control message to flush the codec means performing these steps
         with |promise|.
-    1. Signal {{AudioDecoder/[[codec implementation]]}} to emit all <a>internal
-        pending outputs</a>.
-    2. Let |decoded outputs| be a [=list=] of decoded audio data outputs emited
+    1. Signal {{AudioDecoder/[[codec implementation]]}} to emit all [=internal
+        pending outputs=].
+    2. Let |decoded outputs| be a [=list=] of decoded audio data outputs emitted
         by {{AudioDecoder/[[codec implementation]]}}.
     3. If |decoded outputs| is not empty, queue a task on the [=control thread=]
-        event loop to run the <a>Output AudioFrames</a> algorithm with
+        event loop to run the [=Output AudioFrames=] algorithm with
         |decoded outputs|.
     4. Queue a task on the [=control thread=] event loop to resolve |promise|.
   </dd>
@@ -293,18 +292,18 @@ Methods {#audiodecoder-methods}
   <dt><dfn method for=AudioDecoder>reset()</dfn></dt>
   <dd>
     Immediately resets all state including configuration,
-    <a>control messages</a> in the <a>control message queue</a>, and all pending
+    [=control messages=] in the [=control message queue=], and all pending
     callbacks.
 
-    When invoked, run the <a>Reset AudioDecoder</a> algorithm.
+    When invoked, run the [=Reset AudioDecoder=] algorithm.
   </dd>
 
   <dt><dfn method for=AudioDecoder>close()</df></dt>
   <dd>
-    Immediately aborts all pending work and releases <a>system resources</a>.
+    Immediately aborts all pending work and releases [=system resources=].
     Close is permanent.
 
-    When invoked, run the <a>Close AudioDecoder</a> algorithm.
+    When invoked, run the [=Close AudioDecoder=] algorithm.
   </dd>
 </dl>
 
@@ -328,16 +327,16 @@ Algorithms {#audiodecoder-algorithms}
     2. Set {{AudioDecoder/state}} to `"unconfigured"`.
     3. Signal {{AudioDecoder/[[codec implementation]]}} to cease producing
         output for the previous configuration.
-    4. <a>Reset the control message queue</a>.
+    4. [=Reset the control message queue=].
     5. Set {{AudioDecoder/decodeQueueSize}} to zero.
   </dd>
   <dt><dfn>Close AudioDecoder</dfn> (with error)</dt>
   <dd>
     Run these steps:
-    1. Run the <a>Reset AudioDecoder</a> algorithm.
+    1. Run the [=Reset AudioDecoder=] algorithm.
     2. Set {{AudioDecoder/state}} to `"closed"`.
     3. Clear {{AudioDecoder/[[codec implementation]]}} and release associated
-        <a>system resources</a>.
+        [=system resources=].
     4. If |error| is set, queue a task on the [=control thread=] event loop to
         invoke the {{AudioDecoder/[[error callback]]}} with |error|.
   </dd>
@@ -404,8 +403,8 @@ Attributes {#videodecoder-attributes}
     <dfn attribute for=VideoDecoder>decodeQueueSize</dfn>
   </dt>
   <dd>
-    The number of pending decode requests. This does not include requests that
-    have been sent to the underlying codec.
+    The number of pending decode requests. This number will decrease as the
+    underlying codec is ready to accept new input.
   </dd>
 </dl>
 
@@ -414,20 +413,19 @@ Methods {#videodecoder-methods}
 <dl>
   <dt><dfn method for=VideoDecoder>configure(config)</dfn></dt>
   <dd>
-    <a>Enqueues a control message</a> to configure the video decoder for
-    decoding chunks as described by |config|.
+    [=Enqueues a control message=] to configure the video decoder for decoding
+    chunks as described by |config|.
 
     When invoked, run these steps:
-    1. If |config| is not a <a>valid VideoDecoderConfig</a>, throw a
+    1. If |config| is not a [=valid VideoDecoderConfig=], throw a
         {{TypeError}}.
     2. If {{VideoDecoder/state}} is `"closed"`, throw an {{InvalidStateError}}.
     3. If the user agent cannot provide a codec implementation to support
         |config|, throw a {{NotSupportedError}}.
     4. Set {{VideoDecoder/state}} to `"configured"`.
-    5. <a>Queue a control message</a> to configure the decoder with |config|.
-    6. <a>Run the control message processing loop</a>.
+    5. [=Queue a control message=] to configure the decoder with |config|.
 
-    <a>Running a control message</a> to configure the decoder means running
+    [=Running a control message=] to configure the decoder means running
     these steps:
     1. Assign {{VideoDecoder/[[codec implementation]]}} with an implementation
         supporting |config|.
@@ -435,97 +433,100 @@ Methods {#videodecoder-methods}
 
   <dt><dfn method for=VideoDecoder>decode(chunk)</dfn></dt>
   <dd>
-    <a>Enqueues a control message</a> to decode the given |chunk|.
+    [=Enqueues a control message=] to decode the given |chunk|.
 
     When invoked, run these steps:
     1. If {{VideoDecoder/state}} is not `"configured"`, throw an
         {{InvalidStateError}}.
     2. Increment {{VideoDecoder/decodeQueueSize}}.
-    3. <a>Queue a control message</a> to decode the |chunk|.
-    4. <a>Run the control message processing loop</a>.
+    3. [=Queue a control message=] to decode the |chunk|.
 
     Running a control message to decode the chunk means performing these steps:
-    1. Decrement {{VideoDecoder/decodeQueueSize}}
-    2. Let |codec implementation queue| be the result of starting a new
-        <a>parallel queue</a>.
-    3. Enqueue the following steps to |codec implementation queue|:
-        1. Attempt to use {{VideoDecoder/[[codec implementation]]}} to decode
-            the chunk.
-        2. If decoding results in an error, queue a task on the media element
-            task source to run the <a>Close VideoDecoder</a> algorithm with
-            {{EncodingError}}.
-        3. Otherwise, for each decoded video frame data |output|, queue a task
-            on the media element task source to run the <a>Output VideoFrame</a>
-            algorithm with |output|.
+    1. Attempt to use {{VideoDecoder/[[codec implementation]]}} to decode the
+        chunk.
+    2. If decoding results in an error, queue a task on the [=control thread=]
+        event loop to run the [=Close VideoDecoder=] algorithm with
+        {{EncodingError}}.
+    3. Queue a task on the [=control thread=] event loop to decrement
+        {{VideoDecoder/decodeQueueSize}}
+    4. Let |decoded outputs| be a [=list=] of decoded video data outputs emitted
+        by {{VideoDecoder/[[codec implementation]]}}.
+    5. If |decoded outputs| is not empty, queue a task on the [=control thread=]
+        event loop to run the [=Output VideoFrames=] algorithm with
+        |decoded outputs|.
   </dd>
 
   <dt><dfn method for=VideoDecoder>flush()</dfn></dt>
   <dd>
-    Completes all <a>control messages</a> in the <a>control message queue</a>
+    Completes all [=control messages=] in the [=control message queue=]
     and emits all outputs.
 
     When invoked, run these steps:
     1. If {{VideoDecoder/state}} is not `"configured"`, return
         [=a promise rejected with=] {{InvalidStateError}} {{DOMException}}.
     2. Let |promise| be a new Promise.
-    3. <a>Queue a control message</a> to flush the codec with |promise|.
+    3. [=Queue a control message=] to flush the codec with |promise|.
     4. Return |promise|.
 
     Running a control message to flush the codec means performing these steps
         with |promise|.
-    1. Signal {{VideoDecoder/[[codec implementation]]}} to emit all <a>internal
-        pending outputs</a>.
-    2. For each decoded video frame data |output|, queue a task on the media
-        element task source to run the <a>Output VideoFrame</a> algorithm with
-        |output|.
-    3. Queue a task on the media element task source to resolve |promise|.
+    1. Signal {{VideoDecoder/[[codec implementation]]}} to emit all [=internal
+        pending outputs=].
+    2. Let |decoded outputs| be a [=list=] of decoded video data outputs emitted
+        by {{VideoDecoder/[[codec implementation]]}}.
+    3. If |decoded outputs| is not empty, queue a task on the [=control thread=]
+        event loop to run the [=Output VideoFrames=] algorithm with
+        |decoded outputs|.
+    4. Queue a task on the [=control thread=] event loop to resolve |promise|.
   </dd>
 
   <dt><dfn method for=VideoDecoder>reset()</dfn></dt>
   <dd>
     Immediately resets all state including configuration,
-    <a>control messages</a> in the <a>control message queue</a>, and all pending
+    [=control messages=] in the [=control message queue=], and all pending
     callbacks.
 
-    When invoked, run the <a>Reset VideoDecoder</a> algorithm.
+    When invoked, run the [=Reset VideoDecoder=] algorithm.
   </dd>
 
   <dt><dfn method for=VideoDecoder>close()</df></dt>
   <dd>
-    Immediately aborts all pending work and releases <a>system resources</a>.
+    Immediately aborts all pending work and releases [=system resources=].
     Close is permanent.
 
-    When invoked, run the <a>Close VideoDecoder</a> algorithm.
+    When invoked, run the [=Close VideoDecoder=] algorithm.
   </dd>
 </dl>
 
 Algorithms {#videodecoder-algorithms}
 -------------------------------------
 <dl>
-  <dt><dfn>Output VideoFrame</dfn> (with |output|)</dt>
+  <dt><dfn>Output VideoFrames</dfn> (with |outputs|)</dt>
   <dd>
     Run these steps:
-    1. Let |planes| be a sequence of {{Plane}}s containing the decoded video
-        frame data from |output|.
-    2. Let |pixelFormat| be the {{PixelFormat}} of |planes|.
-    3. Let |frameInit| be a {{VideoFrameInit}} with the following keys:
-        1. Let {{VideoFrameInit/timestamp}} and {{VideoFrameInit/duration}} be
-            the {{EncodedVideoChunk/timestamp}} and
-            {{EncodedVideoChunk/duration}} from the {{EncodedVideoChunk}}
-            associated with |output|.
-        2. Let {{VideoFrameInit/codedWidth}} and {{VideoFrameInit/codedHeight}}
-            be the width and height of the decoded video frame |output| in
-            pixels, prior to any cropping or aspect ratio adjustments.
-        3. Let {{VideoFrameInit/cropLeft}}, {{VideoFrameInit/cropTop}},
-            {{VideoFrameInit/cropWidth}}, and {{VideoFrameInit/cropHeight}} be
-            the crop region of the decoded video frame |output| in pixels,
-            prior to any aspect ratio adjustments.
-        4. Let {{VideoFrameInit/displayWidth}} and
-            {{VideoFrameInit/displayHeight}} be the display size of the decoded
-            video frame in pixels.
-    4. Let |frame| be a {{VideoFrame}}, constructed with |pixelFormat|,
-        |planes|, and |frameInit|.
-    5. Invoke {{VideoDecoder/[[output callback]]}} with |frame|.
+    1. For each |output| in |outputs|:
+      1. Let |planes| be a sequence of {{Plane}}s containing the decoded video
+          frame data from |output|.
+      2. Let |pixelFormat| be the {{PixelFormat}} of |planes|.
+      3. Let |frameInit| be a {{VideoFrameInit}} with the following keys:
+          1. Let {{VideoFrameInit/timestamp}} and {{VideoFrameInit/duration}} be
+              the {{EncodedVideoChunk/timestamp}} and
+              {{EncodedVideoChunk/duration}} from the {{EncodedVideoChunk}}
+              associated with |output|.
+          2. Let {{VideoFrameInit/codedWidth}} and
+              {{VideoFrameInit/codedHeight}}
+              be the width and height of the decoded video frame |output| in
+              pixels, prior to any cropping or aspect ratio adjustments.
+          3. Let {{VideoFrameInit/cropLeft}}, {{VideoFrameInit/cropTop}},
+              {{VideoFrameInit/cropWidth}}, and {{VideoFrameInit/cropHeight}} be
+              the crop region of the decoded video frame |output| in pixels,
+              prior to any aspect ratio adjustments.
+          4. Let {{VideoFrameInit/displayWidth}} and
+              {{VideoFrameInit/displayHeight}} be the display size of the
+              decoded video frame in pixels.
+      4. Let |frame| be a {{VideoFrame}}, constructed with |pixelFormat|,
+          |planes|, and |frameInit|.
+      5. Invoke {{VideoDecoder/[[output callback]]}} with |frame|.
   </dd>
   <dt><dfn>Reset VideoDecoder</dfn></dt>
   <dd>
@@ -534,17 +535,17 @@ Algorithms {#videodecoder-algorithms}
     2. Set {{VideoDecoder/state}} to `"unconfigured"`.
     3. Signal {{VideoDecoder/[[codec implementation]]}} to cease producing
         output for the previous configuration.
-    4. <a>Reset the control message queue</a>.
+    4. [=Reset the control message queue=].
     5. Set {{VideoDecoder/decodeQueueSize}} to zero.
   </dd>
-  <dt><dfn>Close VideoDecoder</dfn> (with error)</dt>
+  <dt><dfn>Close VideoDecoder</dfn> (with |error|)</dt>
   <dd>
     Run these steps:
-    1. Run the <a>Reset VideoDecoder</a> algorithm.
+    1. Run the [=Reset VideoDecoder=] algorithm.
     2. Set {{VideoDecoder/state}} to `"closed"`.
     3. Clear {{VideoDecoder/[[codec implementation]]}} and release associated
-        <a>system resources</a>.
-    4. If |error| is set, queue a task on the media element task source to
+        [=system resources=].
+    4. If |error| is set, queue a task on the [=control thread=] event loop to
         invoke the {{VideoDecoder/[[error callback]]}} with |error|.
   </dd>
 </dl>
@@ -621,18 +622,17 @@ Methods {#audioencoder-methods}
 <dl>
   <dt><dfn method for=AudioEncoder>configure(config)</dfn></dt>
   <dd>
-    <a>Enqueues a control message</a> to configure the audio encoder for
+    [=Enqueues a control message=] to configure the audio encoder for
     decoding chunks as described by |config|.
 
     When invoked, run these steps:
-    1. If |config| is not a <a>valid AudioEncoderConfig</a>, throw a
+    1. If |config| is not a [=valid AudioEncoderConfig=], throw a
         {{TypeError}}.
     2. If {{AudioEncoder/state}} is `"closed"`, throw an {{InvalidStateError}}.
     3. If the user agent cannot provide a codec implementation to support
         |config|, throw a {{NotSupportedError}}.
     4. Set {{AudioEncoder/state}} to `"configured"`.
-    5. <a>Queue a control message</a> to configure the encoder using |config|.
-    6. <a>Run the control message processing loop</a>.
+    5. [=Queue a control message=] to configure the encoder using |config|.
 
     Running a control message to configure the encoder means performing these
     steps:
@@ -642,7 +642,7 @@ Methods {#audioencoder-methods}
 
   <dt><dfn method for=AudioEncoder>encode(frame)</dfn></dt>
   <dd>
-    <a>Enqueues a control message</a> to encode the given |frame|.
+    [=Enqueues a control message=] to encode the given |frame|.
 
     NOTE: This method will destroy the AudioFrame. Authors who wish to retain a
     copy, should call `frame.clone()` prior to calling encode().
@@ -652,84 +652,86 @@ Methods {#audioencoder-methods}
         `true`, throw a {{TypeError}}.
     2. If {{AudioEncoder/state}} is not `"configured"`, throw an
         {{InvalidStateError}}.
-    3. Let |frameClone| hold the result of running the <a>Clone Frame</a>
+    3. Let |frameClone| hold the result of running the [=Clone Frame=]
         algorithm with |frame|.
     4. Destroy the original |frame| by invoking `frame.destroy()`.
     5. Increment {{AudioEncoder/encodeQueueSize}}.
-    6. <a>Queue a control message</a> to encode |frameClone|.
-    7. Run the control message processing loop.
+    6. [=Queue a control message=] to encode |frameClone|.
 
     Running a control message to encode the frame means performing these steps.
-    1. Decrement {{AudioEncoder/encodeQueueSize}}.
-    2. Let |codec implementation queue| be the result of starting a new
-        <a>parallel queue</a>.
-    3. Enqueue the following steps to |codec implementation queue|:
-        1. Attempt to use {{AudioEncoder/[[codec implementation]]}} to encode
-            |frameClone|.
-        2. If encoding results in an error, queue a task on the media element
-            task source to run the <a>Close AudioEncoder</a> algorithm with
-            {{EncodingError}}.
-        3. Otherwise, for each encoded audio data |output|, queue a task on the
-            media element task source to run the <a>Output EncodedAudioChunk</a>
-            algorithm with |output|.
+    1. Attempt to use {{AudioEncoder/[[codec implementation]]}} to encode
+        |frameClone|.
+    2. If encoding results in an error, queue a task on the [=control thread=]
+        event loop to run the [=Close AudioEncoder=] algorithm with
+        {{EncodingError}}.
+    3. Queue a task on the [=control thread=] event loop to decrement
+        {{AudioEncoder/encodeQueueSize}}.
+    4. Let |encoded outputs| be a [=list=] of encoded audio data outputs
+        emitted by {{AudioEncoder/[[codec implementation]]}}.
+    5. If |encoded outputs| is not empty, queue a task on the [=control thread=]
+        event loop to run the [=Output EncodedAudioChunks=] algorithm with
+        |encoded outputs|.
   </dd>
 
   <dt><dfn method for=AudioEncoder>flush()</dfn></dt>
   <dd>
-    Completes all <a>control messages</a> in the <a>control message queue</a>
+    Completes all [=control messages=] in the [=control message queue=]
     and emits all outputs.
 
     When invoked, run these steps:
     1. If {{AudioEncoder/state}} is not `"configured"`, return
         [=a promise rejected with=] {{InvalidStateError}} {{DOMException}}.
     2. Let |promise| be a new Promise.
-    3. <a>Queue a control message</a> to flush the codec with |promise|.
+    3. [=Queue a control message=] to flush the codec with |promise|.
     4. Return |promise|.
 
     Running a control message to flush the codec means performing these steps
         with |promise|.
-    1. Signal {{AudioEncoder/[[codec implementation]]}} to emit all <a>internal
-        pending outputs</a>.
-    2. For each encoded audio data |output|, queue a task on the media element
-        task source to run the <a>Output EncodedAudioChunk</a> algorithm with
-        |output|.
-    3. Queue a task on the media element task source to resolve |promise|.
+    1. Signal {{AudioEncoder/[[codec implementation]]}} to emit all [=internal
+        pending outputs=].
+    2. Let |encoded outputs| be a [=list=] of encoded audio data outputs
+        emitted by {{AudioEncoder/[[codec implementation]]}}.
+    5. If |encoded outputs| is not empty, queue a task on the [=control thread=]
+        event loop to run the [=Output EncodedAudioChunks=] algorithm with
+        |encoded outputs|.
+    3. Queue a task on the [=control thread=] event loop to resolve |promise|.
   </dd>
 
   <dt><dfn method for=AudioEncoder>reset()</dfn></dt>
   <dd>
     Immediately resets all state including configuration,
-    <a>control messages</a> in the <a>control message queue</a>, and all pending
+    [=control messages=] in the [=control message queue=], and all pending
     callbacks.
 
-    When invoked, run the <a>Reset AudioEncoder</a> algorithm.
+    When invoked, run the [=Reset AudioEncoder=] algorithm.
   </dd>
 
   <dt><dfn method for=AudioEncoder>close()</df></dt>
   <dd>
-    Immediately aborts all pending work and releases <a>system resources</a>.
+    Immediately aborts all pending work and releases [=system resources=].
     Close is permanent.
 
-    When invoked, run the <a>Close AudioEncoder</a> algorithm.
+    When invoked, run the [=Close AudioEncoder=] algorithm.
   </dd>
 </dl>
 
 Algorithms {#audioencoder-algorithms}
 -------------------------------------
 <dl>
-  <dt><dfn>Output EncodedAudioChunk</dfn> (with |output|)</dt>
+  <dt><dfn>Output EncodedAudioChunks</dfn> (with |outputs|)</dt>
   <dd>
     Run these steps:
-    1. Let |chunkInit| be an {{EncodedAudioChunkInit}} with the following keys:
-        1. Let {{EncodedAudioChunkInit/data}} contain the encoded audio data
-            from |output|.
-        2. Let {{EncodedAudioChunkInit/type}} be the {{EncodedAudioChunkType}}
-            of |output|.
-        3. Let {{EncodedAudioChunkInit/timestamp}} be the
-            {{AudioFrame/timestamp}} from the AudioFrame associated with
-            |output|.
-    2. Let |chunk| be a new {{EncodedAudioChunk}} constructed with |chunkInit|.
-    3. Invoke {{AudioEncoder/[[output callback]]}} with |chunk|.
+    1. For each |output| in |outputs|:
+      1. Let |chunkInit| be an {{EncodedAudioChunkInit}} with the following keys:
+          1. Let {{EncodedAudioChunkInit/data}} contain the encoded audio data
+              from |output|.
+          2. Let {{EncodedAudioChunkInit/type}} be the {{EncodedAudioChunkType}}
+              of |output|.
+          3. Let {{EncodedAudioChunkInit/timestamp}} be the
+              {{AudioFrame/timestamp}} from the AudioFrame associated with
+              |output|.
+      2. Let |chunk| be a new {{EncodedAudioChunk}} constructed with |chunkInit|.
+      3. Invoke {{AudioEncoder/[[output callback]]}} with |chunk|.
   </dd>
   <dt><dfn>Reset AudioEncoder</dfn></dt>
   <dd>
@@ -738,17 +740,17 @@ Algorithms {#audioencoder-algorithms}
     2. Set {{AudioEncoder/state}} to `"unconfigured"`.
     3. Signal {{AudioEncoder/[[codec implementation]]}} to cease producing
         output for the previous configuration.
-    4. <a>Reset the control message queue</a>.
+    4. [=Reset the control message queue=].
     5. Set {{AudioEncoder/encodeQueueSize}} to zero.
   </dd>
-  <dt><dfn>Close AudioEncoder</dfn></dt>
+  <dt><dfn>Close AudioEncoder</dfn> (with |error|)</dt>
   <dd>
     Run these steps:
-    1. Run the <a>Reset AudioEncoder</a> algorithm.
+    1. Run the [=Reset AudioEncoder=] algorithm.
     2. Set {{AudioEncoder/state}} to `"closed"`.
     3. Clear {{AudioEncoder/[[codec implementation]]}} and release associated
-        <a>system resources</a>.
-    4. If |error| is set, queue a task on the media element task source to
+        [=system resources=].
+    4. If |error| is set, queue a task on the [=control thread=] event loop
         invoke the {{AudioEncoder/[[error callback]]}} with |error|.
   </dd>
 </dl>
@@ -824,18 +826,17 @@ Methods {#videoencoder-methods}
 <dl>
   <dt><dfn method for=VideoEncoder>configure(config)</dfn></dt>
   <dd>
-    <a>Enqueues a control message</a> to configure the video encoder for
+    [=Enqueues a control message=] to configure the video encoder for
     decoding chunks as described by |config|.
 
     When invoked, run these steps:
-    1. If |config| is not a <a>valid VideoEncoderConfig</a>, throw a
+    1. If |config| is not a [=valid VideoEncoderConfig=], throw a
         {{TypeError}}.
     2. If {{VideoEncoder/state}} is `"closed"`, throw an {{InvalidStateError}}.
     3. If the user agent cannot provide a codec implementation to support
         |config|, throw a {{NotSupportedError}}.
     4. Set {{VideoEncoder/state}} to `"configured"`.
-    5. <a>Queue a control message</a> to configure the encoder using |config|.
-    6. <a>Run the control message processing loop</a>.
+    5. [=Queue a control message=] to configure the encoder using |config|.
 
     Running a control message to configure the encoder means performing these
     steps:
@@ -845,7 +846,7 @@ Methods {#videoencoder-methods}
 
   <dt><dfn method for=VideoEncoder>encode(frame, options)</dfn></dt>
   <dd>
-    <a>Enqueues a control message</a> to encode the given |frame|.
+    [=Enqueues a control message=] to encode the given |frame|.
 
     NOTE: This method will destroy the VideoFrame. Authors who wish to retain a
     copy, should call `frame.clone()` prior to calling encode().
@@ -855,86 +856,88 @@ Methods {#videoencoder-methods}
         `true`, throw a {{TypeError}}.
     2. If {{VideoEncoder/state}} is not `"configured"`, throw an
         {{InvalidStateError}}.
-    3. Let |frameClone| hold the result of running the <a>Clone Frame</a>
+    3. Let |frameClone| hold the result of running the [=Clone Frame=]
         algorithm with |frame|.
     4. Destroy the original |frame| by invoking `frame.destroy()`.
     5. Increment {{VideoEncoder/encodeQueueSize}}.
-    6. <a>Queue a control message</a> to encode |frameClone|.
-    7. Run the control message processing loop.
+    6. [=Queue a control message=] to encode |frameClone|.
 
     Running a control message to encode the frame means performing these steps.
-    1. Decrement {{VideoEncoder/encodeQueueSize}}.
-    2. Let |codec implementation queue| be the result of starting a new
-        <a>parallel queue</a>.
-    3. Enqueue the following steps to |codec implementation queue|:
-        1. Attempt to use {{VideoEncoder/[[codec implementation]]}} to encode
-            |frameClone| according to |options|.
-        2. If encoding results in an error, queue a task on the media element
-            task source to run the <a>Close VideoEncoder</a> algorithm with
-            {{EncodingError}}.
-        3. Otherwise, for each encoded video data |output|, queue a task on the
-            media element task source to run the <a>Output EncodedVideoChunk</a>
-            algorithm with |output|.
+    1. Attempt to use {{VideoEncoder/[[codec implementation]]}} to encode
+        |frameClone| according to |options|.
+    2. If encoding results in an error, queue a task on the [=control thread=]
+        event loop to run the [=Close VideoEncoder=] algorithm with
+        {{EncodingError}}.
+    3. Queue a task on the [=control thread=] event loop to decrement
+        {{VideoEncoder/encodeQueueSize}}.
+    4. Let |encoded outputs| be a [=list=] of encoded video data outputs
+        emitted by {{VideoEncoder/[[codec implementation]]}}.
+    5. If |encoded outputs| is not empty, queue a task on the [=control thread=]
+        event loop to run the [=Output EncodedVideoChunks=] algorithm with
+        |encoded outputs|.
   </dd>
 
   <dt><dfn method for=VideoEncoder>flush()</dfn></dt>
   <dd>
-    Completes all <a>control messages</a> in the <a>control message queue</a>
+    Completes all [=control messages=] in the [=control message queue=]
     and emits all outputs.
 
     When invoked, run these steps:
     1. If {{VideoEncoder/state}} is not `"configured"`, return
         [=a promise rejected with=] {{InvalidStateError}} {{DOMException}}.
     2. Let |promise| be a new Promise.
-    3. <a>Queue a control message</a> to flush the codec with |promise|.
+    3. [=Queue a control message=] to flush the codec with |promise|.
     4. Return |promise|.
 
     Running a control message to flush the codec means performing these steps
         with |promise|.
-    1. Signal {{VideoEncoder/[[codec implementation]]}} to emit all<a>internal
-        pending outputs</a>.
-    2. For each encoded video data |output|, queue a task on the media element
-        task source to run the <a>Output EncodedVideoChunk</a> algorithm with
-        |output|.
-    3. Queue a task on the media element task source to resolve |promise|.
+    1. Signal {{VideoEncoder/[[codec implementation]]}} to emit all [=internal
+        pending outputs=].
+    2. Let |encoded outputs| be a [=list=] of encoded video data outputs
+        emitted by {{VideoEncoder/[[codec implementation]]}}.
+    5. If |encoded outputs| is not empty, queue a task on the [=control thread=]
+        event loop to run the [=Output EncodedVideoChunks=] algorithm with
+        |encoded outputs|.
+    3. Queue a task on the [=control thread=] event loop to resolve |promise|.
   </dd>
 
   <dt><dfn method for=VideoEncoder>reset()</dfn></dt>
   <dd>
     Immediately resets all state including configuration,
-    <a>control messages</a> in the <a>control message queue</a>, and all pending
+    [=control messages=] in the [=control message queue=], and all pending
     callbacks.
 
-    When invoked, run the <a>Reset VideoEncoder</a> algorithm.
+    When invoked, run the [=Reset VideoEncoder=] algorithm.
   </dd>
 
   <dt><dfn method for=VideoEncoder>close()</df></dt>
   <dd>
-    Immediately aborts all pending work and releases <a>system resources</a>.
+    Immediately aborts all pending work and releases [=system resources=].
     Close is permanent.
 
-    When invoked, run the <a>Close VideoEncoder</a> algorithm.
+    When invoked, run the [=Close VideoEncoder=] algorithm.
   </dd>
 </dl>
 
 Algorithms {#videoencoder-algorithms}
 -------------------------------------
 <dl>
-  <dt><dfn>Output EncodedVideoChunk</dfn> (with |output|)</dt>
+  <dt><dfn>Output EncodedVideoChunks</dfn> (with |outputs|)</dt>
   <dd>
     Run these steps:
-    1. Let |chunkInit| be an {{EncodedVideoChunkInit}} with the following keys:
-        1. Let {{EncodedVideoChunkInit/data}} contain the encoded video data
-            from |output|.
-        2. Let {{EncodedVideoChunkInit/type}} be the {{EncodedVideoChunkType}}
-            of |output|.
-        3. Let {{EncodedVideoChunkInit/timestamp}} be the
-            {{VideoFrame/timestamp}} from the {{VideoFrame}} associated with
-            |output|.
-        4. Let {{EncodedVideoChunkInit/duration}} be the {{VideoFrame/duration}}
-            from the {{VideoFrame}} associated with |output|.
-    2. Let |chunk| be a new {{EncodedVideoChunk}} constructed with |chunkInit|.
-    3. Invoke {{VideoEncoder/[[output callback]]}} with chunk.
+    1. For each |output| in |outputs|:
+      1. Let |chunkInit| be an {{EncodedVideoChunkInit}} with the following keys:
+          1. Let {{EncodedVideoChunkInit/data}} contain the encoded video data
+              from |output|.
+          2. Let {{EncodedVideoChunkInit/type}} be the {{EncodedVideoChunkType}}
+              of |output|.
+          3. Let {{EncodedVideoChunkInit/timestamp}} be the
+              {{VideoFrame/timestamp}} from the {{VideoFrame}} associated with
+              |output|.
+          4. Let {{EncodedVideoChunkInit/duration}} be the {{VideoFrame/duration}}
+              from the {{VideoFrame}} associated with |output|.
+      2. Let |chunk| be a new {{EncodedVideoChunk}} constructed with |chunkInit|.
+      3. Invoke {{VideoEncoder/[[output callback]]}} with chunk.
   </dd>
   <dt><dfn>Reset VideoEncoder</dfn></dt>
   <dd>
@@ -943,18 +946,18 @@ Algorithms {#videoencoder-algorithms}
     2. Set {{VideoEncoder/state}} to `"unconfigured"`.
     3. Signal {{VideoEncoder/[[codec implementation]]}} to cease producing
         output for the previous configuration.
-    4. <a>Reset the control message queue</a>.
+    4. [=Reset the control message queue=].
+    5. Set {{VideoEncoder/encodeQueueSize}} to zero.
   </dd>
-  <dt><dfn>Close VideoEncoder</dfn></dt>
+  <dt><dfn>Close VideoEncoder</dfn> (with |error|)</dt>
   <dd>
     Run these steps:
-    1. Run the <a>Reset VideoEncoder</a> algorithm.
+    1. Run the [=Reset VideoEncoder=] algorithm.
     2. Set {{VideoEncoder/state}} to `"closed"`.
     3. Clear {{VideoEncoder/[[codec implementation]]}} and release associated
-        <a>system resources</a>.
-    4. If |error| is set, queue a task on the media element task source to
+        [=system resources=].
+    4. If |error| is set, queue a task on the [=control thread=] event loop
         invoke the {{VideoEncoder/[[error callback]]}} with |error|.
-    5. Set {{VideoEncoder/encodeQueueSize}} to zero.
   </dd>
 </dl>
 
@@ -965,7 +968,7 @@ Configurations{#configurations}
 <dfn export>Codec String</dfn>{#config-codec-string}
 ----------------------------------------------------
 In other media specifications, codec strings historically accompanied a
-    <a>MIME type</a> as the "codecs=" parameter
+    [=MIME type=] as the "codecs=" parameter
     ({{MediaSource/isTypeSupported()}}, {{HTMLMediaElement/canPlayType()}})
     [[RFC6381]]. In this specification, encoded media is not containerized; hence,
     only the value of the codecs parameter is accepted.
@@ -1258,7 +1261,7 @@ enum CodecState {
   </dd>
   <dt><dfn enum-value for=CodecState>closed</dfn></dt>
   <dd>
-    The codec is no longer usable and underlying <a>system resources</a> have
+    The codec is no longer usable and underlying [=system resources=] have
         been released.
   </dd>
 </dl>
@@ -1437,8 +1440,8 @@ dictionary AudioFrameInit {
 <dl>
   <dt><dfn method for=AudioFrame>close()</dfn></dt>
   <dd>
-    Immediately frees <a>system resources</a>. When invoked, run these steps:
-    1. Release <a>system resources</a> for buffer and set its value to null.
+    Immediately frees [=system resources=]. When invoked, run these steps:
+    1. Release [=system resources=] for buffer and set its value to null.
     2. Assign `true` to the {{AudioFrame/[[detached]]}} internal slot.
 
     NOTE: This section needs work. We should use the name and semantics of
@@ -1518,7 +1521,7 @@ NOTE: this section needs work. Current wording assumes a VideoFrame can always
 <dfn constructor for=VideoFrame title="VideoFrame(imageBitmap, frameInit)">
   VideoFrame(imageBitmap, frameInit)
 </dfn>
-1. If |frameInit| is not a <a>valid VideoFrameInit</a>, throw a {{TypeError}}.
+1. If |frameInit| is not a [=valid VideoFrameInit=], throw a {{TypeError}}.
 2. If the value of |imageBitmap|'s' {{PlatformObject/[[Detached]]}} internal
     slot is set to `true`, then throw an {{InvalidStateError}} DOMException.
 3. Let |frame| be a new {{VideoFrame}}.
@@ -1561,7 +1564,7 @@ NOTE: this section needs work. Current wording assumes a VideoFrame can always
 </dfn>
 1. If either {{VideoFrameInit/codedWidth}} or {{VideoFrameInit/codedHeight}} is
     not present in |frameInit|, throw a {{TypeError}}.
-2. If |frameInit| is not a <a>valid VideoFrameInit</a>, throw a {{TypeError}}.
+2. If |frameInit| is not a [=valid VideoFrameInit=], throw a {{TypeError}}.
 3. If the length of |planes| is incompatible with the given pixelFormat, throw a
     TypeError.
 4. Let |frame| be a new {{VideoFrame}} object.
@@ -1655,7 +1658,7 @@ NOTE: this section needs work. Current wording assumes a VideoFrame can always
 
 ### Methods ###{#videoframe-methods}
 <dfn method for=VideoFrame>destroy()</dfn>
-Immediately frees <a>system resources</a>. Destruction applies to all
+Immediately frees [=system resources=]. Destruction applies to all
     references, including references that are serialized and passed across
     Realms.
 
