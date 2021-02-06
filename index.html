@@ -573,6 +573,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
      <dd><a class="u-url" href="https://wicg.github.io/web-codecs/">https://wicg.github.io/web-codecs/</a>
      <dt>Issue Tracking:
      <dd><a href="https://github.com/wicg/web-codecs/issues/">GitHub</a>
+     <dd><a href="#issues-index">Inline In Spec</a>
      <dt class="editor">Editors:
      <dd class="editor p-author h-card vcard" data-editor-id="114832"><span class="p-name fn">Chris Cunningham</span> (<a class="p-org org" href="https://google.com/">Google Inc.</a>)
      <dd class="editor p-author h-card vcard" data-editor-id="62410"><span class="p-name fn">Paul Adenot</span> (<a class="p-org org" href="https://www.mozilla.org/">Mozilla</a>)
@@ -730,6 +731,8 @@ frames from MediaStreamStracks.</p>
       <li><a href="#videotrackreader-methods"><span class="secno">11.6</span> <span class="content">Methods</span></a>
       <li><a href="#mediastreamtrack-monitoring"><span class="secno">11.7</span> <span class="content">MediaStreamTrack Monitoring</span></a>
      </ol>
+    <li><a href="#security-considerations"><span class="secno">12</span> <span class="content">Security Considerations</span></a>
+    <li><a href="#privacy-considerations"><span class="secno">13</span> <span class="content">Privacy Considerations</span></a>
     <li>
      <a href="#w3c-conformance"><span class="secno"></span> <span class="content">Conformance</span></a>
      <ol class="toc">
@@ -749,6 +752,7 @@ frames from MediaStreamStracks.</p>
       <li><a href="#informative"><span class="secno"></span> <span class="content">Informative References</span></a>
      </ol>
     <li><a href="#idl-index"><span class="secno"></span> <span class="content">IDL Index</span></a>
+    <li><a href="#issues-index"><span class="secno"></span> <span class="content">Issues Index</span></a>
    </ol>
   </nav>
   <main>
@@ -2401,6 +2405,73 @@ ratio adjustments.</p>
      <p><a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task" id="ref-for-queue-a-task①">Queue a task</a> on the media element task source to run a simple
 event named <code class="idl"><a data-link-type="idl" href="#eventdef-videotrackreader-ended" id="ref-for-eventdef-videotrackreader-ended">ended</a></code> at the <code class="idl"><a data-link-type="idl" href="#videotrackreader" id="ref-for-videotrackreader③">VideoTrackReader</a></code>.</p>
    </ol>
+   <h2 class="heading settled" data-level="12" id="security-considerations"><span class="secno">12. </span><span class="content">Security Considerations</span><a class="self-link" href="#security-considerations"></a></h2>
+   <p>The primary security impact is that features of this API make it easier for an
+attacker to exploit vulnerabilities in the underlying platform codecs.
+Additionally, new abilities to configure and control the codecs may allow for
+new exploits that rely on a specific configuration and/or sequence of control
+operations.</p>
+   <p>Platform codecs are historically an internal detail of APIs like <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/media.html#htmlmediaelement" id="ref-for-htmlmediaelement">HTMLMediaElement</a></code>, <a data-link-type="biblio" href="#biblio-webaudio">[WebAudio]</a>, and <a data-link-type="biblio" href="#biblio-webrtc">[WebRTC]</a>. In this way, it has always
+been possible to attack the underlying codecs by using malformed media
+files/streams and invoking the various API control methods.</p>
+   <p>For example, you can send any stream to a decoder by first wrapping that stream
+in a media container (e.g. mp4) and setting that as the <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/media.html#dom-media-src" id="ref-for-dom-media-src">src</a></code> of an <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/media.html#htmlmediaelement" id="ref-for-htmlmediaelement①">HTMLMediaElement</a></code>. Similarly, you can send any stream to an encoder by
+using <code class="idl"><a data-link-type="idl" href="https://www.w3.org/TR/mediastream-recording/#mediarecorder" id="ref-for-mediarecorder">MediaRecorder</a></code> to capture a stream of "images" from an <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/canvas.html#htmlcanvaselement" id="ref-for-htmlcanvaselement">HTMLCanvasElement</a></code>, where the image is actually specially crafted binary
+data.</p>
+   <p>Having loaded the bytes into the codec, you can use existing media APIs as a
+proxy to invoke different codec controls. For example, you can cause an
+underlying video decoder to be <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-reset" id="ref-for-dom-videodecoder-reset①">reset()</a></code> by setting a new value
+for <code>&lt;video>.currentTime</code>. Similarly, you can cause an underlying video encoder
+to <code class="idl"><a data-link-type="idl" href="#dom-videoencoder-flush" id="ref-for-dom-videoencoder-flush①">flush()</a></code> by stopping the <code class="idl"><a data-link-type="idl" href="https://www.w3.org/TR/mediastream-recording/#mediarecorder" id="ref-for-mediarecorder①">MediaRecorder</a></code>.</p>
+   <p>WebCodecs makes such attacks easier by exposing low level control when inputs
+are provided and direct access to invoke the codec control methods. This also
+affords attackers the ability to invoke sequences of control methods that were
+not previously possible via the higher level APIs.</p>
+   <p>User agents should mitigate this risk by extensively fuzzing their
+implementation with random inputs and control method invocations. Additionally,
+user agents are encouraged to isolate their underlying codecs in processes with
+restricted privileges (sandbox) as a barrier against successful exploits being
+able to read user data.</p>
+   <p>An additional concern is exposing the underlying codecs to input mutation race
+conditions. Specifically, it should not be possible for a site to mutate a codec
+input or output while the underlying codec may still be operating on that data.
+This concern is mitigated by ensuring that input and output interfaces are
+immutable.</p>
+   <p class="issue" id="issue-fde64654"><a class="self-link" href="#issue-fde64654"></a> EncodedVideoChunk and EncodedAudioChunk currently expose a mutable
+data. See <a href="https://github.com/WICG/web-codecs/issues/80">#80</a>.</p>
+   <h2 class="heading settled" data-level="13" id="privacy-considerations"><span class="secno">13. </span><span class="content">Privacy Considerations</span><a class="self-link" href="#privacy-considerations"></a></h2>
+    The primary privacy impact is an increased ability to fingerprint users by
+querying for different codec capabilities to establish a codec feature profile.
+Much of this profile is already exposed by existing APIs. Such profiles are very
+unlikely to be uniquely identifying, but may be used with other metrics to
+create a fingerprint. 
+   <p>An attacker may accumulate a codec feature profile by calling <code>IsConfigSupported()</code> methods with a number of different configuration
+dictionaries. Similarly, an attacker may attempt to <code>configure()</code> a codec with
+different configuration dictionaries and observe which configurations are
+accepted.</p>
+   <p>Attackers may also use existing APIs to establish much of the codec feature
+profile. For example, the <a data-link-type="biblio" href="#biblio-media-capabilities">[media-capabilities]</a> <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/media-capabilities/#dom-mediacapabilities-decodinginfo" id="ref-for-dom-mediacapabilities-decodinginfo">decodingInfo()</a></code> API
+describes what types of decoders are supported and its <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/media-capabilities/#dom-mediacapabilitiesinfo-powerefficient" id="ref-for-dom-mediacapabilitiesinfo-powerefficient">powerEfficient</a></code> attribute may signal when a decoder uses hardware acceleration. Similarly, the <a data-link-type="biblio" href="#biblio-webrtc">[WebRTC]</a> <code class="idl"><a data-link-type="idl" href="https://www.w3.org/TR/webrtc/#dom-rtcrtpsender-getcapabilities" id="ref-for-dom-rtcrtpsender-getcapabilities">getCapabilities()</a></code> API may be used to determine what
+types of encoders are supported and the <code class="idl"><a data-link-type="idl" href="https://www.w3.org/TR/webrtc/#widl-RTCPeerConnection-getStats-Promise-RTCStatsReport--MediaStreamTrack-selector" id="ref-for-widl-RTCPeerConnection-getStats-Promise-RTCStatsReport--MediaStreamTrack-selector">getStats()</a></code> API may
+be used to determine when an encoder uses hardware acceleration. WebCodecs will
+expose some additional information in the form of low level codec features.</p>
+   <p>A codec feature profile alone is unlikely to be uniquely identifying. Underlying
+codecs are often implemented entirely in software (be it part of the user agent
+binary or part of the operating system), such that all users who run that
+software will have a common set capabilities. Additionally, underlying codecs
+are often implemented with hardware acceleration, but such hardware is mass
+produced and devices of a particular class and manufacture date (e.g. flagship
+phones manufactured in 2020) will often have common capabilities. There will be
+outliers (some users may run outdated versions of software codecs or use a rare
+mix of custom assembled hardware), but most of the time a given codec feature
+profile is shared by a large group of users.</p>
+   <p>Segmenting groups of users by codec feature profile still amounts to a bit of
+entropy that can be combined with other metrics to uniquely identify a user.
+User agents may partially mitigate this by returning an error whenever a site
+attempts to exhaustively probe for codec capabilities. Additionally, user agents
+may implement a "privacy budget", which depletes as authors use WebCodecs and
+other identifying APIs. Upon exhaustion of the privacy budget, codec
+capabilities could be reduced to a common baseline or prompt for user approval.</p>
   </main>
   <div data-fill-with="conformance">
    <h2 class="no-ref no-num heading settled" id="w3c-conformance"><span class="content">Conformance</span><a class="self-link" href="#w3c-conformance"></a></h2>
@@ -2843,6 +2914,18 @@ event named <code class="idl"><a data-link-type="idl" href="#eventdef-videotrack
     <li><a href="#ref-for-eventhandler①">11.4. Attributes</a>
    </ul>
   </aside>
+  <aside class="dfn-panel" data-for="term-for-htmlcanvaselement">
+   <a href="https://html.spec.whatwg.org/multipage/canvas.html#htmlcanvaselement">https://html.spec.whatwg.org/multipage/canvas.html#htmlcanvaselement</a><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-htmlcanvaselement">12. Security Considerations</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="term-for-htmlmediaelement">
+   <a href="https://html.spec.whatwg.org/multipage/media.html#htmlmediaelement">https://html.spec.whatwg.org/multipage/media.html#htmlmediaelement</a><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-htmlmediaelement">12. Security Considerations</a> <a href="#ref-for-htmlmediaelement①">(2)</a>
+   </ul>
+  </aside>
   <aside class="dfn-panel" data-for="term-for-imagebitmap">
    <a href="https://html.spec.whatwg.org/multipage/imagebitmap-and-animations.html#imagebitmap">https://html.spec.whatwg.org/multipage/imagebitmap-and-animations.html#imagebitmap</a><b>Referenced in:</b>
    <ul>
@@ -2893,6 +2976,12 @@ event named <code class="idl"><a data-link-type="idl" href="#eventdef-videotrack
     <li><a href="#ref-for-dom-imagebitmapoptions-resizewidth">10.2.4. Methods</a>
    </ul>
   </aside>
+  <aside class="dfn-panel" data-for="term-for-dom-media-src">
+   <a href="https://html.spec.whatwg.org/multipage/media.html#dom-media-src">https://html.spec.whatwg.org/multipage/media.html#dom-media-src</a><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-dom-media-src">12. Security Considerations</a>
+   </ul>
+  </aside>
   <aside class="dfn-panel" data-for="term-for-queue-dequeue">
    <a href="https://infra.spec.whatwg.org/#queue-dequeue">https://infra.spec.whatwg.org/#queue-dequeue</a><b>Referenced in:</b>
    <ul>
@@ -2915,6 +3004,18 @@ event named <code class="idl"><a data-link-type="idl" href="#eventdef-videotrack
    <a href="https://infra.spec.whatwg.org/#queues">https://infra.spec.whatwg.org/#queues</a><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-queues">2. Codec Processing Model</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="term-for-dom-mediacapabilities-decodinginfo">
+   <a href="https://w3c.github.io/media-capabilities/#dom-mediacapabilities-decodinginfo">https://w3c.github.io/media-capabilities/#dom-mediacapabilities-decodinginfo</a><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-dom-mediacapabilities-decodinginfo">13. Privacy Considerations</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="term-for-dom-mediacapabilitiesinfo-powerefficient">
+   <a href="https://w3c.github.io/media-capabilities/#dom-mediacapabilitiesinfo-powerefficient">https://w3c.github.io/media-capabilities/#dom-mediacapabilitiesinfo-powerefficient</a><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-dom-mediacapabilitiesinfo-powerefficient">13. Privacy Considerations</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-dom-mediasource-istypesupported">
@@ -2954,6 +3055,12 @@ event named <code class="idl"><a data-link-type="idl" href="#eventdef-videotrack
    <a href="https://www.w3.org/TR/mediacapture-streams/#dom-mediadevices-getusermedia">https://www.w3.org/TR/mediacapture-streams/#dom-mediadevices-getusermedia</a><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-dom-mediadevices-getusermedia">11. VideoTrackReader Interface</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="term-for-mediarecorder">
+   <a href="https://www.w3.org/TR/mediastream-recording/#mediarecorder">https://www.w3.org/TR/mediastream-recording/#mediarecorder</a><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-mediarecorder">12. Security Considerations</a> <a href="#ref-for-mediarecorder①">(2)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-mime-type">
@@ -3154,12 +3261,26 @@ event named <code class="idl"><a data-link-type="idl" href="#eventdef-videotrack
     <li><a href="#ref-for-idl-unsigned-long-long①⑦">10.2.3. Attributes</a> <a href="#ref-for-idl-unsigned-long-long①⑧">(2)</a>
    </ul>
   </aside>
+  <aside class="dfn-panel" data-for="term-for-dom-rtcrtpsender-getcapabilities">
+   <a href="https://www.w3.org/TR/webrtc/#dom-rtcrtpsender-getcapabilities">https://www.w3.org/TR/webrtc/#dom-rtcrtpsender-getcapabilities</a><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-dom-rtcrtpsender-getcapabilities">13. Privacy Considerations</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="term-for-widl-RTCPeerConnection-getStats-Promise-RTCStatsReport--MediaStreamTrack-selector">
+   <a href="https://www.w3.org/TR/webrtc/#widl-RTCPeerConnection-getStats-Promise-RTCStatsReport--MediaStreamTrack-selector">https://www.w3.org/TR/webrtc/#widl-RTCPeerConnection-getStats-Promise-RTCStatsReport--MediaStreamTrack-selector</a><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-widl-RTCPeerConnection-getStats-Promise-RTCStatsReport--MediaStreamTrack-selector">13. Privacy Considerations</a>
+   </ul>
+  </aside>
   <h3 class="no-num no-ref heading settled" id="index-defined-elsewhere"><span class="content">Terms defined by reference</span><a class="self-link" href="#index-defined-elsewhere"></a></h3>
   <ul class="index">
    <li>
     <a data-link-type="biblio">[HTML]</a> defines the following terms:
     <ul>
      <li><span class="dfn-paneled" id="term-for-eventhandler">EventHandler</span>
+     <li><span class="dfn-paneled" id="term-for-htmlcanvaselement">HTMLCanvasElement</span>
+     <li><span class="dfn-paneled" id="term-for-htmlmediaelement">HTMLMediaElement</span>
      <li><span class="dfn-paneled" id="term-for-imagebitmap">ImageBitmap</span>
      <li><span class="dfn-paneled" id="term-for-imagebitmapoptions">ImageBitmapOptions</span>
      <li><span class="dfn-paneled" id="term-for-detached">[[Detached]]</span>
@@ -3168,6 +3289,7 @@ event named <code class="idl"><a data-link-type="idl" href="#eventdef-videotrack
      <li><span class="dfn-paneled" id="term-for-queue-a-task">queue a task</span>
      <li><span class="dfn-paneled" id="term-for-dom-imagebitmapoptions-resizeheight">resizeHeight</span>
      <li><span class="dfn-paneled" id="term-for-dom-imagebitmapoptions-resizewidth">resizeWidth</span>
+     <li><span class="dfn-paneled" id="term-for-dom-media-src">src</span>
     </ul>
    <li>
     <a data-link-type="biblio">[INFRA]</a> defines the following terms:
@@ -3176,6 +3298,12 @@ event named <code class="idl"><a data-link-type="idl" href="#eventdef-videotrack
      <li><span class="dfn-paneled" id="term-for-list-is-empty">empty</span>
      <li><span class="dfn-paneled" id="term-for-queue-enqueue">enqueing</span>
      <li><span class="dfn-paneled" id="term-for-queues">queue</span>
+    </ul>
+   <li>
+    <a data-link-type="biblio">[media-capabilities]</a> defines the following terms:
+    <ul>
+     <li><span class="dfn-paneled" id="term-for-dom-mediacapabilities-decodinginfo">decodingInfo()</span>
+     <li><span class="dfn-paneled" id="term-for-dom-mediacapabilitiesinfo-powerefficient">powerEfficient</span>
     </ul>
    <li>
     <a data-link-type="biblio">[media-source]</a> defines the following terms:
@@ -3200,12 +3328,17 @@ event named <code class="idl"><a data-link-type="idl" href="#eventdef-videotrack
      <li><span class="dfn-paneled" id="term-for-dom-mediadevices-getusermedia">getUserMedia()</span>
     </ul>
    <li>
+    <a data-link-type="biblio">[mediastream-recording]</a> defines the following terms:
+    <ul>
+     <li><span class="dfn-paneled" id="term-for-mediarecorder">MediaRecorder</span>
+    </ul>
+   <li>
     <a data-link-type="biblio">[MIMESNIFF]</a> defines the following terms:
     <ul>
      <li><span class="dfn-paneled" id="term-for-mime-type">mime type</span>
     </ul>
    <li>
-    <a data-link-type="biblio">[webaudio]</a> defines the following terms:
+    <a data-link-type="biblio">[WebAudio]</a> defines the following terms:
     <ul>
      <li><span class="dfn-paneled" id="term-for-audiobuffer">AudioBuffer</span>
     </ul>
@@ -3232,6 +3365,12 @@ event named <code class="idl"><a data-link-type="idl" href="#eventdef-videotrack
      <li><span class="dfn-paneled" id="term-for-idl-unsigned-long">unsigned long</span>
      <li><span class="dfn-paneled" id="term-for-idl-unsigned-long-long">unsigned long long</span>
     </ul>
+   <li>
+    <a data-link-type="biblio">[webrtc-1]</a> defines the following terms:
+    <ul>
+     <li><span class="dfn-paneled" id="term-for-dom-rtcrtpsender-getcapabilities">getCapabilities()</span>
+     <li><span class="dfn-paneled" id="term-for-widl-RTCPeerConnection-getStats-Promise-RTCStatsReport--MediaStreamTrack-selector">getStats()</span>
+    </ul>
   </ul>
   <h2 class="no-num no-ref heading settled" id="references"><span class="content">References</span><a class="self-link" href="#references"></a></h2>
   <h3 class="no-num no-ref heading settled" id="normative"><span class="content">Normative References</span><a class="self-link" href="#normative"></a></h3>
@@ -3240,18 +3379,24 @@ event named <code class="idl"><a data-link-type="idl" href="#eventdef-videotrack
    <dd>Anne van Kesteren; et al. <a href="https://html.spec.whatwg.org/multipage/">HTML Standard</a>. Living Standard. URL: <a href="https://html.spec.whatwg.org/multipage/">https://html.spec.whatwg.org/multipage/</a>
    <dt id="biblio-infra">[INFRA]
    <dd>Anne van Kesteren; Domenic Denicola. <a href="https://infra.spec.whatwg.org/">Infra Standard</a>. Living Standard. URL: <a href="https://infra.spec.whatwg.org/">https://infra.spec.whatwg.org/</a>
+   <dt id="biblio-media-capabilities">[MEDIA-CAPABILITIES]
+   <dd>Mounir Lamouri; Chris Cunningham; Vi Nguyen. <a href="https://www.w3.org/TR/media-capabilities/">Media Capabilities</a>. 30 January 2020. WD. URL: <a href="https://www.w3.org/TR/media-capabilities/">https://www.w3.org/TR/media-capabilities/</a>
    <dt id="biblio-media-source">[MEDIA-SOURCE]
    <dd>Matthew Wolenetz; et al. <a href="https://www.w3.org/TR/media-source/">Media Source Extensions™</a>. 17 November 2016. REC. URL: <a href="https://www.w3.org/TR/media-source/">https://www.w3.org/TR/media-source/</a>
    <dt id="biblio-mediacapture-streams">[MEDIACAPTURE-STREAMS]
    <dd>Cullen Jennings; et al. <a href="https://www.w3.org/TR/mediacapture-streams/">Media Capture and Streams</a>. 28 January 2021. CR. URL: <a href="https://www.w3.org/TR/mediacapture-streams/">https://www.w3.org/TR/mediacapture-streams/</a>
+   <dt id="biblio-mediastream-recording">[MEDIASTREAM-RECORDING]
+   <dd>Miguel Casas-sanchez. <a href="https://www.w3.org/TR/mediastream-recording/">MediaStream Recording</a>. 1 December 2020. WD. URL: <a href="https://www.w3.org/TR/mediastream-recording/">https://www.w3.org/TR/mediastream-recording/</a>
    <dt id="biblio-mimesniff">[MIMESNIFF]
    <dd>Gordon P. Hemsley. <a href="https://mimesniff.spec.whatwg.org/">MIME Sniffing Standard</a>. Living Standard. URL: <a href="https://mimesniff.spec.whatwg.org/">https://mimesniff.spec.whatwg.org/</a>
    <dt id="biblio-rfc2119">[RFC2119]
    <dd>S. Bradner. <a href="https://tools.ietf.org/html/rfc2119">Key words for use in RFCs to Indicate Requirement Levels</a>. March 1997. Best Current Practice. URL: <a href="https://tools.ietf.org/html/rfc2119">https://tools.ietf.org/html/rfc2119</a>
-   <dt id="biblio-webaudio">[WEBAUDIO]
+   <dt id="biblio-webaudio">[WebAudio]
    <dd>Paul Adenot; Hongchan Choi. <a href="https://www.w3.org/TR/webaudio/">Web Audio API</a>. 14 January 2021. CR. URL: <a href="https://www.w3.org/TR/webaudio/">https://www.w3.org/TR/webaudio/</a>
    <dt id="biblio-webidl">[WebIDL]
    <dd>Boris Zbarsky. <a href="https://heycam.github.io/webidl/">Web IDL</a>. 15 December 2016. ED. URL: <a href="https://heycam.github.io/webidl/">https://heycam.github.io/webidl/</a>
+   <dt id="biblio-webrtc">[WebRTC]
+   <dd>Cullen Jennings; Henrik Boström; Jan-Ivar Bruaroey. <a href="https://www.w3.org/TR/webrtc/">WebRTC 1.0: Real-Time Communication Between Browsers</a>. 26 January 2021. REC. URL: <a href="https://www.w3.org/TR/webrtc/">https://www.w3.org/TR/webrtc/</a>
   </dl>
   <h3 class="no-num no-ref heading settled" id="informative"><span class="content">Informative References</span><a class="self-link" href="#informative"></a></h3>
   <dl>
@@ -3530,6 +3675,11 @@ event named <code class="idl"><a data-link-type="idl" href="#eventdef-videotrack
 
 
 </pre>
+  <h2 class="no-num no-ref heading settled" id="issues-index"><span class="content">Issues Index</span><a class="self-link" href="#issues-index"></a></h2>
+  <div style="counter-reset:issue">
+   <div class="issue"> EncodedVideoChunk and EncodedAudioChunk currently expose a mutable
+data. See <a href="https://github.com/WICG/web-codecs/issues/80">#80</a>.<a href="#issue-fde64654"> ↵ </a></div>
+  </div>
   <aside class="dfn-panel" data-for="control-message-queue">
    <b><a href="#control-message-queue">#control-message-queue</a></b><b>Referenced in:</b>
    <ul>
@@ -3728,6 +3878,7 @@ event named <code class="idl"><a data-link-type="idl" href="#eventdef-videotrack
    <b><a href="#dom-videodecoder-reset">#dom-videodecoder-reset</a></b><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-dom-videodecoder-reset">4. VideoDecoder Interface</a>
+    <li><a href="#ref-for-dom-videodecoder-reset①">12. Security Considerations</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dom-videodecoder-close">
@@ -3866,6 +4017,7 @@ event named <code class="idl"><a data-link-type="idl" href="#eventdef-videotrack
    <b><a href="#dom-videoencoder-flush">#dom-videoencoder-flush</a></b><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-dom-videoencoder-flush">6. VideoEncoder Interface</a>
+    <li><a href="#ref-for-dom-videoencoder-flush①">12. Security Considerations</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dom-videoencoder-reset">
