@@ -56,6 +56,13 @@ spec: infra; urlPrefix: https://infra.spec.whatwg.org/#
     type: dfn; text: enqueing; url: queue-enqueue;
     type: dfn; text: dequeued; url: queue-dequeue;
     type: dfn; text: empty; url: list-is-empty;
+
+spec: mediastream-recording; urlPrefix: https://www.w3.org/TR/mediastream-recording/#
+    type: interface; text: MediaRecorder; url: mediarecorder
+
+spec: media-capabilities; urlPrefix: https://w3c.github.io/media-capabilities/#
+    type: method; text: decodingInfo(); url: dom-mediacapabilities-decodinginfo
+    type: attribute; text: powerEfficient; url: dom-mediacapabilitiesinfo-powerefficient
 </pre>
 
 
@@ -1840,3 +1847,93 @@ If {{VideoTrackReader/[[track]]}}.readyState becomes `"ended"`,
 1. Set {{VideoTrackReader/readyState}} to "ended".
 2. <a>Queue a task</a> on the media element task source to run a simple
     event named {{VideoTrackReader/ended}} at the {{VideoTrackReader}}.
+
+
+Security Considerations{#security-considerations}
+=================================================
+
+The primary security impact is that features of this API make it easier for an
+attacker to exploit vulnerabilities in the underlying platform codecs.
+Additionally, new abilities to configure and control the codecs may allow for
+new exploits that rely on a specific configuration and/or sequence of control
+operations.
+
+Platform codecs are historically an internal detail of APIs like
+{{HTMLMediaElement}}, [[WebAudio]], and [[WebRTC]]. In this way, it has always
+been possible to attack the underlying codecs by using malformed media
+files/streams and invoking the various API control methods.
+
+For example, you can send any stream to a decoder by first wrapping that stream
+in a media container (e.g. mp4) and setting that as the {{HTMLMediaElement/src}}
+of an {{HTMLMediaElement}}. Similarly, you can send any stream to an encoder by
+using {{MediaRecorder}} to capture a stream of "images" from an
+{{HTMLCanvasElement}}, where the image is actually specially crafted binary
+data.
+
+Having loaded the bytes into the codec, you can use existing media APIs as a
+proxy to invoke different codec controls. For example, you can cause an
+underlying video decoder to be {{VideoDecoder/reset()}} by setting a new value
+for `<video>.currentTime`. Similarly, you can cause an underlying video encoder
+to {{VideoEncoder/flush()}} by stopping the {{MediaRecorder}}.
+
+WebCodecs makes such attacks easier by exposing low level control when inputs
+are provided and direct access to invoke the codec control methods. This also
+affords attackers the ability to invoke sequences of control methods that were
+not previously possible via the higher level APIs.
+
+User agents should mitigate this risk by extensively fuzzing their
+implementation with random inputs and control method invocations. Additionally,
+user agents are encouraged to isolate their underlying codecs in processes with
+restricted privileges (sandbox) as a barrier against successful exploits being
+able to read user data.
+
+An additional concern is exposing the underlying codecs to input mutation race
+conditions. Specifically, it should not be possible for a site to mutate a codec
+input or output while the underlying codec may still be operating on that data.
+This concern is mitigated by ensuring that input and output interfaces are
+immutable.
+
+ISSUE: EncodedVideoChunk and EncodedAudioChunk currently expose a mutable
+data. See <a href="https://github.com/WICG/web-codecs/issues/80">#80</a>.
+
+Privacy Considerations{#privacy-considerations}
+===============================================
+The primary privacy impact is an increased ability to fingerprint users by
+querying for different codec capabilities to establish a codec feature profile.
+Much of this profile is already exposed by existing APIs. Such profiles are very
+unlikely to be uniquely identifying, but may be used with other metrics to
+create a fingerprint.
+
+An attacker may accumulate a codec feature profile by calling
+`IsConfigSupported()` methods with a number of different configuration
+dictionaries. Similarly, an attacker may attempt to `configure()` a codec with
+different configuration dictionaries and observe which configurations are
+accepted.
+
+Attackers may also use existing APIs to establish much of the codec feature
+profile. For example, the [[media-capabilities]] {{decodingInfo()}} API
+describes what types of decoders are supported and its {{powerEfficient}}
+attribute may signal when a decoder uses hardware acceleration. Similarly, the
+[[WebRTC]] {{RTCRtpSender/getCapabilities()}} API may be used to determine what
+types of encoders are supported and the {{RTCPeerConnection/getStats()}} API may
+be used to determine when an encoder uses hardware acceleration. WebCodecs will
+expose some additional information in the form of low level codec features.
+
+A codec feature profile alone is unlikely to be uniquely identifying. Underlying
+codecs are often implemented entirely in software (be it part of the user agent
+binary or part of the operating system), such that all users who run that
+software will have a common set capabilities. Additionally, underlying codecs
+are often implemented with hardware acceleration, but such hardware is mass
+produced and devices of a particular class and manufacture date (e.g. flagship
+phones manufactured in 2020) will often have common capabilities. There will be
+outliers (some users may run outdated versions of software codecs or use a rare
+mix of custom assembled hardware), but most of the time a given codec feature
+profile is shared by a large group of users.
+
+Segmenting groups of users by codec feature profile still amounts to a bit of
+entropy that can be combined with other metrics to uniquely identify a user.
+User agents may partially mitigate this by returning an error whenever a site
+attempts to exhaustively probe for codec capabilities. Additionally, user agents
+may implement a "privacy budget", which depletes as authors use WebCodecs and
+other identifying APIs. Upon exhaustion of the privacy budget, codec
+capabilities could be reduced to a common baseline or prompt for user approval.
