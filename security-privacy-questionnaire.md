@@ -103,7 +103,7 @@ leak information between modes.
 **Does this specification have both "Security Considerations" and "Privacy
 Considerations" sections?**
 
-Not yet. The specification is a work-in-progress.
+Yes.
 
 **Do features in your specification enable downgrading default security
 characteristics?**
