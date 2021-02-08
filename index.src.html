@@ -1865,16 +1865,8 @@ files/streams and invoking the various API control methods.
 
 For example, you can send any stream to a decoder by first wrapping that stream
 in a media container (e.g. mp4) and setting that as the {{HTMLMediaElement/src}}
-of an {{HTMLMediaElement}}. Similarly, you can send any stream to an encoder by
-using {{MediaRecorder}} to capture a stream of "images" from an
-{{HTMLCanvasElement}}, where the image is actually specially crafted binary
-data.
-
-Having loaded the bytes into the codec, you can use existing media APIs as a
-proxy to invoke different codec controls. For example, you can cause an
-underlying video decoder to be {{VideoDecoder/reset()}} by setting a new value
-for `<video>.currentTime`. Similarly, you can cause an underlying video encoder
-to {{VideoEncoder/flush()}} by stopping the {{MediaRecorder}}.
+of an {{HTMLMediaElement}}. You can then cause the underlying video decoder to
+be {{VideoDecoder/reset()}} by setting a new value for `<video>.currentTime`.
 
 WebCodecs makes such attacks easier by exposing low level control when inputs
 are provided and direct access to invoke the codec control methods. This also
