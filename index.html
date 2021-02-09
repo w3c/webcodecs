@@ -566,7 +566,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
   <div class="head">
    <p data-fill-with="logo"><a class="logo" href="https://www.w3.org/"> <img alt="W3C" height="48" src="https://www.w3.org/StyleSheets/TR/2016/logos/W3C" width="72"> </a> </p>
    <h1 class="p-name no-ref" id="title">WebCodecs</h1>
-   <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">Draft Community Group Report, <time class="dt-updated" datetime="2021-02-08">8 February 2021</time></span></h2>
+   <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">Draft Community Group Report, <time class="dt-updated" datetime="2021-02-09">9 February 2021</time></span></h2>
    <div data-fill-with="spec-metadata">
     <dl>
      <dt>This version:
@@ -713,19 +713,8 @@ frames from MediaStreamStracks.</p>
       <li><a href="#raw-media-algorithms"><span class="secno">9.5</span> <span class="content">Algorithms</span></a>
       <li><a href="#clone-frame-algo"><span class="secno">9.6</span> <span class="content"><span>Clone Frame</span> (with <var>frame</var>)</span></a>
      </ol>
-    <li>
-     <a href="#videotrackreader-interface"><span class="secno">10</span> <span class="content">VideoTrackReader Interface</span></a>
-     <ol class="toc">
-      <li><a href="#videotrackreaderreadystate"><span class="secno">10.1</span> <span class="content">VideoTrackReaderState Values</span></a>
-      <li><a href="#videotrackreader-slots"><span class="secno">10.2</span> <span class="content">Internal Slots</span></a>
-      <li><a href="#videotrackreader-constructors"><span class="secno">10.3</span> <span class="content">Constructors</span></a>
-      <li><a href="#videotrackreader-attributes"><span class="secno">10.4</span> <span class="content">Attributes</span></a>
-      <li><a href="#videotrackreader-events"><span class="secno">10.5</span> <span class="content">Event Summary</span></a>
-      <li><a href="#videotrackreader-methods"><span class="secno">10.6</span> <span class="content">Methods</span></a>
-      <li><a href="#mediastreamtrack-monitoring"><span class="secno">10.7</span> <span class="content">MediaStreamTrack Monitoring</span></a>
-     </ol>
-    <li><a href="#security-considerations"><span class="secno">11</span> <span class="content">Security Considerations</span></a>
-    <li><a href="#privacy-considerations"><span class="secno">12</span> <span class="content">Privacy Considerations</span></a>
+    <li><a href="#security-considerations"><span class="secno">10</span> <span class="content">Security Considerations</span></a>
+    <li><a href="#privacy-considerations"><span class="secno">11</span> <span class="content">Privacy Considerations</span></a>
     <li>
      <a href="#w3c-conformance"><span class="secno"></span> <span class="content">Conformance</span></a>
      <ol class="toc">
@@ -2434,160 +2423,7 @@ from the corresponding attribute of this frame.</p>
     <li data-md>
      <p>Return <var>cloneFrame</var>.</p>
    </ol>
-   <h2 class="heading settled" data-level="10" id="videotrackreader-interface"><span class="secno">10. </span><span class="content">VideoTrackReader Interface</span><a class="self-link" href="#videotrackreader-interface"></a></h2>
-    <code class="idl"><a data-link-type="idl" href="#videotrackreader" id="ref-for-videotrackreader">VideoTrackReader</a></code> emits <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe②①">VideoFrame</a></code>s from a <code class="idl"><a data-link-type="idl" href="https://www.w3.org/TR/mediacapture-streams/#dom-mediastreamtrack" id="ref-for-dom-mediastreamtrack">MediaStreamTrack</a></code>. Authors
-may use this interface to manipulate, render, or encode streams from <code class="idl"><a data-link-type="idl" href="https://www.w3.org/TR/mediacapture-streams/#dom-mediadevices-getusermedia" id="ref-for-dom-mediadevices-getusermedia">getUserMedia()</a></code> and <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/mediacapture-screen-share/#dom-mediadevices-getdisplaymedia" id="ref-for-dom-mediadevices-getdisplaymedia">getDisplayMedia()</a></code>. 
-<pre class="idl highlight def">[<a class="idl-code" data-link-type="extended-attribute" href="https://heycam.github.io/webidl/#Exposed" id="ref-for-Exposed⑦"><c- g>Exposed</c-></a>=<c- n>Window</c->]
-<c- b>interface</c-> <dfn class="dfn-paneled idl-code" data-dfn-type="interface" data-export id="videotrackreader"><code><c- g>VideoTrackReader</c-></code></dfn> {
-  <a class="idl-code" data-link-type="constructor" href="#dom-videotrackreader-videotrackreader" id="ref-for-dom-videotrackreader-videotrackreader"><c- g>constructor</c-></a>(<a data-link-type="idl-name" href="https://www.w3.org/TR/mediacapture-streams/#dom-mediastreamtrack" id="ref-for-dom-mediastreamtrack①"><c- n>MediaStreamTrack</c-></a> <dfn class="idl-code" data-dfn-for="VideoTrackReader/VideoTrackReader(track), VideoTrackReader/constructor(track)" data-dfn-type="argument" data-export id="dom-videotrackreader-videotrackreader-track-track"><code><c- g>track</c-></code><a class="self-link" href="#dom-videotrackreader-videotrackreader-track-track"></a></dfn>);
-
-  <c- b>readonly</c-> <c- b>attribute</c-> <a data-link-type="idl-name" href="#enumdef-videotrackreaderstate" id="ref-for-enumdef-videotrackreaderstate"><c- n>VideoTrackReaderState</c-></a> <a class="idl-code" data-link-type="attribute" data-readonly data-type="VideoTrackReaderState" href="#dom-videotrackreader-readystate" id="ref-for-dom-videotrackreader-readystate"><c- g>readyState</c-></a>;
-  <c- b>attribute</c-> <a data-link-type="idl-name" href="https://html.spec.whatwg.org/multipage/webappapis.html#eventhandler" id="ref-for-eventhandler"><c- n>EventHandler</c-></a> <a class="idl-code" data-link-type="attribute" data-type="EventHandler" href="#dom-videotrackreader-onended" id="ref-for-dom-videotrackreader-onended"><c- g>onended</c-></a>;
-
-  <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-undefined" id="ref-for-idl-undefined②⑧"><c- b>undefined</c-></a> <a class="idl-code" data-link-type="method" href="#dom-videotrackreader-start" id="ref-for-dom-videotrackreader-start"><c- g>start</c-></a>(<a data-link-type="idl-name" href="#callbackdef-videoframeoutputcallback" id="ref-for-callbackdef-videoframeoutputcallback①"><c- n>VideoFrameOutputCallback</c-></a> <dfn class="idl-code" data-dfn-for="VideoTrackReader/start(callback)" data-dfn-type="argument" data-export id="dom-videotrackreader-start-callback-callback"><code><c- g>callback</c-></code><a class="self-link" href="#dom-videotrackreader-start-callback-callback"></a></dfn>);
-  <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-undefined" id="ref-for-idl-undefined②⑨"><c- b>undefined</c-></a> <a class="idl-code" data-link-type="method" href="#dom-videotrackreader-stop" id="ref-for-dom-videotrackreader-stop"><c- g>stop</c-></a>();
-};
-
-<c- b>enum</c-> <dfn class="dfn-paneled idl-code" data-dfn-type="enum" data-export id="enumdef-videotrackreaderstate"><code><c- g>VideoTrackReaderState</c-></code></dfn> {
-  <a class="idl-code" data-link-type="enum-value" href="#dom-videotrackreaderstate-started" id="ref-for-dom-videotrackreaderstate-started"><c- s>"started"</c-></a>,
-  <a class="idl-code" data-link-type="enum-value" href="#dom-videotrackreaderstate-stopped" id="ref-for-dom-videotrackreaderstate-stopped"><c- s>"stopped"</c-></a>,
-  <a class="idl-code" data-link-type="enum-value" href="#dom-videotrackreaderstate-ended" id="ref-for-dom-videotrackreaderstate-ended"><c- s>"ended"</c-></a>
-};
-
-</pre>
-   <h3 class="heading settled" data-level="10.1" id="videotrackreaderreadystate"><span class="secno">10.1. </span><span class="content">VideoTrackReaderState Values</span><a class="self-link" href="#videotrackreaderreadystate"></a></h3>
-   <dl>
-    <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoTrackReaderState" data-dfn-type="enum-value" data-export data-lt="&quot;started&quot;|started" id="dom-videotrackreaderstate-started"><code>started</code></dfn>
-    <dd> Indicates that the <code class="idl"><a data-link-type="idl" href="#dom-videotrackreader-track-slot" id="ref-for-dom-videotrackreader-track-slot">[[track]]</a></code> is <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/mediacapture-main/#idl-def-MediaStreamTrackState.live" id="ref-for-idl-def-MediaStreamTrackState.live">live</a></code> and <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe②②">VideoFrame</a></code>s are being output to
-        the <code class="idl"><a data-link-type="idl" href="#dom-videotrackreader-callback-slot" id="ref-for-dom-videotrackreader-callback-slot">[[callback]]</a></code> provided to <code class="idl"><a data-link-type="idl" href="#dom-videotrackreader-start" id="ref-for-dom-videotrackreader-start①">start()</a></code>. 
-    <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoTrackReaderState" data-dfn-type="enum-value" data-export data-lt="&quot;stopped&quot;|stopped" id="dom-videotrackreaderstate-stopped"><code>stopped</code></dfn>
-    <dd> Indicates that the <code class="idl"><a data-link-type="idl" href="#dom-videotrackreader-track-slot" id="ref-for-dom-videotrackreader-track-slot①">[[track]]</a></code> is <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/mediacapture-main/#idl-def-MediaStreamTrackState.live" id="ref-for-idl-def-MediaStreamTrackState.live①">live</a></code>, but the <code class="idl"><a data-link-type="idl" href="#dom-videotrackreader-callback-slot" id="ref-for-dom-videotrackreader-callback-slot①">[[callback]]</a></code> is not set, so no <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe②③">VideoFrame</a></code>s are
-        being output. 
-    <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoTrackReaderState" data-dfn-type="enum-value" data-export data-lt="&quot;ended&quot;|ended" id="dom-videotrackreaderstate-ended"><code>ended</code></dfn>
-    <dd> Indicates that the <code class="idl"><a data-link-type="idl" href="#dom-videotrackreader-track-slot" id="ref-for-dom-videotrackreader-track-slot②">[[track]]</a></code> is <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/mediacapture-main/#idl-def-MediaStreamTrackState.ended" id="ref-for-idl-def-MediaStreamTrackState.ended">ended</a></code> and this object can no longer be <code class="idl"><a data-link-type="idl" href="#dom-videotrackreaderstate-started" id="ref-for-dom-videotrackreaderstate-started①">started</a></code> nor <code class="idl"><a data-link-type="idl" href="#dom-videotrackreaderstate-stopped" id="ref-for-dom-videotrackreaderstate-stopped①">stopped</a></code>. 
-   </dl>
-   <h3 class="heading settled" data-level="10.2" id="videotrackreader-slots"><span class="secno">10.2. </span><span class="content">Internal Slots</span><a class="self-link" href="#videotrackreader-slots"></a></h3>
-   <dl>
-    <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoTrackReader" data-dfn-type="attribute" data-export id="dom-videotrackreader-track-slot"><code>[[track]]</code></dfn>
-    <dd>The <code class="idl"><a data-link-type="idl" href="https://www.w3.org/TR/mediacapture-streams/#dom-mediastreamtrack" id="ref-for-dom-mediastreamtrack②">MediaStreamTrack</a></code> provided at construction.
-    <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoTrackReader" data-dfn-type="attribute" data-export id="dom-videotrackreader-callback-slot"><code>[[callback]]</code></dfn>
-    <dd> The <code class="idl"><a data-link-type="idl" href="#callbackdef-videoframeoutputcallback" id="ref-for-callbackdef-videoframeoutputcallback②">VideoFrameOutputCallback</a></code> assigned by the last call to <code class="idl"><a data-link-type="idl" href="#dom-videotrackreader-start" id="ref-for-dom-videotrackreader-start②">start()</a></code>. 
-   </dl>
-   <h3 class="heading settled" data-level="10.3" id="videotrackreader-constructors"><span class="secno">10.3. </span><span class="content">Constructors</span><a class="self-link" href="#videotrackreader-constructors"></a></h3>
-    <dfn class="dfn-paneled idl-code" data-dfn-for="VideoTrackReader" data-dfn-type="constructor" data-export data-lt="VideoTrackReader(track)|constructor(track)" id="dom-videotrackreader-videotrackreader" title="VideoTrackReader(track)"><code> VideoTrackReader(track) </code></dfn> 
-   <ol>
-    <li data-md>
-     <p>If <code>track.kind</code> is not <code>"video"</code>, throw a <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#exceptiondef-typeerror" id="ref-for-exceptiondef-typeerror①⓪">TypeError</a></code>.</p>
-    <li data-md>
-     <p>If <code>track.readyState</code> is <code>"ended"</code>, throw an <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#invalidstateerror" id="ref-for-invalidstateerror②②">InvalidStateError</a></code>.</p>
-    <li data-md>
-     <p>Let <var>reader</var> be a new <code class="idl"><a data-link-type="idl" href="#videotrackreader" id="ref-for-videotrackreader①">VideoTrackReader</a></code> object.</p>
-    <li data-md>
-     <p>Assign <var>track</var> to the <code class="idl"><a data-link-type="idl" href="#dom-videotrackreader-track-slot" id="ref-for-dom-videotrackreader-track-slot③">[[track]]</a></code> internal
-slot.</p>
-    <li data-md>
-     <p>Assign <code>"stopped"</code> to <code>reader.readyState</code>.</p>
-    <li data-md>
-     <p>Return <var>reader</var>.</p>
-   </ol>
-   <h3 class="heading settled" data-level="10.4" id="videotrackreader-attributes"><span class="secno">10.4. </span><span class="content">Attributes</span><a class="self-link" href="#videotrackreader-attributes"></a></h3>
-   <dl>
-    <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoTrackReader" data-dfn-type="attribute" data-export id="dom-videotrackreader-readystate"><code>readyState</code></dfn>, <span> of type <a data-link-type="idl-name" href="#enumdef-videotrackreaderstate" id="ref-for-enumdef-videotrackreaderstate①">VideoTrackReaderState</a>, readonly</span>
-    <dd> Indicates the current state of the <code class="idl"><a data-link-type="idl" href="#videotrackreader" id="ref-for-videotrackreader②">VideoTrackReader</a></code> object. 
-    <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoTrackReader" data-dfn-type="attribute" data-export id="dom-videotrackreader-onended"><code>onended</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://html.spec.whatwg.org/multipage/webappapis.html#eventhandler" id="ref-for-eventhandler①">EventHandler</a></span>
-    <dd>The event handler for the ended event.
-   </dl>
-   <h3 class="heading settled" data-level="10.5" id="videotrackreader-events"><span class="secno">10.5. </span><span class="content">Event Summary</span><a class="self-link" href="#videotrackreader-events"></a></h3>
-   <dl>
-    <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoTrackReader" data-dfn-type="event" data-export id="eventdef-videotrackreader-ended"><code>ended</code></dfn>
-    <dd> Dispatched when the <code class="idl"><a data-link-type="idl" href="#dom-videotrackreader-track-slot" id="ref-for-dom-videotrackreader-track-slot④">[[track]]</a></code>'s <code class="idl"><a data-link-type="idl" href="#dom-videotrackreader-readystate" id="ref-for-dom-videotrackreader-readystate①">readyState</a></code> becomes <code>"ended"</code>, indicating no further <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe②④">VideoFrame</a></code>s will be output. 
-   </dl>
-   <h3 class="heading settled" data-level="10.6" id="videotrackreader-methods"><span class="secno">10.6. </span><span class="content">Methods</span><a class="self-link" href="#videotrackreader-methods"></a></h3>
-    <dfn class="dfn-paneled idl-code" data-dfn-for="VideoTrackReader" data-dfn-type="method" data-export id="dom-videotrackreader-start"><code>start(callback)</code></dfn> 
-   <p>Starts calling the callback with <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe②⑤">VideoFrame</a></code>s from the <code class="idl"><a data-link-type="idl" href="https://www.w3.org/TR/mediacapture-streams/#dom-mediastreamtrack" id="ref-for-dom-mediastreamtrack③">MediaStreamTrack</a></code>.</p>
-   <p>When invoked, run these steps:</p>
-   <ol>
-    <li data-md>
-     <p>If <code class="idl"><a data-link-type="idl" href="#dom-videotrackreader-readystate" id="ref-for-dom-videotrackreader-readystate②">readyState</a></code> is not <code>"stopped"</code>, throw an <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#invalidstateerror" id="ref-for-invalidstateerror②③">InvalidStateError</a></code>.</p>
-    <li data-md>
-     <p>Assign <code>"started"</code> to <code class="idl"><a data-link-type="idl" href="#dom-videotrackreader-readystate" id="ref-for-dom-videotrackreader-readystate③">readyState</a></code>.</p>
-    <li data-md>
-     <p>Assign <var>callback</var> to the <code class="idl"><a data-link-type="idl" href="#dom-videotrackreader-callback-slot" id="ref-for-dom-videotrackreader-callback-slot②">[[callback]]</a></code> internal slot.</p>
-    <li data-md>
-     <p>In parallel, <a data-link-type="dfn" href="#running-the-track-monitor" id="ref-for-running-the-track-monitor">run the track monitor</a>.</p>
-   </ol>
-   <p><dfn class="dfn-paneled idl-code" data-dfn-for="VideoTrackReader" data-dfn-type="method" data-export id="dom-videotrackreader-stop"><code>stop()</code></dfn></p>
-   <p>Stops calling the <code class="idl"><a data-link-type="idl" href="#callbackdef-videoframeoutputcallback" id="ref-for-callbackdef-videoframeoutputcallback③">VideoFrameOutputCallback</a></code> with <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe②⑥">VideoFrame</a></code>s from the <code class="idl"><a data-link-type="idl" href="https://www.w3.org/TR/mediacapture-streams/#dom-mediastreamtrack" id="ref-for-dom-mediastreamtrack④">MediaStreamTrack</a></code>.</p>
-   <p>When invoked, run these steps:</p>
-   <ol>
-    <li data-md>
-     <p>If readyState is not <code>"started"</code>, throw an <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#invalidstateerror" id="ref-for-invalidstateerror②④">InvalidStateError</a></code>.</p>
-    <li data-md>
-     <p>Cease <a data-link-type="dfn" href="#running-the-track-monitor" id="ref-for-running-the-track-monitor①">running the track monitor</a>.</p>
-    <li data-md>
-     <p>Assign <code>"stopped"</code> to the <code class="idl"><a data-link-type="idl" href="#dom-videotrackreader-readystate" id="ref-for-dom-videotrackreader-readystate④">readyState</a></code>.</p>
-    <li data-md>
-     <p>Assign <code>null</code> to the <code class="idl"><a data-link-type="idl" href="#dom-videotrackreader-callback-slot" id="ref-for-dom-videotrackreader-callback-slot③">[[callback]]</a></code> internal slot.</p>
-   </ol>
-   <h3 class="heading settled" data-level="10.7" id="mediastreamtrack-monitoring"><span class="secno">10.7. </span><span class="content">MediaStreamTrack Monitoring</span><a class="self-link" href="#mediastreamtrack-monitoring"></a></h3>
-   <p>The <dfn data-dfn-type="dfn" data-export id="track-monitor">track monitor<a class="self-link" href="#track-monitor"></a></dfn> may be started and stopped by the user to
-    control the calling of the <code class="idl"><a data-link-type="idl" href="#callbackdef-videoframeoutputcallback" id="ref-for-callbackdef-videoframeoutputcallback④">VideoFrameOutputCallback</a></code>.</p>
-   <p><dfn class="dfn-paneled" data-dfn-type="dfn" data-lt="running the track monitor|run the track monitor" data-noexport id="running-the-track-monitor">Running the track
-    monitor</dfn> means monitoring <code class="idl"><a data-link-type="idl" href="#dom-videotrackreader-track-slot" id="ref-for-dom-videotrackreader-track-slot⑤">[[track]]</a></code> for the
-    arrival of new picture data as well as changes to <code>[[track]].readyState</code>.</p>
-   <p>While <code>[[track]].readyState</code> is <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/mediacapture-main/#idl-def-MediaStreamTrackState.live" id="ref-for-idl-def-MediaStreamTrackState.live②">live</a></code>, for each new
-    picture that arrives in <code class="idl"><a data-link-type="idl" href="#dom-videotrackreader-track-slot" id="ref-for-dom-videotrackreader-track-slot⑥">[[track]]</a></code>, perform the
-    following steps:</p>
-   <p class="note" role="note"><span>NOTE:</span> Pictures that arrived prior to the start of this loop are not
-        considered.</p>
-   <p class="note" role="note"><span>NOTE:</span> Video data in a MediaStreamTrack does not have a canonical binary
-        form. The user agent should tokenize "pictures" by discrete times of
-        capture. For example, if the source is a camera capturing 60 frames per
-        second, the UA should construct 60 corresponding VideoFrame’s each
-        second.</p>
-   <ol>
-    <li data-md>
-     <p>Let <var>planes</var> be a sequence of <code class="idl"><a data-link-type="idl" href="#plane" id="ref-for-plane①③">Plane</a></code>s containing the picture data.</p>
-    <li data-md>
-     <p>Let <var>pixelFormat</var> be the <code class="idl"><a data-link-type="idl" href="#enumdef-pixelformat" id="ref-for-enumdef-pixelformat⑤">PixelFormat</a></code> of <var>planes</var>.</p>
-     <p class="note" role="note"><span>NOTE:</span> This section needs work. The UA should avoid early optimizations to
-    convert between PixelFormats, but currently only a narrow set of formats
-    is defined in this spec. We should consider adding an "opaque" format
-    along with an API coverter API to make pixel format conversion
-    transparent to authors.</p>
-    <li data-md>
-     <p>Let <var>frameInit</var> be an <code class="idl"><a data-link-type="idl" href="#dictdef-videoframeinit" id="ref-for-dictdef-videoframeinit③">VideoFrameInit</a></code> with the following keys:</p>
-     <ol>
-      <li data-md>
-       <p>Let <var>timestamp</var> and <var>duration</var> be the
-presentation timestamp and (optionally) presentation duration as
-determined by the <code class="idl"><a data-link-type="idl" href="#dom-videotrackreader-track-slot" id="ref-for-dom-videotrackreader-track-slot⑦">[[track]]</a></code> source.</p>
-      <li data-md>
-       <p>Let <var>codedWidth</var> and <var>codedHeight> be the
-width and height of the decoded video frame in pixels, prior to any
-cropping or aspect ratio adjustments.</var></p>
-      <li data-md>
-       <p>Let <var>cropLeft</var>, <var>cropTop</var>, <var>cropWidth</var>, and <var>cropHeight</var> be the
-crop region of the decoded video frame in pixels, prior to any aspect
-ratio adjustments.</p>
-      <li data-md>
-       <p>Let <var>displayWidth</var> and <var>displayHeight</var> be the display size of the decoded video frame in pixels.</p>
-     </ol>
-    <li data-md>
-     <p>Let <var>frame</var> be a <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe②⑦">VideoFrame</a></code>, constructed with <var>pixelFormat</var>, <var>planes</var>, and <var>frameInit</var>.</p>
-    <li data-md>
-     <p>Invoke <code class="idl"><a data-link-type="idl" href="#dom-videotrackreader-callback-slot" id="ref-for-dom-videotrackreader-callback-slot④">[[callback]]</a></code> with <var>frame</var>.</p>
-   </ol>
-   <p>If <code class="idl"><a data-link-type="idl" href="#dom-videotrackreader-track-slot" id="ref-for-dom-videotrackreader-track-slot⑧">[[track]]</a></code>.readyState becomes <code>"ended"</code>, <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task" id="ref-for-queue-a-task">queue a task</a> on the media element task source to run the
-    following steps:</p>
-   <ol>
-    <li data-md>
-     <p>Set <code class="idl"><a data-link-type="idl" href="#dom-videotrackreader-readystate" id="ref-for-dom-videotrackreader-readystate⑤">readyState</a></code> to "ended".</p>
-    <li data-md>
-     <p><a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task" id="ref-for-queue-a-task①">Queue a task</a> on the media element task source to run a simple
-event named <code class="idl"><a data-link-type="idl" href="#eventdef-videotrackreader-ended" id="ref-for-eventdef-videotrackreader-ended">ended</a></code> at the <code class="idl"><a data-link-type="idl" href="#videotrackreader" id="ref-for-videotrackreader③">VideoTrackReader</a></code>.</p>
-   </ol>
-   <h2 class="heading settled" data-level="11" id="security-considerations"><span class="secno">11. </span><span class="content">Security Considerations</span><a class="self-link" href="#security-considerations"></a></h2>
+   <h2 class="heading settled" data-level="10" id="security-considerations"><span class="secno">10. </span><span class="content">Security Considerations</span><a class="self-link" href="#security-considerations"></a></h2>
    <p>The primary security impact is that features of this API make it easier for an
 attacker to exploit vulnerabilities in the underlying platform codecs.
 Additionally, new abilities to configure and control the codecs may allow for
@@ -2615,7 +2451,7 @@ This concern is mitigated by ensuring that input and output interfaces are
 immutable.</p>
    <p class="issue" id="issue-fde64654"><a class="self-link" href="#issue-fde64654"></a> EncodedVideoChunk and EncodedAudioChunk currently expose a mutable
 data. See <a href="https://github.com/WICG/web-codecs/issues/80">#80</a>.</p>
-   <h2 class="heading settled" data-level="12" id="privacy-considerations"><span class="secno">12. </span><span class="content">Privacy Considerations</span><a class="self-link" href="#privacy-considerations"></a></h2>
+   <h2 class="heading settled" data-level="11" id="privacy-considerations"><span class="secno">11. </span><span class="content">Privacy Considerations</span><a class="self-link" href="#privacy-considerations"></a></h2>
     The primary privacy impact is an increased ability to fingerprint users by
 querying for different codec capabilities to establish a codec feature profile.
 Much of this profile is already exposed by existing APIs. Such profiles are very
@@ -2713,7 +2549,6 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
      <li><a href="#dom-audioframe-buffer">attribute for AudioFrame</a><span>, in §9.1.3</span>
      <li><a href="#dom-audioframeinit-buffer">dict-member for AudioFrameInit</a><span>, in §9.1</span>
     </ul>
-   <li><a href="#dom-videotrackreader-callback-slot">[[callback]]</a><span>, in §10.2</span>
    <li><a href="#dom-videoframe-clone">clone()</a><span>, in §9.2.4</span>
    <li><a href="#clone-frame">Clone Frame</a><span>, in §9.6</span>
    <li>
@@ -2789,7 +2624,6 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
      <li><a href="#dom-videoencoder-videoencoder">constructor for VideoEncoder</a><span>, in §6.2</span>
     </ul>
    <li><a href="#dom-videoframe-videoframe-pixelformat-planes-frameinit">constructor(pixelFormat, planes, frameInit)</a><span>, in §9.2.2</span>
-   <li><a href="#dom-videotrackreader-videotrackreader">constructor(track)</a><span>, in §10.3</span>
    <li><a href="#control-message-queue">control message queue</a><span>, in §2.2</span>
    <li><a href="#control-messages">control messages</a><span>, in §2.2</span>
    <li><a href="#running-a-control-message">control message steps</a><span>, in §2.2</span>
@@ -2908,13 +2742,6 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
      <li><a href="#dom-audioencoder-encodequeuesize">attribute for AudioEncoder</a><span>, in §5.3</span>
      <li><a href="#dom-videoencoder-encodequeuesize">attribute for VideoEncoder</a><span>, in §6.3</span>
     </ul>
-   <li><a href="#dom-videotrackreaderstate-ended">"ended"</a><span>, in §10.1</span>
-   <li>
-    ended
-    <ul>
-     <li><a href="#dom-videotrackreaderstate-ended">enum-value for VideoTrackReaderState</a><span>, in §10.1</span>
-     <li><a href="#eventdef-videotrackreader-ended">event for VideoTrackReader</a><span>, in §10.5</span>
-    </ul>
    <li><a href="#enqueues-a-control-message">Enqueues a control message</a><span>, in §2.2</span>
    <li>
     error
@@ -2960,7 +2787,6 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
      <li><a href="#dom-audiodecoderconfig-numberofchannels">dict-member for AudioDecoderConfig</a><span>, in §7.2</span>
      <li><a href="#dom-audioencoderconfig-numberofchannels">dict-member for AudioEncoderConfig</a><span>, in §7.4</span>
     </ul>
-   <li><a href="#dom-videotrackreader-onended">onended</a><span>, in §10.4</span>
    <li>
     output
     <ul>
@@ -2989,7 +2815,6 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
    <li><a href="#dom-videoframe-planes">planes</a><span>, in §9.2.3</span>
    <li><a href="#enqueues-a-control-message">Queue a control message</a><span>, in §2.2</span>
    <li><a href="#dom-plane-readinto">readInto(dst)</a><span>, in §9.3.3</span>
-   <li><a href="#dom-videotrackreader-readystate">readyState</a><span>, in §10.4</span>
    <li>
     reset()
     <ul>
@@ -3010,8 +2835,6 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
      <li><a href="#dom-planeinit-rows">dict-member for PlaneInit</a><span>, in §9.3</span>
     </ul>
    <li><a href="#running-a-control-message">running a control message</a><span>, in §2.2</span>
-   <li><a href="#running-the-track-monitor">running the track monitor</a><span>, in §10.7</span>
-   <li><a href="#running-the-track-monitor">run the track monitor</a><span>, in §10.7</span>
    <li>
     sampleRate
     <ul>
@@ -3019,9 +2842,6 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
      <li><a href="#dom-audioencoderconfig-samplerate">dict-member for AudioEncoderConfig</a><span>, in §7.4</span>
     </ul>
    <li><a href="#dom-planeinit-src">src</a><span>, in §9.3</span>
-   <li><a href="#dom-videotrackreader-start">start(callback)</a><span>, in §10.6</span>
-   <li><a href="#dom-videotrackreaderstate-started">"started"</a><span>, in §10.1</span>
-   <li><a href="#dom-videotrackreaderstate-started">started</a><span>, in §10.1</span>
    <li>
     state
     <ul>
@@ -3030,9 +2850,6 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
      <li><a href="#dom-videodecoder-state">attribute for VideoDecoder</a><span>, in §4.3</span>
      <li><a href="#dom-videoencoder-state">attribute for VideoEncoder</a><span>, in §6.3</span>
     </ul>
-   <li><a href="#dom-videotrackreader-stop">stop()</a><span>, in §10.6</span>
-   <li><a href="#dom-videotrackreaderstate-stopped">"stopped"</a><span>, in §10.1</span>
-   <li><a href="#dom-videotrackreaderstate-stopped">stopped</a><span>, in §10.1</span>
    <li>
     stride
     <ul>
@@ -3052,8 +2869,6 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
      <li><a href="#dom-encodedvideochunkinit-timestamp">dict-member for EncodedVideoChunkInit</a><span>, in §8.2</span>
      <li><a href="#dom-videoframeinit-timestamp">dict-member for VideoFrameInit</a><span>, in §9.2</span>
     </ul>
-   <li><a href="#dom-videotrackreader-track-slot">[[track]]</a><span>, in §10.2</span>
-   <li><a href="#track-monitor">track monitor</a><span>, in §10.7</span>
    <li>
     type
     <ul>
@@ -3084,23 +2899,13 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
    <li><a href="#dictdef-videoframeinit">VideoFrameInit</a><span>, in §9.2</span>
    <li><a href="#callbackdef-videoframeoutputcallback">VideoFrameOutputCallback</a><span>, in §4</span>
    <li><a href="#dom-videoframe-videoframe-pixelformat-planes-frameinit">VideoFrame(pixelFormat, planes, frameInit)</a><span>, in §9.2.2</span>
-   <li><a href="#videotrackreader">VideoTrackReader</a><span>, in §10</span>
-   <li><a href="#enumdef-videotrackreaderstate">VideoTrackReaderState</a><span>, in §10</span>
-   <li><a href="#dom-videotrackreader-videotrackreader">VideoTrackReader(track)</a><span>, in §10.3</span>
    <li><a href="#callbackdef-webcodecserrorcallback">WebCodecsErrorCallback</a><span>, in §7.8</span>
    <li><a href="#dom-videoencoderconfig-width">width</a><span>, in §7.5</span>
   </ul>
-  <aside class="dfn-panel" data-for="term-for-eventhandler">
-   <a href="https://html.spec.whatwg.org/multipage/webappapis.html#eventhandler">https://html.spec.whatwg.org/multipage/webappapis.html#eventhandler</a><b>Referenced in:</b>
-   <ul>
-    <li><a href="#ref-for-eventhandler">10. VideoTrackReader Interface</a>
-    <li><a href="#ref-for-eventhandler①">10.4. Attributes</a>
-   </ul>
-  </aside>
   <aside class="dfn-panel" data-for="term-for-htmlmediaelement">
    <a href="https://html.spec.whatwg.org/multipage/media.html#htmlmediaelement">https://html.spec.whatwg.org/multipage/media.html#htmlmediaelement</a><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-htmlmediaelement">11. Security Considerations</a> <a href="#ref-for-htmlmediaelement①">(2)</a>
+    <li><a href="#ref-for-htmlmediaelement">10. Security Considerations</a> <a href="#ref-for-htmlmediaelement①">(2)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-imagebitmap">
@@ -3134,12 +2939,6 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
     <li><a href="#ref-for-global-object">2.2. Control Thread and Codec Thread</a>
    </ul>
   </aside>
-  <aside class="dfn-panel" data-for="term-for-queue-a-task">
-   <a href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task">https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task</a><b>Referenced in:</b>
-   <ul>
-    <li><a href="#ref-for-queue-a-task">10.7. MediaStreamTrack Monitoring</a> <a href="#ref-for-queue-a-task①">(2)</a>
-   </ul>
-  </aside>
   <aside class="dfn-panel" data-for="term-for-dom-imagebitmapoptions-resizeheight">
    <a href="https://html.spec.whatwg.org/multipage/#dom-imagebitmapoptions-resizeheight">https://html.spec.whatwg.org/multipage/#dom-imagebitmapoptions-resizeheight</a><b>Referenced in:</b>
    <ul>
@@ -3155,7 +2954,7 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
   <aside class="dfn-panel" data-for="term-for-dom-media-src">
    <a href="https://html.spec.whatwg.org/multipage/media.html#dom-media-src">https://html.spec.whatwg.org/multipage/media.html#dom-media-src</a><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-dom-media-src">11. Security Considerations</a>
+    <li><a href="#ref-for-dom-media-src">10. Security Considerations</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-iteration-continue">
@@ -3194,52 +2993,19 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
   <aside class="dfn-panel" data-for="term-for-dom-mediacapabilities-decodinginfo">
    <a href="https://w3c.github.io/media-capabilities/#dom-mediacapabilities-decodinginfo">https://w3c.github.io/media-capabilities/#dom-mediacapabilities-decodinginfo</a><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-dom-mediacapabilities-decodinginfo">12. Privacy Considerations</a>
+    <li><a href="#ref-for-dom-mediacapabilities-decodinginfo">11. Privacy Considerations</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-dom-mediacapabilitiesinfo-powerefficient">
    <a href="https://w3c.github.io/media-capabilities/#dom-mediacapabilitiesinfo-powerefficient">https://w3c.github.io/media-capabilities/#dom-mediacapabilitiesinfo-powerefficient</a><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-dom-mediacapabilitiesinfo-powerefficient">12. Privacy Considerations</a>
+    <li><a href="#ref-for-dom-mediacapabilitiesinfo-powerefficient">11. Privacy Considerations</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-dom-mediasource-istypesupported">
    <a href="https://www.w3.org/TR/media-source/#dom-mediasource-istypesupported">https://www.w3.org/TR/media-source/#dom-mediasource-istypesupported</a><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-dom-mediasource-istypesupported">7.1. Codec String</a>
-   </ul>
-  </aside>
-  <aside class="dfn-panel" data-for="term-for-idl-def-MediaStreamTrackState.ended">
-   <a href="https://w3c.github.io/mediacapture-main/#idl-def-MediaStreamTrackState.ended">https://w3c.github.io/mediacapture-main/#idl-def-MediaStreamTrackState.ended</a><b>Referenced in:</b>
-   <ul>
-    <li><a href="#ref-for-idl-def-MediaStreamTrackState.ended">10.1. VideoTrackReaderState Values</a>
-   </ul>
-  </aside>
-  <aside class="dfn-panel" data-for="term-for-idl-def-MediaStreamTrackState.live">
-   <a href="https://w3c.github.io/mediacapture-main/#idl-def-MediaStreamTrackState.live">https://w3c.github.io/mediacapture-main/#idl-def-MediaStreamTrackState.live</a><b>Referenced in:</b>
-   <ul>
-    <li><a href="#ref-for-idl-def-MediaStreamTrackState.live">10.1. VideoTrackReaderState Values</a> <a href="#ref-for-idl-def-MediaStreamTrackState.live①">(2)</a>
-    <li><a href="#ref-for-idl-def-MediaStreamTrackState.live②">10.7. MediaStreamTrack Monitoring</a>
-   </ul>
-  </aside>
-  <aside class="dfn-panel" data-for="term-for-dom-mediadevices-getdisplaymedia">
-   <a href="https://w3c.github.io/mediacapture-screen-share/#dom-mediadevices-getdisplaymedia">https://w3c.github.io/mediacapture-screen-share/#dom-mediadevices-getdisplaymedia</a><b>Referenced in:</b>
-   <ul>
-    <li><a href="#ref-for-dom-mediadevices-getdisplaymedia">10. VideoTrackReader Interface</a>
-   </ul>
-  </aside>
-  <aside class="dfn-panel" data-for="term-for-dom-mediastreamtrack">
-   <a href="https://www.w3.org/TR/mediacapture-streams/#dom-mediastreamtrack">https://www.w3.org/TR/mediacapture-streams/#dom-mediastreamtrack</a><b>Referenced in:</b>
-   <ul>
-    <li><a href="#ref-for-dom-mediastreamtrack">10. VideoTrackReader Interface</a> <a href="#ref-for-dom-mediastreamtrack①">(2)</a>
-    <li><a href="#ref-for-dom-mediastreamtrack②">10.2. Internal Slots</a>
-    <li><a href="#ref-for-dom-mediastreamtrack③">10.6. Methods</a> <a href="#ref-for-dom-mediastreamtrack④">(2)</a>
-   </ul>
-  </aside>
-  <aside class="dfn-panel" data-for="term-for-dom-mediadevices-getusermedia">
-   <a href="https://www.w3.org/TR/mediacapture-streams/#dom-mediadevices-getusermedia">https://www.w3.org/TR/mediacapture-streams/#dom-mediadevices-getusermedia</a><b>Referenced in:</b>
-   <ul>
-    <li><a href="#ref-for-dom-mediadevices-getusermedia">10. VideoTrackReader Interface</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-mime-type">
@@ -3321,7 +3087,6 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
     <li><a href="#ref-for-Exposed④">8.2. EncodedVideoChunk Interface</a>
     <li><a href="#ref-for-Exposed⑤">9.1. AudioFrame Interface</a>
     <li><a href="#ref-for-Exposed⑥">9.2. VideoFrame Interface</a>
-    <li><a href="#ref-for-Exposed⑦">10. VideoTrackReader Interface</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-idl-frozen-array">
@@ -3344,8 +3109,6 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
     <li><a href="#ref-for-invalidstateerror①⑥">9.2.2. Constructors</a>
     <li><a href="#ref-for-invalidstateerror①⑦">9.2.4. Methods</a> <a href="#ref-for-invalidstateerror①⑧">(2)</a> <a href="#ref-for-invalidstateerror①⑨">(3)</a> <a href="#ref-for-invalidstateerror②⓪">(4)</a>
     <li><a href="#ref-for-invalidstateerror②①">9.3.3. Methods</a>
-    <li><a href="#ref-for-invalidstateerror②②">10.3. Constructors</a>
-    <li><a href="#ref-for-invalidstateerror②③">10.6. Methods</a> <a href="#ref-for-invalidstateerror②④">(2)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-notsupportederror">
@@ -3376,7 +3139,6 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
     <li><a href="#ref-for-exceptiondef-typeerror④">6.4. Methods</a> <a href="#ref-for-exceptiondef-typeerror⑤">(2)</a>
     <li><a href="#ref-for-exceptiondef-typeerror⑥">9.2.2. Constructors</a> <a href="#ref-for-exceptiondef-typeerror⑦">(2)</a> <a href="#ref-for-exceptiondef-typeerror⑧">(3)</a>
     <li><a href="#ref-for-exceptiondef-typeerror⑨">9.3.3. Methods</a>
-    <li><a href="#ref-for-exceptiondef-typeerror①⓪">10.3. Constructors</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-a-promise-rejected-with">
@@ -3431,7 +3193,6 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
     <li><a href="#ref-for-idl-undefined②⑤">9.1. AudioFrame Interface</a>
     <li><a href="#ref-for-idl-undefined②⑥">9.2. VideoFrame Interface</a>
     <li><a href="#ref-for-idl-undefined②⑦">9.3. Plane Interface</a>
-    <li><a href="#ref-for-idl-undefined②⑧">10. VideoTrackReader Interface</a> <a href="#ref-for-idl-undefined②⑨">(2)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-idl-unsigned-long">
@@ -3464,13 +3225,13 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
   <aside class="dfn-panel" data-for="term-for-dom-rtcrtpsender-getcapabilities">
    <a href="https://www.w3.org/TR/webrtc/#dom-rtcrtpsender-getcapabilities">https://www.w3.org/TR/webrtc/#dom-rtcrtpsender-getcapabilities</a><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-dom-rtcrtpsender-getcapabilities">12. Privacy Considerations</a>
+    <li><a href="#ref-for-dom-rtcrtpsender-getcapabilities">11. Privacy Considerations</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-widl-RTCPeerConnection-getStats-Promise-RTCStatsReport--MediaStreamTrack-selector">
    <a href="https://www.w3.org/TR/webrtc/#widl-RTCPeerConnection-getStats-Promise-RTCStatsReport--MediaStreamTrack-selector">https://www.w3.org/TR/webrtc/#widl-RTCPeerConnection-getStats-Promise-RTCStatsReport--MediaStreamTrack-selector</a><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-widl-RTCPeerConnection-getStats-Promise-RTCStatsReport--MediaStreamTrack-selector">12. Privacy Considerations</a>
+    <li><a href="#ref-for-widl-RTCPeerConnection-getStats-Promise-RTCStatsReport--MediaStreamTrack-selector">11. Privacy Considerations</a>
    </ul>
   </aside>
   <h3 class="no-num no-ref heading settled" id="index-defined-elsewhere"><span class="content">Terms defined by reference</span><a class="self-link" href="#index-defined-elsewhere"></a></h3>
@@ -3478,14 +3239,12 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
    <li>
     <a data-link-type="biblio">[HTML]</a> defines the following terms:
     <ul>
-     <li><span class="dfn-paneled" id="term-for-eventhandler">EventHandler</span>
      <li><span class="dfn-paneled" id="term-for-htmlmediaelement">HTMLMediaElement</span>
      <li><span class="dfn-paneled" id="term-for-imagebitmap">ImageBitmap</span>
      <li><span class="dfn-paneled" id="term-for-imagebitmapoptions">ImageBitmapOptions</span>
      <li><span class="dfn-paneled" id="term-for-detached">[[Detached]]</span>
      <li><span class="dfn-paneled" id="term-for-dom-navigator-canplaytype">canPlayType()</span>
      <li><span class="dfn-paneled" id="term-for-global-object">global object</span>
-     <li><span class="dfn-paneled" id="term-for-queue-a-task">queue a task</span>
      <li><span class="dfn-paneled" id="term-for-dom-imagebitmapoptions-resizeheight">resizeHeight</span>
      <li><span class="dfn-paneled" id="term-for-dom-imagebitmapoptions-resizewidth">resizeWidth</span>
      <li><span class="dfn-paneled" id="term-for-dom-media-src">src</span>
@@ -3509,23 +3268,6 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
     <a data-link-type="biblio">[media-source]</a> defines the following terms:
     <ul>
      <li><span class="dfn-paneled" id="term-for-dom-mediasource-istypesupported">isTypeSupported()</span>
-    </ul>
-   <li>
-    <a data-link-type="biblio">[mediacapture-main]</a> defines the following terms:
-    <ul>
-     <li><span class="dfn-paneled" id="term-for-idl-def-MediaStreamTrackState.ended">ended</span>
-     <li><span class="dfn-paneled" id="term-for-idl-def-MediaStreamTrackState.live">live</span>
-    </ul>
-   <li>
-    <a data-link-type="biblio">[mediacapture-screen-share]</a> defines the following terms:
-    <ul>
-     <li><span class="dfn-paneled" id="term-for-dom-mediadevices-getdisplaymedia">getDisplayMedia()</span>
-    </ul>
-   <li>
-    <a data-link-type="biblio">[mediacapture-streams]</a> defines the following terms:
-    <ul>
-     <li><span class="dfn-paneled" id="term-for-dom-mediastreamtrack">MediaStreamTrack</span>
-     <li><span class="dfn-paneled" id="term-for-dom-mediadevices-getusermedia">getUserMedia()</span>
     </ul>
    <li>
     <a data-link-type="biblio">[MIMESNIFF]</a> defines the following terms:
@@ -3579,8 +3321,6 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
    <dd>Mounir Lamouri; Chris Cunningham; Vi Nguyen. <a href="https://www.w3.org/TR/media-capabilities/">Media Capabilities</a>. 30 January 2020. WD. URL: <a href="https://www.w3.org/TR/media-capabilities/">https://www.w3.org/TR/media-capabilities/</a>
    <dt id="biblio-media-source">[MEDIA-SOURCE]
    <dd>Matthew Wolenetz; et al. <a href="https://www.w3.org/TR/media-source/">Media Source Extensions™</a>. 17 November 2016. REC. URL: <a href="https://www.w3.org/TR/media-source/">https://www.w3.org/TR/media-source/</a>
-   <dt id="biblio-mediacapture-streams">[MEDIACAPTURE-STREAMS]
-   <dd>Cullen Jennings; et al. <a href="https://www.w3.org/TR/mediacapture-streams/">Media Capture and Streams</a>. 28 January 2021. CR. URL: <a href="https://www.w3.org/TR/mediacapture-streams/">https://www.w3.org/TR/mediacapture-streams/</a>
    <dt id="biblio-mimesniff">[MIMESNIFF]
    <dd>Gordon P. Hemsley. <a href="https://mimesniff.spec.whatwg.org/">MIME Sniffing Standard</a>. Living Standard. URL: <a href="https://mimesniff.spec.whatwg.org/">https://mimesniff.spec.whatwg.org/</a>
    <dt id="biblio-rfc2119">[RFC2119]
@@ -3854,24 +3594,6 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
 };
 
 
-[<a class="idl-code" data-link-type="extended-attribute" href="https://heycam.github.io/webidl/#Exposed"><c- g>Exposed</c-></a>=<c- n>Window</c->]
-<c- b>interface</c-> <a href="#videotrackreader"><code><c- g>VideoTrackReader</c-></code></a> {
-  <a class="idl-code" data-link-type="constructor" href="#dom-videotrackreader-videotrackreader"><c- g>constructor</c-></a>(<a data-link-type="idl-name" href="https://www.w3.org/TR/mediacapture-streams/#dom-mediastreamtrack"><c- n>MediaStreamTrack</c-></a> <a href="#dom-videotrackreader-videotrackreader-track-track"><code><c- g>track</c-></code></a>);
-
-  <c- b>readonly</c-> <c- b>attribute</c-> <a data-link-type="idl-name" href="#enumdef-videotrackreaderstate"><c- n>VideoTrackReaderState</c-></a> <a class="idl-code" data-link-type="attribute" data-readonly data-type="VideoTrackReaderState" href="#dom-videotrackreader-readystate"><c- g>readyState</c-></a>;
-  <c- b>attribute</c-> <a data-link-type="idl-name" href="https://html.spec.whatwg.org/multipage/webappapis.html#eventhandler"><c- n>EventHandler</c-></a> <a class="idl-code" data-link-type="attribute" data-type="EventHandler" href="#dom-videotrackreader-onended"><c- g>onended</c-></a>;
-
-  <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-undefined"><c- b>undefined</c-></a> <a class="idl-code" data-link-type="method" href="#dom-videotrackreader-start"><c- g>start</c-></a>(<a data-link-type="idl-name" href="#callbackdef-videoframeoutputcallback"><c- n>VideoFrameOutputCallback</c-></a> <a href="#dom-videotrackreader-start-callback-callback"><code><c- g>callback</c-></code></a>);
-  <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-undefined"><c- b>undefined</c-></a> <a class="idl-code" data-link-type="method" href="#dom-videotrackreader-stop"><c- g>stop</c-></a>();
-};
-
-<c- b>enum</c-> <a href="#enumdef-videotrackreaderstate"><code><c- g>VideoTrackReaderState</c-></code></a> {
-  <a class="idl-code" data-link-type="enum-value" href="#dom-videotrackreaderstate-started"><c- s>"started"</c-></a>,
-  <a class="idl-code" data-link-type="enum-value" href="#dom-videotrackreaderstate-stopped"><c- s>"stopped"</c-></a>,
-  <a class="idl-code" data-link-type="enum-value" href="#dom-videotrackreaderstate-ended"><c- s>"ended"</c-></a>
-};
-
-
 </pre>
   <h2 class="no-num no-ref heading settled" id="issues-index"><span class="content">Issues Index</span><a class="self-link" href="#issues-index"></a></h2>
   <div style="counter-reset:issue">
@@ -4106,10 +3828,6 @@ data. See <a href="https://github.com/WICG/web-codecs/issues/80">#80</a>.<a href
    <b><a href="#callbackdef-videoframeoutputcallback">#callbackdef-videoframeoutputcallback</a></b><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-callbackdef-videoframeoutputcallback">4. VideoDecoder Interface</a>
-    <li><a href="#ref-for-callbackdef-videoframeoutputcallback①">10. VideoTrackReader Interface</a>
-    <li><a href="#ref-for-callbackdef-videoframeoutputcallback②">10.2. Internal Slots</a>
-    <li><a href="#ref-for-callbackdef-videoframeoutputcallback③">10.6. Methods</a>
-    <li><a href="#ref-for-callbackdef-videoframeoutputcallback④">10.7. MediaStreamTrack Monitoring</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dom-videodecoder-codec-implementation-slot">
@@ -4180,7 +3898,7 @@ data. See <a href="https://github.com/WICG/web-codecs/issues/80">#80</a>.<a href
    <b><a href="#dom-videodecoder-reset">#dom-videodecoder-reset</a></b><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-dom-videodecoder-reset">4. VideoDecoder Interface</a>
-    <li><a href="#ref-for-dom-videodecoder-reset①">11. Security Considerations</a>
+    <li><a href="#ref-for-dom-videodecoder-reset①">10. Security Considerations</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dom-videodecoder-close">
@@ -4863,11 +4581,6 @@ data. See <a href="https://github.com/WICG/web-codecs/issues/80">#80</a>.<a href
     <li><a href="#ref-for-videoframe①③">9.3. Plane Interface</a> <a href="#ref-for-videoframe①④">(2)</a> <a href="#ref-for-videoframe①⑤">(3)</a> <a href="#ref-for-videoframe①⑥">(4)</a> <a href="#ref-for-videoframe①⑦">(5)</a>
     <li><a href="#ref-for-videoframe①⑧">9.3.1. Internal Slots</a>
     <li><a href="#ref-for-videoframe①⑨">9.6. Clone Frame (with frame)</a> <a href="#ref-for-videoframe②⓪">(2)</a>
-    <li><a href="#ref-for-videoframe②①">10. VideoTrackReader Interface</a>
-    <li><a href="#ref-for-videoframe②②">10.1. VideoTrackReaderState Values</a> <a href="#ref-for-videoframe②③">(2)</a>
-    <li><a href="#ref-for-videoframe②④">10.5. Event Summary</a>
-    <li><a href="#ref-for-videoframe②⑤">10.6. Methods</a> <a href="#ref-for-videoframe②⑥">(2)</a>
-    <li><a href="#ref-for-videoframe②⑦">10.7. MediaStreamTrack Monitoring</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dictdef-videoframeinit">
@@ -4875,7 +4588,6 @@ data. See <a href="https://github.com/WICG/web-codecs/issues/80">#80</a>.<a href
    <ul>
     <li><a href="#ref-for-dictdef-videoframeinit">4.5. Algorithms</a>
     <li><a href="#ref-for-dictdef-videoframeinit①">9.2. VideoFrame Interface</a> <a href="#ref-for-dictdef-videoframeinit②">(2)</a>
-    <li><a href="#ref-for-dictdef-videoframeinit③">10.7. MediaStreamTrack Monitoring</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dom-videoframeinit-codedwidth">
@@ -5079,7 +4791,6 @@ data. See <a href="https://github.com/WICG/web-codecs/issues/80">#80</a>.<a href
     <li><a href="#ref-for-plane⑤">9.2.3. Attributes</a>
     <li><a href="#ref-for-plane⑥">9.2.4. Methods</a>
     <li><a href="#ref-for-plane⑦">9.3. Plane Interface</a> <a href="#ref-for-plane⑧">(2)</a> <a href="#ref-for-plane⑨">(3)</a> <a href="#ref-for-plane①⓪">(4)</a> <a href="#ref-for-plane①①">(5)</a> <a href="#ref-for-plane①②">(6)</a>
-    <li><a href="#ref-for-plane①③">10.7. MediaStreamTrack Monitoring</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dictdef-planeinit">
@@ -5134,7 +4845,6 @@ data. See <a href="https://github.com/WICG/web-codecs/issues/80">#80</a>.<a href
     <li><a href="#ref-for-enumdef-pixelformat①">9.2. VideoFrame Interface</a> <a href="#ref-for-enumdef-pixelformat②">(2)</a>
     <li><a href="#ref-for-enumdef-pixelformat③">9.2.3. Attributes</a>
     <li><a href="#ref-for-enumdef-pixelformat④">9.3. Plane Interface</a>
-    <li><a href="#ref-for-enumdef-pixelformat⑤">10.7. MediaStreamTrack Monitoring</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dom-pixelformat-i420">
@@ -5149,106 +4859,6 @@ data. See <a href="https://github.com/WICG/web-codecs/issues/80">#80</a>.<a href
     <li><a href="#ref-for-clone-frame">5.4. Methods</a>
     <li><a href="#ref-for-clone-frame①">6.4. Methods</a>
     <li><a href="#ref-for-clone-frame②">9.2.4. Methods</a>
-   </ul>
-  </aside>
-  <aside class="dfn-panel" data-for="videotrackreader">
-   <b><a href="#videotrackreader">#videotrackreader</a></b><b>Referenced in:</b>
-   <ul>
-    <li><a href="#ref-for-videotrackreader">10. VideoTrackReader Interface</a>
-    <li><a href="#ref-for-videotrackreader①">10.3. Constructors</a>
-    <li><a href="#ref-for-videotrackreader②">10.4. Attributes</a>
-    <li><a href="#ref-for-videotrackreader③">10.7. MediaStreamTrack Monitoring</a>
-   </ul>
-  </aside>
-  <aside class="dfn-panel" data-for="enumdef-videotrackreaderstate">
-   <b><a href="#enumdef-videotrackreaderstate">#enumdef-videotrackreaderstate</a></b><b>Referenced in:</b>
-   <ul>
-    <li><a href="#ref-for-enumdef-videotrackreaderstate">10. VideoTrackReader Interface</a>
-    <li><a href="#ref-for-enumdef-videotrackreaderstate①">10.4. Attributes</a>
-   </ul>
-  </aside>
-  <aside class="dfn-panel" data-for="dom-videotrackreaderstate-started">
-   <b><a href="#dom-videotrackreaderstate-started">#dom-videotrackreaderstate-started</a></b><b>Referenced in:</b>
-   <ul>
-    <li><a href="#ref-for-dom-videotrackreaderstate-started">10. VideoTrackReader Interface</a>
-    <li><a href="#ref-for-dom-videotrackreaderstate-started①">10.1. VideoTrackReaderState Values</a>
-   </ul>
-  </aside>
-  <aside class="dfn-panel" data-for="dom-videotrackreaderstate-stopped">
-   <b><a href="#dom-videotrackreaderstate-stopped">#dom-videotrackreaderstate-stopped</a></b><b>Referenced in:</b>
-   <ul>
-    <li><a href="#ref-for-dom-videotrackreaderstate-stopped">10. VideoTrackReader Interface</a>
-    <li><a href="#ref-for-dom-videotrackreaderstate-stopped①">10.1. VideoTrackReaderState Values</a>
-   </ul>
-  </aside>
-  <aside class="dfn-panel" data-for="dom-videotrackreaderstate-ended">
-   <b><a href="#dom-videotrackreaderstate-ended">#dom-videotrackreaderstate-ended</a></b><b>Referenced in:</b>
-   <ul>
-    <li><a href="#ref-for-dom-videotrackreaderstate-ended">10. VideoTrackReader Interface</a>
-   </ul>
-  </aside>
-  <aside class="dfn-panel" data-for="dom-videotrackreader-track-slot">
-   <b><a href="#dom-videotrackreader-track-slot">#dom-videotrackreader-track-slot</a></b><b>Referenced in:</b>
-   <ul>
-    <li><a href="#ref-for-dom-videotrackreader-track-slot">10.1. VideoTrackReaderState Values</a> <a href="#ref-for-dom-videotrackreader-track-slot①">(2)</a> <a href="#ref-for-dom-videotrackreader-track-slot②">(3)</a>
-    <li><a href="#ref-for-dom-videotrackreader-track-slot③">10.3. Constructors</a>
-    <li><a href="#ref-for-dom-videotrackreader-track-slot④">10.5. Event Summary</a>
-    <li><a href="#ref-for-dom-videotrackreader-track-slot⑤">10.7. MediaStreamTrack Monitoring</a> <a href="#ref-for-dom-videotrackreader-track-slot⑥">(2)</a> <a href="#ref-for-dom-videotrackreader-track-slot⑦">(3)</a> <a href="#ref-for-dom-videotrackreader-track-slot⑧">(4)</a>
-   </ul>
-  </aside>
-  <aside class="dfn-panel" data-for="dom-videotrackreader-callback-slot">
-   <b><a href="#dom-videotrackreader-callback-slot">#dom-videotrackreader-callback-slot</a></b><b>Referenced in:</b>
-   <ul>
-    <li><a href="#ref-for-dom-videotrackreader-callback-slot">10.1. VideoTrackReaderState Values</a> <a href="#ref-for-dom-videotrackreader-callback-slot①">(2)</a>
-    <li><a href="#ref-for-dom-videotrackreader-callback-slot②">10.6. Methods</a> <a href="#ref-for-dom-videotrackreader-callback-slot③">(2)</a>
-    <li><a href="#ref-for-dom-videotrackreader-callback-slot④">10.7. MediaStreamTrack Monitoring</a>
-   </ul>
-  </aside>
-  <aside class="dfn-panel" data-for="dom-videotrackreader-videotrackreader">
-   <b><a href="#dom-videotrackreader-videotrackreader">#dom-videotrackreader-videotrackreader</a></b><b>Referenced in:</b>
-   <ul>
-    <li><a href="#ref-for-dom-videotrackreader-videotrackreader">10. VideoTrackReader Interface</a>
-   </ul>
-  </aside>
-  <aside class="dfn-panel" data-for="dom-videotrackreader-readystate">
-   <b><a href="#dom-videotrackreader-readystate">#dom-videotrackreader-readystate</a></b><b>Referenced in:</b>
-   <ul>
-    <li><a href="#ref-for-dom-videotrackreader-readystate">10. VideoTrackReader Interface</a>
-    <li><a href="#ref-for-dom-videotrackreader-readystate①">10.5. Event Summary</a>
-    <li><a href="#ref-for-dom-videotrackreader-readystate②">10.6. Methods</a> <a href="#ref-for-dom-videotrackreader-readystate③">(2)</a> <a href="#ref-for-dom-videotrackreader-readystate④">(3)</a>
-    <li><a href="#ref-for-dom-videotrackreader-readystate⑤">10.7. MediaStreamTrack Monitoring</a>
-   </ul>
-  </aside>
-  <aside class="dfn-panel" data-for="dom-videotrackreader-onended">
-   <b><a href="#dom-videotrackreader-onended">#dom-videotrackreader-onended</a></b><b>Referenced in:</b>
-   <ul>
-    <li><a href="#ref-for-dom-videotrackreader-onended">10. VideoTrackReader Interface</a>
-   </ul>
-  </aside>
-  <aside class="dfn-panel" data-for="eventdef-videotrackreader-ended">
-   <b><a href="#eventdef-videotrackreader-ended">#eventdef-videotrackreader-ended</a></b><b>Referenced in:</b>
-   <ul>
-    <li><a href="#ref-for-eventdef-videotrackreader-ended">10.7. MediaStreamTrack Monitoring</a>
-   </ul>
-  </aside>
-  <aside class="dfn-panel" data-for="dom-videotrackreader-start">
-   <b><a href="#dom-videotrackreader-start">#dom-videotrackreader-start</a></b><b>Referenced in:</b>
-   <ul>
-    <li><a href="#ref-for-dom-videotrackreader-start">10. VideoTrackReader Interface</a>
-    <li><a href="#ref-for-dom-videotrackreader-start①">10.1. VideoTrackReaderState Values</a>
-    <li><a href="#ref-for-dom-videotrackreader-start②">10.2. Internal Slots</a>
-   </ul>
-  </aside>
-  <aside class="dfn-panel" data-for="dom-videotrackreader-stop">
-   <b><a href="#dom-videotrackreader-stop">#dom-videotrackreader-stop</a></b><b>Referenced in:</b>
-   <ul>
-    <li><a href="#ref-for-dom-videotrackreader-stop">10. VideoTrackReader Interface</a>
-   </ul>
-  </aside>
-  <aside class="dfn-panel" data-for="running-the-track-monitor">
-   <b><a href="#running-the-track-monitor">#running-the-track-monitor</a></b><b>Referenced in:</b>
-   <ul>
-    <li><a href="#ref-for-running-the-track-monitor">10.6. Methods</a> <a href="#ref-for-running-the-track-monitor①">(2)</a>
    </ul>
   </aside>
 <script>/* script-dfn-panel */
