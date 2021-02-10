@@ -661,7 +661,15 @@ frames from MediaStreamStracks.</p>
       <li><a href="#audio-decoder-config"><span class="secno">7.2</span> <span class="content">AudioDecoderConfig</span></a>
       <li><a href="#video-decoder-config"><span class="secno">7.3</span> <span class="content">VideoDecoderConfig</span></a>
       <li><a href="#audio-encoder-config"><span class="secno">7.4</span> <span class="content">AudioEncoderConfig</span></a>
-      <li><a href="#video-encoder-config"><span class="secno">7.5</span> <span class="content">VideoEncoderConfig</span></a>
+      <li>
+       <a href="#video-encoder-config"><span class="secno">7.5</span> <span class="content">VideoEncoderConfig</span></a>
+       <ol class="toc">
+        <li>
+         <a href="#avc-encoder-config"><span class="secno">7.5.1</span> <span class="content">AvcEncoderConfig</span></a>
+         <ol class="toc">
+          <li><a href="#avc-bitstream-format"><span class="secno">7.5.1.1</span> <span class="content">AvcBitstreamFormat</span></a>
+         </ol>
+       </ol>
       <li><a href="#config-equivalence"><span class="secno">7.6</span> <span class="content">Configuration Equivalence</span></a>
       <li><a href="#video-encoder-options"><span class="secno">7.7</span> <span class="content">VideoEncoderEncodeOptions</span></a>
       <li><a href="#codec-state"><span class="secno">7.8</span> <span class="content">CodecState</span></a>
@@ -761,6 +769,16 @@ flush.</p>
 decoding/encoding hardware that may be allocated by the User Agent as part
 of codec configuration or generation of <code class="idl"><a data-link-type="idl" href="#audioframe" id="ref-for-audioframe">AudioFrame</a></code> and <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe①">VideoFrame</a></code> objects. Such resources may be quickly exhuasted and should be released
 immediately when no longer in use.</p>
+    <dt data-md><dfn class="dfn-paneled" data-dfn-type="dfn" data-lt="AVC" data-noexport id="avc">Advanced Video Coding (AVC)</dfn>
+    <dd data-md>
+     <p>Also known as H.264. Refers to the methods of video compression as defined by <a data-link-type="biblio" href="#biblio-iso14496-10">[iso14496-10]</a>.</p>
+    <dt data-md><dfn class="dfn-paneled" data-dfn-type="dfn" data-lt="Picture Parameter Set (PPS)|PPS" data-noexport id="picture-parameter-set-pps">Picture Parameter Set (PPS)</dfn>
+    <dd data-md>
+     <p>A set of parameters describing <a data-link-type="dfn" href="#avc" id="ref-for-avc">AVC</a> coded pictures as defined by <a data-link-type="biblio" href="#biblio-iso14496-10">[iso14496-10]</a>.</p>
+    <dt data-md><dfn class="dfn-paneled" data-dfn-type="dfn" data-lt="Sequence Parameter Set (SPS)|SPS" data-noexport id="sequence-parameter-set-sps">Sequence Parameter Set (SPS)</dfn>
+    <dd data-md>
+     <p>A set of parameters describing a sequence of <a data-link-type="dfn" href="#avc" id="ref-for-avc①">AVC</a> coded video as
+defined by <a data-link-type="biblio" href="#biblio-iso14496-10">[iso14496-10]</a>.</p>
    </dl>
    <h2 class="heading settled" data-level="2" id="codec-processing-model"><span class="secno">2. </span><span class="content">Codec Processing Model</span><a class="self-link" href="#codec-processing-model"></a></h2>
    <h3 class="heading settled" data-level="2.1" id="processing-model-background"><span class="secno">2.1. </span><span class="content">Background</span><a class="self-link" href="#processing-model-background"></a></h3>
@@ -1696,7 +1714,7 @@ invoke the <code class="idl"><a data-link-type="idl" href="#dom-videoencoder-err
      </ol>
    </dl>
    <h2 class="heading settled" data-level="7" id="configurations"><span class="secno">7. </span><span class="content">Configurations</span><a class="self-link" href="#configurations"></a></h2>
-   <h3 class="heading settled" data-level="7.1" id="config-codec-string"><span class="secno">7.1. </span><span class="content"><dfn data-dfn-type="dfn" data-export id="codec-string">Codec String<a class="self-link" href="#codec-string"></a></dfn></span><a class="self-link" href="#config-codec-string"></a></h3>
+   <h3 class="heading settled" data-level="7.1" id="config-codec-string"><span class="secno">7.1. </span><span class="content"><dfn class="dfn-paneled" data-dfn-type="dfn" data-export id="codec-string">Codec String</dfn></span><a class="self-link" href="#config-codec-string"></a></h3>
     In other media specifications, codec strings historically accompanied a <a data-link-type="dfn" href="https://mimesniff.spec.whatwg.org/#mime-type" id="ref-for-mime-type">MIME type</a> as the "codecs=" parameter
     (<code class="idl"><a data-link-type="idl" href="https://www.w3.org/TR/media-source/#dom-mediasource-istypesupported" id="ref-for-dom-mediasource-istypesupported">isTypeSupported()</a></code>, <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/#dom-navigator-canplaytype" id="ref-for-dom-navigator-canplaytype">canPlayType()</a></code>) <a data-link-type="biblio" href="#biblio-rfc6381">[RFC6381]</a>. In this specification, encoded media is not containerized; hence,
     only the value of the codecs parameter is accepted. 
@@ -1778,7 +1796,7 @@ concepts.</p>
    </ol>
    <dl>
     <dt><dfn class="dfn-paneled idl-code" data-dfn-for="AudioDecoderConfig" data-dfn-type="dict-member" data-export id="dom-audiodecoderconfig-codec"><code>codec</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#idl-DOMString" id="ref-for-idl-DOMString①">DOMString</a></span>
-    <dd>Contains a codec string describing the codec.
+    <dd>Contains a <a data-link-type="dfn" href="#codec-string" id="ref-for-codec-string">codec string</a> describing the codec.
     <dt><dfn class="dfn-paneled idl-code" data-dfn-for="AudioDecoderConfig" data-dfn-type="dict-member" data-export id="dom-audiodecoderconfig-samplerate"><code>sampleRate</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#idl-unsigned-long" id="ref-for-idl-unsigned-long②">unsigned long</a></span>
     <dd>The number of frame samples per second.
     <dt><dfn class="dfn-paneled idl-code" data-dfn-for="AudioDecoderConfig" data-dfn-type="dict-member" data-export id="dom-audiodecoderconfig-numberofchannels"><code>numberOfChannels</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#idl-unsigned-long" id="ref-for-idl-unsigned-long③">unsigned long</a></span>
@@ -1879,12 +1897,14 @@ run these steps:</p>
    </dl>
    <h3 class="heading settled" data-level="7.5" id="video-encoder-config"><span class="secno">7.5. </span><span class="content">VideoEncoderConfig</span><a class="self-link" href="#video-encoder-config"></a></h3>
 <pre class="idl highlight def"><c- b>dictionary</c-> <dfn class="dfn-paneled idl-code" data-dfn-type="dictionary" data-export id="dictdef-videoencoderconfig"><code><c- g>VideoEncoderConfig</c-></code></dfn> {
-  <c- b>required</c-> <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-DOMString" id="ref-for-idl-DOMString⑥"><c- b>DOMString</c-></a> <dfn class="dfn-paneled idl-code" data-dfn-for="VideoEncoderConfig" data-dfn-type="dict-member" data-export data-type="DOMString " id="dom-videoencoderconfig-codec"><code><c- g>codec</c-></code></dfn>;
-  <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-unsigned-long-long" id="ref-for-idl-unsigned-long-long"><c- b>unsigned</c-> <c- b>long</c-> <c- b>long</c-></a> <dfn class="idl-code" data-dfn-for="VideoEncoderConfig" data-dfn-type="dict-member" data-export data-type="unsigned long long " id="dom-videoencoderconfig-bitrate"><code><c- g>bitrate</c-></code><a class="self-link" href="#dom-videoencoderconfig-bitrate"></a></dfn>;
+  <c- b>required</c-> <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-DOMString" id="ref-for-idl-DOMString⑥"><c- b>DOMString</c-></a> <a class="idl-code" data-link-type="dict-member" data-type="DOMString " href="#dom-videoencoderconfig-codec" id="ref-for-dom-videoencoderconfig-codec"><c- g>codec</c-></a>;
+  <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-unsigned-long-long" id="ref-for-idl-unsigned-long-long"><c- b>unsigned</c-> <c- b>long</c-> <c- b>long</c-></a> <a class="idl-code" data-link-type="dict-member" data-type="unsigned long long " href="#dom-videoencoderconfig-bitrate" id="ref-for-dom-videoencoderconfig-bitrate"><c- g>bitrate</c-></a>;
   <c- b>required</c-> <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-unsigned-long" id="ref-for-idl-unsigned-long②④"><c- b>unsigned</c-> <c- b>long</c-></a> <a class="idl-code" data-link-type="dict-member" data-type="unsigned long " href="#dom-videoencoderconfig-cropwidth" id="ref-for-dom-videoencoderconfig-cropwidth"><c- g>cropWidth</c-></a>;
   <c- b>required</c-> <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-unsigned-long" id="ref-for-idl-unsigned-long②⑤"><c- b>unsigned</c-> <c- b>long</c-></a> <a class="idl-code" data-link-type="dict-member" data-type="unsigned long " href="#dom-videoencoderconfig-cropheight" id="ref-for-dom-videoencoderconfig-cropheight"><c- g>cropHeight</c-></a>;
   <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-unsigned-long" id="ref-for-idl-unsigned-long②⑥"><c- b>unsigned</c-> <c- b>long</c-></a> <a class="idl-code" data-link-type="dict-member" data-type="unsigned long " href="#dom-videoencoderconfig-displaywidth" id="ref-for-dom-videoencoderconfig-displaywidth"><c- g>displayWidth</c-></a>;
   <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-unsigned-long" id="ref-for-idl-unsigned-long②⑦"><c- b>unsigned</c-> <c- b>long</c-></a> <a class="idl-code" data-link-type="dict-member" data-type="unsigned long " href="#dom-videoencoderconfig-displayheight" id="ref-for-dom-videoencoderconfig-displayheight"><c- g>displayHeight</c-></a>;
+
+  <a data-link-type="idl-name" href="#dictdef-avcencoderconfig" id="ref-for-dictdef-avcencoderconfig"><c- n>AvcEncoderConfig</c-></a> <a class="idl-code" data-link-type="dict-member" data-type="AvcEncoderConfig " href="#dom-videoencoderconfig-avc" id="ref-for-dom-videoencoderconfig-avc"><c- g>avc</c-></a>;
 };
 
 </pre>
@@ -1892,15 +1912,21 @@ run these steps:</p>
     run these steps:</p>
    <ol>
     <li data-md>
-     <p>If <code class="idl"><a data-link-type="idl" href="#dom-videoencoderconfig-codec" id="ref-for-dom-videoencoderconfig-codec">codec</a></code> is not a <a data-link-type="dfn" href="#valid-codec-string" id="ref-for-valid-codec-string③">valid codec string</a>, return <code>false</code>.</p>
+     <p>If <code class="idl"><a data-link-type="idl" href="#dom-videoencoderconfig-codec" id="ref-for-dom-videoencoderconfig-codec①">codec</a></code> is not a <a data-link-type="dfn" href="#valid-codec-string" id="ref-for-valid-codec-string③">valid codec string</a>, return <code>false</code>.</p>
     <li data-md>
      <p>If <code class="idl"><a data-link-type="idl" href="#dom-videoencoderconfig-cropwidth" id="ref-for-dom-videoencoderconfig-cropwidth①">cropWidth</a></code> = 0 or <code class="idl"><a data-link-type="idl" href="#dom-videoencoderconfig-cropheight" id="ref-for-dom-videoencoderconfig-cropheight①">cropHeight</a></code> = 0, return <code>false</code>.</p>
     <li data-md>
      <p>If <code class="idl"><a data-link-type="idl" href="#dom-videoencoderconfig-displaywidth" id="ref-for-dom-videoencoderconfig-displaywidth①">displayWidth</a></code> = 0 or <code class="idl"><a data-link-type="idl" href="#dom-videoencoderconfig-displayheight" id="ref-for-dom-videoencoderconfig-displayheight①">displayHeight</a></code> = 0, return <code>false</code>.</p>
     <li data-md>
+     <p>If <code class="idl"><a data-link-type="idl" href="#dom-videoencoderconfig-avc" id="ref-for-dom-videoencoderconfig-avc①">avc</a></code> is present, but <code class="idl"><a data-link-type="idl" href="#dom-videoencoderconfig-codec" id="ref-for-dom-videoencoderconfig-codec②">codec</a></code> does not describe the <a data-link-type="dfn" href="#avc" id="ref-for-avc②">AVC</a> codec, per <a data-link-type="biblio" href="#biblio-rfc6381">[RFC6381]</a>, return <code>false</code>.</p>
+    <li data-md>
      <p>Return <code>true</code>.</p>
    </ol>
    <dl>
+    <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoEncoderConfig" data-dfn-type="dict-member" data-export id="dom-videoencoderconfig-codec"><code>codec</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#idl-DOMString" id="ref-for-idl-DOMString⑦">DOMString</a></span>
+    <dd>Contains a <a data-link-type="dfn" href="#codec-string" id="ref-for-codec-string①">codec string</a> describing the codec.
+    <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoEncoderConfig" data-dfn-type="dict-member" data-export id="dom-videoencoderconfig-bitrate"><code>bitrate</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#idl-unsigned-long-long" id="ref-for-idl-unsigned-long-long①">unsigned long long</a></span>
+    <dd>The average bitrate of the encoded video given in units of bits per second.
     <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoEncoderConfig" data-dfn-type="dict-member" data-export id="dom-videoencoderconfig-cropwidth"><code>cropWidth</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#idl-unsigned-long" id="ref-for-idl-unsigned-long②⑧">unsigned long</a></span>
     <dd>
       The encoded width of output <code class="idl"><a data-link-type="idl" href="#encodedvideochunk" id="ref-for-encodedvideochunk⑤">EncodedVideoChunk</a></code>s in pixels, prior to any
@@ -1933,6 +1959,45 @@ run these steps:</p>
     <p>For many codecs this is merely pass-through information, but some codecs
       may optionally include display sizing in the bitstream.</p>
    </div>
+   <dl>
+    <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoEncoderConfig" data-dfn-type="dict-member" data-export id="dom-videoencoderconfig-avc"><code>avc</code></dfn>, <span> of type <a data-link-type="idl-name" href="#dictdef-avcencoderconfig" id="ref-for-dictdef-avcencoderconfig①">AvcEncoderConfig</a></span>
+    <dd>Contains codec specific configuration options for the AVC (H.264) codec.
+   </dl>
+   <h4 class="heading settled" data-level="7.5.1" id="avc-encoder-config"><span class="secno">7.5.1. </span><span class="content">AvcEncoderConfig</span><a class="self-link" href="#avc-encoder-config"></a></h4>
+<pre class="idl highlight def"><c- b>dictionary</c-> <dfn class="dfn-paneled idl-code" data-dfn-type="dictionary" data-export id="dictdef-avcencoderconfig"><code><c- g>AvcEncoderConfig</c-></code></dfn> {
+  <a data-link-type="idl-name" href="#enumdef-avcbitstreamformat" id="ref-for-enumdef-avcbitstreamformat"><c- n>AvcBitstreamFormat</c-></a> <a class="idl-code" data-default="&quot;avc&quot;" data-link-type="dict-member" data-type="AvcBitstreamFormat " href="#dom-avcencoderconfig-format" id="ref-for-dom-avcencoderconfig-format"><c- g>format</c-></a> = "avc";
+};
+
+</pre>
+   <dl>
+    <dt><dfn class="dfn-paneled idl-code" data-dfn-for="AvcEncoderConfig" data-dfn-type="dict-member" data-export id="dom-avcencoderconfig-format"><code>format</code></dfn>, <span> of type <a data-link-type="idl-name" href="#enumdef-avcbitstreamformat" id="ref-for-enumdef-avcbitstreamformat①">AvcBitstreamFormat</a>, defaulting to <code>"avc"</code></span>
+    <dd> Configures the format of output <a data-link-type="dfn" href="#avc" id="ref-for-avc③">AVC</a> <code class="idl"><a data-link-type="idl" href="#encodedvideochunk" id="ref-for-encodedvideochunk⑨">EncodedVideoChunk</a></code>s. See <code class="idl"><a data-link-type="idl" href="#enumdef-avcbitstreamformat" id="ref-for-enumdef-avcbitstreamformat②">AvcBitstreamFormat</a></code>. 
+   </dl>
+   <h5 class="heading settled" data-level="7.5.1.1" id="avc-bitstream-format"><span class="secno">7.5.1.1. </span><span class="content">AvcBitstreamFormat</span><a class="self-link" href="#avc-bitstream-format"></a></h5>
+<pre class="idl highlight def"><c- b>enum</c-> <dfn class="dfn-paneled idl-code" data-dfn-type="enum" data-export id="enumdef-avcbitstreamformat"><code><c- g>AvcBitstreamFormat</c-></code></dfn> {
+  <a class="idl-code" data-link-type="enum-value" href="#dom-avcbitstreamformat-annexb" id="ref-for-dom-avcbitstreamformat-annexb"><c- s>"annexb"</c-></a>,
+  <a class="idl-code" data-link-type="enum-value" href="#dom-avcbitstreamformat-avc" id="ref-for-dom-avcbitstreamformat-avc"><c- s>"avc"</c-></a>,
+};
+
+</pre>
+   <p>The <code class="idl"><a data-link-type="idl" href="#enumdef-avcbitstreamformat" id="ref-for-enumdef-avcbitstreamformat③">AvcBitstreamFormat</a></code> determines the location of <a data-link-type="dfn" href="#sequence-parameter-set-sps" id="ref-for-sequence-parameter-set-sps">Sequence Parameter
+Set (SPS)</a> and <a data-link-type="dfn" href="#picture-parameter-set-pps" id="ref-for-picture-parameter-set-pps">Picture Parameter Set (PPS)</a> data, and mechanisms for
+packaging the bitstream.</p>
+   <dl>
+    <dt><dfn class="dfn-paneled idl-code" data-dfn-for="AvcBitstreamFormat" data-dfn-type="enum-value" data-export data-lt="&quot;annexb&quot;|annexb" id="dom-avcbitstreamformat-annexb"><code>annexb</code></dfn>
+    <dd>
+      This format is as described by <a data-link-type="biblio" href="#biblio-iso14496-10">[iso14496-10]</a>, Annex B. Notably, <a data-link-type="dfn" href="#sequence-parameter-set-sps" id="ref-for-sequence-parameter-set-sps①">SPS</a> and <a data-link-type="dfn" href="#picture-parameter-set-pps" id="ref-for-picture-parameter-set-pps①">PPS</a> data are included periodically throughout the
+    bitstream. 
+     <p class="note" role="note"><span>NOTE:</span> This format is commonly used in live-streaming applications, where
+        including the SPS and PPS data periodically allows users to easily start
+        from the middle of the stream.</p>
+    <dt><dfn class="dfn-paneled idl-code" data-dfn-for="AvcBitstreamFormat" data-dfn-type="enum-value" data-export data-lt="&quot;avc&quot;|avc" id="dom-avcbitstreamformat-avc"><code>avc</code></dfn>
+    <dd>
+      This format is as described by <a data-link-type="biblio" href="#biblio-iso14496-15">[iso14496-15]</a>, Section 5. Notably, <a data-link-type="dfn" href="#sequence-parameter-set-sps" id="ref-for-sequence-parameter-set-sps②">SPS</a> and <a data-link-type="dfn" href="#picture-parameter-set-pps" id="ref-for-picture-parameter-set-pps②">PPS</a> data are not included in the bitstream and are
+    instead passed out of band as a AVCDecoderConfigurationRecord as defined by <a data-link-type="biblio" href="#biblio-iso14496-15">[iso14496-15]</a>. This structure is emitted via the <code class="idl"><a data-link-type="idl" href="#dom-videoencoder-output-callback-slot" id="ref-for-dom-videoencoder-output-callback-slot②">[[output callback]]</a></code> as the <code class="idl"><a data-link-type="idl" href="#dom-videodecoderconfig-description" id="ref-for-dom-videodecoderconfig-description②">description</a></code> of the <code class="idl"><a data-link-type="idl" href="#dictdef-videodecoderconfig" id="ref-for-dictdef-videodecoderconfig⑥">VideoDecoderConfig</a></code> <var>output_config</var>. 
+     <p class="note" role="note"><span>NOTE:</span> This format is commonly used in .MP4 files, where the player generally
+        has random access to the media data.</p>
+   </dl>
    <h3 class="heading settled" data-level="7.6" id="config-equivalence"><span class="secno">7.6. </span><span class="content">Configuration Equivalence</span><a class="self-link" href="#config-equivalence"></a></h3>
     Two dictionaries are <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="equal-dictionaries">equal dictionaries</dfn> if they contain the same
 keys and values. For nested dictionaries, apply this definition recursively. 
@@ -1976,13 +2041,13 @@ keys and values. For nested dictionaries, apply this definition recursively.
 <pre class="idl highlight def"><c- b>interface</c-> <dfn class="dfn-paneled idl-code" data-dfn-type="interface" data-export id="encodedaudiochunk"><code><c- g>EncodedAudioChunk</c-></code></dfn> {
   <a class="idl-code" data-link-type="constructor" href="#dom-encodedaudiochunk-encodedaudiochunk" id="ref-for-dom-encodedaudiochunk-encodedaudiochunk"><c- g>constructor</c-></a>(<a data-link-type="idl-name" href="#dictdef-encodedaudiochunkinit" id="ref-for-dictdef-encodedaudiochunkinit①"><c- n>EncodedAudioChunkInit</c-></a> <dfn class="idl-code" data-dfn-for="EncodedAudioChunk/EncodedAudioChunk(init), EncodedAudioChunk/constructor(init)" data-dfn-type="argument" data-export id="dom-encodedaudiochunk-encodedaudiochunk-init-init"><code><c- g>init</c-></code><a class="self-link" href="#dom-encodedaudiochunk-encodedaudiochunk-init-init"></a></dfn>);
   <c- b>readonly</c-> <c- b>attribute</c-> <a data-link-type="idl-name" href="#enumdef-encodedaudiochunktype" id="ref-for-enumdef-encodedaudiochunktype①"><c- n>EncodedAudioChunkType</c-></a> <a class="idl-code" data-link-type="attribute" data-readonly data-type="EncodedAudioChunkType" href="#dom-encodedaudiochunk-type" id="ref-for-dom-encodedaudiochunk-type"><c- g>type</c-></a>;
-  <c- b>readonly</c-> <c- b>attribute</c-> <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-unsigned-long-long" id="ref-for-idl-unsigned-long-long①"><c- b>unsigned</c-> <c- b>long</c-> <c- b>long</c-></a> <a class="idl-code" data-link-type="attribute" data-readonly data-type="unsigned long long" href="#dom-encodedaudiochunk-timestamp" id="ref-for-dom-encodedaudiochunk-timestamp"><c- g>timestamp</c-></a>;  // microseconds
+  <c- b>readonly</c-> <c- b>attribute</c-> <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-unsigned-long-long" id="ref-for-idl-unsigned-long-long②"><c- b>unsigned</c-> <c- b>long</c-> <c- b>long</c-></a> <a class="idl-code" data-link-type="attribute" data-readonly data-type="unsigned long long" href="#dom-encodedaudiochunk-timestamp" id="ref-for-dom-encodedaudiochunk-timestamp"><c- g>timestamp</c-></a>;  // microseconds
   <c- b>readonly</c-> <c- b>attribute</c-> <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-ArrayBuffer" id="ref-for-idl-ArrayBuffer"><c- b>ArrayBuffer</c-></a> <a class="idl-code" data-link-type="attribute" data-readonly data-type="ArrayBuffer" href="#dom-encodedaudiochunk-data" id="ref-for-dom-encodedaudiochunk-data"><c- g>data</c-></a>;
 };
 
 <c- b>dictionary</c-> <dfn class="dfn-paneled idl-code" data-dfn-type="dictionary" data-export id="dictdef-encodedaudiochunkinit"><code><c- g>EncodedAudioChunkInit</c-></code></dfn> {
   <c- b>required</c-> <a data-link-type="idl-name" href="#enumdef-encodedaudiochunktype" id="ref-for-enumdef-encodedaudiochunktype②"><c- n>EncodedAudioChunkType</c-></a> <dfn class="dfn-paneled idl-code" data-dfn-for="EncodedAudioChunkInit" data-dfn-type="dict-member" data-export data-type="EncodedAudioChunkType " id="dom-encodedaudiochunkinit-type"><code><c- g>type</c-></code></dfn>;
-  <c- b>required</c-> <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-unsigned-long-long" id="ref-for-idl-unsigned-long-long②"><c- b>unsigned</c-> <c- b>long</c-> <c- b>long</c-></a> <dfn class="dfn-paneled idl-code" data-dfn-for="EncodedAudioChunkInit" data-dfn-type="dict-member" data-export data-type="unsigned long long " id="dom-encodedaudiochunkinit-timestamp"><code><c- g>timestamp</c-></code></dfn>;
+  <c- b>required</c-> <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-unsigned-long-long" id="ref-for-idl-unsigned-long-long③"><c- b>unsigned</c-> <c- b>long</c-> <c- b>long</c-></a> <dfn class="dfn-paneled idl-code" data-dfn-for="EncodedAudioChunkInit" data-dfn-type="dict-member" data-export data-type="unsigned long long " id="dom-encodedaudiochunkinit-timestamp"><code><c- g>timestamp</c-></code></dfn>;
   <c- b>required</c-> <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#BufferSource" id="ref-for-BufferSource④"><c- n>BufferSource</c-></a> <dfn class="dfn-paneled idl-code" data-dfn-for="EncodedAudioChunkInit" data-dfn-type="dict-member" data-export data-type="BufferSource " id="dom-encodedaudiochunkinit-data"><code><c- g>data</c-></code></dfn>;
 };
 
@@ -2012,7 +2077,7 @@ keys and values. For nested dictionaries, apply this definition recursively.
    <dl>
     <dt><dfn class="dfn-paneled idl-code" data-dfn-for="EncodedAudioChunk" data-dfn-type="attribute" data-export id="dom-encodedaudiochunk-type"><code>type</code></dfn>, <span> of type <a data-link-type="idl-name" href="#enumdef-encodedaudiochunktype" id="ref-for-enumdef-encodedaudiochunktype③">EncodedAudioChunkType</a>, readonly</span>
     <dd>Describes whether the chunk is a key frame.
-    <dt><dfn class="dfn-paneled idl-code" data-dfn-for="EncodedAudioChunk" data-dfn-type="attribute" data-export id="dom-encodedaudiochunk-timestamp"><code>timestamp</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#idl-unsigned-long-long" id="ref-for-idl-unsigned-long-long③">unsigned long long</a>, readonly</span>
+    <dt><dfn class="dfn-paneled idl-code" data-dfn-for="EncodedAudioChunk" data-dfn-type="attribute" data-export id="dom-encodedaudiochunk-timestamp"><code>timestamp</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#idl-unsigned-long-long" id="ref-for-idl-unsigned-long-long④">unsigned long long</a>, readonly</span>
     <dd>The presentation timestamp, given in microseconds.
     <dt><dfn class="dfn-paneled idl-code" data-dfn-for="EncodedAudioChunk" data-dfn-type="attribute" data-export id="dom-encodedaudiochunk-data"><code>data</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#idl-ArrayBuffer" id="ref-for-idl-ArrayBuffer①">ArrayBuffer</a>, readonly</span>
     <dd>A sequence of bytes containing encoded audio data.
@@ -2022,15 +2087,15 @@ keys and values. For nested dictionaries, apply this definition recursively.
 <c- b>interface</c-> <dfn class="dfn-paneled idl-code" data-dfn-type="interface" data-export id="encodedvideochunk"><code><c- g>EncodedVideoChunk</c-></code></dfn> {
   <a class="idl-code" data-link-type="constructor" href="#dom-encodedvideochunk-encodedvideochunk" id="ref-for-dom-encodedvideochunk-encodedvideochunk"><c- g>constructor</c-></a>(<a data-link-type="idl-name" href="#dictdef-encodedvideochunkinit" id="ref-for-dictdef-encodedvideochunkinit①"><c- n>EncodedVideoChunkInit</c-></a> <dfn class="idl-code" data-dfn-for="EncodedVideoChunk/EncodedVideoChunk(init), EncodedVideoChunk/constructor(init)" data-dfn-type="argument" data-export id="dom-encodedvideochunk-encodedvideochunk-init-init"><code><c- g>init</c-></code><a class="self-link" href="#dom-encodedvideochunk-encodedvideochunk-init-init"></a></dfn>);
   <c- b>readonly</c-> <c- b>attribute</c-> <a data-link-type="idl-name" href="#enumdef-encodedvideochunktype" id="ref-for-enumdef-encodedvideochunktype①"><c- n>EncodedVideoChunkType</c-></a> <a class="idl-code" data-link-type="attribute" data-readonly data-type="EncodedVideoChunkType" href="#dom-encodedvideochunk-type" id="ref-for-dom-encodedvideochunk-type"><c- g>type</c-></a>;
-  <c- b>readonly</c-> <c- b>attribute</c-> <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-unsigned-long-long" id="ref-for-idl-unsigned-long-long④"><c- b>unsigned</c-> <c- b>long</c-> <c- b>long</c-></a> <a class="idl-code" data-link-type="attribute" data-readonly data-type="unsigned long long" href="#dom-encodedvideochunk-timestamp" id="ref-for-dom-encodedvideochunk-timestamp①"><c- g>timestamp</c-></a>;  // microseconds
-  <c- b>readonly</c-> <c- b>attribute</c-> <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-unsigned-long-long" id="ref-for-idl-unsigned-long-long⑤"><c- b>unsigned</c-> <c- b>long</c-> <c- b>long</c-></a>? <a class="idl-code" data-link-type="attribute" data-readonly data-type="unsigned long long?" href="#dom-encodedvideochunk-duration" id="ref-for-dom-encodedvideochunk-duration①"><c- g>duration</c-></a>;  // microseconds
+  <c- b>readonly</c-> <c- b>attribute</c-> <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-unsigned-long-long" id="ref-for-idl-unsigned-long-long⑤"><c- b>unsigned</c-> <c- b>long</c-> <c- b>long</c-></a> <a class="idl-code" data-link-type="attribute" data-readonly data-type="unsigned long long" href="#dom-encodedvideochunk-timestamp" id="ref-for-dom-encodedvideochunk-timestamp①"><c- g>timestamp</c-></a>;  // microseconds
+  <c- b>readonly</c-> <c- b>attribute</c-> <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-unsigned-long-long" id="ref-for-idl-unsigned-long-long⑥"><c- b>unsigned</c-> <c- b>long</c-> <c- b>long</c-></a>? <a class="idl-code" data-link-type="attribute" data-readonly data-type="unsigned long long?" href="#dom-encodedvideochunk-duration" id="ref-for-dom-encodedvideochunk-duration①"><c- g>duration</c-></a>;  // microseconds
   <c- b>readonly</c-> <c- b>attribute</c-> <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-ArrayBuffer" id="ref-for-idl-ArrayBuffer②"><c- b>ArrayBuffer</c-></a> <a class="idl-code" data-link-type="attribute" data-readonly data-type="ArrayBuffer" href="#dom-encodedvideochunk-data" id="ref-for-dom-encodedvideochunk-data"><c- g>data</c-></a>;
 };
 
 <c- b>dictionary</c-> <dfn class="dfn-paneled idl-code" data-dfn-type="dictionary" data-export id="dictdef-encodedvideochunkinit"><code><c- g>EncodedVideoChunkInit</c-></code></dfn> {
   <c- b>required</c-> <a data-link-type="idl-name" href="#enumdef-encodedvideochunktype" id="ref-for-enumdef-encodedvideochunktype②"><c- n>EncodedVideoChunkType</c-></a> <dfn class="dfn-paneled idl-code" data-dfn-for="EncodedVideoChunkInit" data-dfn-type="dict-member" data-export data-type="EncodedVideoChunkType " id="dom-encodedvideochunkinit-type"><code><c- g>type</c-></code></dfn>;
-  <c- b>required</c-> <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-unsigned-long-long" id="ref-for-idl-unsigned-long-long⑥"><c- b>unsigned</c-> <c- b>long</c-> <c- b>long</c-></a> <dfn class="dfn-paneled idl-code" data-dfn-for="EncodedVideoChunkInit" data-dfn-type="dict-member" data-export data-type="unsigned long long " id="dom-encodedvideochunkinit-timestamp"><code><c- g>timestamp</c-></code></dfn>;
-  <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-unsigned-long-long" id="ref-for-idl-unsigned-long-long⑦"><c- b>unsigned</c-> <c- b>long</c-> <c- b>long</c-></a> <dfn class="dfn-paneled idl-code" data-dfn-for="EncodedVideoChunkInit" data-dfn-type="dict-member" data-export data-type="unsigned long long " id="dom-encodedvideochunkinit-duration"><code><c- g>duration</c-></code></dfn>;
+  <c- b>required</c-> <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-unsigned-long-long" id="ref-for-idl-unsigned-long-long⑦"><c- b>unsigned</c-> <c- b>long</c-> <c- b>long</c-></a> <dfn class="dfn-paneled idl-code" data-dfn-for="EncodedVideoChunkInit" data-dfn-type="dict-member" data-export data-type="unsigned long long " id="dom-encodedvideochunkinit-timestamp"><code><c- g>timestamp</c-></code></dfn>;
+  <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-unsigned-long-long" id="ref-for-idl-unsigned-long-long⑧"><c- b>unsigned</c-> <c- b>long</c-> <c- b>long</c-></a> <dfn class="dfn-paneled idl-code" data-dfn-for="EncodedVideoChunkInit" data-dfn-type="dict-member" data-export data-type="unsigned long long " id="dom-encodedvideochunkinit-duration"><code><c- g>duration</c-></code></dfn>;
   <c- b>required</c-> <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#BufferSource" id="ref-for-BufferSource⑤"><c- n>BufferSource</c-></a> <dfn class="dfn-paneled idl-code" data-dfn-for="EncodedVideoChunkInit" data-dfn-type="dict-member" data-export data-type="BufferSource " id="dom-encodedvideochunkinit-data"><code><c- g>data</c-></code></dfn>;
 };
 
@@ -2044,7 +2109,7 @@ keys and values. For nested dictionaries, apply this definition recursively.
     <dfn class="dfn-paneled idl-code" data-dfn-for="EncodedVideoChunk" data-dfn-type="constructor" data-export data-lt="EncodedVideoChunk(init)|constructor(init)" id="dom-encodedvideochunk-encodedvideochunk" title="EncodedVideoChunk(init)"><code> EncodedVideoChunk(init) </code></dfn> 
    <ol>
     <li data-md>
-     <p>Let <var>chunk</var> be a new <code class="idl"><a data-link-type="idl" href="#encodedvideochunk" id="ref-for-encodedvideochunk⑨">EncodedVideoChunk</a></code> object, initialized as follows</p>
+     <p>Let <var>chunk</var> be a new <code class="idl"><a data-link-type="idl" href="#encodedvideochunk" id="ref-for-encodedvideochunk①⓪">EncodedVideoChunk</a></code> object, initialized as follows</p>
      <ol>
       <li data-md>
        <p>Assign <code>init.type</code> to <code>chunk.type</code>.</p>
@@ -2062,9 +2127,9 @@ keys and values. For nested dictionaries, apply this definition recursively.
    <dl>
     <dt><dfn class="dfn-paneled idl-code" data-dfn-for="EncodedVideoChunk" data-dfn-type="attribute" data-export id="dom-encodedvideochunk-type"><code>type</code></dfn>, <span> of type <a data-link-type="idl-name" href="#enumdef-encodedvideochunktype" id="ref-for-enumdef-encodedvideochunktype③">EncodedVideoChunkType</a>, readonly</span>
     <dd>Describes whether the chunk is a key frame or not.
-    <dt><dfn class="dfn-paneled idl-code" data-dfn-for="EncodedVideoChunk" data-dfn-type="attribute" data-export id="dom-encodedvideochunk-timestamp"><code>timestamp</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#idl-unsigned-long-long" id="ref-for-idl-unsigned-long-long⑧">unsigned long long</a>, readonly</span>
+    <dt><dfn class="dfn-paneled idl-code" data-dfn-for="EncodedVideoChunk" data-dfn-type="attribute" data-export id="dom-encodedvideochunk-timestamp"><code>timestamp</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#idl-unsigned-long-long" id="ref-for-idl-unsigned-long-long⑨">unsigned long long</a>, readonly</span>
     <dd>The presentation timestamp, given in microseconds.
-    <dt><dfn class="dfn-paneled idl-code" data-dfn-for="EncodedVideoChunk" data-dfn-type="attribute" data-export id="dom-encodedvideochunk-duration"><code>duration</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#idl-unsigned-long-long" id="ref-for-idl-unsigned-long-long⑨">unsigned long long</a>, readonly, nullable</span>
+    <dt><dfn class="dfn-paneled idl-code" data-dfn-for="EncodedVideoChunk" data-dfn-type="attribute" data-export id="dom-encodedvideochunk-duration"><code>duration</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#idl-unsigned-long-long" id="ref-for-idl-unsigned-long-long①⓪">unsigned long long</a>, readonly, nullable</span>
     <dd>The presentation duration, given in microseconds.
     <dt><dfn class="dfn-paneled idl-code" data-dfn-for="EncodedVideoChunk" data-dfn-type="attribute" data-export id="dom-encodedvideochunk-data"><code>data</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#idl-ArrayBuffer" id="ref-for-idl-ArrayBuffer③">ArrayBuffer</a>, readonly</span>
     <dd>A sequence of bytes containing encoded video data.
@@ -2075,13 +2140,13 @@ keys and values. For nested dictionaries, apply this definition recursively.
 <pre class="idl highlight def">[<a class="idl-code" data-link-type="extended-attribute" href="https://heycam.github.io/webidl/#Exposed" id="ref-for-Exposed⑤"><c- g>Exposed</c-></a>=(<c- n>Window</c->,<c- n>Worker</c->)]
 <c- b>interface</c-> <dfn class="dfn-paneled idl-code" data-dfn-type="interface" data-export id="audioframe"><code><c- g>AudioFrame</c-></code></dfn> {
   <a class="idl-code" data-link-type="constructor" href="#dom-audioframe-audioframe" id="ref-for-dom-audioframe-audioframe"><c- g>constructor</c-></a>(<a data-link-type="idl-name" href="#dictdef-audioframeinit" id="ref-for-dictdef-audioframeinit"><c- n>AudioFrameInit</c-></a> <dfn class="idl-code" data-dfn-for="AudioFrame/AudioFrame(init), AudioFrame/constructor(init)" data-dfn-type="argument" data-export id="dom-audioframe-audioframe-init-init"><code><c- g>init</c-></code><a class="self-link" href="#dom-audioframe-audioframe-init-init"></a></dfn>);
-  <c- b>readonly</c-> <c- b>attribute</c-> <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-unsigned-long-long" id="ref-for-idl-unsigned-long-long①⓪"><c- b>unsigned</c-> <c- b>long</c-> <c- b>long</c-></a> <a class="idl-code" data-link-type="attribute" data-readonly data-type="unsigned long long" href="#dom-audioframe-timestamp" id="ref-for-dom-audioframe-timestamp①"><c- g>timestamp</c-></a>;
+  <c- b>readonly</c-> <c- b>attribute</c-> <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-unsigned-long-long" id="ref-for-idl-unsigned-long-long①①"><c- b>unsigned</c-> <c- b>long</c-> <c- b>long</c-></a> <a class="idl-code" data-link-type="attribute" data-readonly data-type="unsigned long long" href="#dom-audioframe-timestamp" id="ref-for-dom-audioframe-timestamp①"><c- g>timestamp</c-></a>;
   <c- b>readonly</c-> <c- b>attribute</c-> <a data-link-type="idl-name" href="https://webaudio.github.io/web-audio-api/#audiobuffer" id="ref-for-audiobuffer①"><c- n>AudioBuffer</c-></a>? <a class="idl-code" data-link-type="attribute" data-readonly data-type="AudioBuffer?" href="#dom-audioframe-buffer" id="ref-for-dom-audioframe-buffer"><c- g>buffer</c-></a>;
   <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-undefined" id="ref-for-idl-undefined②⑤"><c- b>undefined</c-></a> <a class="idl-code" data-link-type="method" href="#dom-audioframe-close" id="ref-for-dom-audioframe-close"><c- g>close</c-></a>();
 };
 
 <c- b>dictionary</c-> <dfn class="dfn-paneled idl-code" data-dfn-type="dictionary" data-export id="dictdef-audioframeinit"><code><c- g>AudioFrameInit</c-></code></dfn> {
-  <c- b>required</c-> <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-unsigned-long-long" id="ref-for-idl-unsigned-long-long①①"><c- b>unsigned</c-> <c- b>long</c-> <c- b>long</c-></a> <dfn class="idl-code" data-dfn-for="AudioFrameInit" data-dfn-type="dict-member" data-export data-type="unsigned long long " id="dom-audioframeinit-timestamp"><code><c- g>timestamp</c-></code><a class="self-link" href="#dom-audioframeinit-timestamp"></a></dfn>;
+  <c- b>required</c-> <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-unsigned-long-long" id="ref-for-idl-unsigned-long-long①②"><c- b>unsigned</c-> <c- b>long</c-> <c- b>long</c-></a> <dfn class="idl-code" data-dfn-for="AudioFrameInit" data-dfn-type="dict-member" data-export data-type="unsigned long long " id="dom-audioframeinit-timestamp"><code><c- g>timestamp</c-></code><a class="self-link" href="#dom-audioframeinit-timestamp"></a></dfn>;
   <c- b>required</c-> <a data-link-type="idl-name" href="https://webaudio.github.io/web-audio-api/#audiobuffer" id="ref-for-audiobuffer②"><c- n>AudioBuffer</c-></a> <dfn class="idl-code" data-dfn-for="AudioFrameInit" data-dfn-type="dict-member" data-export data-type="AudioBuffer " id="dom-audioframeinit-buffer"><code><c- g>buffer</c-></code><a class="self-link" href="#dom-audioframeinit-buffer"></a></dfn>;
 };
 
@@ -2108,7 +2173,7 @@ keys and values. For nested dictionaries, apply this definition recursively.
    </ol>
    <h4 class="heading settled" data-level="9.1.3" id="audioframe-attributes"><span class="secno">9.1.3. </span><span class="content">Attributes</span><a class="self-link" href="#audioframe-attributes"></a></h4>
    <dl>
-    <dt><dfn class="dfn-paneled idl-code" data-dfn-for="AudioFrame" data-dfn-type="attribute" data-export id="dom-audioframe-timestamp"><code>timestamp</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#idl-unsigned-long-long" id="ref-for-idl-unsigned-long-long①②">unsigned long long</a>, readonly</span>
+    <dt><dfn class="dfn-paneled idl-code" data-dfn-for="AudioFrame" data-dfn-type="attribute" data-export id="dom-audioframe-timestamp"><code>timestamp</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#idl-unsigned-long-long" id="ref-for-idl-unsigned-long-long①③">unsigned long long</a>, readonly</span>
     <dd>The presentation timestamp, given in microseconds.
     <dt><dfn class="dfn-paneled idl-code" data-dfn-for="AudioFrame" data-dfn-type="attribute" data-export id="dom-audioframe-buffer"><code>buffer</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://webaudio.github.io/web-audio-api/#audiobuffer" id="ref-for-audiobuffer③">AudioBuffer</a>, readonly, nullable</span>
     <dd>The buffer containing decoded audio data.
@@ -2145,8 +2210,8 @@ keys and values. For nested dictionaries, apply this definition recursively.
   <c- b>readonly</c-> <c- b>attribute</c-> <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-unsigned-long" id="ref-for-idl-unsigned-long③⑦"><c- b>unsigned</c-> <c- b>long</c-></a> <a class="idl-code" data-link-type="attribute" data-readonly data-type="unsigned long" href="#dom-videoframe-cropheight" id="ref-for-dom-videoframe-cropheight②"><c- g>cropHeight</c-></a>;
   <c- b>readonly</c-> <c- b>attribute</c-> <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-unsigned-long" id="ref-for-idl-unsigned-long③⑧"><c- b>unsigned</c-> <c- b>long</c-></a> <a class="idl-code" data-link-type="attribute" data-readonly data-type="unsigned long" href="#dom-videoframe-displaywidth" id="ref-for-dom-videoframe-displaywidth"><c- g>displayWidth</c-></a>;
   <c- b>readonly</c-> <c- b>attribute</c-> <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-unsigned-long" id="ref-for-idl-unsigned-long③⑨"><c- b>unsigned</c-> <c- b>long</c-></a> <a class="idl-code" data-link-type="attribute" data-readonly data-type="unsigned long" href="#dom-videoframe-displayheight" id="ref-for-dom-videoframe-displayheight"><c- g>displayHeight</c-></a>;
-  <c- b>readonly</c-> <c- b>attribute</c-> <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-unsigned-long-long" id="ref-for-idl-unsigned-long-long①③"><c- b>unsigned</c-> <c- b>long</c-> <c- b>long</c-></a>? <a class="idl-code" data-link-type="attribute" data-readonly data-type="unsigned long long?" href="#dom-videoframe-duration" id="ref-for-dom-videoframe-duration①"><c- g>duration</c-></a>;
-  <c- b>readonly</c-> <c- b>attribute</c-> <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-unsigned-long-long" id="ref-for-idl-unsigned-long-long①④"><c- b>unsigned</c-> <c- b>long</c-> <c- b>long</c-></a>? <a class="idl-code" data-link-type="attribute" data-readonly data-type="unsigned long long?" href="#dom-videoframe-timestamp" id="ref-for-dom-videoframe-timestamp①"><c- g>timestamp</c-></a>;
+  <c- b>readonly</c-> <c- b>attribute</c-> <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-unsigned-long-long" id="ref-for-idl-unsigned-long-long①④"><c- b>unsigned</c-> <c- b>long</c-> <c- b>long</c-></a>? <a class="idl-code" data-link-type="attribute" data-readonly data-type="unsigned long long?" href="#dom-videoframe-duration" id="ref-for-dom-videoframe-duration①"><c- g>duration</c-></a>;
+  <c- b>readonly</c-> <c- b>attribute</c-> <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-unsigned-long-long" id="ref-for-idl-unsigned-long-long①⑤"><c- b>unsigned</c-> <c- b>long</c-> <c- b>long</c-></a>? <a class="idl-code" data-link-type="attribute" data-readonly data-type="unsigned long long?" href="#dom-videoframe-timestamp" id="ref-for-dom-videoframe-timestamp①"><c- g>timestamp</c-></a>;
 
   <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-undefined" id="ref-for-idl-undefined②⑥"><c- b>undefined</c-></a> <a class="idl-code" data-link-type="method" href="#dom-videoframe-destroy" id="ref-for-dom-videoframe-destroy"><c- g>destroy</c-></a>();
   <a data-link-type="idl-name" href="#videoframe" id="ref-for-videoframe①①"><c- n>VideoFrame</c-></a> <a class="idl-code" data-link-type="method" href="#dom-videoframe-clone" id="ref-for-dom-videoframe-clone"><c- g>clone</c-></a>();
@@ -2165,8 +2230,8 @@ keys and values. For nested dictionaries, apply this definition recursively.
   <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-unsigned-long" id="ref-for-idl-unsigned-long④⑤"><c- b>unsigned</c-> <c- b>long</c-></a> <dfn class="dfn-paneled idl-code" data-dfn-for="VideoFrameInit" data-dfn-type="dict-member" data-export data-type="unsigned long " id="dom-videoframeinit-cropheight"><code><c- g>cropHeight</c-></code></dfn>;
   <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-unsigned-long" id="ref-for-idl-unsigned-long④⑥"><c- b>unsigned</c-> <c- b>long</c-></a> <dfn class="dfn-paneled idl-code" data-dfn-for="VideoFrameInit" data-dfn-type="dict-member" data-export data-type="unsigned long " id="dom-videoframeinit-displaywidth"><code><c- g>displayWidth</c-></code></dfn>;
   <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-unsigned-long" id="ref-for-idl-unsigned-long④⑦"><c- b>unsigned</c-> <c- b>long</c-></a> <dfn class="dfn-paneled idl-code" data-dfn-for="VideoFrameInit" data-dfn-type="dict-member" data-export data-type="unsigned long " id="dom-videoframeinit-displayheight"><code><c- g>displayHeight</c-></code></dfn>;
-  <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-unsigned-long-long" id="ref-for-idl-unsigned-long-long①⑤"><c- b>unsigned</c-> <c- b>long</c-> <c- b>long</c-></a> <dfn class="dfn-paneled idl-code" data-dfn-for="VideoFrameInit" data-dfn-type="dict-member" data-export data-type="unsigned long long " id="dom-videoframeinit-duration"><code><c- g>duration</c-></code></dfn>;
-  <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-unsigned-long-long" id="ref-for-idl-unsigned-long-long①⑥"><c- b>unsigned</c-> <c- b>long</c-> <c- b>long</c-></a> <dfn class="dfn-paneled idl-code" data-dfn-for="VideoFrameInit" data-dfn-type="dict-member" data-export data-type="unsigned long long " id="dom-videoframeinit-timestamp"><code><c- g>timestamp</c-></code></dfn>;
+  <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-unsigned-long-long" id="ref-for-idl-unsigned-long-long①⑥"><c- b>unsigned</c-> <c- b>long</c-> <c- b>long</c-></a> <dfn class="dfn-paneled idl-code" data-dfn-for="VideoFrameInit" data-dfn-type="dict-member" data-export data-type="unsigned long long " id="dom-videoframeinit-duration"><code><c- g>duration</c-></code></dfn>;
+  <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-unsigned-long-long" id="ref-for-idl-unsigned-long-long①⑦"><c- b>unsigned</c-> <c- b>long</c-> <c- b>long</c-></a> <dfn class="dfn-paneled idl-code" data-dfn-for="VideoFrameInit" data-dfn-type="dict-member" data-export data-type="unsigned long long " id="dom-videoframeinit-timestamp"><code><c- g>timestamp</c-></code></dfn>;
 };
 
 </pre>
@@ -2314,10 +2379,10 @@ Otherwise, default <code>frame.timestamp</code> to null.</p>
    </ol>
    <h4 class="heading settled" data-level="9.2.3" id="videoframe-attributes"><span class="secno">9.2.3. </span><span class="content">Attributes</span><a class="self-link" href="#videoframe-attributes"></a></h4>
    <dl>
-    <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoFrame" data-dfn-type="attribute" data-export id="dom-videoframe-timestamp"><code>timestamp</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#idl-unsigned-long-long" id="ref-for-idl-unsigned-long-long①⑦">unsigned long long</a>, readonly, nullable</span>
+    <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoFrame" data-dfn-type="attribute" data-export id="dom-videoframe-timestamp"><code>timestamp</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#idl-unsigned-long-long" id="ref-for-idl-unsigned-long-long①⑧">unsigned long long</a>, readonly, nullable</span>
     <dd> The presentation timestamp, given in microseconds. The timestamp is copied
         from the EncodedVideoChunk corresponding to this VideoFrame. 
-    <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoFrame" data-dfn-type="attribute" data-export id="dom-videoframe-duration"><code>duration</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#idl-unsigned-long-long" id="ref-for-idl-unsigned-long-long①⑧">unsigned long long</a>, readonly, nullable</span>
+    <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoFrame" data-dfn-type="attribute" data-export id="dom-videoframe-duration"><code>duration</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#idl-unsigned-long-long" id="ref-for-idl-unsigned-long-long①⑨">unsigned long long</a>, readonly, nullable</span>
     <dd> The presentation duration, given in microseconds. The duration is copied
         from the EncodedVideoChunk corresponding to this VideoFrame. 
     <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoFrame" data-dfn-type="attribute" data-export id="dom-videoframe-format"><code>format</code></dfn>, <span> of type <a data-link-type="idl-name" href="#enumdef-pixelformat" id="ref-for-enumdef-pixelformat③">PixelFormat</a>, readonly</span>
@@ -2615,6 +2680,8 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
   <ul class="index">
    <li><a href="#dom-videoencoder-active-encoder-config-slot">[[active encoder config]]</a><span>, in §6.1</span>
    <li><a href="#dom-videoencoder-active-output-config-slot">[[active output config]]</a><span>, in §6.1</span>
+   <li><a href="#dom-avcbitstreamformat-annexb">"annexb"</a><span>, in §7.5.1.1</span>
+   <li><a href="#dom-avcbitstreamformat-annexb">annexb</a><span>, in §7.5.1.1</span>
    <li><a href="#audiodecoder">AudioDecoder</a><span>, in §3</span>
    <li><a href="#dictdef-audiodecoderconfig">AudioDecoderConfig</a><span>, in §7.2</span>
    <li><a href="#dom-audiodecoder-audiodecoder">AudioDecoder(init)</a><span>, in §3.2</span>
@@ -2627,6 +2694,16 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
    <li><a href="#dom-audioframe-audioframe">AudioFrame(init)</a><span>, in §9.1.2</span>
    <li><a href="#dictdef-audioframeinit">AudioFrameInit</a><span>, in §9.1</span>
    <li><a href="#callbackdef-audioframeoutputcallback">AudioFrameOutputCallback</a><span>, in §3</span>
+   <li><a href="#dom-avcbitstreamformat-avc">"avc"</a><span>, in §7.5.1.1</span>
+   <li><a href="#avc">AVC</a><span>, in §1</span>
+   <li>
+    avc
+    <ul>
+     <li><a href="#dom-videoencoderconfig-avc">dict-member for VideoEncoderConfig</a><span>, in §7.5</span>
+     <li><a href="#dom-avcbitstreamformat-avc">enum-value for AvcBitstreamFormat</a><span>, in §7.5.1.1</span>
+    </ul>
+   <li><a href="#enumdef-avcbitstreamformat">AvcBitstreamFormat</a><span>, in §7.5.1.1</span>
+   <li><a href="#dictdef-avcencoderconfig">AvcEncoderConfig</a><span>, in §7.5.1</span>
    <li><a href="#dom-videoencoderconfig-bitrate">bitrate</a><span>, in §7.5</span>
    <li>
     buffer
@@ -2857,7 +2934,12 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
      <li><a href="#dom-videodecoder-flush">method for VideoDecoder</a><span>, in §4.4</span>
      <li><a href="#dom-videoencoder-flush">method for VideoEncoder</a><span>, in §6.4</span>
     </ul>
-   <li><a href="#dom-videoframe-format">format</a><span>, in §9.2.3</span>
+   <li>
+    format
+    <ul>
+     <li><a href="#dom-videoframe-format">attribute for VideoFrame</a><span>, in §9.2.3</span>
+     <li><a href="#dom-avcencoderconfig-format">dict-member for AvcEncoderConfig</a><span>, in §7.5.1</span>
+    </ul>
    <li><a href="#dom-pixelformat-i420">"I420"</a><span>, in §9.4</span>
    <li><a href="#dom-pixelformat-i420">I420</a><span>, in §9.4</span>
    <li><a href="#injected-state">injected state</a><span>, in §2.2</span>
@@ -2897,11 +2979,13 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
    <li><a href="#output-encodedvideochunks">Output EncodedVideoChunks</a><span>, in §6.5</span>
    <li><a href="#output-videoframes">Output VideoFrames</a><span>, in §4.5</span>
    <li><a href="#dom-plane-parent-frame-slot">[[parent frame]]</a><span>, in §9.3.1</span>
+   <li><a href="#picture-parameter-set-pps">Picture Parameter Set (PPS)</a><span>, in §1</span>
    <li><a href="#enumdef-pixelformat">PixelFormat</a><span>, in §9.4</span>
    <li><a href="#plane">Plane</a><span>, in §9.3</span>
    <li><a href="#dom-plane-plane-buffer-slot">[[plane buffer]]</a><span>, in §9.3.1</span>
    <li><a href="#dictdef-planeinit">PlaneInit</a><span>, in §9.3</span>
    <li><a href="#dom-videoframe-planes">planes</a><span>, in §9.2.3</span>
+   <li><a href="#picture-parameter-set-pps">PPS</a><span>, in §1</span>
    <li><a href="#enqueues-a-control-message">Queue a control message</a><span>, in §2.2</span>
    <li><a href="#dom-plane-readinto">readInto(dst)</a><span>, in §9.3.3</span>
    <li>
@@ -2930,6 +3014,8 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
      <li><a href="#dom-audiodecoderconfig-samplerate">dict-member for AudioDecoderConfig</a><span>, in §7.2</span>
      <li><a href="#dom-audioencoderconfig-samplerate">dict-member for AudioEncoderConfig</a><span>, in §7.4</span>
     </ul>
+   <li><a href="#sequence-parameter-set-sps">Sequence Parameter Set (SPS)</a><span>, in §1</span>
+   <li><a href="#sequence-parameter-set-sps">SPS</a><span>, in §1</span>
    <li><a href="#dom-planeinit-src">src</a><span>, in §9.3</span>
    <li>
     state
@@ -3153,7 +3239,7 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
     <li><a href="#ref-for-idl-DOMString">7.2. AudioDecoderConfig</a> <a href="#ref-for-idl-DOMString①">(2)</a>
     <li><a href="#ref-for-idl-DOMString②">7.3. VideoDecoderConfig</a> <a href="#ref-for-idl-DOMString③">(2)</a>
     <li><a href="#ref-for-idl-DOMString④">7.4. AudioEncoderConfig</a> <a href="#ref-for-idl-DOMString⑤">(2)</a>
-    <li><a href="#ref-for-idl-DOMString⑥">7.5. VideoEncoderConfig</a>
+    <li><a href="#ref-for-idl-DOMString⑥">7.5. VideoEncoderConfig</a> <a href="#ref-for-idl-DOMString⑦">(2)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-encodingerror">
@@ -3299,15 +3385,15 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
   <aside class="dfn-panel" data-for="term-for-idl-unsigned-long-long">
    <a href="https://heycam.github.io/webidl/#idl-unsigned-long-long">https://heycam.github.io/webidl/#idl-unsigned-long-long</a><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-idl-unsigned-long-long">7.5. VideoEncoderConfig</a>
-    <li><a href="#ref-for-idl-unsigned-long-long①">8.1. EncodedAudioChunk Interface</a> <a href="#ref-for-idl-unsigned-long-long②">(2)</a>
-    <li><a href="#ref-for-idl-unsigned-long-long③">8.1.2. Attributes</a>
-    <li><a href="#ref-for-idl-unsigned-long-long④">8.2. EncodedVideoChunk Interface</a> <a href="#ref-for-idl-unsigned-long-long⑤">(2)</a> <a href="#ref-for-idl-unsigned-long-long⑥">(3)</a> <a href="#ref-for-idl-unsigned-long-long⑦">(4)</a>
-    <li><a href="#ref-for-idl-unsigned-long-long⑧">8.2.2. Attributes</a> <a href="#ref-for-idl-unsigned-long-long⑨">(2)</a>
-    <li><a href="#ref-for-idl-unsigned-long-long①⓪">9.1. AudioFrame Interface</a> <a href="#ref-for-idl-unsigned-long-long①①">(2)</a>
-    <li><a href="#ref-for-idl-unsigned-long-long①②">9.1.3. Attributes</a>
-    <li><a href="#ref-for-idl-unsigned-long-long①③">9.2. VideoFrame Interface</a> <a href="#ref-for-idl-unsigned-long-long①④">(2)</a> <a href="#ref-for-idl-unsigned-long-long①⑤">(3)</a> <a href="#ref-for-idl-unsigned-long-long①⑥">(4)</a>
-    <li><a href="#ref-for-idl-unsigned-long-long①⑦">9.2.3. Attributes</a> <a href="#ref-for-idl-unsigned-long-long①⑧">(2)</a>
+    <li><a href="#ref-for-idl-unsigned-long-long">7.5. VideoEncoderConfig</a> <a href="#ref-for-idl-unsigned-long-long①">(2)</a>
+    <li><a href="#ref-for-idl-unsigned-long-long②">8.1. EncodedAudioChunk Interface</a> <a href="#ref-for-idl-unsigned-long-long③">(2)</a>
+    <li><a href="#ref-for-idl-unsigned-long-long④">8.1.2. Attributes</a>
+    <li><a href="#ref-for-idl-unsigned-long-long⑤">8.2. EncodedVideoChunk Interface</a> <a href="#ref-for-idl-unsigned-long-long⑥">(2)</a> <a href="#ref-for-idl-unsigned-long-long⑦">(3)</a> <a href="#ref-for-idl-unsigned-long-long⑧">(4)</a>
+    <li><a href="#ref-for-idl-unsigned-long-long⑨">8.2.2. Attributes</a> <a href="#ref-for-idl-unsigned-long-long①⓪">(2)</a>
+    <li><a href="#ref-for-idl-unsigned-long-long①①">9.1. AudioFrame Interface</a> <a href="#ref-for-idl-unsigned-long-long①②">(2)</a>
+    <li><a href="#ref-for-idl-unsigned-long-long①③">9.1.3. Attributes</a>
+    <li><a href="#ref-for-idl-unsigned-long-long①④">9.2. VideoFrame Interface</a> <a href="#ref-for-idl-unsigned-long-long①⑤">(2)</a> <a href="#ref-for-idl-unsigned-long-long①⑥">(3)</a> <a href="#ref-for-idl-unsigned-long-long①⑦">(4)</a>
+    <li><a href="#ref-for-idl-unsigned-long-long①⑧">9.2.3. Attributes</a> <a href="#ref-for-idl-unsigned-long-long①⑨">(2)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-dom-rtcrtpsender-getcapabilities">
@@ -3405,6 +3491,10 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
    <dd>Anne van Kesteren; et al. <a href="https://html.spec.whatwg.org/multipage/">HTML Standard</a>. Living Standard. URL: <a href="https://html.spec.whatwg.org/multipage/">https://html.spec.whatwg.org/multipage/</a>
    <dt id="biblio-infra">[INFRA]
    <dd>Anne van Kesteren; Domenic Denicola. <a href="https://infra.spec.whatwg.org/">Infra Standard</a>. Living Standard. URL: <a href="https://infra.spec.whatwg.org/">https://infra.spec.whatwg.org/</a>
+   <dt id="biblio-iso14496-10">[ISO14496-10]
+   <dd><a href="https://www.iso.org/standard/75400.html">Information technology — Coding of audio-visual objects — Part 10: Advanced video coding</a>. December 2020. Published. URL: <a href="https://www.iso.org/standard/75400.html">https://www.iso.org/standard/75400.html</a>
+   <dt id="biblio-iso14496-15">[ISO14496-15]
+   <dd><a href="https://www.iso.org/standard/74429.html">Information technology — Coding of audio-visual objects — Part 15: Carriage of network abstraction layer (NAL) unit structured video in the ISO base media file format</a>. September 2019. Published. URL: <a href="https://www.iso.org/standard/74429.html">https://www.iso.org/standard/74429.html</a>
    <dt id="biblio-media-capabilities">[MEDIA-CAPABILITIES]
    <dd>Mounir Lamouri; Chris Cunningham; Vi Nguyen. <a href="https://www.w3.org/TR/media-capabilities/">Media Capabilities</a>. 30 January 2020. WD. URL: <a href="https://www.w3.org/TR/media-capabilities/">https://www.w3.org/TR/media-capabilities/</a>
    <dt id="biblio-media-source">[MEDIA-SOURCE]
@@ -3544,12 +3634,25 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
 
 
 <c- b>dictionary</c-> <a href="#dictdef-videoencoderconfig"><code><c- g>VideoEncoderConfig</c-></code></a> {
-  <c- b>required</c-> <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-DOMString"><c- b>DOMString</c-></a> <a data-type="DOMString " href="#dom-videoencoderconfig-codec"><code><c- g>codec</c-></code></a>;
-  <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-unsigned-long-long"><c- b>unsigned</c-> <c- b>long</c-> <c- b>long</c-></a> <a data-type="unsigned long long " href="#dom-videoencoderconfig-bitrate"><code><c- g>bitrate</c-></code></a>;
+  <c- b>required</c-> <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-DOMString"><c- b>DOMString</c-></a> <a class="idl-code" data-link-type="dict-member" data-type="DOMString " href="#dom-videoencoderconfig-codec"><c- g>codec</c-></a>;
+  <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-unsigned-long-long"><c- b>unsigned</c-> <c- b>long</c-> <c- b>long</c-></a> <a class="idl-code" data-link-type="dict-member" data-type="unsigned long long " href="#dom-videoencoderconfig-bitrate"><c- g>bitrate</c-></a>;
   <c- b>required</c-> <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-unsigned-long"><c- b>unsigned</c-> <c- b>long</c-></a> <a class="idl-code" data-link-type="dict-member" data-type="unsigned long " href="#dom-videoencoderconfig-cropwidth"><c- g>cropWidth</c-></a>;
   <c- b>required</c-> <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-unsigned-long"><c- b>unsigned</c-> <c- b>long</c-></a> <a class="idl-code" data-link-type="dict-member" data-type="unsigned long " href="#dom-videoencoderconfig-cropheight"><c- g>cropHeight</c-></a>;
   <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-unsigned-long"><c- b>unsigned</c-> <c- b>long</c-></a> <a class="idl-code" data-link-type="dict-member" data-type="unsigned long " href="#dom-videoencoderconfig-displaywidth"><c- g>displayWidth</c-></a>;
   <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-unsigned-long"><c- b>unsigned</c-> <c- b>long</c-></a> <a class="idl-code" data-link-type="dict-member" data-type="unsigned long " href="#dom-videoencoderconfig-displayheight"><c- g>displayHeight</c-></a>;
+
+  <a data-link-type="idl-name" href="#dictdef-avcencoderconfig"><c- n>AvcEncoderConfig</c-></a> <a class="idl-code" data-link-type="dict-member" data-type="AvcEncoderConfig " href="#dom-videoencoderconfig-avc"><c- g>avc</c-></a>;
+};
+
+
+<c- b>dictionary</c-> <a href="#dictdef-avcencoderconfig"><code><c- g>AvcEncoderConfig</c-></code></a> {
+  <a data-link-type="idl-name" href="#enumdef-avcbitstreamformat"><c- n>AvcBitstreamFormat</c-></a> <a class="idl-code" data-default="&quot;avc&quot;" data-link-type="dict-member" data-type="AvcBitstreamFormat " href="#dom-avcencoderconfig-format"><c- g>format</c-></a> = "avc";
+};
+
+
+<c- b>enum</c-> <a href="#enumdef-avcbitstreamformat"><code><c- g>AvcBitstreamFormat</c-></code></a> {
+  <a class="idl-code" data-link-type="enum-value" href="#dom-avcbitstreamformat-annexb"><c- s>"annexb"</c-></a>,
+  <a class="idl-code" data-link-type="enum-value" href="#dom-avcbitstreamformat-avc"><c- s>"avc"</c-></a>,
 };
 
 
@@ -3724,6 +3827,26 @@ data. See <a href="https://github.com/WICG/web-codecs/issues/80">#80</a>.<a href
     <li><a href="#ref-for-system-resources⑧">7.8. CodecState</a>
     <li><a href="#ref-for-system-resources⑨">9.1.4. Methods</a> <a href="#ref-for-system-resources①⓪">(2)</a>
     <li><a href="#ref-for-system-resources①①">9.2.4. Methods</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="avc">
+   <b><a href="#avc">#avc</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-avc">1. Definitions</a> <a href="#ref-for-avc①">(2)</a>
+    <li><a href="#ref-for-avc②">7.5. VideoEncoderConfig</a>
+    <li><a href="#ref-for-avc③">7.5.1. AvcEncoderConfig</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="picture-parameter-set-pps">
+   <b><a href="#picture-parameter-set-pps">#picture-parameter-set-pps</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-picture-parameter-set-pps">7.5.1.1. AvcBitstreamFormat</a> <a href="#ref-for-picture-parameter-set-pps①">(2)</a> <a href="#ref-for-picture-parameter-set-pps②">(3)</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="sequence-parameter-set-sps">
+   <b><a href="#sequence-parameter-set-sps">#sequence-parameter-set-sps</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-sequence-parameter-set-sps">7.5.1.1. AvcBitstreamFormat</a> <a href="#ref-for-sequence-parameter-set-sps①">(2)</a> <a href="#ref-for-sequence-parameter-set-sps②">(3)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="control-thread">
@@ -4157,6 +4280,7 @@ data. See <a href="https://github.com/WICG/web-codecs/issues/80">#80</a>.<a href
    <ul>
     <li><a href="#ref-for-dom-videoencoder-output-callback-slot">6.2. Constructors</a>
     <li><a href="#ref-for-dom-videoencoder-output-callback-slot①">6.5. Algorithms</a>
+    <li><a href="#ref-for-dom-videoencoder-output-callback-slot②">7.5.1.1. AvcBitstreamFormat</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dom-videoencoder-error-callback-slot">
@@ -4251,6 +4375,13 @@ data. See <a href="https://github.com/WICG/web-codecs/issues/80">#80</a>.<a href
     <li><a href="#ref-for-close-videoencoder">6.4. Methods</a> <a href="#ref-for-close-videoencoder①">(2)</a>
    </ul>
   </aside>
+  <aside class="dfn-panel" data-for="codec-string">
+   <b><a href="#codec-string">#codec-string</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-codec-string">7.2. AudioDecoderConfig</a>
+    <li><a href="#ref-for-codec-string①">7.5. VideoEncoderConfig</a>
+   </ul>
+  </aside>
   <aside class="dfn-panel" data-for="valid-codec-string">
    <b><a href="#valid-codec-string">#valid-codec-string</a></b><b>Referenced in:</b>
    <ul>
@@ -4305,6 +4436,7 @@ data. See <a href="https://github.com/WICG/web-codecs/issues/80">#80</a>.<a href
     <li><a href="#ref-for-dictdef-videodecoderconfig②">6.1. Internal Slots</a>
     <li><a href="#ref-for-dictdef-videodecoderconfig③">6.5. Algorithms</a> <a href="#ref-for-dictdef-videodecoderconfig④">(2)</a>
     <li><a href="#ref-for-dictdef-videodecoderconfig⑤">7.3. VideoDecoderConfig</a>
+    <li><a href="#ref-for-dictdef-videodecoderconfig⑥">7.5.1.1. AvcBitstreamFormat</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="valid-videodecoderconfig">
@@ -4324,6 +4456,7 @@ data. See <a href="https://github.com/WICG/web-codecs/issues/80">#80</a>.<a href
    <ul>
     <li><a href="#ref-for-dom-videodecoderconfig-description">6.5. Algorithms</a>
     <li><a href="#ref-for-dom-videodecoderconfig-description①">7.3. VideoDecoderConfig</a>
+    <li><a href="#ref-for-dom-videodecoderconfig-description②">7.5.1.1. AvcBitstreamFormat</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dom-videodecoderconfig-codedwidth">
@@ -4414,16 +4547,22 @@ data. See <a href="https://github.com/WICG/web-codecs/issues/80">#80</a>.<a href
     <li><a href="#ref-for-dictdef-videoencoderconfig③">7.5. VideoEncoderConfig</a>
    </ul>
   </aside>
-  <aside class="dfn-panel" data-for="dom-videoencoderconfig-codec">
-   <b><a href="#dom-videoencoderconfig-codec">#dom-videoencoderconfig-codec</a></b><b>Referenced in:</b>
-   <ul>
-    <li><a href="#ref-for-dom-videoencoderconfig-codec">7.5. VideoEncoderConfig</a>
-   </ul>
-  </aside>
   <aside class="dfn-panel" data-for="valid-videoencoderconfig">
    <b><a href="#valid-videoencoderconfig">#valid-videoencoderconfig</a></b><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-valid-videoencoderconfig">6.4. Methods</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="dom-videoencoderconfig-codec">
+   <b><a href="#dom-videoencoderconfig-codec">#dom-videoencoderconfig-codec</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-dom-videoencoderconfig-codec">7.5. VideoEncoderConfig</a> <a href="#ref-for-dom-videoencoderconfig-codec①">(2)</a> <a href="#ref-for-dom-videoencoderconfig-codec②">(3)</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="dom-videoencoderconfig-bitrate">
+   <b><a href="#dom-videoencoderconfig-bitrate">#dom-videoencoderconfig-bitrate</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-dom-videoencoderconfig-bitrate">7.5. VideoEncoderConfig</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dom-videoencoderconfig-cropwidth">
@@ -4448,6 +4587,43 @@ data. See <a href="https://github.com/WICG/web-codecs/issues/80">#80</a>.<a href
    <b><a href="#dom-videoencoderconfig-displayheight">#dom-videoencoderconfig-displayheight</a></b><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-dom-videoencoderconfig-displayheight">7.5. VideoEncoderConfig</a> <a href="#ref-for-dom-videoencoderconfig-displayheight①">(2)</a> <a href="#ref-for-dom-videoencoderconfig-displayheight②">(3)</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="dom-videoencoderconfig-avc">
+   <b><a href="#dom-videoencoderconfig-avc">#dom-videoencoderconfig-avc</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-dom-videoencoderconfig-avc">7.5. VideoEncoderConfig</a> <a href="#ref-for-dom-videoencoderconfig-avc①">(2)</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="dictdef-avcencoderconfig">
+   <b><a href="#dictdef-avcencoderconfig">#dictdef-avcencoderconfig</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-dictdef-avcencoderconfig">7.5. VideoEncoderConfig</a> <a href="#ref-for-dictdef-avcencoderconfig①">(2)</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="dom-avcencoderconfig-format">
+   <b><a href="#dom-avcencoderconfig-format">#dom-avcencoderconfig-format</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-dom-avcencoderconfig-format">7.5.1. AvcEncoderConfig</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="enumdef-avcbitstreamformat">
+   <b><a href="#enumdef-avcbitstreamformat">#enumdef-avcbitstreamformat</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-enumdef-avcbitstreamformat">7.5.1. AvcEncoderConfig</a> <a href="#ref-for-enumdef-avcbitstreamformat①">(2)</a> <a href="#ref-for-enumdef-avcbitstreamformat②">(3)</a>
+    <li><a href="#ref-for-enumdef-avcbitstreamformat③">7.5.1.1. AvcBitstreamFormat</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="dom-avcbitstreamformat-annexb">
+   <b><a href="#dom-avcbitstreamformat-annexb">#dom-avcbitstreamformat-annexb</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-dom-avcbitstreamformat-annexb">7.5.1.1. AvcBitstreamFormat</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="dom-avcbitstreamformat-avc">
+   <b><a href="#dom-avcbitstreamformat-avc">#dom-avcbitstreamformat-avc</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-dom-avcbitstreamformat-avc">7.5.1.1. AvcBitstreamFormat</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="equal-dictionaries">
@@ -4583,7 +4759,8 @@ data. See <a href="https://github.com/WICG/web-codecs/issues/80">#80</a>.<a href
     <li><a href="#ref-for-encodedvideochunk③">6.1. Internal Slots</a>
     <li><a href="#ref-for-encodedvideochunk④">6.5. Algorithms</a>
     <li><a href="#ref-for-encodedvideochunk⑤">7.5. VideoEncoderConfig</a> <a href="#ref-for-encodedvideochunk⑥">(2)</a> <a href="#ref-for-encodedvideochunk⑦">(3)</a> <a href="#ref-for-encodedvideochunk⑧">(4)</a>
-    <li><a href="#ref-for-encodedvideochunk⑨">8.2.1. Constructors</a>
+    <li><a href="#ref-for-encodedvideochunk⑨">7.5.1. AvcEncoderConfig</a>
+    <li><a href="#ref-for-encodedvideochunk①⓪">8.2.1. Constructors</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dictdef-encodedvideochunkinit">
