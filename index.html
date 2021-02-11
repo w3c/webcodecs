@@ -720,7 +720,6 @@ frames from MediaStreamStracks.</p>
        </ol>
       <li><a href="#pixel-format"><span class="secno">9.4</span> <span class="content">Pixel Format</span></a>
       <li><a href="#raw-media-algorithms"><span class="secno">9.5</span> <span class="content">Algorithms</span></a>
-      <li><a href="#clone-frame-algo"><span class="secno">9.6</span> <span class="content"><span>Clone Frame</span> (with <var>frame</var>)</span></a>
      </ol>
     <li><a href="#security-considerations"><span class="secno">10</span> <span class="content">Security Considerations</span></a>
     <li><a href="#privacy-considerations"><span class="secno">11</span> <span class="content">Privacy Considerations</span></a>
@@ -2555,22 +2554,23 @@ number and order of the planes.
     <dd> Planar 4:2:0 YUV. 
    </dl>
    <h3 class="heading settled" data-level="9.5" id="raw-media-algorithms"><span class="secno">9.5. </span><span class="content">Algorithms</span><a class="self-link" href="#raw-media-algorithms"></a></h3>
-   <h3 class="heading settled" data-level="9.6" id="clone-frame-algo"><span class="secno">9.6. </span><span class="content"><dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="clone-frame">Clone Frame</dfn> (with <var>frame</var>)</span><a class="self-link" href="#clone-frame-algo"></a></h3>
-   <ol>
-    <li data-md>
-     <p>Let <var>cloneFrame</var> be a new object of the same type as frame (either <code class="idl"><a data-link-type="idl" href="#audioframe" id="ref-for-audioframe⑤">AudioFrame</a></code> or <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe②③">VideoFrame</a></code>).</p>
-    <li data-md>
-     <p>Initialize each attribute and internal slot of clone with a copy of the value
-from the corresponding attribute of this frame.</p>
-   </ol>
-   <p class="note" role="note"><span>NOTE:</span> User Agents are encouraged to avoid expensive copies of large objects
-    (for instance, <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe②④">VideoFrame</a></code> pixel data). Frame types are immutable, so the
-    above step may be implemented using memory sharing techniques such as
-    reference counting.</p>
-   <ol start="3">
-    <li data-md>
-     <p>Return <var>cloneFrame</var>.</p>
-   </ol>
+   <dl>
+    <dt><dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="clone-frame">Clone Frame</dfn> (with <var>frame</var>)
+    <dd>
+     <ol>
+      <li data-md>
+       <p>Let <var>cloneFrame</var> be a new object of the same type as frame (either <code class="idl"><a data-link-type="idl" href="#audioframe" id="ref-for-audioframe⑤">AudioFrame</a></code> or <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe②③">VideoFrame</a></code>).</p>
+      <li data-md>
+       <p>Initialize each attribute and internal slot of clone with a copy of the
+value from the corresponding attribute of this frame.</p>
+       <p class="note" role="note"><span>NOTE:</span> User Agents are encouraged to avoid expensive copies of large
+    objects (for instance, <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe②④">VideoFrame</a></code> pixel data). Frame types are
+    immutable, so the above step may be implemented using memory sharing
+    techniques such as reference counting.</p>
+      <li data-md>
+       <p>Return <var>cloneFrame</var>.</p>
+     </ol>
+   </dl>
    <h2 class="heading settled" data-level="10" id="security-considerations"><span class="secno">10. </span><span class="content">Security Considerations</span><a class="self-link" href="#security-considerations"></a></h2>
    <p>The primary security impact is that features of this API make it easier for an
 attacker to exploit vulnerabilities in the underlying platform codecs.
@@ -2712,7 +2712,7 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
      <li><a href="#dom-audioframeinit-buffer">dict-member for AudioFrameInit</a><span>, in §9.1</span>
     </ul>
    <li><a href="#dom-videoframe-clone">clone()</a><span>, in §9.2.4</span>
-   <li><a href="#clone-frame">Clone Frame</a><span>, in §9.6</span>
+   <li><a href="#clone-frame">Clone Frame</a><span>, in §9.5</span>
    <li>
     close()
     <ul>
@@ -4842,7 +4842,7 @@ data. See <a href="https://github.com/WICG/web-codecs/issues/80">#80</a>.<a href
     <li><a href="#ref-for-audioframe②">3.5. Algorithms</a>
     <li><a href="#ref-for-audioframe③">5. AudioEncoder Interface</a>
     <li><a href="#ref-for-audioframe④">9.1.2. Constructors</a>
-    <li><a href="#ref-for-audioframe⑤">9.6. Clone Frame (with frame)</a>
+    <li><a href="#ref-for-audioframe⑤">9.5. Algorithms</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dictdef-audioframeinit">
@@ -4898,7 +4898,7 @@ data. See <a href="https://github.com/WICG/web-codecs/issues/80">#80</a>.<a href
     <li><a href="#ref-for-videoframe①④">9.2.4. Methods</a> <a href="#ref-for-videoframe①⑤">(2)</a> <a href="#ref-for-videoframe①⑥">(3)</a>
     <li><a href="#ref-for-videoframe①⑦">9.3. Plane Interface</a> <a href="#ref-for-videoframe①⑧">(2)</a> <a href="#ref-for-videoframe①⑨">(3)</a> <a href="#ref-for-videoframe②⓪">(4)</a> <a href="#ref-for-videoframe②①">(5)</a>
     <li><a href="#ref-for-videoframe②②">9.3.1. Internal Slots</a>
-    <li><a href="#ref-for-videoframe②③">9.6. Clone Frame (with frame)</a> <a href="#ref-for-videoframe②④">(2)</a>
+    <li><a href="#ref-for-videoframe②③">9.5. Algorithms</a> <a href="#ref-for-videoframe②④">(2)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dictdef-videoframeinit">
