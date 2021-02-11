@@ -2017,19 +2017,24 @@ enum PixelFormat {
 
 Algorithms{#raw-media-algorithms}
 ---------------------------------
-<h3 id='clone-frame-algo'><dfn>Clone Frame</dfn> (with |frame|)</h3>
+<dl>
+  <dt><dfn>Clone Frame</dfn> (with |frame|)</dt>
+  <dd>
+    1. Let |cloneFrame| be a new object of the same type as frame (either
+        {{AudioFrame}} or {{VideoFrame}}).
+    2. Initialize each attribute and internal slot of clone with a copy of the
+        value from the corresponding attribute of this frame.
 
-1. Let |cloneFrame| be a new object of the same type as frame (either
-    {{AudioFrame}} or {{VideoFrame}}).
-2. Initialize each attribute and internal slot of clone with a copy of the value
-    from the corresponding attribute of this frame.
+        NOTE: User Agents are encouraged to avoid expensive copies of large
+            objects (for instance, {{VideoFrame}} pixel data). Frame types are
+            immutable, so the above step may be implemented using memory sharing
+            techniques such as reference counting.
 
-NOTE: User Agents are encouraged to avoid expensive copies of large objects
-    (for instance, {{VideoFrame}} pixel data). Frame types are immutable, so the
-    above step may be implemented using memory sharing techniques such as
-    reference counting.
+    3. Return |cloneFrame|.
 
-3. Return |cloneFrame|.
+  </dd>
+</dl>
+
 
 
 Security Considerations{#security-considerations}
