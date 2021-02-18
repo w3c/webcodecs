@@ -1171,7 +1171,7 @@ run these steps:
         present.
   </dd>
 
-  <dt><dfn dict-member for=VideoDecoderConfig>acceleration</dfn></dt>
+  <dt><dfn dict-member for=VideoDecoderConfig>hardwareAcceleration</dfn></dt>
   <dd>
     Configures hardware acceleration for this codec. See
     {{HardwareAcceleration}}.
@@ -1304,7 +1304,7 @@ To check if a {{VideoEncoderConfig}} is a <dfn>valid VideoEncoderConfig</dfn>,
   <dt><dfn dict-member for=VideoEncoderConfig>avc</dfn></dt>
   <dd>Contains codec specific configuration options for the AVC (H.264) codec.</dd>
 
-  <dt><dfn dict-member for=VideoEncoderConfig>acceleration</dfn></dt>
+  <dt><dfn dict-member for=VideoEncoderConfig>hardwareAcceleration</dfn></dt>
   <dd>
     Configures hardware acceleration for this codec. See
     {{HardwareAcceleration}}.
@@ -1379,7 +1379,41 @@ enum HardwareAcceleration {
 </pre>
 
 When supported, hardware acceleration offloads encoding or decoding to
-specialized hardware, reducing codec CPU usage and power consumption.
+specialized hardware.
+
+<div class='note'>
+  NOTE: Most authors will be best served by using the default of
+  {{HardwareAcceleration/allow}}. This gives the user agent flexibility to
+  optimize based on its knowledge of the system and configuration. A common
+  strategy will be to prioritize hardware acceleration at higher resolutions
+  with a fallback to software codecs if hardware acceleration fails.
+
+  Authors should carefully weigh the tradeoffs setting a hardware acceleration
+  preference. The precise trade-offs will be device-specific, but authors should
+  generally expect the following:
+
+  * Setting a value of {{HardwareAcceleration/require}} may significantly
+      restrict what configurations are supported. It may occur that the user's
+      device does not offer acceleration for any codec, or only for the most
+      common profiles of older codecs.
+  * Hardware acceleration does not simply imply faster encoding / decoding.
+      Hardware acceleration often has higher startup latency but more consistent
+      throughput performance. Acceleration will generally reduce CPU load.
+  * For decoding, hardware acceleration is often less robust to inputs that are
+      mislabeled or violate the relevant codec specification.
+  * Hardware acceleration will often be more power efficient than purely
+      software based codecs.
+  * For lower resolution content, the overhead added by hardware acceleration
+      may yield decreased performance and power efficiency compared to purely
+      software based codecs.
+
+  Given these tradeoffs, a good example of using "require" would be if an author
+  intends to provide their own software based fallback via WebAssembly.
+
+  Alternatively, a good example of using "disallow" would be if an author is
+  especially sensitive to the higher startup latency or decreased robustness
+  generally associated with hardware acceleration.
+</div>
 
 <dl>
   <dt><dfn enum-value for=HardwareAcceleration>allow</dfn></dt>
