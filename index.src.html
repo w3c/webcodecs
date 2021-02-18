@@ -1483,13 +1483,13 @@ EncodedAudioChunk Interface {#encodedaudiochunk-interface}
 interface EncodedAudioChunk {
   constructor(EncodedAudioChunkInit init);
   readonly attribute EncodedAudioChunkType type;
-  readonly attribute DOMHighResTimeStamp timestamp;
+  readonly attribute unsigned long long timestamp;  // microseconds
   readonly attribute ArrayBuffer data;
 };
 
 dictionary EncodedAudioChunkInit {
   required EncodedAudioChunkType type;
-  required DOMHighResTimeStamp timestamp;
+  required unsigned long long timestamp;
   required BufferSource data;
 };
 
@@ -1516,7 +1516,7 @@ enum EncodedAudioChunkType {
   <dd>Describes whether the chunk is a key frame.</dd>
 
   <dt><dfn attribute for=EncodedAudioChunk>timestamp</dfn></dt>
-  <dd>The presentation timestamp, given in floating-point milliseconds.</dd>
+  <dd>The presentation timestamp, given in microseconds.</dd>
 
   <dt><dfn attribute for=EncodedAudioChunk>data</dfn></dt>
   <dd>A sequence of bytes containing encoded audio data.</dd>
@@ -1530,15 +1530,15 @@ EncodedVideoChunk Interface{#encodedvideochunk-interface}
 interface EncodedVideoChunk {
   constructor(EncodedVideoChunkInit init);
   readonly attribute EncodedVideoChunkType type;
-  readonly attribute DOMHighResTimeStamp timestamp;
-  readonly attribute DOMHighResTimeStamp? duration;
+  readonly attribute unsigned long long timestamp;  // microseconds
+  readonly attribute unsigned long long? duration;  // microseconds
   readonly attribute ArrayBuffer data;
 };
 
 dictionary EncodedVideoChunkInit {
   required EncodedVideoChunkType type;
-  required DOMHighResTimeStamp timestamp;
-  DOMHighResTimeStamp duration;
+  required unsigned long long timestamp;
+  unsigned long long duration;
   required BufferSource data;
 };
 
@@ -1567,10 +1567,10 @@ enum EncodedVideoChunkType {
   <dd>Describes whether the chunk is a key frame or not.</dd>
 
   <dt><dfn attribute for=EncodedVideoChunk>timestamp</dfn></dt>
-  <dd>The presentation timestamp, given in floating-point milliseconds.</dd>
+  <dd>The presentation timestamp, given in microseconds.</dd>
 
   <dt><dfn attribute for=EncodedVideoChunk>duration</dfn></dt>
-  <dd>The presentation duration, given in floating-point milliseconds.</dd>
+  <dd>The presentation duration, given in microseconds.</dd>
 
   <dt><dfn attribute for=EncodedVideoChunk>data</dfn></dt>
   <dd>A sequence of bytes containing encoded video data.</dd>
@@ -1590,13 +1590,13 @@ AudioFrame Interface {#audioframe-interface}
 [Exposed=(Window,DedicatedWorker)]
 interface AudioFrame {
   constructor(AudioFrameInit init);
-  readonly attribute DOMHighResTimeStamp timestamp;
+  readonly attribute unsigned long long timestamp;
   readonly attribute AudioBuffer? buffer;
   undefined close();
 };
 
 dictionary AudioFrameInit {
-  required DOMHighResTimeStamp timestamp;
+  required unsigned long long timestamp;
   required AudioBuffer buffer;
 };
 </xmp>
@@ -1626,7 +1626,7 @@ dictionary AudioFrameInit {
 ### Attributes ###{#audioframe-attributes}
 <dl>
   <dt><dfn attribute for=AudioFrame>timestamp</dfn></dt>
-  <dd>The presentation timestamp, given in floating-point milliseconds.</dd>
+  <dd>The presentation timestamp, given in microseconds.</dd>
 
   <dt><dfn attribute for=AudioFrame>buffer</dfn></dt>
   <dd>The buffer containing decoded audio data.</dd>
@@ -1668,8 +1668,8 @@ interface VideoFrame {
   readonly attribute unsigned long cropHeight;
   readonly attribute unsigned long displayWidth;
   readonly attribute unsigned long displayHeight;
-  readonly attribute DOMHighResTimeStamp? duration;
-  readonly attribute DOMHighResTimeStamp? timestamp;
+  readonly attribute unsigned long long? duration;
+  readonly attribute unsigned long long? timestamp;
 
   undefined destroy();
   VideoFrame clone();
@@ -1688,8 +1688,8 @@ dictionary VideoFrameInit {
   unsigned long cropHeight;
   unsigned long displayWidth;
   unsigned long displayHeight;
-  DOMHighResTimeStamp duration;
-  DOMHighResTimeStamp timestamp;
+  unsigned long long duration;
+  unsigned long long timestamp;
 };
 </xmp>
 </pre>
@@ -1805,12 +1805,12 @@ NOTE: this section needs work. Current wording assumes a VideoFrame can always
 <dl>
   <dt><dfn attribute for=VideoFrame>timestamp</dfn></dt>
   <dd>
-    The presentation timestamp, given in floating-point milliseconds. The timestamp is copied
+    The presentation timestamp, given in microseconds. The timestamp is copied
         from the EncodedVideoChunk corresponding to this VideoFrame.
   </dd>
   <dt><dfn attribute for=VideoFrame>duration</dfn></dt>
   <dd>
-    The presentation duration, given in floating-point milliseconds. The duration is copied
+    The presentation duration, given in microseconds. The duration is copied
         from the EncodedVideoChunk corresponding to this VideoFrame.
   </dd>
   <dt><dfn attribute for=VideoFrame>format</dfn></dt>
