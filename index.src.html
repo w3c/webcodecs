@@ -10,9 +10,14 @@ Editor: Chris Cunningham, w3cid 114832, Google Inc. https://google.com/
 Editor: Paul Adenot, w3cid 62410, Mozilla https://www.mozilla.org/
 Editor: Bernard Aboba, w3cid 65611, Microsoft Corporation https://www.microsoft.com/
 
-Abstract: This specification defines interfaces for encoding and decoding audio
-Abstract: and video. It also includes an interface for retrieving raw video
-Abstract: frames from MediaStreamStracks.
+Abstract: This specification defines interfaces to codecs for encoding and
+    decoding of audio and video.
+
+    This specification does not specify or require any particular codec or
+    method of encoding or decoding. The purpose of this specification is to
+    provide JavaScript interfaces to implementations of existing codec
+    technology developed elsewhere. Implementers may support any combination of
+    codecs or none at all.
 
 Markup Shorthands:css no, markdown yes, dfn yes
 !Participate: <a href="https://github.com/wicg/web-codecs">Git Repository.</a>
@@ -65,6 +70,16 @@ spec: media-capabilities; urlPrefix: https://w3c.github.io/media-capabilities/#
     type: attribute; text: powerEfficient; url: dom-mediacapabilitiesinfo-powerefficient
 </pre>
 
+<pre class='biblio'>
+{
+  "CODEC-REGISTRY": {
+      "href": "https://wicg.github.io/web-codecs/codec_registry.html",
+      "title": "WebCodecs Codec Registry",
+      "publisher": "WICG"
+  }
+}
+</pre>
+
 
 Definitions {#definitions}
 ==========================
@@ -90,18 +105,6 @@ Definitions {#definitions}
     objects. Such resources may be quickly exhuasted and should be released
     immediately when no longer in use.
 
-: <dfn lt="AVC">Advanced Video Coding (AVC)</dfn>
-:: Also known as H.264. Refers to the methods of video compression as defined by
-    [[!iso14496-10]].
-
-: <dfn lt="Picture Parameter Set (PPS)|PPS">Picture Parameter Set (PPS)</dfn>
-:: A set of parameters describing <a>AVC</a> coded pictures as defined by
-    [[!iso14496-10]].
-
-: <dfn lt="Sequence Parameter Set (SPS)|SPS">Sequence Parameter Set (SPS)</dfn>
-:: A set of parameters describing a sequence of <a>AVC</a> coded video as
-    defined by [[!iso14496-10]].
-
 Codec Processing Model {#codec-processing-model}
 ================================================
 
@@ -110,11 +113,11 @@ Background {#processing-model-background}
 
 This section is non-normative.
 
-The codec interfaces defined by the specification designed such that new codec
-tasks may be scheduled while previous tasks are still pending. For example, web
-authors may call `decode()` without waiting for a previous `decode()` to
-complete. This is achieved by offloading underlying codec tasks to a separate
-thread for parallel execution.
+The codec interfaces defined by the specification are designed such that new
+codec tasks may be scheduled while previous tasks are still pending. For
+example, web authors may call `decode()` without waiting for a previous
+`decode()` to complete. This is achieved by offloading underlying codec tasks to
+a separate thread for parallel execution.
 
 This section describes threading behaviors as they are visible from the
 perspective of web authors. Implementers may choose to use more or less threads
@@ -247,9 +250,10 @@ Methods {#audiodecoder-methods}
     [=Enqueues a control message=] to configure the audio decoder for decoding
     chunks as described by |config|.
 
-    NOTE: Authors should first check support by calling
-        {{AudioDecoder/isConfigSupported()}} with |config| to avoid error paths
-        in the steps below.
+    NOTE: This method will trigger a {{NotSupportedError}} if the user agent
+        does not support |config|. Authors should first check support by calling
+        {{AudioDecoder/isConfigSupported()}} with |config|. User agents are not
+        required to support any particular codec type or configuration.
 
     When invoked, run these steps:
     1. If |config| is not a [=valid AudioDecoderConfig=], throw a
@@ -475,9 +479,10 @@ Methods {#videodecoder-methods}
     [=Enqueues a control message=] to configure the video decoder for decoding
     chunks as described by |config|.
 
-    NOTE: Authors should first check support by calling
-        {{VideoDecoder/isConfigSupported()}} with |config| to avoid error paths
-        in the steps below.
+    NOTE: This method will trigger a {{NotSupportedError}} if the user agent
+        does not support |config|. Authors should first check support by calling
+        {{VideoDecoder/isConfigSupported()}} with |config|. User agents are not
+        required to support any particular codec type or configuration.
 
     When invoked, run these steps:
     1. If |config| is not a [=valid VideoDecoderConfig=], throw a
@@ -721,9 +726,10 @@ Methods {#audioencoder-methods}
     [=Enqueues a control message=] to configure the audio encoder for
     decoding chunks as described by |config|.
 
-    NOTE: Authors should first check support by calling
-        {{AudioEncoder/isConfigSupported()}} with |config| to avoid error paths
-        in the steps below.
+    NOTE: This method will trigger a {{NotSupportedError}} if the user agent
+        does not support |config|. Authors should first check support by calling
+        {{AudioEncoder/isConfigSupported()}} with |config|. User agents are not
+        required to support any particular codec type or configuration.
 
     When invoked, run these steps:
     1. If |config| is not a [=valid AudioEncoderConfig=], throw a
@@ -971,9 +977,10 @@ Methods {#videoencoder-methods}
     [=Enqueues a control message=] to configure the video encoder for
     decoding chunks as described by |config|.
 
-    NOTE: Authors should first check support by calling
-        {{VideoEncoder/isConfigSupported()}} with |config| to avoid error paths
-        in the steps below.
+    NOTE: This method will trigger a {{NotSupportedError}} if the user agent
+        does not support |config|. Authors should first check support by calling
+        {{VideoEncoder/isConfigSupported()}} with |config|. User agents are not
+        required to support any particular codec type or configuration.
 
     When invoked, run these steps:
     1. If |config| is not a [=valid VideoEncoderConfig=], throw a
@@ -1131,7 +1138,9 @@ Algorithms {#videoencoder-algorithms}
 
                 NOTE: This includes supplying the
                     {{VideoDecoderConfig/description}} to describe codec
-                    specific "extradata" like the avcC bytes for AVC.
+                    specific "extradata", the use of which may be further
+                    described in codec registrations listed in the
+                    [[CODEC-REGISTRY]].
         3. If |output_config| and {{VideoEncoder/[[active output config]]}} are
             <a>equal dictionaries</a>, set |output_config| to null. Otherwise,
             set {{VideoEncoder/[[active output config]]}} to |output_config|.
@@ -1317,63 +1326,24 @@ dictionary VideoEncoderSupport {
 
 <dfn export>Codec String</dfn>{#config-codec-string}
 ----------------------------------------------------
-In other media specifications, codec strings historically accompanied a
-    [=MIME type=] as the "codecs=" parameter
-    ({{MediaSource/isTypeSupported()}}, {{HTMLMediaElement/canPlayType()}})
-    [[RFC6381]]. In this specification, encoded media is not containerized; hence,
-    only the value of the codecs parameter is accepted.
+A codec string describes a given codec format to be used for encoding or
+decoding.
 
 A <dfn>valid codec string</dfn> must meet the following conditions.
 1. Is valid per the relevant codec specification (see examples below).
-
 2. It describes a single codec.
-
-NOTE: Not a comma separated list.
-
 3. It is unambiguous about codec profile and level for codecs that define these
     concepts.
 
+NOTE: In other media specifications, codec strings historically accompanied a
+    [=MIME type=] as the "codecs=" parameter
+    ({{MediaSource/isTypeSupported()}}, {{HTMLMediaElement/canPlayType()}})
+    [[RFC6381]]. In this specification, encoded media is not containerized;
+    hence, only the value of the codecs parameter is accepted.
 
-<div class='note'>
-  NOTE: There is no unified specification for codec strings. Each codec has its
-  own unique string format, specified by the authors of the codec. Relevant
-  specifications include:
-
-  * h264, aac - [[RFC6381]]
-  * vp9 -
-      <a href="https://www.webmproject.org/vp9/mp4/#codecs-parameter-string">
-        https://www.webmproject.org/vp9/mp4/#codecs-parameter-string
-      </a>
-  * hevc -
-      <a href="https://www.iso.org/standard/74429.html">
-        ISO IEC 14496-15 dated 2012 or newer in the Annex E.3
-      </a>
-  * av1 -
-      <a href="https://aomediacodec.github.io/av1-isobmff/#codecsparam">
-        https://aomediacodec.github.io/av1-isobmff/#codecsparam
-      </a>
-
-</div>
-
-<div class='example'>
-Valid examples include:<br>
-  * 'vp8'
-  * 'vp09.00.10.08'
-  * 'avc1.4D401E',
-  * 'opus',
-  * 'mp4a.40.2',
-  * 'flac'
-
-Invalid examples include:<br>
-  * 'video/webm; codecs="vp8"' (invalid to supply full mimetype; valid as just
-        'vp8')<br>
-  * 'codecs="opus"' (invalid to include codecs= prefix)<br>
-  * ‘flac,vorbis’ (describes more than one codec)<br>
-  * ‘vp9’ (ambiguous about profile and level)<br>
-  * 'video/mp4' (describes a container, not a codec)<br>
-
-</div>
-
+The format and semantics for codec strings are defined by codec registrations
+listed in the [[CODEC-REGISTRY]]. A compliant implementation may support any
+combination of codec registrations or none at all.
 
 AudioDecoderConfig{#audio-decoder-config}
 -----------------------------------------
@@ -1407,7 +1377,9 @@ To check if an {{AudioDecoderConfig}} is a <dfn>valid AudioDecoderConfig</dfn>,
   <dd>
     A sequence of codec specific bytes, commonly known as extradata.
 
-    NOTE: For example, the vorbis "code book".
+    NOTE: The registrations in the [[CODEC-REGISTRY]] describe whether/how to
+        populate this sequence, corresponding to the provided
+        {{AudioDecoderConfig/codec}}.
   </dd>
 </dl>
 
@@ -1456,7 +1428,9 @@ run these steps:
   <dd>
     A sequence of codec specific bytes, commonly known as extradata.
 
-    NOTE: Examples include the VP9 vpcC bytes or the AVC avcC bytes.
+    NOTE: The registrations in the [[CODEC-REGISTRY]] may describe whether/how
+        to populate this sequence, corresponding to the provided
+        {{VideoDecoderConfig/codec}}.
   </dd>
 
   <dt><dfn dict-member for=VideoDecoderConfig>codedWidth</dfn></dt>
@@ -1527,6 +1501,9 @@ dictionary AudioEncoderConfig {
 </xmp>
 </pre>
 
+NOTE: Codec-specific extensions to {{AudioEncoderConfig}} may be defined by the
+    registrations in the [[CODEC-REGISTRY]].
+
 To check if an {{AudioEncoderConfig}} is a <dfn>valid AudioEncoderConfig</dfn>,
 run these steps:
 1. If {{AudioEncoderConfig/codec}} is not a <a>valid codec string</a>, return
@@ -1557,11 +1534,12 @@ dictionary VideoEncoderConfig {
   unsigned long displayWidth;
   unsigned long displayHeight;
   HardwareAcceleration hardwareAcceleration = "allow";
-
-  AvcEncoderConfig avc;
 };
 </xmp>
 </pre>
+
+NOTE: Codec-specific extensions to {{VideoEncoderConfig}} may be defined by the
+    registrations in the [[CODEC-REGISTRY]].
 
 To check if a {{VideoEncoderConfig}} is a <dfn>valid VideoEncoderConfig</dfn>,
     run these steps:
@@ -1571,8 +1549,6 @@ To check if a {{VideoEncoderConfig}} is a <dfn>valid VideoEncoderConfig</dfn>,
     = 0, return `false`.
 3. If {{VideoEncoderConfig/displayWidth}} = 0 or
     {{VideoEncoderConfig/displayHeight}} = 0, return `false`.
-4. If {{VideoEncoderConfig/avc}} is present, but {{VideoEncoderConfig/codec}}
-    does not describe the <a>AVC</a> codec, per [[RFC6381]], return `false`.
 4. Return `true`.
 
 <dl>
@@ -1637,69 +1613,11 @@ To check if a {{VideoEncoderConfig}} is a <dfn>valid VideoEncoderConfig</dfn>,
 </div>
 
 <dl>
-  <dt><dfn dict-member for=VideoEncoderConfig>avc</dfn></dt>
-  <dd>Contains codec specific configuration options for the AVC (H.264) codec.</dd>
-
   <dt><dfn dict-member for=VideoEncoderConfig>hardwareAcceleration</dfn></dt>
   <dd>
     Configures hardware acceleration for this codec. See
     {{HardwareAcceleration}}.
   </dd>
-</dl>
-
-### AvcEncoderConfig ### {#avc-encoder-config}
-<pre class='idl'>
-<xmp>
-dictionary AvcEncoderConfig {
-  AvcBitstreamFormat format = "avc";
-};
-</xmp>
-</pre>
-
-<dl>
-  <dt><dfn dict-member for=AvcEncoderConfig>format</dfn></dt>
-  <dd>
-    Configures the format of output <a>AVC</a> {{EncodedVideoChunk}}s. See
-    {{AvcBitstreamFormat}}.
-  </dd>
-</dl>
-
-#### AvcBitstreamFormat #### {#avc-bitstream-format}
-<pre class='idl'>
-<xmp>
-enum AvcBitstreamFormat {
-  "annexb",
-  "avc",
-};
-</xmp>
-</pre>
-The {{AvcBitstreamFormat}} determines the location of <a>Sequence Parameter
-Set (SPS)</a> and <a>Picture Parameter Set (PPS)</a> data, and mechanisms for
-packaging the bitstream.
-
-<dl>
-  <dt><dfn enum-value for=AvcBitstreamFormat>annexb</dfn></dt>
-  <dd>
-    This format is as described by [[!iso14496-10]], Annex B. Notably,
-    <a>SPS</a> and <a>PPS</a> data are included periodically throughout the
-    bitstream.
-
-    NOTE: This format is commonly used in live-streaming applications, where
-        including the SPS and PPS data periodically allows users to easily start
-        from the middle of the stream.
-  </dd>
-  <dt><dfn enum-value for=AvcBitstreamFormat>avc</dfn></dt>
-  <dd>
-    This format is as described by [[!iso14496-15]], Section 5. Notably,
-    <a>SPS</a> and <a>PPS</a> data are not included in the bitstream and are
-    instead passed out of band as a AVCDecoderConfigurationRecord as defined by
-    [[!iso14496-15]]. This structure is emitted via the
-    {{VideoEncoder/[[output callback]]}} as the
-    {{VideoDecoderConfig/description}} of the {{VideoDecoderConfig}}
-    |output_config|.
-
-    NOTE: This format is commonly used in .MP4 files, where the player generally
-        has random access to the media data.
 </dl>
 
 Hardware Acceleration{#hardware-acceleration}
