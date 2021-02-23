@@ -60,22 +60,22 @@ Core interfaces include
 
 -   **EncodedAudioChunks** and **EncodedVideoChunks** contain codec-specific encoded media bytes.
 
--   **AudioPacket** contains decoded audio data. It will provide an [AudioBuffer](https://webaudio.github.io/web-audio-api/#audiobuffer) for rendering via [AudioWorklet](https://webaudio.github.io/web-audio-api/#audioworklet).
+-   **AudioFrame** contains decoded audio data. It will provide an [AudioBuffer](https://webaudio.github.io/web-audio-api/#audiobuffer) for rendering via [AudioWorklet](https://webaudio.github.io/web-audio-api/#audioworklet).
 
 -   **VideoFrame** contains decoded video data. It will provide an [ImageBitmap](https://html.spec.whatwg.org/multipage/imagebitmap-and-animations.html#imagebitmap) for manipulating in WebGL, including rendering to Canvas. It should eventually also [provide access to YUV data](https://github.com/WICG/web-codecs/issues/30), but the design is still TBD.
 
--   An **AudioEncoder** encodes AudioPackets to produce EncodedAudioChunks.
+-   An **AudioEncoder** encodes AudioFrames to produce EncodedAudioChunks.
 
 -   A **VideoEncoder** encodes VideoFrames to produce EncodedVideoChunks.
 
--   An **AudioDecoder** decodes EncodedAudioChunks to produce AudioPackets.
+-   An **AudioDecoder** decodes EncodedAudioChunks to produce AudioFrames.
 
 -   A **VideoDecoder** decodes EncodedVideoChunks to produce VideoFrames.
 
 
 WebCodecs will also define mechanisms for importing content from getUserMedia().
 
--   An **AudioTrackReader** converts an audio MediaStreamTrack into a ReadableStream of AudioPacket.
+-   An **AudioTrackReader** converts an audio MediaStreamTrack into a ReadableStream of AudioFrame.
 
 -   A **VideoTrackReader** converts a video MediaStreamTrack into a ReadableStream of VideoFrame.
 
@@ -285,7 +285,7 @@ function streamEncodedChunks(decodeAudioCallback, decodeVideoCallback) { ... }
 
 // App rendering audio in AudioWorklet
 // TODO(chcunningham): source a demo.
-function renderInAudioWorklet(audioPacket) { ... }
+function renderInAudioWorklet(audioFrame) { ... }
 
 // See definition from earlier example.
 function paintFrameToCanvas(videoFrame) { ... }
