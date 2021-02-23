@@ -187,6 +187,8 @@ interface AudioDecoder {
   Promise<undefined> flush();
   undefined reset();
   undefined close();
+
+  static Promise<AudioDecoderSupport> isConfigSupported(AudioDecoderConfig config);
 };
 
 dictionary AudioDecoderInit {
@@ -244,19 +246,26 @@ Methods {#audiodecoder-methods}
     [=Enqueues a control message=] to configure the audio decoder for decoding
     chunks as described by |config|.
 
+    NOTE: Authors should first check support by calling
+        {{AudioDecoder/isConfigSupported()}} with |config| to avoid error paths
+        in the steps below.
+
     When invoked, run these steps:
     1. If |config| is not a [=valid AudioDecoderConfig=], throw a
         {{TypeError}}.
-    2. If {{AudioDecoder/state}} is `"closed"`, throw an {{InvalidStateError}}.
-    3. If the user agent cannot provide a codec implementation to support
-        |config|, throw a {{NotSupportedError}}.
-    4. Set {{AudioDecoder/state}} to `"configured"`.
-    5. [=Queue a control message=] to configure the decoder with |config|.
+    2. If {{AudioDecoder/state}} is `“closed”`, throw an {{InvalidStateError}}.
+    3. Set {{AudioDecoder/state}} to `"configured"`.
+    4. [=Queue a control message=] to configure the decoder with |config|.
 
     [=Running a control message=] to configure the decoder means running
     these steps:
-    1. Assign {{AudioDecoder/[[codec implementation]]}} with an implementation
+    1. Let |supported| be the result of running the <a>Check Configuration
+        Support</a> algorith with |config|.
+    2. If |supported| is `true`, assign
+        {{AudioDecoder/[[codec implementation]]}} with an implementation
         supporting |config|.
+    3. Otherwise, run the <a>Close AudioDecoder</a> algorithm with
+        {{NotSupportedError}}.
   </dd>
 
   <dt><dfn method for=AudioDecoder>decode(chunk)</dfn></dt>
@@ -324,6 +333,34 @@ Methods {#audiodecoder-methods}
 
     When invoked, run the [=Close AudioDecoder=] algorithm.
   </dd>
+
+  <dt><dfn method for=AudioDecoder>isConfigSupported(config)</dfn></dt>
+  <dd>
+    Returns a promise indicating whether the provided |config| is supported by
+    the user agent.
+
+    NOTE: The returned {{AudioDecoderSupport}} {{AudioDecoderSupport/config}}
+        will contain only the dictionary members that user agent recognized.
+        Unrecognized dictionary memebers will be ignored. Authors may detect
+        unrecognized dictionary members by comparinging
+        {{AudioDecoderSupport/config}} to their provided |config|.
+
+    When invoked, run these steps:
+    1. If |config| is not a <a>valid AudioDecoderConfig</a>, return
+        [=a promise rejected with=] {{TypeError}}.
+    2. Let |p| be a new Promise.
+    3. Let |checkSupportQueue| be the result of starting a new <a>parallel
+        queue</a>.
+    4. Enqueue the following steps to |checkSupportQueue|:
+        1. Let |decoderSupport| be a newly constructed
+            {{AudioDecoderSupport}}, initialized as follows:
+            1. Set {{AudioDecoderSupport/config}} to the result of running the
+                <a>Clone Configuration</a> algorithm with |config|.
+            2. Set {{AudioDecoderSupport/supported}} to the result of running
+                the <a>Check Configuration Support</a> algorithm with |config|.
+        2. Resolve |p| with |decoderSupport|.
+    5. Return  |p|.
+  </dd>
 </dl>
 
 Algorithms {#audiodecoder-algorithms}
@@ -378,6 +415,8 @@ interface VideoDecoder {
   Promise<undefined> flush();
   undefined reset();
   undefined close();
+
+  static Promise<VideoDecoderSupport> isConfigSupported(VideoDecoderConfig config);
 };
 
 dictionary VideoDecoderInit {
@@ -435,19 +474,26 @@ Methods {#videodecoder-methods}
     [=Enqueues a control message=] to configure the video decoder for decoding
     chunks as described by |config|.
 
+    NOTE: Authors should first check support by calling
+        {{VideoDecoder/isConfigSupported()}} with |config| to avoid error paths
+        in the steps below.
+
     When invoked, run these steps:
     1. If |config| is not a [=valid VideoDecoderConfig=], throw a
         {{TypeError}}.
-    2. If {{VideoDecoder/state}} is `"closed"`, throw an {{InvalidStateError}}.
-    3. If the user agent cannot provide a codec implementation to support
-        |config|, throw a {{NotSupportedError}}.
-    4. Set {{VideoDecoder/state}} to `"configured"`.
-    5. [=Queue a control message=] to configure the decoder with |config|.
+    2. If {{VideoDecoder/state}} is `“closed”`, throw an {{InvalidStateError}}.
+    3. Set {{VideoDecoder/state}} to `"configured"`.
+    4. [=Queue a control message=] to configure the decoder with |config|.
 
     [=Running a control message=] to configure the decoder means running
     these steps:
-    1. Assign {{VideoDecoder/[[codec implementation]]}} with an implementation
+    1. Let |supported| be the result of running the <a>Check Configuration
+        Support</a> algorith with |config|.
+    2. If |supported| is `true`, assign
+        {{VideoDecoder/[[codec implementation]]}} with an implementation
         supporting |config|.
+    3. Otherwise, run the <a>Close VideoDecoder</a> algorithm with
+        {{NotSupportedError}}.
   </dd>
 
   <dt><dfn method for=VideoDecoder>decode(chunk)</dfn></dt>
@@ -514,6 +560,34 @@ Methods {#videodecoder-methods}
     Close is final.
 
     When invoked, run the [=Close VideoDecoder=] algorithm.
+  </dd>
+
+  <dt><dfn method for=VideoDecoder>isConfigSupported(config)</dfn></dt>
+  <dd>
+    Returns a promise indicating whether the provided |config| is supported by
+    the user agent.
+
+    NOTE: The returned {{VideoDecoderSupport}} {{VideoDecoderSupport/config}}
+        will contain only the dictionary members that user agent recognized.
+        Unrecognized dictionary memebers will be ignored. Authors may detect
+        unrecognized dictionary members by comparinging
+        {{VideoDecoderSupport/config}} to their provided |config|.
+
+    When invoked, run these steps:
+    1. If |config| is not a <a>valid VideoDecoderConfig</a>, return
+        [=a promise rejected with=] {{TypeError}}.
+    2. Let |p| be a new Promise.
+    3. Let |checkSupportQueue| be the result of starting a new <a>parallel
+        queue</a>.
+    4. Enqueue the following steps to |checkSupportQueue|:
+        1. Let |decoderSupport| be a newly constructed
+            {{VideoDecoderSupport}}, initialized as follows:
+            1. Set {{VideoDecoderSupport/config}} to the result of running the
+                <a>Clone Configuration</a> algorithm with |config|.
+            2. Set {{VideoDecoderSupport/supported}} to the result of running
+                the <a>Check Configuration Support</a> algorithm with |config|.
+        2. Resolve |p| with |decoderSupport|.
+    5. Return  |p|.
   </dd>
 </dl>
 
@@ -587,6 +661,8 @@ interface AudioEncoder {
   Promise<undefined> flush();
   undefined reset();
   undefined close();
+
+  static Promise<AudioEncoderSupport> isConfigSupported(AudioEncoderConfig config);
 };
 
 dictionary AudioEncoderInit {
@@ -644,19 +720,26 @@ Methods {#audioencoder-methods}
     [=Enqueues a control message=] to configure the audio encoder for
     decoding chunks as described by |config|.
 
+    NOTE: Authors should first check support by calling
+        {{AudioEncoder/isConfigSupported()}} with |config| to avoid error paths
+        in the steps below.
+
     When invoked, run these steps:
     1. If |config| is not a [=valid AudioEncoderConfig=], throw a
         {{TypeError}}.
     2. If {{AudioEncoder/state}} is `"closed"`, throw an {{InvalidStateError}}.
-    3. If the user agent cannot provide a codec implementation to support
-        |config|, throw a {{NotSupportedError}}.
-    4. Set {{AudioEncoder/state}} to `"configured"`.
-    5. [=Queue a control message=] to configure the encoder using |config|.
+    3. Set {{AudioEncoder/state}} to `"configured"`.
+    4. [=Queue a control message=] to configure the encoder using |config|.
 
     Running a control message to configure the encoder means performing these
     steps:
-    1. Assign {{AudioEncoder/[[codec implementation]]}} with an implementation
+    1. Let |supported| be the result of running the <a>Check Configuration
+        Support</a> algorith with |config|.
+    2. If |supported| is `true`, assign
+        {{AudioEncoder/[[codec implementation]]}} with an implementation
         supporting |config|.
+    3. Otherwise, run the <a>Close AudioEncoder</a> algorithm with
+        {{NotSupportedError}}.
   </dd>
 
   <dt><dfn method for=AudioEncoder>encode(frame)</dfn></dt>
@@ -732,6 +815,34 @@ Methods {#audioencoder-methods}
 
     When invoked, run the [=Close AudioEncoder=] algorithm.
   </dd>
+
+  <dt><dfn method for=AudioEncoder>isConfigSupported(config)</dfn></dt>
+  <dd>
+    Returns a promise indicating whether the provided |config| is supported by
+    the user agent.
+
+    NOTE: The returned {{AudioEncoderSupport}} {{AudioEncoderSupport/config}}
+        will contain only the dictionary members that user agent recognized.
+        Unrecognized dictionary memebers will be ignored. Authors may detect
+        unrecognized dictionary members by comparinging
+        {{AudioEncoderSupport/config}} to their provided |config|.
+
+    When invoked, run these steps:
+    1. If |config| is not a <a>valid AudioEncoderConfig</a>, return
+        [=a promise rejected with=] {{TypeError}}.
+    2. Let |p| be a new Promise.
+    3. Let |checkSupportQueue| be the result of starting a new <a>parallel
+        queue</a>.
+    4. Enqueue the following steps to |checkSupportQueue|:
+        1. Let |encoderSupport| be a newly constructed
+            {{AudioEncoderSupport}}, initialized as follows:
+            1. Set {{AudioEncoderSupport/config}} to the result of running the
+                <a>Clone Configuration</a> algorithm with |config|.
+            2. Set {{AudioEncoderSupport/supported}} to the result of running
+                the <a>Check Configuration Support</a> algorithm with |config|.
+        2. Resolve |p| with |encoderSupport|.
+    5. Return  |p|.
+  </dd>
 </dl>
 
 Algorithms {#audioencoder-algorithms}
@@ -793,6 +904,8 @@ interface VideoEncoder {
   Promise<undefined> flush();
   undefined reset();
   undefined close();
+
+  static Promise<boolean> isConfigSupported(VideoEncoderConfig config);
 };
 
 dictionary VideoEncoderInit {
@@ -857,19 +970,26 @@ Methods {#videoencoder-methods}
     [=Enqueues a control message=] to configure the video encoder for
     decoding chunks as described by |config|.
 
+    NOTE: Authors should first check support by calling
+        {{VideoEncoder/isConfigSupported()}} with |config| to avoid error paths
+        in the steps below.
+
     When invoked, run these steps:
     1. If |config| is not a [=valid VideoEncoderConfig=], throw a
         {{TypeError}}.
     2. If {{VideoEncoder/state}} is `"closed"`, throw an {{InvalidStateError}}.
-    3. If the user agent cannot provide a codec implementation to support
-        |config|, throw a {{NotSupportedError}}.
-    4. Set {{VideoEncoder/state}} to `"configured"`.
-    5. [=Queue a control message=] to configure the encoder using |config|.
+    3. Set {{VideoEncoder/state}} to `"configured"`.
+    4. [=Queue a control message=] to configure the encoder using |config|.
 
     Running a control message to configure the encoder means performing these
     steps:
-    1. Assign {{VideoEncoder/[[codec implementation]]}} with an implementation
+    1. Let |supported| be the result of running the <a>Check Configuration
+        Support</a> algorith with |config|.
+    2. If |supported| is `true`, assign
+        {{VideoEncoder/[[codec implementation]]}} with an implementation
         supporting |config|.
+    3. Otherwise, run the <a>Close VideoEncoder</a> algorithm with
+        {{NotSupportedError}} and abort these steps.
     2. Set {{VideoEncoder/[[active encoder config]]}} to `config`.
   </dd>
 
@@ -945,6 +1065,34 @@ Methods {#videoencoder-methods}
     Close is final.
 
     When invoked, run the [=Close VideoEncoder=] algorithm.
+  </dd>
+
+  <dt><dfn method for=VideoEncoder>isConfigSupported(config)</dfn></dt>
+  <dd>
+    Returns a promise indicating whether the provided |config| is supported by
+    the user agent.
+
+    NOTE: The returned {{VideoEncoderSupport}} {{VideoEncoderSupport/config}}
+        will contain only the dictionary members that user agent recognized.
+        Unrecognized dictionary memebers will be ignored. Authors may detect
+        unrecognized dictionary members by comparinging
+        {{VideoEncoderSupport/config}} to their provided |config|.
+
+    When invoked, run these steps:
+    1. If |config| is not a <a>valid VideoEncoderConfig</a>, return
+        [=a promise rejected with=] {{TypeError}}.
+    2. Let |p| be a new Promise.
+    3. Let |checkSupportQueue| be the result of starting a new <a>parallel
+        queue</a>.
+    4. Enqueue the following steps to |checkSupportQueue|:
+        1. Let |encoderSupport| be a newly constructed
+            {{VideoEncoderSupport}}, initialized as follows:
+            1. Set {{VideoEncoderSupport/config}} to the result of running the
+                <a>Clone Configuration</a> algorithm with |config|.
+            2. Set {{VideoEncoderSupport/supported}} to the result of running
+                the <a>Check Configuration Support</a> algorithm with |config|.
+        2. Resolve |p| with |encoderSupport|.
+    5. Return  |p|.
   </dd>
 </dl>
 
@@ -1034,6 +1182,137 @@ Algorithms {#videoencoder-algorithms}
 
 Configurations{#configurations}
 ===============================
+
+<dfn>Check Configuration Support</dfn> (with |config|) {#config-support}
+------------------------------------------------------------------------
+Run these steps:
+1. If the user agent can provide a <a>codec</a> to support all entries of the
+    |config|, including applicable default values for keys that are not
+    included, return `true`.
+
+    NOTE: The types {{AudioDecoderConfig}}, {{VideoDecoderConfig}},
+        {{AudioEncoderConfig}}, and {{VideoEncoderConfig}} each define their
+        respective configuration entries and defaults.
+
+    NOTE: Support for a given configuration may change dynamically if the
+        hardware is altered (e.g. external GPU unplugged) or if required
+        hardware resources are exhausted. User agents should describe support on
+        a best-effort basis given the resources that are available at the time
+        of the query.
+
+2. Otherwise, return false.
+
+<dfn>Clone Configuration</dfn> (with |config|) {#clone-config}
+--------------------------------------------------------------
+
+NOTE: This algorithm will copy only the dictionary members that the user agent
+    recognizes as part of the dictionary type.
+
+Run these steps:
+1. Let |dictType| be the type of dictionary |config|.
+2. Let <var ignore=''>clone</var> be a new empty instance of |dictType|.
+3. For each dictionary member |m| defined on |dictType|:
+    1. If |m| does not [=map/exist=] in |config|, then [=iteration/continue=].
+    2. If `config[m]` is a nested dictionary, set `clone[m]` to the result of
+        recursively running the <a>Clone Configuration</a> algorithm with
+        `config[m]`.
+    3. Otherwise, assign the value of `config[m]` to `clone[m]`.
+
+
+Signalling Configuration Support{#config-support-info}
+------------------------------------------------------
+
+### AudioDecoderSupport ### {#audio-decoder-support}
+<pre class='idl'>
+<xmp>
+dictionary AudioDecoderSupport {
+  boolean supported;
+  AudioDecoderConfig config;
+};
+</xmp>
+</pre>
+
+<dl>
+  <dt><dfn dict-member for=AudioDecoderSupport>supported</dfn></dt>
+  <dd>
+    A boolean indicating the whether the corresponding
+    {{AudioDecoderSupport/config}} is supported by the user agent.
+  </dd>
+  <dt><dfn dict-member for=AudioDecoderSupport>config</dfn></dt>
+  <dd>
+    An {{AudioDecoderConfig}} used by the user agent in determining the value of
+    {{AudioDecoderSupport/supported}}.
+  </dd>
+</dl>
+
+### VideoDecoderSupport ### {#video-decoder-support}
+<pre class='idl'>
+<xmp>
+dictionary VideoDecoderSupport {
+  boolean supported;
+  VideoDecoderConfig config;
+};
+</xmp>
+</pre>
+
+<dl>
+  <dt><dfn dict-member for=VideoDecoderSupport>supported</dfn></dt>
+  <dd>
+    A boolean indicating the whether the corresponding
+    {{VideoDecoderSupport/config}} is supported by the user agent.
+  </dd>
+  <dt><dfn dict-member for=VideoDecoderSupport>config</dfn></dt>
+  <dd>
+    A {{VideoDecoderConfig}} used by the user agent in determining the value of
+    {{VideoDecoderSupport/supported}}.
+  </dd>
+</dl>
+
+### AudioEncoderSupport ### {#audio-encoder-support}
+<pre class='idl'>
+<xmp>
+dictionary AudioEncoderSupport {
+  boolean supported;
+  AudioEncoderConfig config;
+};
+</xmp>
+</pre>
+
+<dl>
+  <dt><dfn dict-member for=AudioEncoderSupport>supported</dfn></dt>
+  <dd>
+    A boolean indicating the whether the corresponding
+    {{AudioEncoderSupport/config}} is supported by the user agent.
+  </dd>
+  <dt><dfn dict-member for=AudioEncoderSupport>config</dfn></dt>
+  <dd>
+    An {{AudioEncoderConfig}} used by the user agent in determining the value of
+    {{AudioEncoderSupport/supported}}.
+  </dd>
+</dl>
+
+### VideoEncoderSupport ### {#video-encoder-support}
+<pre class='idl'>
+<xmp>
+dictionary VideoEncoderSupport {
+  boolean supported;
+  VideoEncoderConfig config;
+};
+</xmp>
+</pre>
+
+<dl>
+  <dt><dfn dict-member for=VideoEncoderSupport>supported</dfn></dt>
+  <dd>
+    A boolean indicating the whether the corresponding
+    {{VideoEncoderSupport/config}} is supported by the user agent.
+  </dd>
+  <dt><dfn dict-member for=VideoEncoderSupport>config</dfn></dt>
+  <dd>
+    A {{VideoEncoderConfig}} used by the user agent in determining the value of
+    {{VideoEncoderSupport/supported}}.
+  </dd>
+</dl>
 
 <dfn export>Codec String</dfn>{#config-codec-string}
 ----------------------------------------------------
@@ -1147,6 +1426,7 @@ dictionary VideoDecoderConfig {
   unsigned long cropHeight;
   unsigned long displayWidth;
   unsigned long displayHeight;
+  HardwareAcceleration hardwareAcceleration = "allow";
 };
 </xmp>
 </pre>
@@ -1225,6 +1505,12 @@ run these steps:
     Height of the VideoFrame when displayed. Defaults to cropHeight if not
         present.
   </dd>
+
+  <dt><dfn dict-member for=VideoDecoderConfig>hardwareAcceleration</dfn></dt>
+  <dd>
+    Configures hardware acceleration for this codec. See
+    {{HardwareAcceleration}}.
+  </dd>
 </dl>
 
 
@@ -1269,6 +1555,7 @@ dictionary VideoEncoderConfig {
   required unsigned long cropHeight;
   unsigned long displayWidth;
   unsigned long displayHeight;
+  HardwareAcceleration hardwareAcceleration = "allow";
 
   AvcEncoderConfig avc;
 };
@@ -1351,6 +1638,12 @@ To check if a {{VideoEncoderConfig}} is a <dfn>valid VideoEncoderConfig</dfn>,
 <dl>
   <dt><dfn dict-member for=VideoEncoderConfig>avc</dfn></dt>
   <dd>Contains codec specific configuration options for the AVC (H.264) codec.</dd>
+
+  <dt><dfn dict-member for=VideoEncoderConfig>hardwareAcceleration</dfn></dt>
+  <dd>
+    Configures hardware acceleration for this codec. See
+    {{HardwareAcceleration}}.
+  </dd>
 </dl>
 
 ### AvcEncoderConfig ### {#avc-encoder-config}
@@ -1406,6 +1699,79 @@ packaging the bitstream.
 
     NOTE: This format is commonly used in .MP4 files, where the player generally
         has random access to the media data.
+</dl>
+
+Hardware Acceleration{#hardware-acceleration}
+---------------------------------------------
+<pre class='idl'>
+<xmp>
+enum HardwareAcceleration {
+  "allow",
+  "deny",
+  "require",
+};
+</xmp>
+</pre>
+
+When supported, hardware acceleration offloads encoding or decoding to
+specialized hardware.
+
+<div class='note'>
+  NOTE: Most authors will be best served by using the default of
+  {{HardwareAcceleration/allow}}. This gives the user agent flexibility to
+  optimize based on its knowledge of the system and configuration. A common
+  strategy will be to prioritize hardware acceleration at higher resolutions
+  with a fallback to software codecs if hardware acceleration fails.
+
+  Authors should carefully weigh the tradeoffs setting a hardware acceleration
+  preference. The precise trade-offs will be device-specific, but authors should
+  generally expect the following:
+
+  * Setting a value of {{HardwareAcceleration/require}} may significantly
+      restrict what configurations are supported. It may occur that the user's
+      device does not offer acceleration for any codec, or only for the most
+      common profiles of older codecs.
+  * Hardware acceleration does not simply imply faster encoding / decoding.
+      Hardware acceleration often has higher startup latency but more consistent
+      throughput performance. Acceleration will generally reduce CPU load.
+  * For decoding, hardware acceleration is often less robust to inputs that are
+      mislabeled or violate the relevant codec specification.
+  * Hardware acceleration will often be more power efficient than purely
+      software based codecs.
+  * For lower resolution content, the overhead added by hardware acceleration
+      may yield decreased performance and power efficiency compared to purely
+      software based codecs.
+
+  Given these tradeoffs, a good example of using "require" would be if an author
+  intends to provide their own software based fallback via WebAssembly.
+
+  Alternatively, a good example of using "disallow" would be if an author is
+  especially sensitive to the higher startup latency or decreased robustness
+  generally associated with hardware acceleration.
+</div>
+
+<dl>
+  <dt><dfn enum-value for=HardwareAcceleration>allow</dfn></dt>
+  <dd>
+    Indicates that the user agent may use hardware acceleration if it is
+    available and compatible with other aspects of the codec configuration.
+  </dd>
+  <dt><dfn enum-value for=HardwareAcceleration>deny</dfn></dt>
+  <dd>
+    Indicates that the user agent must not use hardware acceleration.
+
+    NOTE: This will cause the configuration to be unsupported on platforms where
+    an unaccelerated codec is unavailable or is incompatible with other aspects
+    of the codec configuration.
+  </dd>
+  <dt><dfn enum-value for=HardwareAcceleration>require</dfn></dt>
+  <dd>
+    Indicates that the user agent must use hardware acceleration.
+
+    NOTE: This will cause the configuration to be unsupported on platforms where
+    an accelerated codec is unavailable or is incompatible with other aspects of
+    the codec configuration.
+  </dd>
 </dl>
 
 Configuration Equivalence{#config-equivalence}
