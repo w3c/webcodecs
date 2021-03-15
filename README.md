@@ -1,5 +1,3 @@
-https://wicg.github.io/web-codecs/
-
 # Try it out in Chrome 86
 
 Please see [this doc for current limitations](https://docs.google.com/document/d/1H1UHn3DIw-LOfBUdNUFR6l2-zSipXuHCVmhrwF3rR6w/edit).
@@ -13,7 +11,8 @@ https://developers.chrome.com/origintrials/#/register_trial/-7811493553674125311
 
 # WebCodecs
 
-API that allows web applications to encode and decode audio and video
+The [WebCodecs API](https://w3c.github.io/web-codecs/) allows web applications
+to encode and decode audio and video.
 
 Many Web APIs use media codecs internally to support APIs for particular uses:
 - HTMLMediaElement and Media Source Extensions
@@ -33,5 +32,5 @@ It's great for:
 - Cloud gaming
 - Media file editing and transcoding
 
-See the [explainer](https://github.com/pthatcherg/web-codecs/blob/master/explainer.md) for more info.
+See the [explainer](https://github.com/w3c/web-codecs/blob/main/explainer.md) for more info.
 
