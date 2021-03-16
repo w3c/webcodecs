@@ -11,10 +11,10 @@ Editor: Paul Adenot, w3cid 62410, Mozilla https://www.mozilla.org/
 Editor: Bernard Aboba, w3cid 65611, Microsoft Corporation https://www.microsoft.com/
 Boilerplate: omit conformance
 
-Abstract: This registration is entered into the [[WebCodecs-Codec-Registry]]. It
-    describes, for AVC (H.264), the (1) fully qualified codec strings, (2) the
-    {{WebCodecs/VideoDecoderConfig.description}} bytes, and (3) the
-    codec-sepcific extensions to the {{WebCodecs/VideoEncoderConfig}}.
+Abstract: This registration is entered into the [[webcodecs-codec-registry]].
+    It describes, for AVC (H.264), the (1) fully qualified codec strings, (2)
+    the {{VideoDecoderConfig.description}} bytes, and (3) the
+    codec-specific extensions to the {{VideoEncoderConfig}}.
 
     The registration is not intended to include any information on whether a
     codec format is encumbered by intellectual property claims. Implementers and
@@ -31,20 +31,25 @@ Markup Shorthands:css no, markdown yes, dfn yes
 </pre>
 
 <pre class='anchors'>
-spec: web-codecs; for: WebCodecs; urlPrefix: https://wicg.github.io/web-codecs/#
+spec: webcodecs; urlPrefix: https://wicg.github.io/web-codecs/#
     type: attribute
         text: VideoDecoderConfig.description; url: dom-videodecoderconfig-description
     type: interface
         text: EncodedVideoChunk; url: encodedvideochunk
         text: VideoEncoder; url: videoencoder
     type: dictionary
-        text: VideoEncoderConfig; url: video-encoder-config
+        text: VideoEncoderConfig; url: dictdef-videoencoderconfig
         text: VideoDecoderConfig; url: dictdef-videodecoderconfig
 </pre>
 
 <pre class='biblio'>
 {
-  "WebCodecs-Codec-Registry": {
+  "webcodecs": {
+      "href": "https://wicg.github.io/web-codecs/",
+      "title": "WebCodecs",
+      "publisher": "WICG"
+  },
+  "webcodecs-codec-registry": {
       "href": "https://wicg.github.io/web-codecs/codec_registry.html",
       "title": "WebCodecs Codec Registry",
       "publisher": "WICG"
@@ -72,17 +77,17 @@ NOTE: The common "avc3." prefix is intentionally not included. This prefix does
 VideoDecoderConfig description {#videodecoderconfig-description}
 ================================================================
 
-A {{WebCodecs/VideoDecoderConfig.description}} may or may not be required by the
+A {{VideoDecoderConfig.description}} may or may not be required by the
 AVC codec depending on the bitstream format of the AVC content to be decoded.
 
-If the {{WebCodecs/VideoDecoderConfig.description}} includes an
+If the {{VideoDecoderConfig.description}} includes an
 `AVCDecoderConfigurationRecord`, as defined by [[iso14496-15]], section 5.3.3.1,
 it will be assumed that the bitstream is in "avc" format.
 
 NOTE: This format is commonly used in .MP4 files, where the player generally has
     random access to the media data.
 
-If the {{WebCodecs/VideoDecoderConfig.description}} is not provided, it will be
+If the {{VideoDecoderConfig.description}} is not provided, it will be
 assumed that the bitstream is in “annexb” format.
 
 NOTE: "annexb" format is described in greater detail by [[ITU-T-REC-H.264]],
@@ -95,7 +100,7 @@ VideoEncoderConfig extensions {#videoencoderconfig-extensions}
 
 <pre class='idl'>
 <xmp>
-/* partial */ dictionary VideoEncoderConfig {
+partial dictionary VideoEncoderConfig {
   AvcEncoderConfig avc;
 };
 </xmp>
@@ -121,7 +126,7 @@ dictionary AvcEncoderConfig {
 <dl>
   <dt><dfn dict-member for=AvcEncoderConfig>format</dfn></dt>
   <dd>
-    Configures the format of output {{WebCodecs/EncodedVideoChunk}}s. See
+    Configures the format of output {{EncodedVideoChunk}}s. See
     {{AvcBitstreamFormat}}.
   </dd>
 </dl>
@@ -157,9 +162,9 @@ SPS and PPS are described in greater detail in sections G.3.41 and G.3.55 of
   <dt><dfn enum-value for=AvcBitstreamFormat>avc</dfn></dt>
   <dd>
     SPS and PPS data are not included in the bitstream and are instead emitted
-    via the {{WebCodecs/VideoEncoder}} [[output callback]] as the
-    {{WebCodecs/VideoDecoderConfig.description}} of the
-    {{WebCodecs/VideoDecoderConfig}}.
+    via the {{VideoEncoder}} [[output callback]] as the
+    {{VideoDecoderConfig.description}} of the
+    {{VideoDecoderConfig}}.
     <var ignore=''>output_config</var>.
 
     NOTE: This format is described in greater detail by [[iso14496-15]],
