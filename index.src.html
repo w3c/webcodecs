@@ -9,9 +9,8 @@ Group: wicg
 Editor: Chris Cunningham, w3cid 114832, Google Inc. https://google.com/
 Editor: Paul Adenot, w3cid 62410, Mozilla https://www.mozilla.org/
 
-Abstract: This specification defines interfaces for encoding and decoding audio
-Abstract: and video. It also includes an interface for retrieving raw video
-Abstract: frames from MediaStreamStracks.
+Abstract: This specification defines interfaces for encoding and decoding audio,
+Abstract: video, and images.
 
 Markup Shorthands:css no, markdown yes, dfn yes
 !Participate: <a href="https://github.com/wicg/web-codecs">Git Repository.</a>
@@ -48,6 +47,7 @@ spec: mediacapture-main; urlPrefix: https://w3c.github.io/mediacapture-main/
 
 spec: mimesniff; urlPrefix: https://mimesniff.spec.whatwg.org/#
     type: dfn; text: MIME type; url: mime-type
+    type: dfn; text: valid MIME type string; url:valid-mime-type
 
 spec: infra; urlPrefix: https://infra.spec.whatwg.org/#
     type: dfn; text: queue; url: queues
@@ -63,6 +63,12 @@ spec: media-capabilities; urlPrefix: https://w3c.github.io/media-capabilities/#
     type: method; text: decodingInfo(); url: dom-mediacapabilities-decodinginfo
     type: attribute; text: powerEfficient; url: dom-mediacapabilitiesinfo-powerefficient
 </pre>
+
+<style>
+main > dl > dd {
+  margin-bottom: 1em;
+}
+</style>
 
 
 Definitions {#definitions}
@@ -101,8 +107,22 @@ Definitions {#definitions}
 :: A set of parameters describing a sequence of <a>AVC</a> coded video as
     defined by [[!iso14496-10]].
 
-Codec Processing Model {#codec-processing-model}
-================================================
+: <dfn>Progressive Image</dfn>
+:: An image that supports decoding to multiple levels of detail, with lower
+    levels becoming available while the encoded data is not yet fully buffered.
+
+: <dfn>Progressive Image Frame Generation</dfn>
+:: A generational identifier for a given [=Progressive Image=] decoded output.
+    The mechanism for computing a frame's generation is implementer / format
+    defined.
+
+: <dfn>Primary Image Track</dfn>
+:: An image track that is marked by the given image file as being the default
+    track. The mechanism for indiciating a primary track is format defined.
+
+
+<dfn>Codec Processing Model</dfn> {#codec-processing-model-section}
+===================================================================
 
 Background {#processing-model-background}
 -----------------------------------------
@@ -278,7 +298,8 @@ Methods {#audiodecoder-methods}
     2. Increment {{VideoDecoder/decodeQueueSize}}.
     3. [=Queue a control message=] to decode the |chunk|.
 
-    Running a control message to decode the chunk means performing these steps:
+    [=Running a control message=] to decode the chunk means performing these
+    steps:
     1. Attempt to use {{VideoDecoder/[[codec implementation]]}} to decode the
         chunk.
     2. If decoding results in an error, queue a task on the [=control thread=]
@@ -305,7 +326,7 @@ Methods {#audiodecoder-methods}
     3. [=Queue a control message=] to flush the codec with |promise|.
     4. Return |promise|.
 
-    Running a control message to flush the codec means performing these steps
+    [=Running a control message=] to flush the codec means performing these steps
         with |promise|.
     1. Signal {{AudioDecoder/[[codec implementation]]}} to emit all [=internal
         pending outputs=].
@@ -506,7 +527,7 @@ Methods {#videodecoder-methods}
     2. Increment {{VideoDecoder/decodeQueueSize}}.
     3. [=Queue a control message=] to decode the |chunk|.
 
-    Running a control message to decode the chunk means performing these steps:
+    [=Running a control message=] to decode the chunk means performing these steps:
     1. Attempt to use {{VideoDecoder/[[codec implementation]]}} to decode the
         chunk.
     2. If decoding results in an error, queue a task on the [=control thread=]
@@ -533,7 +554,7 @@ Methods {#videodecoder-methods}
     3. [=Queue a control message=] to flush the codec with |promise|.
     4. Return |promise|.
 
-    Running a control message to flush the codec means performing these steps
+    [=Running a control message=] to flush the codec means performing these steps
         with |promise|.
     1. Signal {{VideoDecoder/[[codec implementation]]}} to emit all [=internal
         pending outputs=].
@@ -598,28 +619,33 @@ Algorithms {#videodecoder-algorithms}
   <dd>
     Run these steps:
     1. For each |output| in |outputs|:
-        1. Let |planes| be a sequence of {{Plane}}s containing the decoded video
-            frame data from |output|.
-        2. Let |pixelFormat| be the {{PixelFormat}} of |planes|.
-        3. Let |frameInit| be a {{VideoFrameInit}} with the following keys:
-            1. Let {{VideoFrameInit/timestamp}} and {{VideoFrameInit/duration}}
-                be the {{EncodedVideoChunk/timestamp}} and
-                {{EncodedVideoChunk/duration}} from the {{EncodedVideoChunk}}
-                associated with |output|.
-            2. Let {{VideoFrameInit/codedWidth}} and
-                {{VideoFrameInit/codedHeight}}
-                be the width and height of the decoded video frame |output| in
-                pixels, prior to any cropping or aspect ratio adjustments.
-            3. Let {{VideoFrameInit/cropLeft}}, {{VideoFrameInit/cropTop}},
-                {{VideoFrameInit/cropWidth}}, and {{VideoFrameInit/cropHeight}}
-                be the crop region of the decoded video frame |output| in
-                pixels, prior to any aspect ratio adjustments.
-            4. Let {{VideoFrameInit/displayWidth}} and
-                {{VideoFrameInit/displayHeight}} be the display size of the
-                decoded video frame in pixels.
-        4. Let |frame| be a {{VideoFrame}}, constructed with |pixelFormat|,
-            |planes|, and |frameInit|.
+        1. Let |frame| be the result of running the [=Create a VideoFrame=]
+            algorithm with |output|.
         5. Invoke {{VideoDecoder/[[output callback]]}} with |frame|.
+  </dd>
+  <dt><dfn>Create a VideoFrame</dfn> (with |output|)</dt>
+  <dd>
+    1. Let |planes| be a sequence of {{Plane}}s containing the decoded video
+            frame data from |output|.
+    2. Let |pixelFormat| be the {{PixelFormat}} of |planes|.
+    3. Let |frameInit| be a {{VideoFrameInit}} with the following keys:
+        1. Let {{VideoFrameInit/timestamp}} and {{VideoFrameInit/duration}}
+            be the {{EncodedVideoChunk/timestamp}} and
+            {{EncodedVideoChunk/duration}} from the {{EncodedVideoChunk}}
+            associated with |output|.
+        2. Let {{VideoFrameInit/codedWidth}} and
+            {{VideoFrameInit/codedHeight}}
+            be the width and height of the decoded video frame |output| in
+            pixels, prior to any cropping or aspect ratio adjustments.
+        3. Let {{VideoFrameInit/cropLeft}}, {{VideoFrameInit/cropTop}},
+            {{VideoFrameInit/cropWidth}}, and {{VideoFrameInit/cropHeight}}
+            be the crop region of the decoded video frame |output| in
+            pixels, prior to any aspect ratio adjustments.
+        4. Let {{VideoFrameInit/displayWidth}} and
+            {{VideoFrameInit/displayHeight}} be the display size of the
+            decoded video frame in pixels.
+    4. Return a new {{VideoFrame}}, constructed with |pixelFormat|,
+        |planes|, and |frameInit|.
   </dd>
   <dt><dfn>Reset VideoDecoder</dfn></dt>
   <dd>
@@ -731,7 +757,7 @@ Methods {#audioencoder-methods}
     3. Set {{AudioEncoder/state}} to `"configured"`.
     4. [=Queue a control message=] to configure the encoder using |config|.
 
-    Running a control message to configure the encoder means performing these
+    [=Running a control message=] to configure the encoder means performing these
     steps:
     1. Let |supported| be the result of running the <a>Check Configuration
         Support</a> algorith with |config|.
@@ -760,7 +786,7 @@ Methods {#audioencoder-methods}
     5. Increment {{AudioEncoder/encodeQueueSize}}.
     6. [=Queue a control message=] to encode |frameClone|.
 
-    Running a control message to encode the frame means performing these steps.
+    [=Running a control message=] to encode the frame means performing these steps.
     1. Attempt to use {{AudioEncoder/[[codec implementation]]}} to encode
         |frameClone|.
     2. If encoding results in an error, queue a task on the [=control thread=]
@@ -787,7 +813,7 @@ Methods {#audioencoder-methods}
     3. [=Queue a control message=] to flush the codec with |promise|.
     4. Return |promise|.
 
-    Running a control message to flush the codec means performing these steps
+    [=Running a control message=] to flush the codec means performing these steps
         with |promise|.
     1. Signal {{AudioEncoder/[[codec implementation]]}} to emit all [=internal
         pending outputs=].
@@ -981,7 +1007,7 @@ Methods {#videoencoder-methods}
     3. Set {{VideoEncoder/state}} to `"configured"`.
     4. [=Queue a control message=] to configure the encoder using |config|.
 
-    Running a control message to configure the encoder means performing these
+    [=Running a control message=] to configure the encoder means performing these
     steps:
     1. Let |supported| be the result of running the <a>Check Configuration
         Support</a> algorith with |config|.
@@ -1011,7 +1037,7 @@ Methods {#videoencoder-methods}
     5. Increment {{VideoEncoder/encodeQueueSize}}.
     6. [=Queue a control message=] to encode |frameClone|.
 
-    Running a control message to encode the frame means performing these steps.
+    [=Running a control message=] to encode the frame means performing these steps.
     1. Attempt to use {{VideoEncoder/[[codec implementation]]}} to encode
         |frameClone| according to |options|.
     2. If encoding results in an error, queue a task on the [=control thread=]
@@ -1038,7 +1064,7 @@ Methods {#videoencoder-methods}
     3. [=Queue a control message=] to flush the codec with |promise|.
     4. Return |promise|.
 
-    Running a control message to flush the codec means performing these steps
+    [=Running a control message=] to flush the codec means performing these steps
         with |promise|.
     1. Signal {{VideoEncoder/[[codec implementation]]}} to emit all [=internal
         pending outputs=].
@@ -2394,14 +2420,692 @@ Algorithms{#raw-media-algorithms}
 
         NOTE: User Agents are encouraged to avoid expensive copies of large
             objects (for instance, {{VideoFrame}} pixel data). Frame types are
-            immutable, so the above step may be implemented using memory sharing
-            techniques such as reference counting.
+            immutable, so the above step may be implemented using memory
+            sharing techniques such as reference counting.
 
     3. Return |cloneFrame|.
 
   </dd>
 </dl>
 
+Image Decoding {#image-decoding}
+====================================
+
+Background {#image-decoding-background}
+-------------------------------------
+
+This section is non-normative.
+
+Image codec definitions are typically accompanied by a definition for a
+corresponding file format. Hence, image decoders often perform both duties of
+unpacking (demuxing) as well as decoding the encoded image data. The WebCodecs
+{{ImageDecoder}} follows this pattern, which motivates an interface design that
+is notably different from that of {{VideoDecoder}} and {{AudioDecoder}}.
+
+In spite of these differences, {{ImageDecoder}} uses the same
+[=codec processing model=] as the other codec interfaces. Additionally,
+{{ImageDecoder}} uses the {{VideoFrame}} interface to describe decoded outputs.
+
+ImageDecoder Interface {#imagedecoder-interface}
+------------------------------------------------
+
+<pre class='idl'>
+<xmp>
+[Exposed=(Window,DedicatedWorker)]
+interface ImageDecoder {
+  constructor(ImageDecoderInit init);
+
+  readonly attribute boolean complete;
+  readonly attribute ImageTrackList tracks;
+
+  Promise<undefined> decodeMetadata();
+  Promise<ImageDecodeResult> decode(optional unsigned long frameIndex = 0,
+                                    optional boolean completeFramesOnly = true);
+
+  static Promise<boolean> isTypeSupported(DOMString type);
+};
+</xmp>
+</pre>
+
+### Internal Slots ### {#imagedecoder-internal-slots}
+
+: <dfn attribute for=ImageDecoder>\[[ImageTrackList]]</dfn>
+:: An {{ImageTrackList}} describing the tracks found in
+    {{ImageDecoder/[[encoded data]]}}
+
+: <dfn attribute for=ImageDecoder>\[[complete]]</dfn>
+:: A boolean indicating whether {{ImageDecoder/[[encoded data]]}} is completely
+    buffered.
+
+: <dfn attribute for=ImageDecoder>[[codec implementation]]</dfn>
+:: An underlying image decoder implementation provided by the User Agent.
+
+: <dfn attribute for=ImageDecoder>[[encoded data]]</dfn>
+:: A [=byte sequence=] containing the encoded image data to be decoded.
+
+: <dfn attribute for=ImageDecoder>[[prefer animation]]</dfn>
+:: Boolean reflecting the value of {{ImageDecoderInit/preferAnimation}} given
+    at construction.
+
+: <dfn attribute for=ImageDecoder>[[pending metadata promises]]</dfn>
+:: A list of unresolved promises returned by calls to decodeMetadata().
+
+: <dfn attribute for=ImageDecoder>[[pending decode promises]]</dfn>
+:: A list of unresolved promises returned by calls to decode().
+
+: <dfn attribute for=ImageDecoder>[[internal selected track index]]</dfn>
+:: Identifies the image track within {{ImageDecoder/[[encoded data]]}} that is
+    used by decoding algorithms on the [=codec thread=].
+
+: <dfn attribute for=ImageDecoder>[[tracks established]]</dfn>
+:: A boolean indicating whether the track list has been established in
+    {{ImageDecoder/[[ImageTrackList]]}}.
+
+: <dfn attribute for=ImageDecoder>[[fatal error]]</dfn>
+:: A boolean indicating that the ImageDecoder is in a permanent error state.
+
+: <dfn attribute for=ImageDecoder>[[progressive frame generations]]</dfn>
+:: A mapping of frame indices to [=Progressive Image Frame Generations=]. The
+    values represent the Progressive Image Frame Generation for the
+    {{VideoFrame}} which was most recently output by a call to
+    {{ImageDecoder/decode()}} with the given frame index.
+
+
+### Constructor ### {#imagedecoder-constructor}
+
+: <dfn constructor for=ImageDecoder title="ImageDecoder(init)">
+    ImageDecoder(init)
+    </dfn>
+:: NOTE: Calling {{ImageDecoder/decode()}} on the constructed {{ImageDecoder}}
+    will trigger a {{NotSupportedError}} if the user agent does not support
+    |type|. Authors should first check support by calling
+    {{ImageDecoder/isTypeSupported()}} with |type|. User agents are not
+    required to support any particular type.
+
+    When invoked, run these steps:
+    1. If |init| is not [=valid ImageDecoderInit=], throw a {{TypeError}}.
+    2. Let |d| be a new {{ImageDecoder}} object. In the steps below, all
+        mentions of {{ImageDecoder}} members apply to |d| unless stated
+        otherwise.
+    3. Assign {{ImageDecoder/[[ImageTrackList]]}} a new {{ImageTrackList}}
+        initialized as follows:
+        1. Assign a new [=list=] to {{ImageTrackList/[[track list]]}}.
+        2. Assign `-1` to {{ImageTrackList/[[selected index]]}}.
+    4. Assign `null` to {{ImageDecoder/[[codec implementation]]}}.
+    5. If `init.preferAnimation` [=map/exists=], assign `init.preferAnimation`
+        to the {{ImageDecoder/[[prefer animation]]}} internal slot. Otherwise,
+        assign 'null' to {{ImageDecoder/[[prefer animation]]}} internal slot.
+    6. Assign a new [=list=] to {{ImageDecoder/[[pending metadata promises]]}}.
+    7. Assign a new [=list=] to {{ImageDecoder/[[pending decode promises]]}}.
+    8. Assign `false` to {{ImageDecoder/[[tracks established]]}}.
+    9. Assign `false` to {{ImageDecoder/[[fatal error]]}}.
+    10. Assign a new [=map=] to {{ImageDecoder/[[progressive frame
+        generations]]}}.
+    11. If |init|'s {{ImageDecoderInit/data}} member is of type
+        {{ReadableStream}}:
+        1. Assign a new [=list=] to {{ImageDecoder/[[encoded data]]}}.
+        2. Assign `false` to {{ImageDecoder/complete}}
+        3. [=Queue a control message=] to [=configure the image decoder=] with
+            |init|.
+        4. Let |reader| be the result of [=getting a reader=] for
+            {{ImageDecoderInit/data}}.
+        5. In parallel, perform the [=Fetch Stream Data Loop=] on |d| with
+            |reader|.
+    12. Otherwise:
+        1. Assert that `init.data` is of type {{BufferSource}}.
+        2. Assign a copy of `init.data` to  {{ImageDecoder/[[encoded data]]}}.
+        3. Assign `true` to {{ImageDecoder/complete}}
+        4. Queue a control message to [=configure the image decoder=] with
+            |init|.
+        5. Queue a control message to [=decode track metadata=].
+    13. return |d|.
+
+    [=Running a control message=] to <dfn>configure the image decoder</dfn>
+    means running these steps:
+    1. Let |supported| be the result of running the [=Check Configuration
+        Support=] algorithm with `init.type`.
+    2. If |supported| is `false`, queue a task on the control thread event
+        loop to run the [=ImageDecoder/Handle Error=] algorithm and abort
+        these steps.
+    3. If |supported| is `true`, assign the
+        {{ImageDecoder/[[codec implementation]]}} internal slot with an
+        implementation supporting `init.type`
+    4. Configure {{ImageDecoder/[[codec implementation]]}} in accordance with
+        the values given for {{ImageDecoderInit/premultiplyAlpha}},
+        {{ImageDecoderInit/colorSpaceConversion}},
+        {{ImageDecoderInit/desiredWidth}}, and
+        {{ImageDecoderInit/desiredHeight}}.
+
+    [=Running a control message=] to <dfn>decode track metadata</dfn> means
+    running these steps:
+    1. Run the [=Decode Track Metadata=] algorithm.
+
+### Attributes ### {#imagedecoder-attributes}
+
+: <dfn attribute for=ImageDecoder>tracks</dfn>
+:: Provides metadata for the available tracks and a mechanism for selecting a
+    track to decode.
+
+    The {{ImageDecoder/tracks}} getter steps are to return
+    {{ImageDecoder/[[ImageTrackList]]}}.
+
+: <dfn attribute for=ImageDecoder>complete</dfn>
+:: Indicates whether {{ImageDecoder/[[encoded data]]}} is completely buffered.
+
+    The {{ImageDecoder/complete}} getter steps are to return
+    {{ImageDecoder/[[complete]]}}.
+
+
+### Methods ### {#imagedecoder-methods}
+: <dfn method for=ImageDecoder>decodeMetadata()</dfn>
+:: Returns a promise which resolves once enough
+    {{ImageDecoder/[[encoded data]]}} has been buffered and decoded to
+    establish {{ImageDecoder/tracks}}.
+
+    NOTE: {{ImageTrack}} {{ImageTrack/frameCount}} may receive subsequent
+        updates until {{ImageDecoder/complete}} is `true`.
+
+    When invoked, run these steps:
+    1. If {{ImageDecoder/[[fatal error]]}} is `true`, return a {{Promise}}
+        rejected with an {{EncodingError}} {{DOMException}}.
+    2. If {{ImageDecoder/[[tracks established]]}} is `true`, return a resolved
+        {{Promise}}.
+    3. Let |promise| be a new {{Promise}}.
+    4. Append |promise| to {{ImageDecoder/[[pending metadata promises]]}}
+    5. Return |promise|.
+
+: <dfn method for=ImageDecoder>decode(frameIndex, completeFramesOnly)</dfn>
+:: Enqueues a control message to decode the frame at frameIndex, resolving the
+    promise to output the decoded frame. When |completeFramesOnly| is `false`,
+    the returned promise may contain a [=Progressive Image=] output with
+    reduced detail, as indicated by {{ImageDecodeResult/complete}}.
+    Subsequent calls to {{ImageDecoder/decode()}} with the same |frameIndex|
+    will only resolve when an update to the progressively decoded image is
+    available or when it is completely decoded.
+
+    When invoked, run these steps:
+    1. If {{ImageDecoder/[[fatal error]]}} is `true`, return a {{Promise}}
+        rejected with an {{InvalidStateError}} {{DOMException}}.
+    2. If {{ImageDecoder/[[ImageTrackList]]}}'s
+        {{ImageTrackList/[[selected index]]}} is '-1', return a {{Promise}}
+        rejected with an {{InvalidStateError}} {{DOMException}}.
+    3. Let |promise| be a new {{Promise}}.
+    4. [=Queue a control message=] to decode the the image with |frameIndex|,
+        |completeFramesOnly|, and |promise|.
+    5. Append |promise| to {{ImageDecoder/[[pending decode promises]]}}.
+    6. Return |promise|.
+
+    [=Running a control message=] to decode the image means running these
+    steps:
+    1. Wait for {{ImageDecoder/[[tracks established]]}} to become `true`.
+    2. If |completeFramesOnly| is `true`, run the [=Decode Complete Frame=]
+        algorithm with |frameIndex| and |promise|.
+    3. Otherwise, run the [=Decode Progressive Frame=] algorithm with
+        |frameIndex| and |promise|.
+
+: <dfn method for=ImageDecoder>isTypeSupported(type)</dfn>
+:: Returns a promise indicating whether the provided config is supported by the
+    user agent.
+
+    When invoked, run these steps:
+    1. If |type| is not a [=valid image MIME type=], return a {{Promise}}
+        rejected with {{TypeError}}.
+    2. Let |p| be a new {{Promise}}.
+    3. In parallel, resolve |p| with the result of running the
+        [=Check Type Support=] algorithm with |type|.
+    4. Return |p|.
+
+### Algorithms ### {#imagedecoder-algorithms}
+
+: <dfn for=ImageDecoder>Fetch Stream Data Loop</dfn> (with |reader|)
+:: Run these steps:
+    1. Let |readRequest| be the following [=read request=].
+
+        : [=read request/chunk steps=], given |chunk|
+        :: 1. If {{ImageDecoder/[[fatal error]]}} is `true`, abort these steps.
+            2. If |chunk| is not a Uint8Array object, run the [=Handle Error=]
+                algorithm with a {{NotReadableError}} {{DOMException}} and
+                abort these steps.
+            3. Let |bytes| be the byte sequence represented by the Uint8Array
+                object.
+            4. Append |bytes| to the  {{ImageDecoder/[[encoded data]]}}
+                internal slot.
+            5. If {{ImageDecoder/[[tracks established]]}} is `false`, run the
+                [=Establish Tracks=] algorithm.
+            6. Otherwise, run the [=Update Tracks=] algorithm.
+            7. Run the [=Fetch Stream Data Loop=] algorithm with |reader|.
+
+        : [=read request/close steps=]
+        :: 1. Assign `true` to {{ImageDecoder/complete}}
+
+        : [=read request/error steps=]
+        :: 1. Queue a task on the [=control thread=] event loop to run the
+                [=Handle Error=] algorithm.
+
+    2. Read a chunk from |reader| given |readRequest|.
+
+: <dfn for=ImageDecoder>Establish Tracks</dfn>
+:: Run these steps:
+    1. Assert {{ImageDecoder/[[tracks established]]}} is `false`.
+    2. If {{ImageDecoder/[[encoded data]]}} does not contain enough data to
+        determine the number of tracks, abort these steps.
+    3. If the number of tracks is found to be '0', run the
+        [=ImageDecoder/Handle Error=] algorithm and abort these steps.
+    4. Let |selectedTrackIndex| be `-1`.
+    5. Let |newTrackList| be a new [=list=].
+    6. For each |image track| found in {{ImageDecoder/[[encoded data]]}}:
+        1. Let |newTrack| be a new {{ImageTrack}}, initialized as follows:
+            1. Assign [=this=] to {{ImageTrack/[[ImageDecoder]]}}.
+            2. Assign {{ImageDecoder/tracks}} to
+                {{ImageTrack/[[ImageTrackList]]}}.
+            3. If |image track| is found to be animated, assign `true` to
+                |newTrack|'s {{ImageTrack/[[animated]]}} internal slot.
+                Otherwise, assign `false`.
+            4. If |image track| is found to describe a frame count, assign
+                that count to |newTrack|'s {{ImageTrack/[[frame count]]}}
+                internal slot. Otherwise, assign `0`.
+
+                NOTE: If [=this=] was constructed with
+                  {{ImageDecoderInit/data}} as a {{ReadableStream}}, the
+                  {{ImageTrack/frameCount}} may change as additional bytes are
+                  appended to {{ImageDecoder/[[encoded data]]}}. See the
+                  [=Update Tracks=] algorithm.
+
+            5. If |image track| is found to describe a repetition count,
+                assign that count to {{ImageTrack/[[repetition count]]}}
+                internal slot. Otherwise, assign `0`.
+
+                NOTE: A value of `Infinity` indicates infinite repetitions.
+
+        2. Append |newTrack| to |newTrackList|.
+        3. Let |trackIndex| be the index of |newTrack| in |newTrackList|.
+        4. If |selectedTrackIndex| is `-1`:
+            1. If {{ImageDecoder/[[prefer animation]]}} is equal to
+                |newTrack|'s {{ImageTrack/[[animated]]}}, assign |trackIndex|
+                to |selectedTrackIndex|.
+            2. Otherwise, if the {{ImageDecoder/[[encoded data]]}} indicates
+                that |newTrack| is the [=Primary Image Track=], assign
+                |trackIndex| to |selectedTrackIndex|.
+            3. Otherwise, if the {{ImageDecoder/[[encoded data]]}} does not
+                indicate that any track is primary, assign |trackIndex| to
+                |selectedTrackIndex|.
+        5. If |trackIndex| equals |selectedTrackIndex|, assign `true` to
+            |newTrack|'s {{ImageTrack/[[selected]]}} internal slot.
+    7. Assert that |selectedTrackIndex| is not `-1`.
+    8. Assign |selectedTrackIndex| to {{ImageDecoder/[[internal selected track
+        index]]}}.
+    9. Assign `true` to {{ImageDecoder/[[tracks established]]}}.
+    10. Queue a task on the [=control thread=] event loop to perform the
+        following steps:
+        1. Assign |newTrackList| to the {{ImageDecoder/tracks}}
+            {{ImageTrackList/[[track list]]}} internal slot .
+        2. Assign |selectedTrackIndex| to {{ImageDecoder/tracks}}
+            {{ImageTrackList/[[selected index]]}}.
+        3. Fire a simple event named {{ImageTrackList/change}} at the
+            {{ImageDecoder/tracks}} object.
+        4. For each |promise| in
+            {{ImageDecoder/[[pending metadata promises]]}}, resolve |promise|
+            and remove it from the list.
+
+: <dfn for=ImageDecoder>Update Tracks</dfn>
+:: A <dfn>track update struct</dfn> is a [=struct=] that consists of a
+    <dfn for="track update struct">track index</dfn> ({{unsigned long}})
+    and a <dfn for="track update struct">frame count</dfn>
+    ({{unsigned long}}).
+
+    Run these steps:
+    1. Assert {{ImageDecoder/[[tracks established]]}} is `true`.
+    2. Let |trackChanges| be a new [=list=].
+    3. Let |trackList| be a copy of {{ImageDecoder/tracks}}'
+        {{ImageTrackList/[[track list]]}}.
+    4. For each |track| in |trackList|:
+        1. Let |trackIndex| be  the position of |track| in |trackList|.
+        2. Let |latestFrameCount| be the frame count as indicated by
+            {{ImageDecoder/[[encoded data]]}} for the track corresponding to
+            |track|.
+        3. Assert that |latestFrameCount| is greater than or equal to
+            `track.frameCount`.
+        4. If |latestFrameCount| is greater than `track.frameCount`:
+            1. Let |change| be a [=track update struct=] whose
+                [=track update struct/track index=] is |trackIndex| and
+                [=track update struct/frame count=] is |latestFrameCount|.
+            2. Append |change| to |tracksChanges|.
+    5. If |tracksChanges| is [=list/empty=], abort these steps.
+    6. For each <var ignore=''>update</var> in |trackChanges|:
+        1. Let |updateTrack| be the {{ImageTrack}} at position
+            `update.trackIndex` within {{ImageDecoder/tracks}}'
+            {{ImageTrackList/[[track list]]}}.
+        2. Assign `update.frameCount` to |updateTrack|'s
+            {{ImageTrack/[[frame count]]}}.
+    7. Fire a simple event named {{ImageTrackList/change}} at the
+        {{ImageDecoder/tracks}} object.
+
+: <dfn for=ImageDecoder>Decode Complete Frame</dfn> (with |frameIndex| and
+    |promise|)
+:: 1. Assert that {{ImageDecoder/[[tracks established]]}} is `true`.
+    2. Assert that {{ImageDecoder/[[internal selected track index]]}} is not
+        `-1`.
+    3. Let |encodedFrame| be the encoded frame identified by |frameIndex| and
+        {{ImageDecoder/[[internal selected track index]]}}.
+    4. Wait for any of the following conditions to be true (whichever happens
+        first):
+        1. {{ImageDecoder/[[encoded data]]}} contains enough bytes to
+            completely decode |encodedFrame|.
+        2. {{ImageDecoder/complete}} is `true`.
+        3. {{ImageDecoder/[[fatal error]]}} is `true`.
+    5. If {{ImageDecoder/[[encoded data]]}} does not contain enough bytes to
+        completely decode |encodedFrame|:
+        1. Remove |promise| from {{ImageDecoder/[[pending decode promises]]}}.
+        2. Reject |promise| with {{InvalidStateError}} {{DOMException}}.
+        3. Abort these steps.
+    6. Attempt to use {{ImageDecoder/[[codec implementation]]}} to decode
+        |encodedFrame|.
+    7. If decoding produces an error:
+        1. Remove |promise| from {{ImageDecoder/[[pending decode promises]]}}.
+        2. Reject |promise| with {{EncodingError}} {{DOMException}}.
+        3. Abort these steps.
+    8. If {{ImageDecoder/[[progressive frame generations]]}} contains an entry
+        keyed by |frameIndex|, remove the entry from the map.
+    9. Let |output| be the decoded image data emitted by
+        {{ImageDecoder/[[codec implementation]]}} corresponding to
+        |encodedFrame|.
+    10. Let |decodeResult| be a new {{ImageDecodeResult}} initialized as
+        follows:
+        1. Assign 'true' to {{ImageDecodeResult/complete}}.
+        2. Assign {{ImageDecodeResult/image}} with the result of running the
+            [=Create a VideoFrame=] algorithm with |output|.
+    13. Remove |promise| from {{ImageDecoder/[[pending decode promises]]}}.
+    14. Resolve |promise| with |decodeResult|.
+
+: <dfn for=ImageDecoder>Decode Progressive Frame</dfn> (with |frameIndex| and
+    |promise|)
+:: 1. Assert that {{ImageDecoder/[[tracks established]]}} is `true`.
+    2. Assert that {{ImageDecoder/[[internal selected track index]]}} is not
+        `-1`.
+    3. Let |encodedFrame| be the encoded frame identified by |frameIndex| and
+        {{ImageDecoder/[[internal selected track index]]}}.
+    4. Let |lastFrameGeneration| be `null`.
+    5. If {{ImageDecoder/[[progressive frame generations]]}} contains a map
+        entry with the key |frameIndex|, assign the value of the map entry to
+        |lastFrameGeneration|.
+    6. Wait for any of the following conditions to be true (whichever happens
+        first):
+        1. {{ImageDecoder/[[encoded data]]}} contains enough bytes to decode
+            |encodedFrame| to produce an output who's [=Progressive Image
+            Frame Generation=] does not equal |lastFrameGeneration|.
+        2. {{ImageDecoder/complete}} is `true`.
+        3. {{ImageDecoder/[[fatal error]]}} is `true`.
+    7. If {{ImageDecoder/[[encoded data]]}} does not contain enough bytes to
+        progressively decode |encodedFrame| to produce an output who's
+        [=Progressive Image Frame Generation=] does not equal
+        |lastFrameGeneration|:
+        1. Remove |promise| from {{ImageDecoder/[[pending decode promises]]}}.
+        2. Reject |promise| with {{InvalidStateError}} {{DOMException}}.
+        3. Abort these steps.
+    8. Attempt to use {{ImageDecoder/[[codec implementation]]}} to decode
+        |encodedFrame|.
+    9. If decoding produces an error:
+        1. Remove |promise| from {{ImageDecoder/[[pending decode promises]]}}.
+        2. Reject |promise| with {{EncodingError}} {{DOMException}}.
+        3. Abort these steps.
+    10. Let |output| be the decoded image data emitted by
+        {{ImageDecoder/[[codec implementation]]}} corresponding to
+        |encodedFrame|.
+    11. Let |decodeResult| be a new {{ImageDecodeResult}}.
+    12. If |output| is the final full-detail progressive output corresponding
+        to |encodedFrame|:
+        1. Assign `true` to |decodeResult|'s {{ImageDecodeResult/complete}}.
+        2. If {{ImageDecoder/[[progressive frame generations]]}} contains an
+            entry keyed by |frameIndex|, remove the entry from the map.
+    13. Otherwise:
+        1. Assign `false` to |decodeResult|'s {{ImageDecodeResult/complete}}.
+        2. Let |frameGeneration| be the [=Progressive Image Frame Generation=]
+            for |output|.
+        3. Add a new entry to {{ImageDecoder/[[progressive frame
+            generations]]}} with key |frameIndex| and value |frameGeneration|.
+    14. Assign |decodeResult|.{{ImageDecodeResult/image}} with the result of
+        running the [=Create a VideoFrame=] algorithm with |output|.
+    15. Remove |promise| from {{ImageDecoder/[[pending decode promises]]}}.
+    16. Resolve |promise| with |decodeResult|.
+
+: <dfn for=ImageDecoder>Check Type Support</dfn> (with |type|)
+:: 1. If the user agent can provide a codec to support decoding |type|, return
+        `true`.
+    2. Otherwise, return `false`.
+
+: <dfn for=ImageDecoder>Handle Error</dfn> (with |exception|)
+:: 1. Assign `true` to {{ImageDecoder/[[fatal error]]}}.
+    2. For each |metadataPromise| in
+        {{ImageDecoder/[[pending metadata promises]]}}:
+        1. Reject |metadataPromise| with |exception|.
+        2. Remove |metadataPromise| from
+            {{ImageDecoder/[[pending metadata promises]]}}.
+    3. For each |decodePromise| in
+        {{ImageDecoder/[[pending decode promises]]}}:
+        1. Reject |decodePromise| with |exception|.
+        2. Remove |decodePromise| from
+            {{ImageDecoder/[[pending decode promises]]}}.
+
+ImageDecoderInit Interface {#imagedecoderinit-interface}
+--------------------------------------------------------
+<pre class='idl'>
+<xmp>
+typedef (BufferSource or ReadableStream) ImageBufferSource;
+dictionary ImageDecoderInit {
+  required DOMString type;
+  required ImageBufferSource data;
+  PremultiplyAlpha premultiplyAlpha = "default";
+  ColorSpaceConversion colorSpaceConversion = "default";
+  unsigned long desiredWidth;
+  unsigned long desiredHeight;
+  boolean preferAnimation;
+};
+</xmp>
+</pre>
+
+To determine if an {{ImageDecoderInit}} is a <dfn>valid ImageDecoderInit</dfn>,
+run these steps:
+1. If |type| is not a [=valid image MIME type=], return `false`.
+2. If |data| is of type {{ReadableStream}} and the ReadableStream is
+    [=ReadableStream/disturbed=] or [=ReadableStream/locked=], return `false`.
+3. If |data| is of type {{BufferSource}}:
+    1. If the result of running  IsDetachedBuffer (described in
+        [[!ECMASCRIPT]]) on |data| is `false`, return `false`.
+    2. If |data| is [=empty=], return `false`.
+4. If {{ImageDecoderInit/desiredWidth}} [=map/exists=] and
+    {{ImageDecoderInit/desiredHeight}} does not exist, return `false`.
+5. If {{ImageDecoderInit/desiredHeight}} [=map/exists=] and
+    {{ImageDecoderInit/desiredWidth}} does not exist, return `false`.
+6. Return `true`.
+
+A <dfn>valid image MIME type</dfn> is a string that is a [=valid MIME type
+string=] and for which the `type`, per Section 3.1.1.1 of [[RFC7231]], is
+`image`.
+
+: <dfn dict-member for=ImageDecoderInit>type</dfn>
+:: String containing the MIME type of the image file to be decoded.
+
+: <dfn dict-member for=ImageDecoderInit>data</dfn>
+:: {{BufferSource}} or {{ReadableStream}} of bytes representing an encoded
+    image file as described by {{ImageDecoderInit/type}}.
+
+: <dfn dict-member for=ImageDecoderInit>premultiplyAlpha</dfn>
+:: Controls whether decoded outputs' color channels are to be premultiplied by
+    their alpha channel, as defined by {{ImageBitmapOptions/premultiplyAlpha}}
+    in {{ImageBitmapOptions}}.
+
+: <dfn dict-member for=ImageDecoderInit>colorSpaceConversion</dfn>
+:: Controls whether decoded outputs' color space is converted or ignored, as
+    defined by {{ImageBitmapOptions/colorSpaceConversion}} in
+    {{ImageBitmapOptions}}.
+
+: <dfn dict-member for=ImageDecoderInit>desiredWidth</dfn>
+:: Indicates a desired width for decoded outputs. Implementation is best
+    effort; decoding to a desired width may not be supported by all formats/
+    decoders.
+
+: <dfn dict-member for=ImageDecoderInit>desiredHeight</dfn>
+:: Indicates a desired height for decoded outputs. Implementation is best
+    effort; decoding to a desired height may not be supported by all
+    formats/decoders.
+
+ImageDecodeResult Interface {#imagedecoderesult-interface}
+----------------------------------------------------------
+<pre class='idl'>
+<xmp>
+dictionary ImageDecodeResult {
+  required VideoFrame image;
+  required boolean complete;
+};
+</xmp>
+</pre>
+
+: <dfn dict-member for=ImageDecodeResult>image</dfn>
+:: The decoded image.
+
+: <dfn dict-member for=ImageDecodeResult>complete</dfn>
+:: Indicates whether {{ImageDecodeResult/image}} contains the final full-detail
+    output.
+
+    NOTE: {{ImageDecodeResult/complete}} is always `true` when
+        {{ImageDecoder/decode()}} is invoked with |completeFramesOnly| set to
+        `true`.
+
+ImageTrackList Interface {#imagetracklist-interface}
+----------------------------------------------------
+<pre class='idl'>
+<xmp>
+interface ImageTrackList : EventTarget {
+  getter ImageTrack (unsigned long index);
+
+  readonly attribute unsigned long length;
+  readonly attribute long selectedIndex;
+
+  attribute EventHandler onchange;
+};
+</xmp>
+</pre>
+
+### Internal Slots ### {#imagetracklist-internal-slots}
+
+: <dfn attribute for=ImageTrackList>[[track list]]</dfn>
+:: The list of {{ImageTrack}}s describe by this {{ImageTrackList}}.
+
+: <dfn attribute for=ImageTrackList>\[[selected index]]</dfn>
+:: The index of the selected track in {{ImageTrackList/[[track list]]}}. A
+    value of `-1` indeicates that no track is selected.
+
+### Attributes ### {#imagetracklist-attributes}
+
+: <dfn attribute for=ImageTrackList>length</dfn>
+:: The {{ImageTrackList/length}} getter steps are to return the length of
+    {{ImageTrackList/[[track list]]}}.
+
+: <dfn attribute for=ImageTrackList>selectedIndex</dfn>
+:: The {{ImageTrackList/selectedIndex}} getter steps are to return
+    {{ImageTrackList/[[selected index]]}};
+
+: <dfn attribute for=ImageTrackList>onchange</dfn>
+:: An [=event handler IDL attribute=] whose [=event handler event type=] is
+    {{ImageTrackList/change}}.
+
+### Event Summary ### {#imagetracklist-eventsummary}
+
+: <dfn event for=ImageTrackList>change</dfn>
+:: Fired at the {{ImageTrackList}} when the list of {{ImageTrack}}s is
+    established or when attributes of the listed {{ImageTrack}}s are updated.
+
+ImageTrack Interface {#imagetrack-interface}
+--------------------------------------------
+<pre class='idl'>
+<xmp>
+interface ImageTrack {
+  readonly attribute boolean animated;
+  readonly attribute long frameCount;
+  readonly attribute unrestricted float repetitionCount;
+  attribute boolean selected;
+};
+</xmp>
+</pre>
+
+### Internal Slots ### {#imagetrack-internal-slots}
+: <dfn attribute for=ImageTrack>\[[ImageDecoder]]</dfn>
+:: The {{ImageDecoder}} instance that constructed this {{ImageTrack}}.
+
+: <dfn attribute for=ImageTrack>\[[ImageTrackList]]</dfn>
+:: The {{ImageTrackList}} instance that lists this {{ImageTrack}}.
+
+: <dfn attribute for=ImageTrack>\[[animated]]</dfn>
+:: Indicates whether this track contains an animated image with multiple
+    frames.
+
+: <dfn attribute for=ImageTrack>[[frame count]]</dfn>
+:: The number of frames in this track.
+
+: <dfn attribute for=ImageTrack>[[repetition count]]</dfn>
+:: The number of times the animation is intended to repeat.
+
+: <dfn attribute for=ImageTrack>\[[selected]]</dfn>
+:: Indicates whether this track is selected for decoding.
+
+### Attributes ### {#imagetrack-attributes}
+
+: <dfn attribute for=ImageTrack>animated</dfn>
+:: The {{ImageTrack/animated}} getter steps are to return the value of
+    {{ImageTrack/[[animated]]}}.
+
+    NOTE: This attribute provides an early indication that
+        {{ImageTrack/frameCount}} will ultimately exceed 0 for images where the
+        {{ImageTrack/frameCount}} starts at '0' and later increments as new
+        chunks of the {{ReadableStream}} {{ImageDecoderInit/data}} arrive.
+
+: <dfn attribute for=ImageTrack>frameCount</dfn>
+:: The {{ImageTrack/frameCount}} getter steps are to return the value of
+    {{ImageTrack/[[frame count]]}}.
+
+: <dfn attribute for=ImageTrack>repetitionCount</dfn>
+:: The {{ImageTrack/repetitionCount}} getter steps are to return the value of
+    {{ImageTrack/[[repetition count]]}}.
+
+: <dfn attribute for=ImageTrack>selected</dfn>
+:: The {{ImageTrack/selected}} getter steps are to return the value of
+    {{ImageTrack/[[selected]]}}.
+
+    The {{ImageTrack/selected}} setter steps are:
+    1. Let |newValue| be [=the given value=].
+    2. If |newValue| equals {{ImageTrack/[[selected]]}}, abort these steps.
+    3. Assign |newValue| to {{ImageTrack/[[selected]]}}.
+    4. Let |parentTrackList| be {{ImageTrack/[[ImageTrackList]]}}
+    5. Let |oldSelectedIndex| be the value of |parentTrackList|
+        {{ImageTrackList/[[selected index]]}}.
+    6. If |oldSelectedIndex| is not `-1`:
+        1. Let |oldSelectedTrack| be the {{ImageTrack}} in |parentTrackList|
+            {{ImageTrackList/[[track list]]}} at the position of
+            |oldSelectedIndex|.
+        2. Assign `false` to |oldSelectedTrack| {{ImageTrack/[[selected]]}}
+
+    7. If |newValue| is `true`, let |selectedIndex| be the index of [=this=]
+        {{ImageTrack}} within |parentTrackList|'s
+        {{ImageTrackList/[[track list]]}}. Otherwise, let |selectedIndex| be
+        `-1`.
+    8. Assign |selectedIndex| to |parentTrackList|
+        {{ImageTrackList/[[selected index]]}}.
+    9. Let |parentDecoder| be  {{ImageTrack/[[ImageDecoder]]}}.
+    10. [=Reset the control message queue=] associated with |parentDecoder|.
+    11. For each |promise| in |parentDecoder|'s
+        {{ImageDecoder/[[pending decode promises]]}} internal slot:
+        1. Reject |promise| with an {{AbortError}} {{DOMException}}.
+        2. Remove |promise| from {{ImageDecoder/[[pending decode promises]]}}.
+    12. [=Queue a control message=] to {{ImageTrack/[[ImageDecoder]]}}'s
+        [=control message queue=] to update the internal selected track
+        index with |selectedIndex|.
+
+    [=Running a control message=] to update the internal selected track index
+    means running these steps:
+    1. Set {{ImageDecoder/[[internal selected track index]]}} to
+        |selectedIndex|.
+    2. Remove all entries from
+        {{ImageDecoder/[[progressive frame generations]]}}.
 
 
 Security Considerations{#security-considerations}
