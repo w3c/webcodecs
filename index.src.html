@@ -2485,7 +2485,7 @@ interface ImageDecoder {
 :: A [=byte sequence=] containing the encoded image data to be decoded.
 
 : <dfn attribute for=ImageDecoder>[[prefer animation]]</dfn>
-:: Boolean reflecting the value of {{ImageDecoderInit/preferAnimation}} given
+:: A boolean reflecting the value of {{ImageDecoderInit/preferAnimation}} given
     at construction.
 
 : <dfn attribute for=ImageDecoder>[[pending metadata promises]]</dfn>
@@ -2497,6 +2497,10 @@ interface ImageDecoder {
 : <dfn attribute for=ImageDecoder>[[internal selected track index]]</dfn>
 :: Identifies the image track within {{ImageDecoder/[[encoded data]]}} that is
     used by decoding algorithms on the [=codec thread=].
+
+: <dfn attribute for=ImageDecoder>[[decode metadata requested]]</dfn>
+:: A boolean indicating whether a [=control message=] to [=ImageDecoder/decode
+    track metadata=] has been enqueued to the [=control message queue=].
 
 : <dfn attribute for=ImageDecoder>[[tracks established]]</dfn>
 :: A boolean indicating whether the track list has been established in
@@ -2539,11 +2543,13 @@ interface ImageDecoder {
         assign 'null' to {{ImageDecoder/[[prefer animation]]}} internal slot.
     6. Assign a new [=list=] to {{ImageDecoder/[[pending metadata promises]]}}.
     7. Assign a new [=list=] to {{ImageDecoder/[[pending decode promises]]}}.
-    8. Assign `false` to {{ImageDecoder/[[tracks established]]}}.
-    9. Assign `false` to {{ImageDecoder/[[closed]]}}.
-    10. Assign a new [=map=] to {{ImageDecoder/[[progressive frame
+    8. Assign `-1` to {{ImageDecoder/[[internal selected track index]]}}.
+    9. Assign `false` to {{ImageDecoder/[[decode metadata requested]]}}.
+    10. Assign `false` to {{ImageDecoder/[[tracks established]]}}.
+    11. Assign `false` to {{ImageDecoder/[[closed]]}}.
+    12. Assign a new [=map=] to {{ImageDecoder/[[progressive frame
         generations]]}}.
-    11. If |init|'s {{ImageDecoderInit/data}} member is of type
+    13. If |init|'s {{ImageDecoderInit/data}} member is of type
         {{ReadableStream}}:
         1. Assign a new [=list=] to {{ImageDecoder/[[encoded data]]}}.
         2. Assign `false` to {{ImageDecoder/complete}}
@@ -2553,14 +2559,13 @@ interface ImageDecoder {
             {{ImageDecoderInit/data}}.
         5. In parallel, perform the [=Fetch Stream Data Loop=] on |d| with
             |reader|.
-    12. Otherwise:
+    14. Otherwise:
         1. Assert that `init.data` is of type {{BufferSource}}.
         2. Assign a copy of `init.data` to  {{ImageDecoder/[[encoded data]]}}.
         3. Assign `true` to {{ImageDecoder/complete}}
-        4. Queue a control message to [=configure the image decoder=] with
-            |init|.
-        5. Queue a control message to [=decode track metadata=].
-    13. return |d|.
+    15. Queue a control message to [=configure the image decoder=] with
+        |init|.
+    16. return |d|.
 
     [=Running a control message=] to <dfn>configure the image decoder</dfn>
     means running these steps:
@@ -2578,10 +2583,6 @@ interface ImageDecoder {
         {{ImageDecoderInit/colorSpaceConversion}},
         {{ImageDecoderInit/desiredWidth}}, and
         {{ImageDecoderInit/desiredHeight}}.
-
-    [=Running a control message=] to <dfn>decode track metadata</dfn> means
-    running these steps:
-    1. Run the [=ImageDecoder/Establish Tracks=] algorithm.
 
 ### Attributes ### {#imagedecoder-attributes}
 
@@ -2610,12 +2611,20 @@ interface ImageDecoder {
 
     When invoked, run these steps:
     1. If {{ImageDecoder/[[closed]]}} is `true`, return a {{Promise}}
-        rejected with an {{EncodingError}} {{DOMException}}.
+        rejected with an {{InvalidStateError}} {{DOMException}}.
     2. If {{ImageDecoder/[[tracks established]]}} is `true`, return a resolved
         {{Promise}}.
     3. Let |promise| be a new {{Promise}}.
     4. Append |promise| to {{ImageDecoder/[[pending metadata promises]]}}
+    5. If {{ImageDecoder/[[decode metadata requested]]}} is `false`:
+        1. [=Queue a control message=] to [=ImageDecoder/decode track
+            metadata=].
+        2. Assign `true` to {{ImageDecoder/[[decode metadata requested]]}}.
     5. Return |promise|.
+
+    [=Running a control message=] to <dfn for=ImageDecoder>decode track
+    metadata</dfn> means running these steps:
+    1. Run the [=ImageDecoder/Establish Tracks=] algorithm.
 
 : <dfn method for=ImageDecoder>decode(options)</dfn>
 :: Enqueues a control message to decode the frame according to |options|.
@@ -2628,11 +2637,15 @@ interface ImageDecoder {
         rejected with an {{InvalidStateError}} {{DOMException}}.
     3. If |options| is `undefined`, assign a new {{ImageDecodeOptions}} to
         |options|.
-    4. Let |promise| be a new {{Promise}}.
-    5. [=Queue a control message=] to decode the the image with |options|, and
+    4. If {{ImageDecoder/[[decode metadata requested]]}} is `false`:
+        1. [=Queue a control message=] to [=ImageDecoder/decode track
+            metadata=].
+        2. Assign `true` to {{ImageDecoder/[[decode metadata requested]]}}.
+    5. Let |promise| be a new {{Promise}}.
+    6. [=Queue a control message=] to decode the the image with |options|, and
         |promise|.
-    6. Append |promise| to {{ImageDecoder/[[pending decode promises]]}}.
-    7. Return |promise|.
+    7. Append |promise| to {{ImageDecoder/[[pending decode promises]]}}.
+    8. Return |promise|.
 
     [=Running a control message=] to decode the image means running these
     steps:
