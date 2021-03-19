@@ -113,8 +113,8 @@ Definitions {#definitions}
 
 : <dfn>Progressive Image Frame Generation</dfn>
 :: A generational identifier for a given [=Progressive Image=] decoded output.
-    The mechanism for computing a frame's generation is implementer / format
-    defined.
+    Each successive generation adds additional detail to the decoded output.
+    The mechanism for computing a frame's generation is implementer defined.
 
 : <dfn>Primary Image Track</dfn>
 :: An image track that is marked by the given image file as being the default
@@ -2437,7 +2437,7 @@ Background {#image-decoding-background}
 This section is non-normative.
 
 Image codec definitions are typically accompanied by a definition for a
-corresponding file format. Hence, image decoders often perform both duties of
+corresponding file format. Hence image decoders often perform both duties of
 unpacking (demuxing) as well as decoding the encoded image data. The WebCodecs
 {{ImageDecoder}} follows this pattern, which motivates an interface design that
 is notably different from that of {{VideoDecoder}} and {{AudioDecoder}}.
@@ -2459,8 +2459,9 @@ interface ImageDecoder {
   readonly attribute ImageTrackList tracks;
 
   Promise<undefined> decodeMetadata();
-  Promise<ImageDecodeResult> decode(optional unsigned long frameIndex = 0,
-                                    optional boolean completeFramesOnly = true);
+  Promise<ImageDecodeResult> decode(optional ImageDecodeOptions options);
+  undefined reset();
+  undefined close();
 
   static Promise<boolean> isTypeSupported(DOMString type);
 };
@@ -2501,8 +2502,9 @@ interface ImageDecoder {
 :: A boolean indicating whether the track list has been established in
     {{ImageDecoder/[[ImageTrackList]]}}.
 
-: <dfn attribute for=ImageDecoder>[[fatal error]]</dfn>
-:: A boolean indicating that the ImageDecoder is in a permanent error state.
+: <dfn attribute for=ImageDecoder>\[[closed]]</dfn>
+:: A boolean indicating that the ImageDecoder is in a permanent closed state
+    and can no longer be used.
 
 : <dfn attribute for=ImageDecoder>[[progressive frame generations]]</dfn>
 :: A mapping of frame indices to [=Progressive Image Frame Generations=]. The
@@ -2538,7 +2540,7 @@ interface ImageDecoder {
     6. Assign a new [=list=] to {{ImageDecoder/[[pending metadata promises]]}}.
     7. Assign a new [=list=] to {{ImageDecoder/[[pending decode promises]]}}.
     8. Assign `false` to {{ImageDecoder/[[tracks established]]}}.
-    9. Assign `false` to {{ImageDecoder/[[fatal error]]}}.
+    9. Assign `false` to {{ImageDecoder/[[closed]]}}.
     10. Assign a new [=map=] to {{ImageDecoder/[[progressive frame
         generations]]}}.
     11. If |init|'s {{ImageDecoderInit/data}} member is of type
@@ -2562,10 +2564,11 @@ interface ImageDecoder {
 
     [=Running a control message=] to <dfn>configure the image decoder</dfn>
     means running these steps:
-    1. Let |supported| be the result of running the [=Check Configuration
+    1. Let |supported| be the result of running the [=ImageDecoder/Check Type
         Support=] algorithm with `init.type`.
-    2. If |supported| is `false`, queue a task on the control thread event
-        loop to run the [=ImageDecoder/Handle Error=] algorithm and abort
+    2. If |supported| is `false`, queue a task on the [=control thread=] event
+        loop to run the [=ImageDecoder/Close ImageDecoder=] algorithm
+        with a {{NotSupportedError}} {{DOMException}} and abort
         these steps.
     3. If |supported| is `true`, assign the
         {{ImageDecoder/[[codec implementation]]}} internal slot with an
@@ -2578,7 +2581,7 @@ interface ImageDecoder {
 
     [=Running a control message=] to <dfn>decode track metadata</dfn> means
     running these steps:
-    1. Run the [=Decode Track Metadata=] algorithm.
+    1. Run the [=ImageDecoder/Establish Tracks=] algorithm.
 
 ### Attributes ### {#imagedecoder-attributes}
 
@@ -2606,7 +2609,7 @@ interface ImageDecoder {
         updates until {{ImageDecoder/complete}} is `true`.
 
     When invoked, run these steps:
-    1. If {{ImageDecoder/[[fatal error]]}} is `true`, return a {{Promise}}
+    1. If {{ImageDecoder/[[closed]]}} is `true`, return a {{Promise}}
         rejected with an {{EncodingError}} {{DOMException}}.
     2. If {{ImageDecoder/[[tracks established]]}} is `true`, return a resolved
         {{Promise}}.
@@ -2614,34 +2617,44 @@ interface ImageDecoder {
     4. Append |promise| to {{ImageDecoder/[[pending metadata promises]]}}
     5. Return |promise|.
 
-: <dfn method for=ImageDecoder>decode(frameIndex, completeFramesOnly)</dfn>
-:: Enqueues a control message to decode the frame at frameIndex, resolving the
-    promise to output the decoded frame. When |completeFramesOnly| is `false`,
-    the returned promise may contain a [=Progressive Image=] output with
-    reduced detail, as indicated by {{ImageDecodeResult/complete}}.
-    Subsequent calls to {{ImageDecoder/decode()}} with the same |frameIndex|
-    will only resolve when an update to the progressively decoded image is
-    available or when it is completely decoded.
+: <dfn method for=ImageDecoder>decode(options)</dfn>
+:: Enqueues a control message to decode the frame according to |options|.
 
     When invoked, run these steps:
-    1. If {{ImageDecoder/[[fatal error]]}} is `true`, return a {{Promise}}
+    1. If {{ImageDecoder/[[closed]]}} is `true`, return a {{Promise}}
         rejected with an {{InvalidStateError}} {{DOMException}}.
     2. If {{ImageDecoder/[[ImageTrackList]]}}'s
         {{ImageTrackList/[[selected index]]}} is '-1', return a {{Promise}}
         rejected with an {{InvalidStateError}} {{DOMException}}.
-    3. Let |promise| be a new {{Promise}}.
-    4. [=Queue a control message=] to decode the the image with |frameIndex|,
-        |completeFramesOnly|, and |promise|.
-    5. Append |promise| to {{ImageDecoder/[[pending decode promises]]}}.
-    6. Return |promise|.
+    3. If |options| is `undefined`, assign a new {{ImageDecodeOptions}} to
+        |options|.
+    4. Let |promise| be a new {{Promise}}.
+    5. [=Queue a control message=] to decode the the image with |options|, and
+        |promise|.
+    6. Append |promise| to {{ImageDecoder/[[pending decode promises]]}}.
+    7. Return |promise|.
 
     [=Running a control message=] to decode the image means running these
     steps:
     1. Wait for {{ImageDecoder/[[tracks established]]}} to become `true`.
-    2. If |completeFramesOnly| is `true`, run the [=Decode Complete Frame=]
-        algorithm with |frameIndex| and |promise|.
-    3. Otherwise, run the [=Decode Progressive Frame=] algorithm with
-        |frameIndex| and |promise|.
+    2. If |options|.{{ImageDecodeOptions/completeFramesOnly}} is `false` and
+        the image is a [=Progressive Image=] for which the user agent supports
+        progressive decoding, run the [=Decode Progressive Frame=] algorithm with |options|.{{ImageDecodeOptions/frameIndex}} and |promise|.
+    3. Otherwise, run the [=Decode Complete Frame=] algorithm with
+        |options|.{{ImageDecodeOptions/frameIndex}} and |promise|.
+
+: <dfn method for=ImageDecoder>reset()</dfn>
+:: Immediately aborts all pending work.
+
+    When invoked, run the [=ImageDecoder/Reset ImageDecoder=] algorithm with
+    and {{AbortError}} {{DOMException}}.
+
+: <dfn method for=ImageDecoder>close()</dfn>
+:: Immediately aborts all pending work and releases system resources. Close is
+    final.
+
+    When invoked, run the [=ImageDecoder/Close ImageDecoder=] algorithm with
+    and {{AbortError}} {{DOMException}}.
 
 : <dfn method for=ImageDecoder>isTypeSupported(type)</dfn>
 :: Returns a promise indicating whether the provided config is supported by the
@@ -2662,10 +2675,11 @@ interface ImageDecoder {
     1. Let |readRequest| be the following [=read request=].
 
         : [=read request/chunk steps=], given |chunk|
-        :: 1. If {{ImageDecoder/[[fatal error]]}} is `true`, abort these steps.
-            2. If |chunk| is not a Uint8Array object, run the [=Handle Error=]
-                algorithm with a {{NotReadableError}} {{DOMException}} and
-                abort these steps.
+        :: 1. If {{ImageDecoder/[[closed]]}} is `true`, abort these steps.
+            2. If |chunk| is not a Uint8Array object, queue a task on the
+                [=control thread=] event loop to run the
+                [=ImageDecoder/Close ImageDecoder=] algorithm with a
+                {{DataError}} {{DOMException}} and abort these steps.
             3. Let |bytes| be the byte sequence represented by the Uint8Array
                 object.
             4. Append |bytes| to the  {{ImageDecoder/[[encoded data]]}}
@@ -2680,7 +2694,8 @@ interface ImageDecoder {
 
         : [=read request/error steps=]
         :: 1. Queue a task on the [=control thread=] event loop to run the
-                [=Handle Error=] algorithm.
+                [=ImageDecoder/Close ImageDecoder=] algorithm with a
+                {{NotReadableError}} {{DOMException}}
 
     2. Read a chunk from |reader| given |readRequest|.
 
@@ -2689,11 +2704,11 @@ interface ImageDecoder {
     1. Assert {{ImageDecoder/[[tracks established]]}} is `false`.
     2. If {{ImageDecoder/[[encoded data]]}} does not contain enough data to
         determine the number of tracks, abort these steps.
-    3. If the number of tracks is found to be '0', run the
-        [=ImageDecoder/Handle Error=] algorithm and abort these steps.
-    4. Let |selectedTrackIndex| be `-1`.
-    5. Let |newTrackList| be a new [=list=].
-    6. For each |image track| found in {{ImageDecoder/[[encoded data]]}}:
+    3. If the number of tracks is found to be '0', queue a task on the
+        [=control thread=] event loop to run the
+        [=ImageDecoder/Close ImageDecoder=] algorithm and abort these steps.
+    4. Let |newTrackList| be a new [=list=].
+    5. For each |image track| found in {{ImageDecoder/[[encoded data]]}}:
         1. Let |newTrack| be a new {{ImageTrack}}, initialized as follows:
             1. Assign [=this=] to {{ImageTrack/[[ImageDecoder]]}}.
             2. Assign {{ImageDecoder/tracks}} to
@@ -2717,35 +2732,46 @@ interface ImageDecoder {
 
                 NOTE: A value of `Infinity` indicates infinite repetitions.
 
+            6. Assign `false` to |newTrack|'s {{ImageTrack/[[selected]]}}
+                internal slot.
         2. Append |newTrack| to |newTrackList|.
-        3. Let |trackIndex| be the index of |newTrack| in |newTrackList|.
-        4. If |selectedTrackIndex| is `-1`:
-            1. If {{ImageDecoder/[[prefer animation]]}} is equal to
-                |newTrack|'s {{ImageTrack/[[animated]]}}, assign |trackIndex|
-                to |selectedTrackIndex|.
-            2. Otherwise, if the {{ImageDecoder/[[encoded data]]}} indicates
-                that |newTrack| is the [=Primary Image Track=], assign
-                |trackIndex| to |selectedTrackIndex|.
-            3. Otherwise, if the {{ImageDecoder/[[encoded data]]}} does not
-                indicate that any track is primary, assign |trackIndex| to
-                |selectedTrackIndex|.
-        5. If |trackIndex| equals |selectedTrackIndex|, assign `true` to
-            |newTrack|'s {{ImageTrack/[[selected]]}} internal slot.
-    7. Assert that |selectedTrackIndex| is not `-1`.
+    6. Let |selectedTrackIndex| be the result of running the
+        [=ImageDecoder/Get Default Selected Track Index=] algorithm with
+        |newTrackList|.
+    7. Let |selectedTrack| be the track at position |selectedTrackIndex| within
+        |newTrackList|.
+    8. Assign `true` to |selectedTrack|'s {{ImageTrack/[[selected]]}} internal
+        slot.
     8. Assign |selectedTrackIndex| to {{ImageDecoder/[[internal selected track
         index]]}}.
     9. Assign `true` to {{ImageDecoder/[[tracks established]]}}.
     10. Queue a task on the [=control thread=] event loop to perform the
         following steps:
         1. Assign |newTrackList| to the {{ImageDecoder/tracks}}
-            {{ImageTrackList/[[track list]]}} internal slot .
+            {{ImageTrackList/[[track list]]}} internal slot.
         2. Assign |selectedTrackIndex| to {{ImageDecoder/tracks}}
             {{ImageTrackList/[[selected index]]}}.
-        3. Fire a simple event named {{ImageTrackList/change}} at the
-            {{ImageDecoder/tracks}} object.
-        4. For each |promise| in
+        3. For each |promise| in
             {{ImageDecoder/[[pending metadata promises]]}}, resolve |promise|
             and remove it from the list.
+
+: <dfn for=ImageDecoder>Get Default Selected Track Index</dfn> (with
+    |trackList|)
+:: Run these steps:
+    1. If {{ImageDecoder/[[encoded data]]}} identifies a [=Primary Image
+        Track=]:
+        1. Let |primaryTrack| be the {{ImageTrack}} from |trackList| that
+            describes the [=Primary Image Track=].
+        2. Let |primaryTrackIndex| be position of |primaryTrack| within
+            |trackList|.
+        3. If {{ImageDecoder/[[prefer animation]]}} is `null`, return
+            |primaryTrackIndex|.
+        4. If |primaryTrack|.{{ImageTrack/animated}} equals
+            {{ImageDecoder/[[prefer animation]]}}, return |primaryTrackIndex|.
+    2. If any {{ImageTrack}}s in |trackList| have {{ImageTrack/animated}} equal
+        to {{ImageDecoder/[[prefer animation]]}}, return the position of the
+        earliest such track in |trackList|.
+    3. Return `0`.
 
 : <dfn for=ImageDecoder>Update Tracks</dfn>
 :: A <dfn>track update struct</dfn> is a [=struct=] that consists of a
@@ -2771,14 +2797,16 @@ interface ImageDecoder {
                 [=track update struct/frame count=] is |latestFrameCount|.
             2. Append |change| to |tracksChanges|.
     5. If |tracksChanges| is [=list/empty=], abort these steps.
-    6. For each <var ignore=''>update</var> in |trackChanges|:
-        1. Let |updateTrack| be the {{ImageTrack}} at position
-            `update.trackIndex` within {{ImageDecoder/tracks}}'
-            {{ImageTrackList/[[track list]]}}.
-        2. Assign `update.frameCount` to |updateTrack|'s
-            {{ImageTrack/[[frame count]]}}.
-    7. Fire a simple event named {{ImageTrackList/change}} at the
-        {{ImageDecoder/tracks}} object.
+    6. Queue a task on the [=control thread=] event loop to perform the
+        following steps:
+        1. For each <var ignore=''>update</var> in |trackChanges|:
+            1. Let |updateTrack| be the {{ImageTrack}} at position
+                `update.trackIndex` within {{ImageDecoder/tracks}}'
+                {{ImageTrackList/[[track list]]}}.
+            2. Assign `update.frameCount` to |updateTrack|'s
+                {{ImageTrack/[[frame count]]}}.
+            3. Fire a simple event named {{ImageTrack/change}} at the
+                {{ImageDecoder/tracks}} object.
 
 : <dfn for=ImageDecoder>Decode Complete Frame</dfn> (with |frameIndex| and
     |promise|)
@@ -2792,18 +2820,16 @@ interface ImageDecoder {
         1. {{ImageDecoder/[[encoded data]]}} contains enough bytes to
             completely decode |encodedFrame|.
         2. {{ImageDecoder/complete}} is `true`.
-        3. {{ImageDecoder/[[fatal error]]}} is `true`.
+        3. {{ImageDecoder/[[closed]]}} is `true`.
     5. If {{ImageDecoder/[[encoded data]]}} does not contain enough bytes to
-        completely decode |encodedFrame|:
-        1. Remove |promise| from {{ImageDecoder/[[pending decode promises]]}}.
-        2. Reject |promise| with {{InvalidStateError}} {{DOMException}}.
-        3. Abort these steps.
+        completely decode |encodedFrame|, run the
+        [=ImageDecoder/Reject Infeasible Decode=] algorithm with |promise| and
+        abort these steps.
     6. Attempt to use {{ImageDecoder/[[codec implementation]]}} to decode
         |encodedFrame|.
-    7. If decoding produces an error:
-        1. Remove |promise| from {{ImageDecoder/[[pending decode promises]]}}.
-        2. Reject |promise| with {{EncodingError}} {{DOMException}}.
-        3. Abort these steps.
+    7. If decoding produces an error, run the
+        [=ImageDecoder/Reject Failed Decode=] algorithm with |promise| and
+        abort these steps.
     8. If {{ImageDecoder/[[progressive frame generations]]}} contains an entry
         keyed by |frameIndex|, remove the entry from the map.
     9. Let |output| be the decoded image data emitted by
@@ -2814,8 +2840,8 @@ interface ImageDecoder {
         1. Assign 'true' to {{ImageDecodeResult/complete}}.
         2. Assign {{ImageDecodeResult/image}} with the result of running the
             [=Create a VideoFrame=] algorithm with |output|.
-    13. Remove |promise| from {{ImageDecoder/[[pending decode promises]]}}.
-    14. Resolve |promise| with |decodeResult|.
+    11. Run the [=ImageDecoder/Resolve Decode=] algorithm with |promise| and
+        |decodeResult|.
 
 : <dfn for=ImageDecoder>Decode Progressive Frame</dfn> (with |frameIndex| and
     |promise|)
@@ -2832,22 +2858,19 @@ interface ImageDecoder {
         first):
         1. {{ImageDecoder/[[encoded data]]}} contains enough bytes to decode
             |encodedFrame| to produce an output who's [=Progressive Image
-            Frame Generation=] does not equal |lastFrameGeneration|.
+            Frame Generation=] exceeds |lastFrameGeneration|.
         2. {{ImageDecoder/complete}} is `true`.
-        3. {{ImageDecoder/[[fatal error]]}} is `true`.
+        3. {{ImageDecoder/[[closed]]}} is `true`.
     7. If {{ImageDecoder/[[encoded data]]}} does not contain enough bytes to
-        progressively decode |encodedFrame| to produce an output who's
-        [=Progressive Image Frame Generation=] does not equal
-        |lastFrameGeneration|:
-        1. Remove |promise| from {{ImageDecoder/[[pending decode promises]]}}.
-        2. Reject |promise| with {{InvalidStateError}} {{DOMException}}.
-        3. Abort these steps.
+        decode |encodedFrame| to produce an output who's
+        [=Progressive Image Frame Generation=] exceeds |lastFrameGeneration|,
+        run the [=ImageDecoder/Reject Infeasible Decode=] algorithm with
+        |promise| and abort these steps.
     8. Attempt to use {{ImageDecoder/[[codec implementation]]}} to decode
         |encodedFrame|.
-    9. If decoding produces an error:
-        1. Remove |promise| from {{ImageDecoder/[[pending decode promises]]}}.
-        2. Reject |promise| with {{EncodingError}} {{DOMException}}.
-        3. Abort these steps.
+    9. If decoding produces an error, run the
+        [=ImageDecoder/Reject Failed Decode=] algorithm with |promise| and
+        abort these steps.
     10. Let |output| be the decoded image data emitted by
         {{ImageDecoder/[[codec implementation]]}} corresponding to
         |encodedFrame|.
@@ -2868,13 +2891,43 @@ interface ImageDecoder {
     15. Remove |promise| from {{ImageDecoder/[[pending decode promises]]}}.
     16. Resolve |promise| with |decodeResult|.
 
+: <dfn for=ImageDecoder>Resolve Decode</dfn> (with |promise| and |result|)
+:: 1. Queue a task on the [=control thread=] event loop to run these steps:
+        1. If {{ImageDecoder/[[closed]]}}, abort these steps.
+        2. Assert that |promise| is an element of
+            {{ImageDecoder/[[pending decode promises]]}}.
+        3. Remove |promise| from {{ImageDecoder/[[pending decode promises]]}}.
+        4. Resolve |promise| with |result|.
+
+: <dfn for=ImageDecoder>Reject Infeasible Decode</dfn> (with |promise|)
+:: 1. Assert that {{ImageDecoder/complete}} is `true` or
+        {{ImageDecoder/[[closed]]}} is `true`.
+    2. If {{ImageDecoder/complete}} is `true`, let |exception| be a
+            {{RangeError}}. Otherwise, let |exception| be an
+            {{InvalidStateError}} {{DOMException}}.
+    3. Queue a task on the [=control thread=] event loop to run these steps:
+        1. If {{ImageDecoder/[[closed]]}}, abort these steps.
+        2. Assert that |promise| is an element of
+            {{ImageDecoder/[[pending decode promises]]}}.
+        3. Remove |promise| from {{ImageDecoder/[[pending decode promises]]}}.
+        4. Reject |promise| with |exception|.
+
+: <dfn for=ImageDecoder>Reject Failed Decode</dfn> (with |promise|)
+:: 1. Queue a task on the [=control thread=] event loop to run these steps:
+        1. If {{ImageDecoder/[[closed]]}}, abort these steps.
+        2. Assert that |promise| is an element of
+            {{ImageDecoder/[[pending decode promises]]}}.
+        3. Remove |promise| from {{ImageDecoder/[[pending decode promises]]}}.
+        4. Reject |promise| with {{EncodingError}} {{DOMException}}.
+
 : <dfn for=ImageDecoder>Check Type Support</dfn> (with |type|)
 :: 1. If the user agent can provide a codec to support decoding |type|, return
         `true`.
     2. Otherwise, return `false`.
 
-: <dfn for=ImageDecoder>Handle Error</dfn> (with |exception|)
-:: 1. Assign `true` to {{ImageDecoder/[[fatal error]]}}.
+: <dfn for=ImageDecoder>Reset ImageDecoder</dfn> (with |exception|)
+:: 1. Signal {{ImageDecoder/[[codec implementation]]}} to abort any active
+        decoding operation.
     2. For each |metadataPromise| in
         {{ImageDecoder/[[pending metadata promises]]}}:
         1. Reject |metadataPromise| with |exception|.
@@ -2885,6 +2938,13 @@ interface ImageDecoder {
         1. Reject |decodePromise| with |exception|.
         2. Remove |decodePromise| from
             {{ImageDecoder/[[pending decode promises]]}}.
+
+: <dfn for=ImageDecoder>Close ImageDecoder</dfn> (with |exception|)
+:: 1. Run the [=ImageDecoder/Reset ImageDecoder=] algorithm with |exception|.
+    1. Assign `true` to {{ImageDecoder/[[closed]]}}.
+    2. Clear {{ImageDecoder/[[codec implementation]]}} and release associated
+        [=system resources=].
+
 
 ImageDecoderInit Interface {#imagedecoderinit-interface}
 --------------------------------------------------------
@@ -2949,6 +3009,45 @@ string=] and for which the `type`, per Section 3.1.1.1 of [[RFC7231]], is
     effort; decoding to a desired height may not be supported by all
     formats/decoders.
 
+ImageDecodeOptions Interface {#imagedecodeoptions-interface}
+------------------------------------------------------------
+<pre class='idl'>
+<xmp>
+dictionary ImageDecodeOptions {
+  unsigned long frameIndex = 0;
+  boolean completeFramesOnly = true;
+};
+</xmp>
+</pre>
+
+: <dfn dict-member for=ImageDecodeOptions>frameIndex</dfn>
+:: The index of the frame to decode.
+
+: <dfn dict-member for=ImageDecodeOptions>completeFramesOnly</dfn>
+:: For [=Progressive Images=], a value of `false` indicates that the decoder
+    may output an {{ImageDecodeResult/image}} with reduced detail. Each
+    subsequent call to {{ImageDecoder/decode()}} for the same
+    {{ImageDecodeOptions/frameIndex}} will resolve to produce an image with a
+    higher [=Progressive Image Frame Generation=] (more image detail) than the
+    previous call, until finally the full-detail image is produced.
+
+    If {{ImageDecodeOptions/completeFramesOnly}} is assigned `true`, or if the
+    image is not a [=Progressive Image=], or if the user agent does not support
+    progressive decoding for the given image type, calls to
+    {{ImageDecoder/decode()}} will only resolve once the full detail image is
+    decoded.
+
+    <div class='note'>
+      NOTE: For [=Progressive Images=], setting
+          {{ImageDecodeOptions/completeFramesOnly}} to `false` may be used to
+          offer users a preview an image that is still being buffered from the
+          network (via the {{ImageDecoderInit/data}} {{ReadableStream}}).
+
+          Upon decoding the full detail image, the {{ImageDecodeResult}}'s
+          {{ImageDecodeResult/complete}} will be set to true.
+    </div>
+
+
 ImageDecodeResult Interface {#imagedecoderesult-interface}
 ----------------------------------------------------------
 <pre class='idl'>
@@ -2968,20 +3067,19 @@ dictionary ImageDecodeResult {
     output.
 
     NOTE: {{ImageDecodeResult/complete}} is always `true` when
-        {{ImageDecoder/decode()}} is invoked with |completeFramesOnly| set to
-        `true`.
+        {{ImageDecoder/decode()}} is invoked with
+        {{ImageDecodeOptions/completeFramesOnly}} set to `true`.
 
 ImageTrackList Interface {#imagetracklist-interface}
 ----------------------------------------------------
 <pre class='idl'>
 <xmp>
-interface ImageTrackList : EventTarget {
+interface ImageTrackList {
   getter ImageTrack (unsigned long index);
 
   readonly attribute unsigned long length;
   readonly attribute long selectedIndex;
-
-  attribute EventHandler onchange;
+  readonly attribute ImageTrack? selected;
 };
 </xmp>
 </pre>
@@ -3005,24 +3103,21 @@ interface ImageTrackList : EventTarget {
 :: The {{ImageTrackList/selectedIndex}} getter steps are to return
     {{ImageTrackList/[[selected index]]}};
 
-: <dfn attribute for=ImageTrackList>onchange</dfn>
-:: An [=event handler IDL attribute=] whose [=event handler event type=] is
-    {{ImageTrackList/change}}.
-
-### Event Summary ### {#imagetracklist-eventsummary}
-
-: <dfn event for=ImageTrackList>change</dfn>
-:: Fired at the {{ImageTrackList}} when the list of {{ImageTrack}}s is
-    established or when attributes of the listed {{ImageTrack}}s are updated.
+: <dfn attribute for=ImageTrackList>selected</dfn>
+:: The {{ImageTrackList/selected}} getter steps are:
+    1. If {{ImageTrackList/[[selected index]]}} is `-1`, return `null`.
+    2. Otherwise, return the ImageTrack from {{ImageTrackList/[[track list]]}}
+        at the position indicated by {{ImageTrackList/[[selected index]]}}.
 
 ImageTrack Interface {#imagetrack-interface}
 --------------------------------------------
 <pre class='idl'>
 <xmp>
-interface ImageTrack {
+interface ImageTrack : EventTarget {
   readonly attribute boolean animated;
-  readonly attribute long frameCount;
+  readonly attribute unsigned long frameCount;
   readonly attribute unrestricted float repetitionCount;
+  attribute EventHandler onchange;
   attribute boolean selected;
 };
 </xmp>
@@ -3067,6 +3162,10 @@ interface ImageTrack {
 :: The {{ImageTrack/repetitionCount}} getter steps are to return the value of
     {{ImageTrack/[[repetition count]]}}.
 
+: <dfn attribute for=ImageTrack>onchange</dfn>
+:: An [=event handler IDL attribute=] whose [=event handler event type=] is
+    {{ImageTrack/change}}.
+
 : <dfn attribute for=ImageTrack>selected</dfn>
 :: The {{ImageTrack/selected}} getter steps are to return the value of
     {{ImageTrack/[[selected]]}}.
@@ -3090,22 +3189,24 @@ interface ImageTrack {
         `-1`.
     8. Assign |selectedIndex| to |parentTrackList|
         {{ImageTrackList/[[selected index]]}}.
-    9. Let |parentDecoder| be  {{ImageTrack/[[ImageDecoder]]}}.
-    10. [=Reset the control message queue=] associated with |parentDecoder|.
-    11. For each |promise| in |parentDecoder|'s
-        {{ImageDecoder/[[pending decode promises]]}} internal slot:
-        1. Reject |promise| with an {{AbortError}} {{DOMException}}.
-        2. Remove |promise| from {{ImageDecoder/[[pending decode promises]]}}.
-    12. [=Queue a control message=] to {{ImageTrack/[[ImageDecoder]]}}'s
+    9. Run the [=ImageDecoder/Reset ImageDecoder=] algorithm on
+        {{ImageTrack/[[ImageDecoder]]}}.
+    10. [=Queue a control message=] to {{ImageTrack/[[ImageDecoder]]}}'s
         [=control message queue=] to update the internal selected track
         index with |selectedIndex|.
 
     [=Running a control message=] to update the internal selected track index
     means running these steps:
-    1. Set {{ImageDecoder/[[internal selected track index]]}} to
-        |selectedIndex|.
+    1. Assign |selectedIndex| to
+        {{ImageDecoder/[[internal selected track index]]}}.
     2. Remove all entries from
         {{ImageDecoder/[[progressive frame generations]]}}.
+
+
+### Event Summary ### {#imagetracklist-eventsummary}
+
+: <dfn event for=ImageTrack>change</dfn>
+:: Fired at the {{ImageTrack}} when the {{ImageTrack/frameCount}} is altered.
 
 
 Security Considerations{#security-considerations}
