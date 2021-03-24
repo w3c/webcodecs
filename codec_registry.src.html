@@ -1,0 +1,172 @@
+<pre class='metadata'>
+Title: WebCodecs Codec Registry
+Repository: wicg/web-codecs
+Status: CG-DRAFT
+Shortname: webcodecs-codec-registry
+Level: none
+Group: wicg
+ED: none
+Editor: Chris Cunningham, w3cid 114832, Google Inc. https://google.com/
+Editor: Paul Adenot, w3cid 62410, Mozilla https://www.mozilla.org/
+Editor: Bernard Aboba, w3cid 65611, Microsoft Corporation https://www.microsoft.com/
+
+Boilerplate: omit conformance
+
+Abstract: This registry is intended to enhance interoperability among
+    implementations and users of [[webcodecs]]. In particular, this
+    registry provides the means to identify and avoid collisions among codec
+    strings and provides a mechanism to define codec-specific members of
+    [[webcodecs]] codec configuration dictionaries.
+
+    This registry is not intended to include any information on whether a codec
+    format is encumbered by intellectual property claims. Implementers and
+    users are advised to seek appropriate legal counsel in this matter if they
+    intend to implement or use a specific codec format. Implementers of
+    WebCodecs are not required to support any particular codec nor registry
+    entry.
+
+    This registry is non-normative.
+
+Markup Shorthands:css no, markdown yes, dfn yes
+!Participate: <a href="https://github.com/wicg/web-codecs">Git Repository.</a>
+!Participate: <a href="https://github.com/wicg/web-codecs/issues/new">File an issue.</a>
+!Version History: <a href="https://github.com/wicg/web-codecs/commits">https://github.com/wicg/web-codecs/commits</a>
+</pre>
+
+<pre class='anchors'>
+spec: web-codecs; urlPrefix: https://wicg.github.io/web-codecs/#
+    type: attribute
+        text: AudioDecoderConfig.description; url: dom-audiodecoderconfig-description
+        text: VideoDecoderConfig.description; url: dom-videodecoderconfig-description
+        text: VideoEncoderConfig; url: video-encoder-config
+        text: AudioEncoderConfig; url: audio-encoder-config
+</pre>
+
+<pre class='biblio'>
+{
+  "WEBCODECS": {
+      "href": "https://wicg.github.io/web-codecs/",
+      "title": "WebCodecs",
+      "publisher": "WICG"
+  },
+  "WEBCODECS-AVC-REGISTRATION": {
+      "href": "https://wicg.github.io/web-codecs/avc_codec_registration.html",
+      "title": "AVC (H.264) WebCodecs Registration",
+      "publisher": "WICG"
+  }
+}
+</pre>
+
+Organization {#organization}
+============================
+
+This registry maintains a mapping between codec strings and definitions for (1)
+fully qualified codec string values, (2) codec-specific values for
+{{VideoDecoderConfig.description}} and
+{{AudioDecoderConfig.description}}, and (3) codec-specific members of
+the {{VideoEncoderConfig}} and {{AudioEncoderConfig}}
+dictionaries.
+
+Registration Entry Requirements {#registration-entry-requirements}
+==================================================================
+
+1. Each entry must include a unique codec string and a common name string.
+2. If the codec string contains a fixed prefix with variable suffix values, the
+    suffix must be represented by an asterisk and the registration must link to
+    a public specification describing how to fully qualify the variable portion
+    of the string.
+3. If the described codec requires that codec-specific bytes be provided as part
+    of the {{VideoDecoderConfig.description}} or the
+    {{AudioDecoderConfig.description}}, the registration must link to
+    a public specification describing how to populate these fields.
+4. If the {{AudioEncoderConfig}} or {{VideoEncoderConfig}}
+    dictionaries are extended with members specific to the described codec, the
+    registration must link to a public specification describing how to populate
+    these fields.
+4. Candidate entries must be announced by filing an issue in the
+    [WebCodecs GitHub issue tracker](https://github.com/wicg/web-codecs/issues/)
+    so they can be discussed and evaluated for compliance before being added to
+    the registry.
+
+Audio Codec Registry {#audio-codec-registry}
+============================================
+
+ISSUE: Several registrations contain TODOs which should be replaced with links
+    to public specifications covering the mentioned definitions.
+
+<table class='data'>
+  <tr>
+    <td>**codec string**</td>
+    <td>**common name**</td>
+    <td>**public specification**</td>
+  </tr>
+  <tr>
+    <td>flac</td>
+    <td>Flac</td>
+    <td>TODO (AudioDecoderConfig.description)</td>
+  </tr>
+  <tr>
+    <td>mp3</td>
+    <td>MP3</td>
+    <td>N/A</td>
+  </tr>
+  <tr>
+    <td>mp4a.*</td>
+    <td>AAC</td>
+    <td>TODO (string + AudioDecoderConfig.description)</td>
+  </tr>
+  <tr>
+    <td>opus</td>
+    <td>Opus</td>
+    <td>TODO (AudioDecoderConfig.description)</td>
+  </tr>
+  <tr>
+    <td>vorbis</td>
+    <td>Vorbis</td>
+    <td>TODO (AudoDecoderConfig.description)</td>
+  </tr>
+  <tr>
+    <td>ulaw</td>
+    <td>PCM u-law</td>
+    <td>N/A</td>
+  </tr>
+  <tr>
+    <td>alaw</td>
+    <td>PCM a-law</td>
+    <td>N/A</td>
+  </tr>
+</table>
+
+Video Codec Registry {#video-codec-registry}
+============================================
+
+ISSUE: Several registrations contain TODOs which should be replaced with links
+    to public specifications covering the mentioned definitions.
+
+<table class='data'>
+  <tr>
+    <td>**codec string**</td>
+    <td>**common name**</td>
+    <td>**specification**</td>
+  </tr>
+  <tr>
+    <td>av01.*</td>
+    <td>AV1</td>
+    <td>TODO (string + VideoDecoderConfig.description)</td>
+  </tr>
+  <tr>
+    <td>avc1.*</td>
+    <td>AVC / H.264</td>
+    <td>[AVC (H.264) WebCodecs Registration](avc_codec_registration.html) [[WEBCODECS-AVC-REGISTRATION]]</td>
+  </tr>
+  <tr>
+    <td>vp8</td>
+    <td>VP8</td>
+    <td>N/A</td>
+  </tr>
+  <tr>
+    <td>vp09.*</td>
+    <td>VP9</td>
+    <td>TODO (string)</td>
+  </tr>
+</table>
