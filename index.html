@@ -566,7 +566,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
   <div class="head">
    <p data-fill-with="logo"><a class="logo" href="https://www.w3.org/"> <img alt="W3C" height="48" src="https://www.w3.org/StyleSheets/TR/2016/logos/W3C" width="72"> </a> </p>
    <h1 class="p-name no-ref" id="title">WebCodecs</h1>
-   <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">Draft Community Group Report, <time class="dt-updated" datetime="2021-02-25">25 February 2021</time></span></h2>
+   <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">Draft Community Group Report, <time class="dt-updated" datetime="2021-03-24">24 March 2021</time></span></h2>
    <div data-fill-with="spec-metadata">
     <dl>
      <dt>This version:
@@ -592,10 +592,15 @@ A human-readable <a href="http://www.w3.org/community/about/agreements/cla-deed/
   </div>
   <div class="p-summary" data-fill-with="abstract">
    <h2 class="no-num no-toc no-ref heading settled" id="abstract"><span class="content">Abstract</span></h2>
-   <p>This specification defines interfaces for encoding and decoding audio
+   <p>This specification defines interfaces to codecs for encoding and
 
-and video. It also includes an interface for retrieving raw video
-frames from MediaStreamStracks.</p>
+    decoding of audio and video.</p>
+   <p>This specification does not specify or require any particular codec or
+
+    method of encoding or decoding. The purpose of this specification is to
+    provide JavaScript interfaces to implementations of existing codec
+    technology developed elsewhere. Implementers may support any combination of
+    codecs or none at all.</p>
   </div>
   <div data-fill-with="at-risk"></div>
   <h2 class="no-num no-toc no-ref heading settled" id="status"><span class="content">Status of this document</span></h2>
@@ -672,15 +677,7 @@ frames from MediaStreamStracks.</p>
       <li><a href="#audio-decoder-config"><span class="secno">7.5</span> <span class="content">AudioDecoderConfig</span></a>
       <li><a href="#video-decoder-config"><span class="secno">7.6</span> <span class="content">VideoDecoderConfig</span></a>
       <li><a href="#audio-encoder-config"><span class="secno">7.7</span> <span class="content">AudioEncoderConfig</span></a>
-      <li>
-       <a href="#video-encoder-config"><span class="secno">7.8</span> <span class="content">VideoEncoderConfig</span></a>
-       <ol class="toc">
-        <li>
-         <a href="#avc-encoder-config"><span class="secno">7.8.1</span> <span class="content">AvcEncoderConfig</span></a>
-         <ol class="toc">
-          <li><a href="#avc-bitstream-format"><span class="secno">7.8.1.1</span> <span class="content">AvcBitstreamFormat</span></a>
-         </ol>
-       </ol>
+      <li><a href="#video-encoder-config"><span class="secno">7.8</span> <span class="content">VideoEncoderConfig</span></a>
       <li><a href="#hardware-acceleration"><span class="secno">7.9</span> <span class="content">Hardware Acceleration</span></a>
       <li><a href="#config-equivalence"><span class="secno">7.10</span> <span class="content">Configuration Equivalence</span></a>
       <li><a href="#video-encoder-options"><span class="secno">7.11</span> <span class="content">VideoEncoderEncodeOptions</span></a>
@@ -780,25 +777,14 @@ flush.</p>
 decoding/encoding hardware that may be allocated by the User Agent as part
 of codec configuration or generation of <code class="idl"><a data-link-type="idl" href="#audioframe" id="ref-for-audioframe">AudioFrame</a></code> and <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe①">VideoFrame</a></code> objects. Such resources may be quickly exhuasted and should be released
 immediately when no longer in use.</p>
-    <dt data-md><dfn class="dfn-paneled" data-dfn-type="dfn" data-lt="AVC" data-noexport id="avc">Advanced Video Coding (AVC)</dfn>
-    <dd data-md>
-     <p>Also known as H.264. Refers to the methods of video compression as defined by <a data-link-type="biblio" href="#biblio-iso14496-10">[iso14496-10]</a>.</p>
-    <dt data-md><dfn class="dfn-paneled" data-dfn-type="dfn" data-lt="Picture Parameter Set (PPS)|PPS" data-noexport id="picture-parameter-set-pps">Picture Parameter Set (PPS)</dfn>
-    <dd data-md>
-     <p>A set of parameters describing <a data-link-type="dfn" href="#avc" id="ref-for-avc">AVC</a> coded pictures as defined by <a data-link-type="biblio" href="#biblio-iso14496-10">[iso14496-10]</a>.</p>
-    <dt data-md><dfn class="dfn-paneled" data-dfn-type="dfn" data-lt="Sequence Parameter Set (SPS)|SPS" data-noexport id="sequence-parameter-set-sps">Sequence Parameter Set (SPS)</dfn>
-    <dd data-md>
-     <p>A set of parameters describing a sequence of <a data-link-type="dfn" href="#avc" id="ref-for-avc①">AVC</a> coded video as
-defined by <a data-link-type="biblio" href="#biblio-iso14496-10">[iso14496-10]</a>.</p>
    </dl>
    <h2 class="heading settled" data-level="2" id="codec-processing-model"><span class="secno">2. </span><span class="content">Codec Processing Model</span><a class="self-link" href="#codec-processing-model"></a></h2>
    <h3 class="heading settled" data-level="2.1" id="processing-model-background"><span class="secno">2.1. </span><span class="content">Background</span><a class="self-link" href="#processing-model-background"></a></h3>
    <p>This section is non-normative.</p>
-   <p>The codec interfaces defined by the specification designed such that new codec
-tasks may be scheduled while previous tasks are still pending. For example, web
-authors may call <code>decode()</code> without waiting for a previous <code>decode()</code> to
-complete. This is achieved by offloading underlying codec tasks to a separate
-thread for parallel execution.</p>
+   <p>The codec interfaces defined by the specification are designed such that new
+codec tasks may be scheduled while previous tasks are still pending. For
+example, web authors may call <code>decode()</code> without waiting for a previous <code>decode()</code> to complete. This is achieved by offloading underlying codec tasks to
+a separate thread for parallel execution.</p>
    <p>This section describes threading behaviors as they are visible from the
 perspective of web authors. Implementers may choose to use more or less threads
 as long the exernally visible behaviors of blocking and sequencing are
@@ -912,8 +898,9 @@ that promise.</p>
     <dd>
       <a data-link-type="dfn" href="#enqueues-a-control-message" id="ref-for-enqueues-a-control-message">Enqueues a control message</a> to configure the audio decoder for decoding
     chunks as described by <var>config</var>. 
-     <p class="note" role="note"><span>NOTE:</span> Authors should first check support by calling <code class="idl"><a data-link-type="idl" href="#dom-audiodecoder-isconfigsupported" id="ref-for-dom-audiodecoder-isconfigsupported①">isConfigSupported()</a></code> with <var>config</var> to avoid error paths
-        in the steps below.</p>
+     <p class="note" role="note"><span>NOTE:</span> This method will trigger a <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#notsupportederror" id="ref-for-notsupportederror">NotSupportedError</a></code> if the user agent
+        does not support <var>config</var>. Authors should first check support by calling <code class="idl"><a data-link-type="idl" href="#dom-audiodecoder-isconfigsupported" id="ref-for-dom-audiodecoder-isconfigsupported①">isConfigSupported()</a></code> with <var>config</var>. User agents are not
+        required to support any particular codec type or configuration.</p>
      <p>When invoked, run these steps:</p>
      <ol>
       <li data-md>
@@ -935,7 +922,7 @@ Support</a> algorith with <var>config</var>.</p>
        <p>If <var>supported</var> is <code>true</code>, assign <code class="idl"><a data-link-type="idl" href="#dom-audiodecoder-codec-implementation-slot" id="ref-for-dom-audiodecoder-codec-implementation-slot">[[codec implementation]]</a></code> with an implementation
 supporting <var>config</var>.</p>
       <li data-md>
-       <p>Otherwise, run the <a data-link-type="dfn" href="#close-audiodecoder" id="ref-for-close-audiodecoder">Close AudioDecoder</a> algorithm with <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#notsupportederror" id="ref-for-notsupportederror">NotSupportedError</a></code>.</p>
+       <p>Otherwise, run the <a data-link-type="dfn" href="#close-audiodecoder" id="ref-for-close-audiodecoder">Close AudioDecoder</a> algorithm with <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#notsupportederror" id="ref-for-notsupportederror①">NotSupportedError</a></code>.</p>
      </ol>
     <dt><dfn class="dfn-paneled idl-code" data-dfn-for="AudioDecoder" data-dfn-type="method" data-export id="dom-audiodecoder-decode"><code>decode(chunk)</code></dfn>
     <dd>
@@ -1148,8 +1135,9 @@ invoke the <code class="idl"><a data-link-type="idl" href="#dom-audiodecoder-err
     <dd>
       <a data-link-type="dfn" href="#enqueues-a-control-message" id="ref-for-enqueues-a-control-message⑤">Enqueues a control message</a> to configure the video decoder for decoding
     chunks as described by <var>config</var>. 
-     <p class="note" role="note"><span>NOTE:</span> Authors should first check support by calling <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-isconfigsupported" id="ref-for-dom-videodecoder-isconfigsupported①">isConfigSupported()</a></code> with <var>config</var> to avoid error paths
-        in the steps below.</p>
+     <p class="note" role="note"><span>NOTE:</span> This method will trigger a <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#notsupportederror" id="ref-for-notsupportederror②">NotSupportedError</a></code> if the user agent
+        does not support <var>config</var>. Authors should first check support by calling <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-isconfigsupported" id="ref-for-dom-videodecoder-isconfigsupported①">isConfigSupported()</a></code> with <var>config</var>. User agents are not
+        required to support any particular codec type or configuration.</p>
      <p>When invoked, run these steps:</p>
      <ol>
       <li data-md>
@@ -1171,7 +1159,7 @@ Support</a> algorith with <var>config</var>.</p>
        <p>If <var>supported</var> is <code>true</code>, assign <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-codec-implementation-slot" id="ref-for-dom-videodecoder-codec-implementation-slot②">[[codec implementation]]</a></code> with an implementation
 supporting <var>config</var>.</p>
       <li data-md>
-       <p>Otherwise, run the <a data-link-type="dfn" href="#close-videodecoder" id="ref-for-close-videodecoder①">Close VideoDecoder</a> algorithm with <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#notsupportederror" id="ref-for-notsupportederror①">NotSupportedError</a></code>.</p>
+       <p>Otherwise, run the <a data-link-type="dfn" href="#close-videodecoder" id="ref-for-close-videodecoder①">Close VideoDecoder</a> algorithm with <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#notsupportederror" id="ref-for-notsupportederror③">NotSupportedError</a></code>.</p>
      </ol>
     <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoDecoder" data-dfn-type="method" data-export id="dom-videodecoder-decode"><code>decode(chunk)</code></dfn>
     <dd>
@@ -1401,8 +1389,9 @@ invoke the <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-err
     <dd>
       <a data-link-type="dfn" href="#enqueues-a-control-message" id="ref-for-enqueues-a-control-message①⓪">Enqueues a control message</a> to configure the audio encoder for
     decoding chunks as described by <var>config</var>. 
-     <p class="note" role="note"><span>NOTE:</span> Authors should first check support by calling <code class="idl"><a data-link-type="idl" href="#dom-audioencoder-isconfigsupported" id="ref-for-dom-audioencoder-isconfigsupported①">isConfigSupported()</a></code> with <var>config</var> to avoid error paths
-        in the steps below.</p>
+     <p class="note" role="note"><span>NOTE:</span> This method will trigger a <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#notsupportederror" id="ref-for-notsupportederror④">NotSupportedError</a></code> if the user agent
+        does not support <var>config</var>. Authors should first check support by calling <code class="idl"><a data-link-type="idl" href="#dom-audioencoder-isconfigsupported" id="ref-for-dom-audioencoder-isconfigsupported①">isConfigSupported()</a></code> with <var>config</var>. User agents are not
+        required to support any particular codec type or configuration.</p>
      <p>When invoked, run these steps:</p>
      <ol>
       <li data-md>
@@ -1424,7 +1413,7 @@ Support</a> algorith with <var>config</var>.</p>
        <p>If <var>supported</var> is <code>true</code>, assign <code class="idl"><a data-link-type="idl" href="#dom-audioencoder-codec-implementation-slot" id="ref-for-dom-audioencoder-codec-implementation-slot">[[codec implementation]]</a></code> with an implementation
 supporting <var>config</var>.</p>
       <li data-md>
-       <p>Otherwise, run the <a data-link-type="dfn" href="#close-audioencoder" id="ref-for-close-audioencoder">Close AudioEncoder</a> algorithm with <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#notsupportederror" id="ref-for-notsupportederror②">NotSupportedError</a></code>.</p>
+       <p>Otherwise, run the <a data-link-type="dfn" href="#close-audioencoder" id="ref-for-close-audioencoder">Close AudioEncoder</a> algorithm with <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#notsupportederror" id="ref-for-notsupportederror⑤">NotSupportedError</a></code>.</p>
      </ol>
     <dt><dfn class="dfn-paneled idl-code" data-dfn-for="AudioEncoder" data-dfn-type="method" data-export id="dom-audioencoder-encode"><code>encode(frame)</code></dfn>
     <dd>
@@ -1658,8 +1647,9 @@ invoke the <code class="idl"><a data-link-type="idl" href="#dom-audioencoder-err
     <dd>
       <a data-link-type="dfn" href="#enqueues-a-control-message" id="ref-for-enqueues-a-control-message①⑤">Enqueues a control message</a> to configure the video encoder for
     decoding chunks as described by <var>config</var>. 
-     <p class="note" role="note"><span>NOTE:</span> Authors should first check support by calling <code class="idl"><a data-link-type="idl" href="#dom-videoencoder-isconfigsupported" id="ref-for-dom-videoencoder-isconfigsupported①">isConfigSupported()</a></code> with <var>config</var> to avoid error paths
-        in the steps below.</p>
+     <p class="note" role="note"><span>NOTE:</span> This method will trigger a <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#notsupportederror" id="ref-for-notsupportederror⑥">NotSupportedError</a></code> if the user agent
+        does not support <var>config</var>. Authors should first check support by calling <code class="idl"><a data-link-type="idl" href="#dom-videoencoder-isconfigsupported" id="ref-for-dom-videoencoder-isconfigsupported①">isConfigSupported()</a></code> with <var>config</var>. User agents are not
+        required to support any particular codec type or configuration.</p>
      <p>When invoked, run these steps:</p>
      <ol>
       <li data-md>
@@ -1681,7 +1671,7 @@ Support</a> algorith with <var>config</var>.</p>
        <p>If <var>supported</var> is <code>true</code>, assign <code class="idl"><a data-link-type="idl" href="#dom-videoencoder-codec-implementation-slot" id="ref-for-dom-videoencoder-codec-implementation-slot">[[codec implementation]]</a></code> with an implementation
 supporting <var>config</var>.</p>
       <li data-md>
-       <p>Otherwise, run the <a data-link-type="dfn" href="#close-videoencoder" id="ref-for-close-videoencoder">Close VideoEncoder</a> algorithm with <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#notsupportederror" id="ref-for-notsupportederror③">NotSupportedError</a></code> and abort these steps.</p>
+       <p>Otherwise, run the <a data-link-type="dfn" href="#close-videoencoder" id="ref-for-close-videoencoder">Close VideoEncoder</a> algorithm with <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#notsupportederror" id="ref-for-notsupportederror⑦">NotSupportedError</a></code> and abort these steps.</p>
       <li data-md>
        <p>Set <code class="idl"><a data-link-type="idl" href="#dom-videoencoder-active-encoder-config-slot" id="ref-for-dom-videoencoder-active-encoder-config-slot">[[active encoder config]]</a></code> to <code>config</code>.</p>
      </ol>
@@ -1826,7 +1816,8 @@ the <a data-link-type="dfn" href="#check-configuration-support" id="ref-for-chec
 must ensure that the configuration is completely described
 such that <var>output_config</var> could be used to correctly decode <var>output</var>.</p>
            <p class="note" role="note"><span>NOTE:</span> This includes supplying the <code class="idl"><a data-link-type="idl" href="#dom-videodecoderconfig-description" id="ref-for-dom-videodecoderconfig-description">description</a></code> to describe codec
-    specific "extradata" like the avcC bytes for AVC.</p>
+    specific "extradata", the use of which may be further
+    described in codec registrations listed in the <a data-link-type="biblio" href="#biblio-webcodecs-codec-registry">[WEBCODECS-CODEC-REGISTRY]</a>.</p>
          </ol>
         <li data-md>
          <p>If <var>output_config</var> and <code class="idl"><a data-link-type="idl" href="#dom-videoencoder-active-output-config-slot" id="ref-for-dom-videoencoder-active-output-config-slot">[[active output config]]</a></code> are <a data-link-type="dfn" href="#equal-dictionaries" id="ref-for-equal-dictionaries">equal dictionaries</a>, set <var>output_config</var> to null. Otherwise,
@@ -1980,68 +1971,24 @@ recursively running the <a data-link-type="dfn" href="#clone-configuration" id="
     <dd> A <code class="idl"><a data-link-type="idl" href="#dictdef-videoencoderconfig" id="ref-for-dictdef-videoencoderconfig⑦">VideoEncoderConfig</a></code> used by the user agent in determining the value of <code class="idl"><a data-link-type="idl" href="#dom-videoencodersupport-supported" id="ref-for-dom-videoencodersupport-supported②">supported</a></code>. 
    </dl>
    <h3 class="heading settled" data-level="7.4" id="config-codec-string"><span class="secno">7.4. </span><span class="content"><dfn class="dfn-paneled" data-dfn-type="dfn" data-export id="codec-string">Codec String</dfn></span><a class="self-link" href="#config-codec-string"></a></h3>
-    In other media specifications, codec strings historically accompanied a <a data-link-type="dfn" href="https://mimesniff.spec.whatwg.org/#mime-type" id="ref-for-mime-type">MIME type</a> as the "codecs=" parameter
-    (<code class="idl"><a data-link-type="idl" href="https://www.w3.org/TR/media-source/#dom-mediasource-istypesupported" id="ref-for-dom-mediasource-istypesupported">isTypeSupported()</a></code>, <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/#dom-navigator-canplaytype" id="ref-for-dom-navigator-canplaytype">canPlayType()</a></code>) <a data-link-type="biblio" href="#biblio-rfc6381">[RFC6381]</a>. In this specification, encoded media is not containerized; hence,
-    only the value of the codecs parameter is accepted. 
+    A codec string describes a given codec format to be used for encoding or
+decoding. 
    <p>A <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="valid-codec-string">valid codec string</dfn> must meet the following conditions.</p>
    <ol>
     <li data-md>
      <p>Is valid per the relevant codec specification (see examples below).</p>
     <li data-md>
      <p>It describes a single codec.</p>
-   </ol>
-   <p class="note" role="note"><span>NOTE:</span> Not a comma separated list.</p>
-   <ol start="3">
     <li data-md>
      <p>It is unambiguous about codec profile and level for codecs that define these
 concepts.</p>
    </ol>
-   <div class="note" role="note">
-     NOTE: There is no unified specification for codec strings. Each codec has its
-  own unique string format, specified by the authors of the codec. Relevant
-  specifications include: 
-    <ul>
-     <li data-md>
-      <p>h264, aac - <a data-link-type="biblio" href="#biblio-rfc6381">[RFC6381]</a></p>
-     <li data-md>
-      <p>vp9 - <a href="https://www.webmproject.org/vp9/mp4/#codecs-parameter-string"> https://www.webmproject.org/vp9/mp4/#codecs-parameter-string </a></p>
-     <li data-md>
-      <p>hevc - <a href="https://www.iso.org/standard/74429.html"> ISO IEC 14496-15 dated 2012 or newer in the Annex E.3 </a></p>
-     <li data-md>
-      <p>av1 - <a href="https://aomediacodec.github.io/av1-isobmff/#codecsparam"> https://aomediacodec.github.io/av1-isobmff/#codecsparam </a></p>
-    </ul>
-   </div>
-   <div class="example" id="example-24dc7467">
-    <a class="self-link" href="#example-24dc7467"></a> Valid examples include:<br> 
-    <ul>
-     <li data-md>
-      <p>'vp8'</p>
-     <li data-md>
-      <p>'vp09.00.10.08'</p>
-     <li data-md>
-      <p>'avc1.4D401E',</p>
-     <li data-md>
-      <p>'opus',</p>
-     <li data-md>
-      <p>'mp4a.40.2',</p>
-     <li data-md>
-      <p>'flac'</p>
-    </ul>
-    <p>Invalid examples include:<br></p>
-    <ul>
-     <li data-md>
-      <p>'video/webm; codecs="vp8"' (invalid to supply full mimetype; valid as just
-    'vp8')<br></p>
-     <li data-md>
-      <p>'codecs="opus"' (invalid to include codecs= prefix)<br></p>
-     <li data-md>
-      <p>‘flac,vorbis’ (describes more than one codec)<br></p>
-     <li data-md>
-      <p>‘vp9’ (ambiguous about profile and level)<br></p>
-     <li data-md>
-      <p>'video/mp4' (describes a container, not a codec)<br></p>
-    </ul>
-   </div>
+   <p class="note" role="note"><span>NOTE:</span> In other media specifications, codec strings historically accompanied a <a data-link-type="dfn" href="https://mimesniff.spec.whatwg.org/#mime-type" id="ref-for-mime-type">MIME type</a> as the "codecs=" parameter
+    (<code class="idl"><a data-link-type="idl" href="https://www.w3.org/TR/media-source/#dom-mediasource-istypesupported" id="ref-for-dom-mediasource-istypesupported">isTypeSupported()</a></code>, <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/#dom-navigator-canplaytype" id="ref-for-dom-navigator-canplaytype">canPlayType()</a></code>) <a data-link-type="biblio" href="#biblio-rfc6381">[RFC6381]</a>. In this specification, encoded media is not containerized;
+    hence, only the value of the codecs parameter is accepted.</p>
+   <p>The format and semantics for codec strings are defined by codec registrations
+listed in the <a data-link-type="biblio" href="#biblio-webcodecs-codec-registry">[WEBCODECS-CODEC-REGISTRY]</a>. A compliant implementation may support any
+combination of codec registrations or none at all.</p>
    <h3 class="heading settled" data-level="7.5" id="audio-decoder-config"><span class="secno">7.5. </span><span class="content">AudioDecoderConfig</span><a class="self-link" href="#audio-decoder-config"></a></h3>
 <pre class="idl highlight def"><c- b>dictionary</c-> <dfn class="dfn-paneled idl-code" data-dfn-type="dictionary" data-export id="dictdef-audiodecoderconfig"><code><c- g>AudioDecoderConfig</c-></code></dfn> {
   <c- b>required</c-> <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-DOMString" id="ref-for-idl-DOMString"><c- b>DOMString</c-></a> <a class="idl-code" data-link-type="dict-member" data-type="DOMString " href="#dom-audiodecoderconfig-codec" id="ref-for-dom-audiodecoderconfig-codec"><c- g>codec</c-></a>;
@@ -2069,7 +2016,8 @@ concepts.</p>
     <dt><dfn class="dfn-paneled idl-code" data-dfn-for="AudioDecoderConfig" data-dfn-type="dict-member" data-export id="dom-audiodecoderconfig-description"><code>description</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#BufferSource" id="ref-for-BufferSource①">BufferSource</a></span>
     <dd>
       A sequence of codec specific bytes, commonly known as extradata. 
-     <p class="note" role="note"><span>NOTE:</span> For example, the vorbis "code book".</p>
+     <p class="note" role="note"><span>NOTE:</span> The registrations in the <a data-link-type="biblio" href="#biblio-webcodecs-codec-registry">[WEBCODECS-CODEC-REGISTRY]</a> describe whether/how to
+        populate this sequence, corresponding to the provided <code class="idl"><a data-link-type="idl" href="#dom-audiodecoderconfig-codec" id="ref-for-dom-audiodecoderconfig-codec①">codec</a></code>.</p>
    </dl>
    <h3 class="heading settled" data-level="7.6" id="video-decoder-config"><span class="secno">7.6. </span><span class="content">VideoDecoderConfig</span><a class="self-link" href="#video-decoder-config"></a></h3>
 <pre class="idl highlight def"><c- b>dictionary</c-> <dfn class="dfn-paneled idl-code" data-dfn-type="dictionary" data-export id="dictdef-videodecoderconfig"><code><c- g>VideoDecoderConfig</c-></code></dfn> {
@@ -2111,7 +2059,8 @@ run these steps:</p>
     <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoDecoderConfig" data-dfn-type="dict-member" data-export id="dom-videodecoderconfig-description"><code>description</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#BufferSource" id="ref-for-BufferSource③">BufferSource</a></span>
     <dd>
       A sequence of codec specific bytes, commonly known as extradata. 
-     <p class="note" role="note"><span>NOTE:</span> Examples include the VP9 vpcC bytes or the AVC avcC bytes.</p>
+     <p class="note" role="note"><span>NOTE:</span> The registrations in the <a data-link-type="biblio" href="#biblio-webcodecs-codec-registry">[WEBCODECS-CODEC-REGISTRY]</a> may describe whether/how
+        to populate this sequence, corresponding to the provided <code class="idl"><a data-link-type="idl" href="#dom-videodecoderconfig-codec" id="ref-for-dom-videodecoderconfig-codec②">codec</a></code>.</p>
     <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoDecoderConfig" data-dfn-type="dict-member" data-export id="dom-videodecoderconfig-codedwidth"><code>codedWidth</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#idl-unsigned-long" id="ref-for-idl-unsigned-long①②">unsigned long</a></span>
     <dd> Width of the VideoFrame in pixels, prior to any cropping or aspect ratio
         adjustments. 
@@ -2147,7 +2096,9 @@ run these steps:</p>
 };
 
 </pre>
-   <p>To check if an <code class="idl"><a data-link-type="idl" href="#dictdef-audioencoderconfig" id="ref-for-dictdef-audioencoderconfig⑥">AudioEncoderConfig</a></code> is a <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="valid-audioencoderconfig">valid AudioEncoderConfig</dfn>,
+   <p class="note" role="note"><span>NOTE:</span> Codec-specific extensions to <code class="idl"><a data-link-type="idl" href="#dictdef-audioencoderconfig" id="ref-for-dictdef-audioencoderconfig⑥">AudioEncoderConfig</a></code> may be defined by the
+    registrations in the <a data-link-type="biblio" href="#biblio-webcodecs-codec-registry">[WEBCODECS-CODEC-REGISTRY]</a>.</p>
+   <p>To check if an <code class="idl"><a data-link-type="idl" href="#dictdef-audioencoderconfig" id="ref-for-dictdef-audioencoderconfig⑦">AudioEncoderConfig</a></code> is a <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="valid-audioencoderconfig">valid AudioEncoderConfig</dfn>,
 run these steps:</p>
    <ol>
     <li data-md>
@@ -2172,12 +2123,12 @@ run these steps:</p>
   <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-unsigned-long" id="ref-for-idl-unsigned-long②⑥"><c- b>unsigned</c-> <c- b>long</c-></a> <a class="idl-code" data-link-type="dict-member" data-type="unsigned long " href="#dom-videoencoderconfig-displaywidth" id="ref-for-dom-videoencoderconfig-displaywidth"><c- g>displayWidth</c-></a>;
   <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-unsigned-long" id="ref-for-idl-unsigned-long②⑦"><c- b>unsigned</c-> <c- b>long</c-></a> <a class="idl-code" data-link-type="dict-member" data-type="unsigned long " href="#dom-videoencoderconfig-displayheight" id="ref-for-dom-videoencoderconfig-displayheight"><c- g>displayHeight</c-></a>;
   <a data-link-type="idl-name" href="#enumdef-hardwareacceleration" id="ref-for-enumdef-hardwareacceleration③"><c- n>HardwareAcceleration</c-></a> <a class="idl-code" data-default="&quot;allow&quot;" data-link-type="dict-member" data-type="HardwareAcceleration " href="#dom-videoencoderconfig-hardwareacceleration" id="ref-for-dom-videoencoderconfig-hardwareacceleration"><c- g>hardwareAcceleration</c-></a> = "allow";
-
-  <a data-link-type="idl-name" href="#dictdef-avcencoderconfig" id="ref-for-dictdef-avcencoderconfig"><c- n>AvcEncoderConfig</c-></a> <a class="idl-code" data-link-type="dict-member" data-type="AvcEncoderConfig " href="#dom-videoencoderconfig-avc" id="ref-for-dom-videoencoderconfig-avc"><c- g>avc</c-></a>;
 };
 
 </pre>
-   <p>To check if a <code class="idl"><a data-link-type="idl" href="#dictdef-videoencoderconfig" id="ref-for-dictdef-videoencoderconfig⑧">VideoEncoderConfig</a></code> is a <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="valid-videoencoderconfig">valid VideoEncoderConfig</dfn>,
+   <p class="note" role="note"><span>NOTE:</span> Codec-specific extensions to <code class="idl"><a data-link-type="idl" href="#dictdef-videoencoderconfig" id="ref-for-dictdef-videoencoderconfig⑧">VideoEncoderConfig</a></code> may be defined by the
+    registrations in the <a data-link-type="biblio" href="#biblio-webcodecs-codec-registry">[WEBCODECS-CODEC-REGISTRY]</a>.</p>
+   <p>To check if a <code class="idl"><a data-link-type="idl" href="#dictdef-videoencoderconfig" id="ref-for-dictdef-videoencoderconfig⑨">VideoEncoderConfig</a></code> is a <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="valid-videoencoderconfig">valid VideoEncoderConfig</dfn>,
     run these steps:</p>
    <ol>
     <li data-md>
@@ -2186,8 +2137,6 @@ run these steps:</p>
      <p>If <code class="idl"><a data-link-type="idl" href="#dom-videoencoderconfig-cropwidth" id="ref-for-dom-videoencoderconfig-cropwidth①">cropWidth</a></code> = 0 or <code class="idl"><a data-link-type="idl" href="#dom-videoencoderconfig-cropheight" id="ref-for-dom-videoencoderconfig-cropheight①">cropHeight</a></code> = 0, return <code>false</code>.</p>
     <li data-md>
      <p>If <code class="idl"><a data-link-type="idl" href="#dom-videoencoderconfig-displaywidth" id="ref-for-dom-videoencoderconfig-displaywidth①">displayWidth</a></code> = 0 or <code class="idl"><a data-link-type="idl" href="#dom-videoencoderconfig-displayheight" id="ref-for-dom-videoencoderconfig-displayheight①">displayHeight</a></code> = 0, return <code>false</code>.</p>
-    <li data-md>
-     <p>If <code class="idl"><a data-link-type="idl" href="#dom-videoencoderconfig-avc" id="ref-for-dom-videoencoderconfig-avc①">avc</a></code> is present, but <code class="idl"><a data-link-type="idl" href="#dom-videoencoderconfig-codec" id="ref-for-dom-videoencoderconfig-codec②">codec</a></code> does not describe the <a data-link-type="dfn" href="#avc" id="ref-for-avc②">AVC</a> codec, per <a data-link-type="biblio" href="#biblio-rfc6381">[RFC6381]</a>, return <code>false</code>.</p>
     <li data-md>
      <p>Return <code>true</code>.</p>
    </ol>
@@ -2229,45 +2178,8 @@ run these steps:</p>
       may optionally include display sizing in the bitstream.</p>
    </div>
    <dl>
-    <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoEncoderConfig" data-dfn-type="dict-member" data-export id="dom-videoencoderconfig-avc"><code>avc</code></dfn>, <span> of type <a data-link-type="idl-name" href="#dictdef-avcencoderconfig" id="ref-for-dictdef-avcencoderconfig①">AvcEncoderConfig</a></span>
-    <dd>Contains codec specific configuration options for the AVC (H.264) codec.
     <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoEncoderConfig" data-dfn-type="dict-member" data-export id="dom-videoencoderconfig-hardwareacceleration"><code>hardwareAcceleration</code></dfn>, <span> of type <a data-link-type="idl-name" href="#enumdef-hardwareacceleration" id="ref-for-enumdef-hardwareacceleration④">HardwareAcceleration</a>, defaulting to <code>"allow"</code></span>
     <dd> Configures hardware acceleration for this codec. See <code class="idl"><a data-link-type="idl" href="#enumdef-hardwareacceleration" id="ref-for-enumdef-hardwareacceleration⑤">HardwareAcceleration</a></code>. 
-   </dl>
-   <h4 class="heading settled" data-level="7.8.1" id="avc-encoder-config"><span class="secno">7.8.1. </span><span class="content">AvcEncoderConfig</span><a class="self-link" href="#avc-encoder-config"></a></h4>
-<pre class="idl highlight def"><c- b>dictionary</c-> <dfn class="dfn-paneled idl-code" data-dfn-type="dictionary" data-export id="dictdef-avcencoderconfig"><code><c- g>AvcEncoderConfig</c-></code></dfn> {
-  <a data-link-type="idl-name" href="#enumdef-avcbitstreamformat" id="ref-for-enumdef-avcbitstreamformat"><c- n>AvcBitstreamFormat</c-></a> <a class="idl-code" data-default="&quot;avc&quot;" data-link-type="dict-member" data-type="AvcBitstreamFormat " href="#dom-avcencoderconfig-format" id="ref-for-dom-avcencoderconfig-format"><c- g>format</c-></a> = "avc";
-};
-
-</pre>
-   <dl>
-    <dt><dfn class="dfn-paneled idl-code" data-dfn-for="AvcEncoderConfig" data-dfn-type="dict-member" data-export id="dom-avcencoderconfig-format"><code>format</code></dfn>, <span> of type <a data-link-type="idl-name" href="#enumdef-avcbitstreamformat" id="ref-for-enumdef-avcbitstreamformat①">AvcBitstreamFormat</a>, defaulting to <code>"avc"</code></span>
-    <dd> Configures the format of output <a data-link-type="dfn" href="#avc" id="ref-for-avc③">AVC</a> <code class="idl"><a data-link-type="idl" href="#encodedvideochunk" id="ref-for-encodedvideochunk⑨">EncodedVideoChunk</a></code>s. See <code class="idl"><a data-link-type="idl" href="#enumdef-avcbitstreamformat" id="ref-for-enumdef-avcbitstreamformat②">AvcBitstreamFormat</a></code>. 
-   </dl>
-   <h5 class="heading settled" data-level="7.8.1.1" id="avc-bitstream-format"><span class="secno">7.8.1.1. </span><span class="content">AvcBitstreamFormat</span><a class="self-link" href="#avc-bitstream-format"></a></h5>
-<pre class="idl highlight def"><c- b>enum</c-> <dfn class="dfn-paneled idl-code" data-dfn-type="enum" data-export id="enumdef-avcbitstreamformat"><code><c- g>AvcBitstreamFormat</c-></code></dfn> {
-  <a class="idl-code" data-link-type="enum-value" href="#dom-avcbitstreamformat-annexb" id="ref-for-dom-avcbitstreamformat-annexb"><c- s>"annexb"</c-></a>,
-  <a class="idl-code" data-link-type="enum-value" href="#dom-avcbitstreamformat-avc" id="ref-for-dom-avcbitstreamformat-avc"><c- s>"avc"</c-></a>,
-};
-
-</pre>
-   <p>The <code class="idl"><a data-link-type="idl" href="#enumdef-avcbitstreamformat" id="ref-for-enumdef-avcbitstreamformat③">AvcBitstreamFormat</a></code> determines the location of <a data-link-type="dfn" href="#sequence-parameter-set-sps" id="ref-for-sequence-parameter-set-sps">Sequence Parameter
-Set (SPS)</a> and <a data-link-type="dfn" href="#picture-parameter-set-pps" id="ref-for-picture-parameter-set-pps">Picture Parameter Set (PPS)</a> data, and mechanisms for
-packaging the bitstream.</p>
-   <dl>
-    <dt><dfn class="dfn-paneled idl-code" data-dfn-for="AvcBitstreamFormat" data-dfn-type="enum-value" data-export data-lt="&quot;annexb&quot;|annexb" id="dom-avcbitstreamformat-annexb"><code>annexb</code></dfn>
-    <dd>
-      This format is as described by <a data-link-type="biblio" href="#biblio-iso14496-10">[iso14496-10]</a>, Annex B. Notably, <a data-link-type="dfn" href="#sequence-parameter-set-sps" id="ref-for-sequence-parameter-set-sps①">SPS</a> and <a data-link-type="dfn" href="#picture-parameter-set-pps" id="ref-for-picture-parameter-set-pps①">PPS</a> data are included periodically throughout the
-    bitstream. 
-     <p class="note" role="note"><span>NOTE:</span> This format is commonly used in live-streaming applications, where
-        including the SPS and PPS data periodically allows users to easily start
-        from the middle of the stream.</p>
-    <dt><dfn class="dfn-paneled idl-code" data-dfn-for="AvcBitstreamFormat" data-dfn-type="enum-value" data-export data-lt="&quot;avc&quot;|avc" id="dom-avcbitstreamformat-avc"><code>avc</code></dfn>
-    <dd>
-      This format is as described by <a data-link-type="biblio" href="#biblio-iso14496-15">[iso14496-15]</a>, Section 5. Notably, <a data-link-type="dfn" href="#sequence-parameter-set-sps" id="ref-for-sequence-parameter-set-sps②">SPS</a> and <a data-link-type="dfn" href="#picture-parameter-set-pps" id="ref-for-picture-parameter-set-pps②">PPS</a> data are not included in the bitstream and are
-    instead passed out of band as a AVCDecoderConfigurationRecord as defined by <a data-link-type="biblio" href="#biblio-iso14496-15">[iso14496-15]</a>. This structure is emitted via the <code class="idl"><a data-link-type="idl" href="#dom-videoencoder-output-callback-slot" id="ref-for-dom-videoencoder-output-callback-slot②">[[output callback]]</a></code> as the <code class="idl"><a data-link-type="idl" href="#dom-videodecoderconfig-description" id="ref-for-dom-videodecoderconfig-description②">description</a></code> of the <code class="idl"><a data-link-type="idl" href="#dictdef-videodecoderconfig" id="ref-for-dictdef-videodecoderconfig①①">VideoDecoderConfig</a></code> <var>output_config</var>. 
-     <p class="note" role="note"><span>NOTE:</span> This format is commonly used in .MP4 files, where the player generally
-        has random access to the media data.</p>
    </dl>
    <h3 class="heading settled" data-level="7.9" id="hardware-acceleration"><span class="secno">7.9. </span><span class="content">Hardware Acceleration</span><a class="self-link" href="#hardware-acceleration"></a></h3>
 <pre class="idl highlight def"><c- b>enum</c-> <dfn class="dfn-paneled idl-code" data-dfn-type="enum" data-export id="enumdef-hardwareacceleration"><code><c- g>HardwareAcceleration</c-></code></dfn> {
@@ -2443,7 +2355,7 @@ keys and values. For nested dictionaries, apply this definition recursively.
     <dfn class="dfn-paneled idl-code" data-dfn-for="EncodedVideoChunk" data-dfn-type="constructor" data-export data-lt="EncodedVideoChunk(init)|constructor(init)" id="dom-encodedvideochunk-encodedvideochunk" title="EncodedVideoChunk(init)"><code> EncodedVideoChunk(init) </code></dfn> 
    <ol>
     <li data-md>
-     <p>Let <var>chunk</var> be a new <code class="idl"><a data-link-type="idl" href="#encodedvideochunk" id="ref-for-encodedvideochunk①⓪">EncodedVideoChunk</a></code> object, initialized as follows</p>
+     <p>Let <var>chunk</var> be a new <code class="idl"><a data-link-type="idl" href="#encodedvideochunk" id="ref-for-encodedvideochunk⑨">EncodedVideoChunk</a></code> object, initialized as follows</p>
      <ol>
       <li data-md>
        <p>Assign <code>init.type</code> to <code>chunk.type</code>.</p>
@@ -3017,8 +2929,6 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
    <li><a href="#dom-videoencoder-active-output-config-slot">[[active output config]]</a><span>, in §6.1</span>
    <li><a href="#dom-hardwareacceleration-allow">"allow"</a><span>, in §7.9</span>
    <li><a href="#dom-hardwareacceleration-allow">allow</a><span>, in §7.9</span>
-   <li><a href="#dom-avcbitstreamformat-annexb">"annexb"</a><span>, in §7.8.1.1</span>
-   <li><a href="#dom-avcbitstreamformat-annexb">annexb</a><span>, in §7.8.1.1</span>
    <li><a href="#audiodecoder">AudioDecoder</a><span>, in §3</span>
    <li><a href="#dictdef-audiodecoderconfig">AudioDecoderConfig</a><span>, in §7.5</span>
    <li><a href="#dom-audiodecoder-audiodecoder">AudioDecoder(init)</a><span>, in §3.2</span>
@@ -3033,16 +2943,6 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
    <li><a href="#dom-audioframe-audioframe">AudioFrame(init)</a><span>, in §9.1.2</span>
    <li><a href="#dictdef-audioframeinit">AudioFrameInit</a><span>, in §9.1</span>
    <li><a href="#callbackdef-audioframeoutputcallback">AudioFrameOutputCallback</a><span>, in §3</span>
-   <li><a href="#dom-avcbitstreamformat-avc">"avc"</a><span>, in §7.8.1.1</span>
-   <li><a href="#avc">AVC</a><span>, in §1</span>
-   <li>
-    avc
-    <ul>
-     <li><a href="#dom-videoencoderconfig-avc">dict-member for VideoEncoderConfig</a><span>, in §7.8</span>
-     <li><a href="#dom-avcbitstreamformat-avc">enum-value for AvcBitstreamFormat</a><span>, in §7.8.1.1</span>
-    </ul>
-   <li><a href="#enumdef-avcbitstreamformat">AvcBitstreamFormat</a><span>, in §7.8.1.1</span>
-   <li><a href="#dictdef-avcencoderconfig">AvcEncoderConfig</a><span>, in §7.8.1</span>
    <li><a href="#dom-videoencoderconfig-bitrate">bitrate</a><span>, in §7.8</span>
    <li>
     buffer
@@ -3287,12 +3187,7 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
      <li><a href="#dom-videodecoder-flush">method for VideoDecoder</a><span>, in §4.4</span>
      <li><a href="#dom-videoencoder-flush">method for VideoEncoder</a><span>, in §6.4</span>
     </ul>
-   <li>
-    format
-    <ul>
-     <li><a href="#dom-videoframe-format">attribute for VideoFrame</a><span>, in §9.2.3</span>
-     <li><a href="#dom-avcencoderconfig-format">dict-member for AvcEncoderConfig</a><span>, in §7.8.1</span>
-    </ul>
+   <li><a href="#dom-videoframe-format">format</a><span>, in §9.2.3</span>
    <li><a href="#enumdef-hardwareacceleration">HardwareAcceleration</a><span>, in §7.9</span>
    <li>
     hardwareAcceleration
@@ -3347,13 +3242,11 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
    <li><a href="#output-encodedvideochunks">Output EncodedVideoChunks</a><span>, in §6.5</span>
    <li><a href="#output-videoframes">Output VideoFrames</a><span>, in §4.5</span>
    <li><a href="#dom-plane-parent-frame-slot">[[parent frame]]</a><span>, in §9.3.1</span>
-   <li><a href="#picture-parameter-set-pps">Picture Parameter Set (PPS)</a><span>, in §1</span>
    <li><a href="#enumdef-pixelformat">PixelFormat</a><span>, in §9.4</span>
    <li><a href="#plane">Plane</a><span>, in §9.3</span>
    <li><a href="#dom-plane-plane-buffer-slot">[[plane buffer]]</a><span>, in §9.3.1</span>
    <li><a href="#dictdef-planeinit">PlaneInit</a><span>, in §9.3</span>
    <li><a href="#dom-videoframe-planes">planes</a><span>, in §9.2.3</span>
-   <li><a href="#picture-parameter-set-pps">PPS</a><span>, in §1</span>
    <li><a href="#enqueues-a-control-message">Queue a control message</a><span>, in §2.2</span>
    <li><a href="#dom-plane-readinto">readInto(dst)</a><span>, in §9.3.3</span>
    <li><a href="#dom-hardwareacceleration-require">"require"</a><span>, in §7.9</span>
@@ -3384,8 +3277,6 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
      <li><a href="#dom-audiodecoderconfig-samplerate">dict-member for AudioDecoderConfig</a><span>, in §7.5</span>
      <li><a href="#dom-audioencoderconfig-samplerate">dict-member for AudioEncoderConfig</a><span>, in §7.7</span>
     </ul>
-   <li><a href="#sequence-parameter-set-sps">Sequence Parameter Set (SPS)</a><span>, in §1</span>
-   <li><a href="#sequence-parameter-set-sps">SPS</a><span>, in §1</span>
    <li><a href="#dom-planeinit-src">src</a><span>, in §9.3</span>
    <li>
     state
@@ -3687,10 +3578,10 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
   <aside class="dfn-panel" data-for="term-for-notsupportederror">
    <a href="https://heycam.github.io/webidl/#notsupportederror">https://heycam.github.io/webidl/#notsupportederror</a><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-notsupportederror">3.4. Methods</a>
-    <li><a href="#ref-for-notsupportederror①">4.4. Methods</a>
-    <li><a href="#ref-for-notsupportederror②">5.4. Methods</a>
-    <li><a href="#ref-for-notsupportederror③">6.4. Methods</a>
+    <li><a href="#ref-for-notsupportederror">3.4. Methods</a> <a href="#ref-for-notsupportederror①">(2)</a>
+    <li><a href="#ref-for-notsupportederror②">4.4. Methods</a> <a href="#ref-for-notsupportederror③">(2)</a>
+    <li><a href="#ref-for-notsupportederror④">5.4. Methods</a> <a href="#ref-for-notsupportederror⑤">(2)</a>
+    <li><a href="#ref-for-notsupportederror⑥">6.4. Methods</a> <a href="#ref-for-notsupportederror⑦">(2)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-idl-promise">
@@ -3897,16 +3788,8 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
    <dd>Anne van Kesteren; et al. <a href="https://html.spec.whatwg.org/multipage/">HTML Standard</a>. Living Standard. URL: <a href="https://html.spec.whatwg.org/multipage/">https://html.spec.whatwg.org/multipage/</a>
    <dt id="biblio-infra">[INFRA]
    <dd>Anne van Kesteren; Domenic Denicola. <a href="https://infra.spec.whatwg.org/">Infra Standard</a>. Living Standard. URL: <a href="https://infra.spec.whatwg.org/">https://infra.spec.whatwg.org/</a>
-   <dt id="biblio-iso14496-10">[ISO14496-10]
-   <dd><a href="https://www.iso.org/standard/75400.html">Information technology — Coding of audio-visual objects — Part 10: Advanced video coding</a>. December 2020. Published. URL: <a href="https://www.iso.org/standard/75400.html">https://www.iso.org/standard/75400.html</a>
-   <dt id="biblio-iso14496-15">[ISO14496-15]
-   <dd><a href="https://www.iso.org/standard/74429.html">Information technology — Coding of audio-visual objects — Part 15: Carriage of network abstraction layer (NAL) unit structured video in the ISO base media file format</a>. September 2019. Published. URL: <a href="https://www.iso.org/standard/74429.html">https://www.iso.org/standard/74429.html</a>
    <dt id="biblio-media-capabilities">[MEDIA-CAPABILITIES]
-   <dd>Mounir Lamouri; Chris Cunningham; Vi Nguyen. <a href="https://www.w3.org/TR/media-capabilities/">Media Capabilities</a>. 30 January 2020. WD. URL: <a href="https://www.w3.org/TR/media-capabilities/">https://www.w3.org/TR/media-capabilities/</a>
-   <dt id="biblio-media-source">[MEDIA-SOURCE]
-   <dd>Matthew Wolenetz; et al. <a href="https://www.w3.org/TR/media-source/">Media Source Extensions™</a>. 17 November 2016. REC. URL: <a href="https://www.w3.org/TR/media-source/">https://www.w3.org/TR/media-source/</a>
-   <dt id="biblio-mimesniff">[MIMESNIFF]
-   <dd>Gordon P. Hemsley. <a href="https://mimesniff.spec.whatwg.org/">MIME Sniffing Standard</a>. Living Standard. URL: <a href="https://mimesniff.spec.whatwg.org/">https://mimesniff.spec.whatwg.org/</a>
+   <dd>Mounir Lamouri; Chris Cunningham; Vi Nguyen. <a href="https://www.w3.org/TR/media-capabilities/">Media Capabilities</a>. 16 March 2021. WD. URL: <a href="https://www.w3.org/TR/media-capabilities/">https://www.w3.org/TR/media-capabilities/</a>
    <dt id="biblio-rfc2119">[RFC2119]
    <dd>S. Bradner. <a href="https://tools.ietf.org/html/rfc2119">Key words for use in RFCs to Indicate Requirement Levels</a>. March 1997. Best Current Practice. URL: <a href="https://tools.ietf.org/html/rfc2119">https://tools.ietf.org/html/rfc2119</a>
    <dt id="biblio-webaudio">[WebAudio]
@@ -3918,8 +3801,14 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
   </dl>
   <h3 class="no-num no-ref heading settled" id="informative"><span class="content">Informative References</span><a class="self-link" href="#informative"></a></h3>
   <dl>
+   <dt id="biblio-media-source">[MEDIA-SOURCE]
+   <dd>Matthew Wolenetz; et al. <a href="https://www.w3.org/TR/media-source/">Media Source Extensions™</a>. 17 November 2016. REC. URL: <a href="https://www.w3.org/TR/media-source/">https://www.w3.org/TR/media-source/</a>
+   <dt id="biblio-mimesniff">[MIMESNIFF]
+   <dd>Gordon P. Hemsley. <a href="https://mimesniff.spec.whatwg.org/">MIME Sniffing Standard</a>. Living Standard. URL: <a href="https://mimesniff.spec.whatwg.org/">https://mimesniff.spec.whatwg.org/</a>
    <dt id="biblio-rfc6381">[RFC6381]
-   <dd>R. Gellens; D. Singer; P. Frojdh. <a href="https://tools.ietf.org/html/rfc6381">The 'Codecs' and 'Profiles' Parameters for "Bucket" Media Types</a>. August 2011. Proposed Standard. URL: <a href="https://tools.ietf.org/html/rfc6381">https://tools.ietf.org/html/rfc6381</a>
+   <dd>R. Gellens; D. Singer; P. Frojdh. <a href="https://datatracker.ietf.org/doc/html/rfc6381">The 'Codecs' and 'Profiles' Parameters for "Bucket" Media Types</a>. August 2011. Proposed Standard. URL: <a href="https://datatracker.ietf.org/doc/html/rfc6381">https://datatracker.ietf.org/doc/html/rfc6381</a>
+   <dt id="biblio-webcodecs-codec-registry">[WEBCODECS-CODEC-REGISTRY]
+   <dd><a href="https://wicg.github.io/web-codecs/codec_registry.html">WebCodecs Codec Registry</a>. URL: <a href="https://wicg.github.io/web-codecs/codec_registry.html">https://wicg.github.io/web-codecs/codec_registry.html</a>
   </dl>
   <h2 class="no-num no-ref heading settled" id="idl-index"><span class="content">IDL Index</span><a class="self-link" href="#idl-index"></a></h2>
 <pre class="idl highlight def">[<a class="idl-code" data-link-type="extended-attribute" href="https://heycam.github.io/webidl/#Exposed"><c- g>Exposed</c-></a>=(<c- n>Window</c->,<c- n>DedicatedWorker</c->)]
@@ -4080,19 +3969,6 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
   <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-unsigned-long"><c- b>unsigned</c-> <c- b>long</c-></a> <a class="idl-code" data-link-type="dict-member" data-type="unsigned long " href="#dom-videoencoderconfig-displaywidth"><c- g>displayWidth</c-></a>;
   <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-unsigned-long"><c- b>unsigned</c-> <c- b>long</c-></a> <a class="idl-code" data-link-type="dict-member" data-type="unsigned long " href="#dom-videoencoderconfig-displayheight"><c- g>displayHeight</c-></a>;
   <a data-link-type="idl-name" href="#enumdef-hardwareacceleration"><c- n>HardwareAcceleration</c-></a> <a class="idl-code" data-default="&quot;allow&quot;" data-link-type="dict-member" data-type="HardwareAcceleration " href="#dom-videoencoderconfig-hardwareacceleration"><c- g>hardwareAcceleration</c-></a> = "allow";
-
-  <a data-link-type="idl-name" href="#dictdef-avcencoderconfig"><c- n>AvcEncoderConfig</c-></a> <a class="idl-code" data-link-type="dict-member" data-type="AvcEncoderConfig " href="#dom-videoencoderconfig-avc"><c- g>avc</c-></a>;
-};
-
-
-<c- b>dictionary</c-> <a href="#dictdef-avcencoderconfig"><code><c- g>AvcEncoderConfig</c-></code></a> {
-  <a data-link-type="idl-name" href="#enumdef-avcbitstreamformat"><c- n>AvcBitstreamFormat</c-></a> <a class="idl-code" data-default="&quot;avc&quot;" data-link-type="dict-member" data-type="AvcBitstreamFormat " href="#dom-avcencoderconfig-format"><c- g>format</c-></a> = "avc";
-};
-
-
-<c- b>enum</c-> <a href="#enumdef-avcbitstreamformat"><code><c- g>AvcBitstreamFormat</c-></code></a> {
-  <a class="idl-code" data-link-type="enum-value" href="#dom-avcbitstreamformat-annexb"><c- s>"annexb"</c-></a>,
-  <a class="idl-code" data-link-type="enum-value" href="#dom-avcbitstreamformat-avc"><c- s>"avc"</c-></a>,
 };
 
 
@@ -4276,26 +4152,6 @@ data. See <a href="https://github.com/WICG/web-codecs/issues/80">#80</a>.<a href
     <li><a href="#ref-for-system-resources⑧">7.12. CodecState</a>
     <li><a href="#ref-for-system-resources⑨">9.1.4. Methods</a> <a href="#ref-for-system-resources①⓪">(2)</a>
     <li><a href="#ref-for-system-resources①①">9.2.4. Methods</a>
-   </ul>
-  </aside>
-  <aside class="dfn-panel" data-for="avc">
-   <b><a href="#avc">#avc</a></b><b>Referenced in:</b>
-   <ul>
-    <li><a href="#ref-for-avc">1. Definitions</a> <a href="#ref-for-avc①">(2)</a>
-    <li><a href="#ref-for-avc②">7.8. VideoEncoderConfig</a>
-    <li><a href="#ref-for-avc③">7.8.1. AvcEncoderConfig</a>
-   </ul>
-  </aside>
-  <aside class="dfn-panel" data-for="picture-parameter-set-pps">
-   <b><a href="#picture-parameter-set-pps">#picture-parameter-set-pps</a></b><b>Referenced in:</b>
-   <ul>
-    <li><a href="#ref-for-picture-parameter-set-pps">7.8.1.1. AvcBitstreamFormat</a> <a href="#ref-for-picture-parameter-set-pps①">(2)</a> <a href="#ref-for-picture-parameter-set-pps②">(3)</a>
-   </ul>
-  </aside>
-  <aside class="dfn-panel" data-for="sequence-parameter-set-sps">
-   <b><a href="#sequence-parameter-set-sps">#sequence-parameter-set-sps</a></b><b>Referenced in:</b>
-   <ul>
-    <li><a href="#ref-for-sequence-parameter-set-sps">7.8.1.1. AvcBitstreamFormat</a> <a href="#ref-for-sequence-parameter-set-sps①">(2)</a> <a href="#ref-for-sequence-parameter-set-sps②">(3)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="control-thread">
@@ -4750,7 +4606,6 @@ data. See <a href="https://github.com/WICG/web-codecs/issues/80">#80</a>.<a href
    <ul>
     <li><a href="#ref-for-dom-videoencoder-output-callback-slot">6.2. Constructors</a>
     <li><a href="#ref-for-dom-videoencoder-output-callback-slot①">6.5. Algorithms</a>
-    <li><a href="#ref-for-dom-videoencoder-output-callback-slot②">7.8.1.1. AvcBitstreamFormat</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dom-videoencoder-error-callback-slot">
@@ -4988,7 +4843,7 @@ data. See <a href="https://github.com/WICG/web-codecs/issues/80">#80</a>.<a href
   <aside class="dfn-panel" data-for="dom-audiodecoderconfig-codec">
    <b><a href="#dom-audiodecoderconfig-codec">#dom-audiodecoderconfig-codec</a></b><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-dom-audiodecoderconfig-codec">7.5. AudioDecoderConfig</a>
+    <li><a href="#ref-for-dom-audiodecoderconfig-codec">7.5. AudioDecoderConfig</a> <a href="#ref-for-dom-audiodecoderconfig-codec①">(2)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dom-audiodecoderconfig-samplerate">
@@ -5019,7 +4874,6 @@ data. See <a href="https://github.com/WICG/web-codecs/issues/80">#80</a>.<a href
     <li><a href="#ref-for-dictdef-videodecoderconfig⑥">7.1. Check Configuration Support (with config)</a>
     <li><a href="#ref-for-dictdef-videodecoderconfig⑦">7.3.2. VideoDecoderSupport</a> <a href="#ref-for-dictdef-videodecoderconfig⑧">(2)</a> <a href="#ref-for-dictdef-videodecoderconfig⑨">(3)</a>
     <li><a href="#ref-for-dictdef-videodecoderconfig①⓪">7.6. VideoDecoderConfig</a>
-    <li><a href="#ref-for-dictdef-videodecoderconfig①①">7.8.1.1. AvcBitstreamFormat</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="valid-videodecoderconfig">
@@ -5031,7 +4885,7 @@ data. See <a href="https://github.com/WICG/web-codecs/issues/80">#80</a>.<a href
   <aside class="dfn-panel" data-for="dom-videodecoderconfig-codec">
    <b><a href="#dom-videodecoderconfig-codec">#dom-videodecoderconfig-codec</a></b><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-dom-videodecoderconfig-codec">7.6. VideoDecoderConfig</a> <a href="#ref-for-dom-videodecoderconfig-codec①">(2)</a>
+    <li><a href="#ref-for-dom-videodecoderconfig-codec">7.6. VideoDecoderConfig</a> <a href="#ref-for-dom-videodecoderconfig-codec①">(2)</a> <a href="#ref-for-dom-videodecoderconfig-codec②">(3)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dom-videodecoderconfig-description">
@@ -5039,7 +4893,6 @@ data. See <a href="https://github.com/WICG/web-codecs/issues/80">#80</a>.<a href
    <ul>
     <li><a href="#ref-for-dom-videodecoderconfig-description">6.5. Algorithms</a>
     <li><a href="#ref-for-dom-videodecoderconfig-description①">7.6. VideoDecoderConfig</a>
-    <li><a href="#ref-for-dom-videodecoderconfig-description②">7.8.1.1. AvcBitstreamFormat</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dom-videodecoderconfig-codedwidth">
@@ -5102,7 +4955,7 @@ data. See <a href="https://github.com/WICG/web-codecs/issues/80">#80</a>.<a href
     <li><a href="#ref-for-dictdef-audioencoderconfig">5. AudioEncoder Interface</a> <a href="#ref-for-dictdef-audioencoderconfig①">(2)</a>
     <li><a href="#ref-for-dictdef-audioencoderconfig②">7.1. Check Configuration Support (with config)</a>
     <li><a href="#ref-for-dictdef-audioencoderconfig③">7.3.3. AudioEncoderSupport</a> <a href="#ref-for-dictdef-audioencoderconfig④">(2)</a> <a href="#ref-for-dictdef-audioencoderconfig⑤">(3)</a>
-    <li><a href="#ref-for-dictdef-audioencoderconfig⑥">7.7. AudioEncoderConfig</a>
+    <li><a href="#ref-for-dictdef-audioencoderconfig⑥">7.7. AudioEncoderConfig</a> <a href="#ref-for-dictdef-audioencoderconfig⑦">(2)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="valid-audioencoderconfig">
@@ -5137,7 +4990,7 @@ data. See <a href="https://github.com/WICG/web-codecs/issues/80">#80</a>.<a href
     <li><a href="#ref-for-dictdef-videoencoderconfig③">6.5. Algorithms</a>
     <li><a href="#ref-for-dictdef-videoencoderconfig④">7.1. Check Configuration Support (with config)</a>
     <li><a href="#ref-for-dictdef-videoencoderconfig⑤">7.3.4. VideoEncoderSupport</a> <a href="#ref-for-dictdef-videoencoderconfig⑥">(2)</a> <a href="#ref-for-dictdef-videoencoderconfig⑦">(3)</a>
-    <li><a href="#ref-for-dictdef-videoencoderconfig⑧">7.8. VideoEncoderConfig</a>
+    <li><a href="#ref-for-dictdef-videoencoderconfig⑧">7.8. VideoEncoderConfig</a> <a href="#ref-for-dictdef-videoencoderconfig⑨">(2)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="valid-videoencoderconfig">
@@ -5149,7 +5002,7 @@ data. See <a href="https://github.com/WICG/web-codecs/issues/80">#80</a>.<a href
   <aside class="dfn-panel" data-for="dom-videoencoderconfig-codec">
    <b><a href="#dom-videoencoderconfig-codec">#dom-videoencoderconfig-codec</a></b><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-dom-videoencoderconfig-codec">7.8. VideoEncoderConfig</a> <a href="#ref-for-dom-videoencoderconfig-codec①">(2)</a> <a href="#ref-for-dom-videoencoderconfig-codec②">(3)</a>
+    <li><a href="#ref-for-dom-videoencoderconfig-codec">7.8. VideoEncoderConfig</a> <a href="#ref-for-dom-videoencoderconfig-codec①">(2)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dom-videoencoderconfig-bitrate">
@@ -5182,47 +5035,10 @@ data. See <a href="https://github.com/WICG/web-codecs/issues/80">#80</a>.<a href
     <li><a href="#ref-for-dom-videoencoderconfig-displayheight">7.8. VideoEncoderConfig</a> <a href="#ref-for-dom-videoencoderconfig-displayheight①">(2)</a> <a href="#ref-for-dom-videoencoderconfig-displayheight②">(3)</a>
    </ul>
   </aside>
-  <aside class="dfn-panel" data-for="dom-videoencoderconfig-avc">
-   <b><a href="#dom-videoencoderconfig-avc">#dom-videoencoderconfig-avc</a></b><b>Referenced in:</b>
-   <ul>
-    <li><a href="#ref-for-dom-videoencoderconfig-avc">7.8. VideoEncoderConfig</a> <a href="#ref-for-dom-videoencoderconfig-avc①">(2)</a>
-   </ul>
-  </aside>
   <aside class="dfn-panel" data-for="dom-videoencoderconfig-hardwareacceleration">
    <b><a href="#dom-videoencoderconfig-hardwareacceleration">#dom-videoencoderconfig-hardwareacceleration</a></b><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-dom-videoencoderconfig-hardwareacceleration">7.8. VideoEncoderConfig</a>
-   </ul>
-  </aside>
-  <aside class="dfn-panel" data-for="dictdef-avcencoderconfig">
-   <b><a href="#dictdef-avcencoderconfig">#dictdef-avcencoderconfig</a></b><b>Referenced in:</b>
-   <ul>
-    <li><a href="#ref-for-dictdef-avcencoderconfig">7.8. VideoEncoderConfig</a> <a href="#ref-for-dictdef-avcencoderconfig①">(2)</a>
-   </ul>
-  </aside>
-  <aside class="dfn-panel" data-for="dom-avcencoderconfig-format">
-   <b><a href="#dom-avcencoderconfig-format">#dom-avcencoderconfig-format</a></b><b>Referenced in:</b>
-   <ul>
-    <li><a href="#ref-for-dom-avcencoderconfig-format">7.8.1. AvcEncoderConfig</a>
-   </ul>
-  </aside>
-  <aside class="dfn-panel" data-for="enumdef-avcbitstreamformat">
-   <b><a href="#enumdef-avcbitstreamformat">#enumdef-avcbitstreamformat</a></b><b>Referenced in:</b>
-   <ul>
-    <li><a href="#ref-for-enumdef-avcbitstreamformat">7.8.1. AvcEncoderConfig</a> <a href="#ref-for-enumdef-avcbitstreamformat①">(2)</a> <a href="#ref-for-enumdef-avcbitstreamformat②">(3)</a>
-    <li><a href="#ref-for-enumdef-avcbitstreamformat③">7.8.1.1. AvcBitstreamFormat</a>
-   </ul>
-  </aside>
-  <aside class="dfn-panel" data-for="dom-avcbitstreamformat-annexb">
-   <b><a href="#dom-avcbitstreamformat-annexb">#dom-avcbitstreamformat-annexb</a></b><b>Referenced in:</b>
-   <ul>
-    <li><a href="#ref-for-dom-avcbitstreamformat-annexb">7.8.1.1. AvcBitstreamFormat</a>
-   </ul>
-  </aside>
-  <aside class="dfn-panel" data-for="dom-avcbitstreamformat-avc">
-   <b><a href="#dom-avcbitstreamformat-avc">#dom-avcbitstreamformat-avc</a></b><b>Referenced in:</b>
-   <ul>
-    <li><a href="#ref-for-dom-avcbitstreamformat-avc">7.8.1.1. AvcBitstreamFormat</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="enumdef-hardwareacceleration">
@@ -5383,8 +5199,7 @@ data. See <a href="https://github.com/WICG/web-codecs/issues/80">#80</a>.<a href
     <li><a href="#ref-for-encodedvideochunk③">6.1. Internal Slots</a>
     <li><a href="#ref-for-encodedvideochunk④">6.5. Algorithms</a>
     <li><a href="#ref-for-encodedvideochunk⑤">7.8. VideoEncoderConfig</a> <a href="#ref-for-encodedvideochunk⑥">(2)</a> <a href="#ref-for-encodedvideochunk⑦">(3)</a> <a href="#ref-for-encodedvideochunk⑧">(4)</a>
-    <li><a href="#ref-for-encodedvideochunk⑨">7.8.1. AvcEncoderConfig</a>
-    <li><a href="#ref-for-encodedvideochunk①⓪">8.2.1. Constructors</a>
+    <li><a href="#ref-for-encodedvideochunk⑨">8.2.1. Constructors</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dictdef-encodedvideochunkinit">
