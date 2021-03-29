@@ -91,11 +91,19 @@ function streamEncodedChunks(decodeCallback) { ... }
 
 // The document contains a canvas for displaying VideoFrames.
 const canvasElement = document.getElementById("canvas");
-const canvasContext = canvasElement.getContext('bitmaprenderer');
+const canvasContext = canvas.getContext('2d', canvasOptions)
 
+// Paint every video frame ASAP for lowest latency.
 function paintFrameToCanvas(videoFrame) {
-  // Paint every video frame ASAP for lowest latency.
-  canvasContext.transferFromImageBitmap(videoFrame.transferToImageBitmap());
+  // VideoFrame is a CanvasImageSource.
+  // See https://github.com/web-platform-tests/wpt/blob/master/webcodecs/videoFrame-drawImage.any.js for more examples.
+  //
+  // Alternaviely, paint using tex(Sub)Image(2D|3D).
+  // See https://github.com/web-platform-tests/wpt/blob/master/webcodecs/videoFrame-texImage.any.js for more examples.
+  canvasContext.drawImage(frame, 0, 0);
+  
+  // IMPORTANT: Release the frame to avoid stalling the decoder.
+  frame.close();
 }
 
 const videoDecoder = new VideoDecoder({
@@ -317,9 +325,10 @@ let { audioEncoder, videoEncoder } = buildAndConfigureEncoders();
 if (audioEncoder == null || videoEncoder == null)
   return;  // More elaborate fallback recommended.
 
-// Convert the camera tracks to ReadableStreams of framed bitstream chunks.
-const audio = (new AudioTrackReader(audioTrack)).readable;
-const video = (new VideoTrackReader(videoTrack)).readable;
+// Convert the camera tracks to ReadableStreams of AudioFrame and VideoFrame.
+// See https://w3c.github.io/mediacapture-transform/#track-processor
+const audio = (new MediaStreamTrackProcessor(audioTrack)).readable;
+const video = (new MediaStreamTrackProcessor(videoTrack)).readable;
 
 // Feed the encoders data from the track readers. Encoded outputs are
 // immediately sent on the wire. See readAndEncode() definition from
@@ -382,17 +391,15 @@ Encoder and decoder objects can be instantiated on the main thread and on dedica
 
 Encode and decode operations can be very computationally expensive. As such, user agents must perform the operations asynchronously with the JavaScript which initiates the operation. The execution environment of the codec implementation is defined by the user agent. Some possibilities include: sequentially or in parallel on an internal thread pool, or on a hardware acceleration unit (e.g., a GPU).
 
-By building on the Streams infrastructure, WebCodecs allows the user agent to optimize the transfer of chunks between JavaScript and internal execution environments. The user agent should take great care to efficiently handle expensive resources (e.g., video frame contents, GPU resource handles).
+The user agent should take great care to efficiently handle expensive resources (e.g., video frame contents, GPU resource handles).
 
 ### Codec configuration
 
 Many codecs and encoder/decoder implementations are highly configurable. WebCodecs intends to support most of the configuration options available in codecs today to efficiently allow for advanced use cases.
 
-Configuration options are classified into two types:
-- **Options** are metadata required to construct a compliant bitstream (for example, the codec name and profile). These are required when configuring the encoder/decoder and cannot be changed without again calling configure(). Reconfiguration will internally reset the codec, aborting any pending outputs. Callers can avoid having outputs aborted by first flushing (flush()) the codec.
-- **Tunings** influence the behavior of the codec but do not change the type of bitstream produced (for example, the target bitrate). A new tuning can be provided at any time by calling tune() without disrupting pending outputs. The new tuning is applied as soon as possible (ideally on the next processed input).
+Configurations consist of (1) metadata required to construct a compliant bitstream (for example, the codec name and profile) as well as (2) settings that influence the behavior of the codec but do not change the type of bitstream produced (for example, the target bitrate). The codec may be reconfigured at any time while the codec state is not "closed". Chunks/Frames passed to decode() or encode() will be decoded/encoded according to most recent preceeding call to configure(). 
 
-WebCodecs will maintain a standard definition of parameters for each supported codec. Additionally, the specification will establish common encoder settings that apply across codecs and implementation. However, we expect many settings will be implementation-specific. These will be available behind a feature detection and configuration API (TODO: sketch this).
+WebCodecs will maintain a standard definition of parameters for each supported codec. Additionally, the specification will establish common encoder settings that apply across codecs and implementation. However, we expect many settings will be implementation-specific. Supported configurations may be feature-detected using the static IsConfigSupported() methods.
 
 ## Alternative designs considered
 
