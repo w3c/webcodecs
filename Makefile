@@ -29,7 +29,7 @@ remote-codec-registry: codec_registry.src.html
 	                       --output codec_registry.html \
 	                       --write-out "%{http_code}" \
 	                       --header "Accept: text/plain, text/html" \
-	                       -F die-on=fatal \
+	                       -F die-on=warning \
 	                       -F file=@codec_registry.src.html) && \
 	[[ "$$HTTP_STATUS" -eq "200" ]]) || ( \
 		echo ""; cat codec_registry.html; echo ""; \
@@ -42,7 +42,7 @@ remote-avc-codec-registration: avc_codec_registration.src.html
 	                       --output avc_codec_registration.html \
 	                       --write-out "%{http_code}" \
 	                       --header "Accept: text/plain, text/html" \
-	                       -F die-on=fatal \
+	                       -F die-on=warning \
 	                       -F file=@avc_codec_registration.src.html) && \
 	[[ "$$HTTP_STATUS" -eq "200" ]]) || ( \
 		echo ""; cat avc_codec_registration.html; echo ""; \
