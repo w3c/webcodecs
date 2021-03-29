@@ -75,9 +75,7 @@ Core interfaces include
 
 WebCodecs will also define mechanisms for importing content from getUserMedia().
 
--   An **AudioTrackReader** converts an audio MediaStreamTrack into a ReadableStream of AudioFrame.
-
--   A **VideoTrackReader** converts a video MediaStreamTrack into a ReadableStream of VideoFrame.
+-   An [**MediaStreamTrackProcessor**](https://w3c.github.io/mediacapture-transform/#track-processor) converts an audio/video MediaStreamTrack into a ReadableStream of AudioFrame/VideoFrame. 
 
 ## Examples
 ### Example of video rendering to Canvas for extremely low-latency streaming (e.g. cloud gaming)
@@ -153,8 +151,9 @@ function readAndEncode(reader, encoder) {
 }
 
 // First, the tracks are converted to ReadableStreams of unencoded audio and video.
-const audio = (new AudioTrackReader(audioTrack)).readable;
-const video = (new VideoTrackReader(videoTrack)).readable;
+// See https://w3c.github.io/mediacapture-transform/#track-processor.
+const audio = (new MediaStreamTrackProcessor(audioTrack)).readable;
+const video = (new MediaStreamTrackProcessor(videoTrack)).readable;
 
 // Then build and configure the encoders.
 const audioEncoder = new AudioEncoder({
