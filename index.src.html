@@ -68,6 +68,11 @@ spec: mediastream-recording; urlPrefix: https://www.w3.org/TR/mediastream-record
 spec: media-capabilities; urlPrefix: https://w3c.github.io/media-capabilities/#
     type: method; text: decodingInfo(); url: dom-mediacapabilities-decodinginfo
     type: attribute; text: powerEfficient; url: dom-mediacapabilitiesinfo-powerefficient
+
+spec: webaudio; urlPrefix: https://www.w3.org/TR/webaudio/
+    type: dfn; text: acquire the content; url: #acquire-the-content
+    for: AudioBuffer
+        type: method;  text: copyToChannel(); url: #dom-audiobuffer-copytochannel
 </pre>
 
 <pre class='biblio'>
@@ -375,10 +380,11 @@ Algorithms {#audiodecoder-algorithms}
   <dd>
     Run these steps:
     1. For each |output| in |outputs|:
-        1. Let |buffer| be an {{AudioBuffer}} containing the decoded audio data in
-            |output|.
-        2. Let |frame| be an {{AudioFrame}} containing |buffer| and a timestamp for
-            the output.
+        1. Let |frameInit| be an {{AudioFrameInit}} with the following keys:
+            1. Let {{AudioFrameInit/buffer}} be an {{AudioBuffer}} containing
+                the decoded audio data from |output|.
+            2. Let {{AudioFrameInit/timestamp}} be the timestamp from |output|.
+        2. Let |frame| be an {{AudioFrame}} constructed with |frameInit|.
         3. Invoke {{AudioDecoder/[[output callback]]}} with frame.
   </dd>
   <dt><dfn>Reset AudioDecoder</dfn></dt>
@@ -761,7 +767,7 @@ Methods {#audioencoder-methods}
         `true`, throw a {{TypeError}}.
     2. If {{AudioEncoder/state}} is not `"configured"`, throw an
         {{InvalidStateError}}.
-    3. Let |frameClone| hold the result of running the [=Clone Frame=]
+    3. Let |frameClone| hold the result of running the [=Clone AudioFrame=]
         algorithm with |frame|.
     4. Destroy the original |frame| by invoking `frame.destroy()`.
     5. Increment {{AudioEncoder/encodeQueueSize}}.
@@ -769,7 +775,7 @@ Methods {#audioencoder-methods}
 
     Running a control message to encode the frame means performing these steps.
     1. Attempt to use {{AudioEncoder/[[codec implementation]]}} to encode
-        |frameClone|.
+        the [=frame resource=] described by |frameClone|.
     2. If encoding results in an error, queue a task on the [=control thread=]
         event loop to run the [=Close AudioEncoder=] algorithm with
         {{EncodingError}}.
@@ -777,9 +783,8 @@ Methods {#audioencoder-methods}
         {{AudioEncoder/encodeQueueSize}}.
     4. Let |encoded outputs| be a [=list=] of encoded audio data outputs
         emitted by {{AudioEncoder/[[codec implementation]]}}.
-    5. If |encoded outputs| is not empty, queue a task on the [=control thread=]
-        event loop to run the [=Output EncodedAudioChunks=] algorithm with
-        |encoded outputs|.
+    5. If |encoded outputs| is not empty, queue a task on the
+        [=control thread=] event loop to run the [=Output EncodedAudioChunks=] algorithm with |encoded outputs|.
   </dd>
 
   <dt><dfn method for=AudioEncoder>flush()</dfn></dt>
@@ -1866,6 +1871,39 @@ Raw Media Interfaces (Frames){#raw-media-interfaces}
 ====================================================
 These interfaces represent unencoded (raw) media.
 
+Memory Model {#raw-media-memory-model}
+--------------------------------------
+
+### Background ### {#raw-media-memory-model-background}
+
+This section is non-normative.
+
+Decoded media data (frames) may occupy a large amount of system memory. To
+minimize the need for expensive copies, this specification defines a scheme
+for reference counting (`frame.clone()` and `frame.close()`).
+
+### Reference Counting ### {#raw-media-memory-model-reference-counting}
+
+A <dfn>frame resource</dfn> is storage for the actual pixel data or the audio
+sample data described by a {{VideoFrame}} or {{AudioFrame}}.
+
+The {{AudioFrame}} {{AudioFrame/[[resource reference]]}} and {{VideoFrame}}
+{{VideoFrame/[[resource reference]]}} internal slots hold a reference to a
+[=frame resource=].
+
+{{VideoFrame}}.{{VideoFrame/clone()}} and
+{{AudioFrame}}.{{AudioFrame/clone()}} return new frame objects who's
+`[[resource reference]]` points to the same [=frame resource=] as the original
+frame.
+
+{{VideoFrame}}.{{VideoFrame/close()}} and {{AudioFrame}}.{{AudioFrame/close()}}
+will clear their [[resource reference]] slot, releasing the reference their
+[=frame resource=]
+
+A [=frame resource=] must outlive the frames that reference it. When no frames
+reference a given [=frame resource=], the resource must be destroyed
+(freeing associated [=system resources=]).
+
 
 AudioFrame Interface {#audioframe-interface}
 ---------------------------------------------
@@ -1875,8 +1913,11 @@ AudioFrame Interface {#audioframe-interface}
 [Exposed=(Window,DedicatedWorker)]
 interface AudioFrame {
   constructor(AudioFrameInit init);
+
   readonly attribute unsigned long long timestamp;
   readonly attribute AudioBuffer? buffer;
+
+  AudioFrame clone();
   undefined close();
 };
 
@@ -1888,14 +1929,13 @@ dictionary AudioFrameInit {
 </pre>
 
 ### Internal Slots ###{#audioframe-internal-slots}
-<dl>
-  <dt><dfn attribute for=AudioFrame>\[[detached]]</dfn></dt>
-  <dd>
-    Boolean indicating whether close() was invoked and underlying resources
-        have been released.
-  </dd>
-</dl>
+: <dfn attribute for=AudioFrame>\[[detached]]</dfn>
+:: Boolean indicating whether close() was invoked and underlying resources
+    have been released.
 
+: <dfn attribute for=AudioFrame>[[resource reference]]</dfn>
+:: A reference to a [=frame resource=] that stores the audio sample data for
+    this frame.
 
 ### Constructors ###{#audioframe-constructors}
 <dfn constructor for=AudioFrame title="AudioFrame(init)">
@@ -1904,33 +1944,55 @@ dictionary AudioFrameInit {
 1. Let |frame| be a new {{AudioFrame}} object.
 2. Assign `init.timestamp` to `frame.timestamp`.
 3. Assign `init.buffer` to `frame.buffer`.
-4. Assign `false` to the {{AudioFrame/[[detached]]}} internal slot.
-5. Return |frame|.
+4. Let |resource| be a new [=frame resource=].
+5. [=Acquire the content=] [[WEBAUDIO]] of `frame.buffer` and assign the
+    acquired content to |resource|.
 
+    NOTE: The acquired content stored in |resource| is an immutable snapshot
+        {{AudioFrameInit/buffer}}'s content. Mutating {{AudioFrame/buffer}}
+        after construction (e.g. via {{AudioBuffer/copyToChannel()}}) will
+        have no effect on the |resource|.
+
+6. Initialize [[resource reference]] with a reference to |resource|.
+7. Assign `false` to the {{AudioFrame/[[detached]]}} internal slot.
+8. Return |frame|.
 
 ### Attributes ###{#audioframe-attributes}
-<dl>
-  <dt><dfn attribute for=AudioFrame>timestamp</dfn></dt>
-  <dd>The presentation timestamp, given in microseconds.</dd>
+: <dfn attribute for=AudioFrame>timestamp</dfn>
+:: The presentation timestamp, given in microseconds.
 
-  <dt><dfn attribute for=AudioFrame>buffer</dfn></dt>
-  <dd>The buffer containing decoded audio data.</dd>
-</dl>
-
+: <dfn attribute for=AudioFrame>buffer</dfn>
+:: The buffer containing decoded audio data.
 
 ### Methods ###{#audioframe-methods}
-<dl>
-  <dt><dfn method for=AudioFrame>close()</dfn></dt>
-  <dd>
-    Immediately frees [=system resources=]. When invoked, run these steps:
-    1. Release [=system resources=] for buffer and set its value to null.
-    2. Assign `true` to the {{AudioFrame/[[detached]]}} internal slot.
+: <dfn method for=AudioFrame>clone()</dfn>
+:: Creates a new AudioFrame with a reference to the same [=frame resource=].
 
-    NOTE: This section needs work. We should use the name and semantics of
-        VideoFrame destroy(). Similarly, we should add clone() to make a deep
-        copy.
-  </dd>
-</dl>
+    When invoked, run these steps:
+    1. If the value of |frame|'s {{AudioFrame/[[detached]]}} internal slot is
+        `true`, throw an {{InvalidStateError}} {{DOMException}}.
+    2. Return the result of running the [=Clone AudioFrame=] algorithm with
+        [=this=].
+
+: <dfn method for=AudioFrame>close()</dfn>
+:: Clears all state and releases the reference to the [=frame resource=].
+    Close is final.
+
+    When invoked, run these steps:
+    1. Assign `null` to {{AudioFrame/[[resource reference]]}}.
+    2. Assign `null` to {{AudioFrame/buffer}}.
+    3. Assign `true` to the {{AudioFrame/[[detached]]}} internal slot.
+
+### Algorithms ### {#audioframe-algorithms}
+
+: <dfn>Clone AudioFrame</dfn> (with |frame|)
+:: Run these steps:
+    1. Let |cloneFrame| be a new {{AudioFrame}} initialized as follows:
+        1. Assign |frame|.{{AudioFrame/[[resource reference]]}} to
+            |cloneFrame|.{{AudioFrame/[[resource reference]]}}.
+        2. Assign |frame|.timestamp to |cloneFrame|.timestamp.
+        3. Assign |frame|.buffer to |cloneFrame|.buffer.
+    2. Return |cloneFrame|.
 
 VideoFrame Interface {#videoframe-interface}
 --------------------------------------------
@@ -2333,7 +2395,7 @@ new exploits that rely on a specific configuration and/or sequence of control
 operations.
 
 Platform codecs are historically an internal detail of APIs like
-{{HTMLMediaElement}}, [[WebAudio]], and [[WebRTC]]. In this way, it has always
+{{HTMLMediaElement}}, [[WEBAUDIO]], and [[WebRTC]]. In this way, it has always
 been possible to attack the underlying codecs by using malformed media
 files/streams and invoking the various API control methods.
 
