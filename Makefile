@@ -3,7 +3,7 @@ SHELL=/bin/bash
 local: local-index local-codec-registry local-avc-codec-registration
 
 local-index: index.src.html
-	bikeshed --die-on=warning spec index.src.html index.html
+	bikeshed -f spec index.src.html index.html
 
 local-codec-registry: codec_registry.src.html
 	bikeshed --die-on=warning spec codec_registry.src.html codec_registry.html
