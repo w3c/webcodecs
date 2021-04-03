@@ -3,7 +3,7 @@ SHELL=/bin/bash
 local: local-index local-codec-registry local-avc-codec-registration
 
 local-index: index.src.html
-	bikeshed -f spec index.src.html index.html
+	bikeshed --die-on=warning spec index.src.html index.html
 
 local-codec-registry: codec_registry.src.html
 	bikeshed --die-on=warning spec codec_registry.src.html codec_registry.html
@@ -16,7 +16,6 @@ remote-index: index.src.html
 	                       --output index.html \
 	                       --write-out "%{http_code}" \
 	                       --header "Accept: text/plain, text/html" \
-	                       -F die-on=warning \
 	                       -F file=@index.src.html) && \
 	[[ "$$HTTP_STATUS" -eq "200" ]]) || ( \
 		echo ""; cat index.html; echo ""; \
