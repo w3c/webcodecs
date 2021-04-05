@@ -283,21 +283,21 @@ Methods {#audiodecoder-methods}
     [=Enqueues a control message=] to decode the given |chunk|.
 
     When invoked, run these steps:
-    1. If {{VideoDecoder/state}} is not `"configured"`, throw an
+    1. If {{AudioDecoder/state}} is not `"configured"`, throw an
         {{InvalidStateError}}.
-    2. Increment {{VideoDecoder/decodeQueueSize}}.
+    2. Increment {{AudioDecoder/decodeQueueSize}}.
     3. [=Queue a control message=] to decode the |chunk|.
 
     Running a control message to decode the chunk means performing these steps:
-    1. Attempt to use {{VideoDecoder/[[codec implementation]]}} to decode the
+    1. Attempt to use {{AudioDecoder/[[codec implementation]]}} to decode the
         chunk.
     2. If decoding results in an error, queue a task on the [=control thread=]
-        event loop to run the [=Close VideoDecoder=] algorithm with
+        event loop to run the [=Close AudioDecoder=] algorithm with
         {{EncodingError}}.
     3. Queue a task on the [=control thread=] event loop to decrement
-        {{VideoDecoder/decodeQueueSize}}
+        {{AudioDecoder/decodeQueueSize}}
     4. Let |decoded outputs| be a [=list=] of decoded video data outputs emitted
-        by {{VideoDecoder/[[codec implementation]]}}.
+        by {{AudioDecoder/[[codec implementation]]}}.
     5. If |decoded outputs| is not empty, queue a task on the [=control thread=]
         event loop to run the [=Output VideoFrames=] algorithm with
         |decoded outputs|.
@@ -1930,8 +1930,7 @@ dictionary AudioFrameInit {
 
 ### Internal Slots ###{#audioframe-internal-slots}
 : <dfn attribute for=AudioFrame>\[[detached]]</dfn>
-:: Boolean indicating whether close() was invoked and underlying resources
-    have been released.
+:: Boolean indicating whether {{AudioFrame/close()}} was invoked.
 
 : <dfn attribute for=AudioFrame>[[resource reference]]</dfn>
 :: A reference to a [=frame resource=] that stores the audio sample data for
@@ -1941,28 +1940,36 @@ dictionary AudioFrameInit {
 <dfn constructor for=AudioFrame title="AudioFrame(init)">
   AudioFrame(init)
 </dfn>
-1. Let |frame| be a new {{AudioFrame}} object.
-2. Assign `init.timestamp` to `frame.timestamp`.
-3. Assign `init.buffer` to `frame.buffer`.
-4. Let |resource| be a new [=frame resource=].
-5. [=Acquire the content=] [[WEBAUDIO]] of `frame.buffer` and assign the
-    acquired content to |resource|.
+1. Let |frame| be a new {{AudioFrame}} object, initialized as follows:
+    1. Assign |init|.{{AudioFrameInit/timestamp}} to {{AudioFrame/timestamp}}.
+    2. Assign |init|.{{AudioFrameInit/buffer}} to {{AudioFrame/buffer}}.
+    3. Let |resource| be a new [=frame resource=].
+    4. [=Acquire the content=] [[WEBAUDIO]] of {{AudioFrame/buffer}} and
+        assign the acquired content to |resource|.
 
-    NOTE: The acquired content stored in |resource| is an immutable snapshot
-        {{AudioFrameInit/buffer}}'s content. Mutating {{AudioFrame/buffer}}
-        after construction (e.g. via {{AudioBuffer/copyToChannel()}}) will
-        have no effect on the |resource|.
+        NOTE: The acquired content stored in |resource| is an immutable
+            snapshot {{AudioFrameInit/buffer}}'s content. Mutating
+            {{AudioFrame/buffer}} after construction (e.g. via
+            {{AudioBuffer/copyToChannel()}}) will have no effect on the
+            |resource|.
 
-6. Initialize [[resource reference]] with a reference to |resource|.
-7. Assign `false` to the {{AudioFrame/[[detached]]}} internal slot.
-8. Return |frame|.
+    5. Let |resourceReference| be a reference to |resource|.
+    6. Assign |resourceReference| to {{AudioFrame/[[resource reference]]}}.
+    7. Assign `false` to the {{AudioFrame/[[detached]]}} internal slot.
+2. Return |frame|.
 
 ### Attributes ###{#audioframe-attributes}
 : <dfn attribute for=AudioFrame>timestamp</dfn>
 :: The presentation timestamp, given in microseconds.
 
 : <dfn attribute for=AudioFrame>buffer</dfn>
-:: The buffer containing decoded audio data.
+:: The buffer describing decoded audio data.
+
+    NOTE: The backing [=frame resource=] (referenced by
+        {{AudioFrame/[[resource reference]]}}) is immutable. Mutating
+        {{AudioFrame/buffer}} after construction (e.g. via
+        {{AudioBuffer/copyToChannel()}}) will have no effect on the
+        [=frame resource=].
 
 ### Methods ###{#audioframe-methods}
 : <dfn method for=AudioFrame>clone()</dfn>
@@ -1987,12 +1994,12 @@ dictionary AudioFrameInit {
 
 : <dfn>Clone AudioFrame</dfn> (with |frame|)
 :: Run these steps:
-    1. Let |cloneFrame| be a new {{AudioFrame}} initialized as follows:
+    1. Let |clone| be a new {{AudioFrame}} initialized as follows:
         1. Assign |frame|.{{AudioFrame/[[resource reference]]}} to
-            |cloneFrame|.{{AudioFrame/[[resource reference]]}}.
-        2. Assign |frame|.timestamp to |cloneFrame|.timestamp.
-        3. Assign |frame|.buffer to |cloneFrame|.buffer.
-    2. Return |cloneFrame|.
+            {{AudioFrame/[[resource reference]]}}.
+        2. Assign |frame|.timestamp to {{AudioFrame/timestamp}}.
+        3. Assign |frame|.buffer to {{AudioFrame/buffer}}.
+    2. Return |clone|.
 
 VideoFrame Interface {#videoframe-interface}
 --------------------------------------------
