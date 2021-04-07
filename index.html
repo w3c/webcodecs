@@ -4,7 +4,7 @@
   <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport">
   <title>WebCodecs</title>
   <link href="https://www.w3.org/StyleSheets/TR/2016/W3C-ED" rel="stylesheet" type="text/css">
-  <meta content="Bikeshed version b94c7e755, updated Fri Feb 19 16:28:59 2021 -0800" name="generator">
+  <meta content="Bikeshed version c5fd42b86, updated Mon Apr 5 16:27:33 2021 -0700" name="generator">
   <link href="https://w3c.github.io/webcodecs/" rel="canonical">
 <style>/* style-autolinks */
 
@@ -566,7 +566,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
   <div class="head">
    <p data-fill-with="logo"><a class="logo" href="https://www.w3.org/"> <img alt="W3C" height="48" src="https://www.w3.org/StyleSheets/TR/2016/logos/W3C" width="72"> </a> </p>
    <h1 class="p-name no-ref" id="title">WebCodecs</h1>
-   <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">Editor’s Draft, <time class="dt-updated" datetime="2021-03-30">30 March 2021</time></span></h2>
+   <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">Editor’s Draft, <time class="dt-updated" datetime="2021-04-07">7 April 2021</time></span></h2>
    <div data-fill-with="spec-metadata">
     <dl>
      <dt>This version:
@@ -1421,8 +1421,6 @@ supporting <var>config</var>.</p>
     <dt><dfn class="dfn-paneled idl-code" data-dfn-for="AudioEncoder" data-dfn-type="method" data-export id="dom-audioencoder-encode"><code>encode(frame)</code></dfn>
     <dd>
       <a data-link-type="dfn" href="#enqueues-a-control-message" id="ref-for-enqueues-a-control-message①②">Enqueues a control message</a> to encode the given <var>frame</var>. 
-     <p class="note" role="note"><span>NOTE:</span> This method will destroy the AudioFrame. Authors who wish to retain a
-    copy, should call <code>frame.clone()</code> prior to calling encode().</p>
      <p>When invoked, run these steps:</p>
      <ol>
       <li data-md>
@@ -1431,8 +1429,6 @@ supporting <var>config</var>.</p>
        <p>If <code class="idl"><a data-link-type="idl" href="#dom-audioencoder-state" id="ref-for-dom-audioencoder-state③">state</a></code> is not <code>"configured"</code>, throw an <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#invalidstateerror" id="ref-for-invalidstateerror⑨">InvalidStateError</a></code>.</p>
       <li data-md>
        <p>Let <var>frameClone</var> hold the result of running the <a data-link-type="dfn" href="#clone-frame" id="ref-for-clone-frame">Clone Frame</a> algorithm with <var>frame</var>.</p>
-      <li data-md>
-       <p>Destroy the original <var>frame</var> by invoking <code>frame.destroy()</code>.</p>
       <li data-md>
        <p>Increment <code class="idl"><a data-link-type="idl" href="#dom-audioencoder-encodequeuesize" id="ref-for-dom-audioencoder-encodequeuesize①">encodeQueueSize</a></code>.</p>
       <li data-md>
@@ -1681,8 +1677,6 @@ supporting <var>config</var>.</p>
     <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoEncoder" data-dfn-type="method" data-export data-lt="encode(frame, options)|encode(frame)" id="dom-videoencoder-encode"><code>encode(frame, options)</code></dfn>
     <dd>
       <a data-link-type="dfn" href="#enqueues-a-control-message" id="ref-for-enqueues-a-control-message①⑦">Enqueues a control message</a> to encode the given <var>frame</var>. 
-     <p class="note" role="note"><span>NOTE:</span> This method will destroy the VideoFrame. Authors who wish to retain a
-    copy, should call <code>frame.clone()</code> prior to calling encode().</p>
      <p>When invoked, run these steps:</p>
      <ol>
       <li data-md>
@@ -1691,8 +1685,6 @@ supporting <var>config</var>.</p>
        <p>If <code class="idl"><a data-link-type="idl" href="#dom-videoencoder-state" id="ref-for-dom-videoencoder-state③">state</a></code> is not <code>"configured"</code>, throw an <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#invalidstateerror" id="ref-for-invalidstateerror①③">InvalidStateError</a></code>.</p>
       <li data-md>
        <p>Let <var>frameClone</var> hold the result of running the <a data-link-type="dfn" href="#clone-frame" id="ref-for-clone-frame①">Clone Frame</a> algorithm with <var>frame</var>.</p>
-      <li data-md>
-       <p>Destroy the original <var>frame</var> by invoking <code>frame.destroy()</code>.</p>
       <li data-md>
        <p>Increment <code class="idl"><a data-link-type="idl" href="#dom-videoencoder-encodequeuesize" id="ref-for-dom-videoencoder-encodequeuesize①">encodeQueueSize</a></code>.</p>
       <li data-md>
