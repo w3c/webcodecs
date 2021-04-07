@@ -753,9 +753,6 @@ Methods {#audioencoder-methods}
   <dd>
     [=Enqueues a control message=] to encode the given |frame|.
 
-    NOTE: This method will destroy the AudioFrame. Authors who wish to retain a
-    copy, should call `frame.clone()` prior to calling encode().
-
     When invoked, run these steps:
     1. If the value of |frame|'s {{AudioFrame/[[detached]]}} internal slot is
         `true`, throw a {{TypeError}}.
@@ -763,9 +760,8 @@ Methods {#audioencoder-methods}
         {{InvalidStateError}}.
     3. Let |frameClone| hold the result of running the [=Clone Frame=]
         algorithm with |frame|.
-    4. Destroy the original |frame| by invoking `frame.destroy()`.
-    5. Increment {{AudioEncoder/encodeQueueSize}}.
-    6. [=Queue a control message=] to encode |frameClone|.
+    4. Increment {{AudioEncoder/encodeQueueSize}}.
+    5. [=Queue a control message=] to encode |frameClone|.
 
     Running a control message to encode the frame means performing these steps.
     1. Attempt to use {{AudioEncoder/[[codec implementation]]}} to encode
@@ -1005,9 +1001,6 @@ Methods {#videoencoder-methods}
   <dd>
     [=Enqueues a control message=] to encode the given |frame|.
 
-    NOTE: This method will destroy the VideoFrame. Authors who wish to retain a
-    copy, should call `frame.clone()` prior to calling encode().
-
     When invoked, run these steps:
     1. If the value of |frame|'s {{VideoFrame/[[detached]]}} internal slot is
         `true`, throw a {{TypeError}}.
@@ -1015,9 +1008,8 @@ Methods {#videoencoder-methods}
         {{InvalidStateError}}.
     3. Let |frameClone| hold the result of running the [=Clone Frame=]
         algorithm with |frame|.
-    4. Destroy the original |frame| by invoking `frame.destroy()`.
-    5. Increment {{VideoEncoder/encodeQueueSize}}.
-    6. [=Queue a control message=] to encode |frameClone|.
+    4. Increment {{VideoEncoder/encodeQueueSize}}.
+    5. [=Queue a control message=] to encode |frameClone|.
 
     Running a control message to encode the frame means performing these steps.
     1. Attempt to use {{VideoEncoder/[[codec implementation]]}} to encode
