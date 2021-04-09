@@ -1900,10 +1900,13 @@ frame.
 will clear their [[resource reference]] slot, releasing the reference their
 [=frame resource=]
 
-A [=frame resource=] must outlive the frames that reference it. When no frames
-reference a given [=frame resource=], the resource must be destroyed
-(freeing associated [=system resources=]).
+A [=frame resource=] must remain alive as long as it continues to be referenced
+by a `[[resource reference]]`.
 
+NOTE: When a [=frame resource=] is no longer referenced by a
+    `[[resource reference]]`, the resource may be destroyed. User agents are
+    encouraged to destroy such resources quickly to reduce memory pressure and
+    facilitate resouce reuse.
 
 AudioFrame Interface {#audioframe-interface}
 ---------------------------------------------
