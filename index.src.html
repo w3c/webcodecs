@@ -38,6 +38,7 @@ spec: html; urlPrefix: https://html.spec.whatwg.org/multipage/;
     for: ImageBitmap;
         type: attribute; text: resizeWidth; url:#dom-imagebitmapoptions-resizewidth
         type: attribute; text: resizeHeight; url:#dom-imagebitmapoptions-resizeheight
+        type: dfn; text: cropped to the source rectangle with formatting; url: imagebitmap-and-animations.html#cropped-to-the-source-rectangle-with-formatting
     type: dfn; text: global object; url: webappapis.html#global-object
 
 spec: mediacapture-streams; urlPrefix: https://www.w3.org/TR/mediacapture-streams/
@@ -515,7 +516,7 @@ Methods {#videodecoder-methods}
     NOTE: Authors should call {{VideoFrame/close()}} on ouput
         {{VideoFrame}}s immediately when frames are no longer needed. The
         underlying [=frame resource=]s are owned by the {{VideoDecoder}} and
-        failing to release them (or waiting of garbage collection) may cause
+        failing to release them (or waiting for garbage collection) may cause
         decoding to stall.
 
     When invoked, run these steps:
@@ -2055,8 +2056,8 @@ dictionary VideoFrameInit {
 };
 
 dictionary VideoFramePlanesInit {
-  unsigned long codedWidth;
-  unsigned long codedHeight;
+  required unsigned long codedWidth;
+  required unsigned long codedHeight;
   unsigned long cropLeft;
   unsigned long cropTop;
   unsigned long cropWidth;
@@ -2085,7 +2086,7 @@ dictionary VideoFramePlanesInit {
 1. If the value of |imageBitmap|'s' {{PlatformObject/[[Detached]]}} internal
     slot is `true`, then throw an {{InvalidStateError}}
     {{DOMException}}.
-2. Let |resource| be the [=frame resource=] containing the pixel data for
+2. Let |resource| be the [=frame resource=] containing the bitmap data for
     |imageBitmap|.
 3. Let |resourceReference| be a reference to |resource|.
 4. Let |frame| be a new {{VideoFrame}}, initialized as follows:
@@ -2121,19 +2122,16 @@ dictionary VideoFramePlanesInit {
 <dfn constructor for=VideoFrame title="VideoFrame(format, planesInit, frameInit)">
   VideoFrame(format, planesInit, frameInit)
 </dfn>
-1. If either {{VideoFramePlanesInit/codedWidth}} or
-    {{VideoFramePlanesInit/codedHeight}} is not present in |frameInit|,
-    throw a {{TypeError}}.
-2. If |frameInit| is not a [=valid VideoFramePlanesInit=], throw a
+1. If |frameInit| is not a [=valid VideoFramePlanesInit=], throw a
     {{TypeError}}.
-3. If |planesInit| is incompatible with the given |format| (e.g. wrong
+2. If |planesInit| is incompatible with the given |format| (e.g. wrong
     number of planes), throw a TypeError.
 
     ISSUE: The spec should list additional format specific validation steps (
         e.g. number and order of planes, acceptable sizing, etc...).  See
         [#165](https://github.com/w3c/webcodecs/issues/165).
 
-4. Let |resource| be a new [=frame resource=] allocated in accordance with
+3. Let |resource| be a new [=frame resource=] allocated in accordance with
     |frameInit|.
 
     ISSUE: The spec should define explicit rules for each
@@ -2145,55 +2143,67 @@ dictionary VideoFramePlanesInit {
       reflected by {{VideoFrame/codedWidth}}, {{VideoFrame/codedHeight}}, and
       {{Plane/stride}}.
 
-5. Let |resourceReference| be a reference to |resource|.
-6. Let |frame| be a new {{VideoFrame}} object initialized as follows:
+4. Let |resourceReference| be a reference to |resource|.
+5. Let |frame| be a new {{VideoFrame}} object initialized as follows:
     1. Assign |resourceReference| to
             {{VideoFrame/[[resource reference]]}}.
     2. Assign |format| to {{VideoFrame/format}}.
     3. Assign a new [=list=] to {{VideoFrame/planes}}.
     4. For each |planeInit| in |planesInit|:
         1. Copy |planeInit|.{{PlaneInit/src}} to |resource|.
+
+            NOTE: The user agent may use {{VideoFramePlanesInit/cropLeft}}
+                and {{VideoFramePlanesInit/cropTop}} to copy only the crop
+                region. It may also reposition the crop region within
+                |resource|. The final position will be reflected by
+                {{VideoFrame/cropLeft}} and {{VideoFrame/cropTop}}.
+
         2. Let |plane| be a new {{Plane}} initialized as follows:
-          1. Assign |frame| to {{Plane/[[parent frame]]}}.
-          2. Let |resourceStride| be the stride of the plane coresponding to
-              |planeInit| in |resource|.
+            1. Assign |frame| to {{Plane/[[parent frame]]}}.
+            2. Let |resourceStride| be the stride of the plane coresponding to
+                |planeInit| in |resource|.
 
-              ISSUE: The spec should provide a definition (and possibly
-                  diagrams) for stride. See
-                  [#166](https://github.com/w3c/webcodecs/issues/166).
+                ISSUE: The spec should provide a definition (and possibly
+                    diagrams) for stride. See
+                    [#166](https://github.com/w3c/webcodecs/issues/166).
 
-          3. Assign |resourceStride| to {{Plane/stride}}.
-          4. Assign |planeInit|.{{PlaneInit/rows}} to {{Plane/rows}}.
-          5. Assign the product of ({{Plane/stride}} * {{Plane/rows}}) to
-              {{Plane/length}}.
+            3. Assign |resourceStride| to {{Plane/stride}}.
+            4. Assign |planeInit|.{{PlaneInit/rows}} to {{Plane/rows}}.
+            5. Assign the product of ({{Plane/stride}} * {{Plane/rows}}) to
+                {{Plane/length}}.
         3. Append |plane| to {{VideoFrame/planes}}.
 
     5. Let |resourceCodedWidth| be the coded width of |resource|.
     6. Let |resourceCodedHeight| be the coded height of |resource|.
+    7. Let |resourceCropLeft| be the left offset of the crop origin of
+        |resource|.
+    8. Let |resourceCropTop| be the top offset of the crop origin of
+        |resource|.
 
         ISSUE: The spec should provide definitions (and possibly diagrams) for
             coded size, crop size, and display size. See
             [#166](https://github.com/w3c/webcodecs/issues/166).
 
-    7. Assign |resourceCodedWidth| to {{VideoFrame/codedWidth}}.
-    8. Assign |resourceCodedHeight| to {{VideoFrame/codedHeight}}.
-    9. Assign |init|.{{VideoFramePlanesInit/cropLeft}} to
-        {{VideoFrame/cropLeft}}.
-    10. Assign |init|.{{VideoFramePlanesInit/cropTop}} to
-        {{VideoFrame/cropTop}}.
-    11. Assign |init|.{{VideoFramePlanesInit/cropWidth}} to
-        {{VideoFrame/cropWidth}}.
-    12. Assign |init|.{{VideoFramePlanesInit/cropHeight}} to
-        {{VideoFrame/cropHeight}}.
-    13. Assign |init|.{{VideoFramePlanesInit/displayWidth}} to
-        {{VideoFrame/displayWidth}}.
-    14. Assign |init|.{{VideoFramePlanesInit/displayHeight}} to
-        {{VideoFrame/displayHeight}}.
-    15. Assign |init|.{{VideoFramePlanesInit/timestamp}} to
-        {{VideoFrame/timestamp}}.
-    16. Assign |init|.{{VideoFramePlanesInit/duration}} to
-        {{VideoFrame/duration}}.
-7. Return |frame|.
+    9. Assign |resourceCodedWidth|, |resourceCodedHeight|, |resourceCropLeft|,
+        and |resourceCropTop| to {{VideoFrame/codedWidth}},
+        {{VideoFrame/codedHeight}}, {{VideoFrame/cropLeft}}, and
+        {{VideoFrame/cropTop}} respectively.
+    10. If |init|.{{VideoFramePlanesInit/cropWidth}} [=map/exists=], assign it
+        to {{VideoFrame/cropWidth}}. Otherwise, assign
+        {{VideoFrame/codedWidth}} to {{VideoFrame/cropWidth}}.
+    11. If |init|.{{VideoFramePlanesInit/cropHeight}} [=map/exists=], assign it
+        to {{VideoFrame/cropHeight}}. Otehrwise, assign
+        {{VideoFrame/codedHeight}} to {{VideoFrame/cropHeight}}.
+    12. If |init|.{{VideoFramePlanesInit/displayWidth}} [=map/exists=], assign
+        it to {{VideoFrame/displayWidth}}. Otherwise, assign
+        {{VideoFrame/cropWidth}} to {{VideoFrame/displayWidth}}.
+    13. If |init|.{{VideoFramePlanesInit/displayHeight}} [=map/exists=], assign
+        it to {{VideoFrame/displayHeight}}. Otherwise, assign
+        {{VideoFrame/cropHeight}} to {{VideoFrame/displayHeight}}.
+    14. Assign |init|'s {{VideoFramePlanesInit/timestamp}} and
+        {{VideoFramePlanesInit/duration}} to {{VideoFrame/timestamp}} and
+        {{VideoFrame/duration}} respectively.
+6. Return |frame|.
 
 
 ### Attributes ###{#videoframe-attributes}
@@ -2288,9 +2298,9 @@ dictionary VideoFramePlanesInit {
         {{DOMException}}.
     4. Let |imageBitmap| be a new {{ImageBitmap}} object.
     5. Set |imageBitmap|'s bitmap data to a copy of the {{VideoFrame}} pixel
-        data, at the frame's intrinsic width and intrinsic height (`i.e`., after
-        any aspect-ratio correction has been applied), cropped to the source
-        rectangle with formatting.
+        data, at the frame's intrinsic width and intrinsic height (`i.e`.,
+        after any aspect-ratio correction has been applied),
+        [=ImageBitmap/cropped to the source rectangle with formatting=].
     6. If the origin of |imageBitmap|'s image is not same origin with entry
         settings object's origin, then set the origin-clean flag of
         |imageBitmap|'s bitmap to `false`.
@@ -2327,24 +2337,8 @@ dictionary VideoFramePlanesInit {
                 3. Assign |plane|.{{Plane/rows}} to {{Plane/rows}}.
                 4. Assign |plane|.{{Plane/length}} to {{Plane/length}}.
             2. Append |clonePlane| to {{VideoFrame/planes}}.
-        5. Assign |frame|.{{VideoFrame/codedWidth}} to
-            {{VideoFrame/codedWidth}}.
-        6. Assign |frame|.{{VideoFrame/codedHeight}} to
-            {{VideoFrame/codedHeight}}.
-        7. Assign |frame|.{{VideoFrame/cropLeft}} to {{VideoFrame/cropLeft}}.
-        8. Assign |frame|.{{VideoFrame/cropTop}} to {{VideoFrame/cropTop}}.
-        9. Assign |frame|.{{VideoFrame/cropWidth}} to {{VideoFrame/cropWidth}}.
-        10. Assign |frame|.{{VideoFrame/cropHeight}} to
-            {{VideoFrame/cropHeight}}.
-        11. Assign |frame|.{{VideoFrame/codedHeight}} to
-            {{VideoFrame/codedHeight}}.
-        12. Assign |frame|.{{VideoFrame/displayWidth}} to
-            {{VideoFrame/displayWidth}}.
-        13. Assign |frame|.{{VideoFrame/displayHeight}} to
-            {{VideoFrame/displayHeight}}.
-        14. Assign |frame|.{{VideoFrame/duration}} to {{VideoFrame/duration}}.
-        15. Assign |frame|.{{VideoFrame/timestamp}} to
-            {{VideoFrame/timestamp}}.
+        5. Assign all remaining attributes of |frame| (
+            {{VideoFrame/codedWidth}}, {{VideoFrame/codedHeight}}, etc.) to those of the same name in |clone|.
     2. Return |clone|.
 
 Plane Interface {#plane-interface}
@@ -2404,7 +2398,7 @@ When invoked, run these steps:
     {{InvalidStateError}}.
 2. If {{Plane/length}} is greater than |`dst.byteLength`|, throw a
     {{TypeError}}.
-3. Let |resource| be the [=frame resource=] referneced by
+3. Let |resource| be the [=frame resource=] refrenced by
     {{Plane/[[parent frame]]}}'s {{VideoFrame/[[resource reference]]}}.
 4. Let |plane bytes| be the region of bytes in [=frame resource=] coresponding
     to this plane.
