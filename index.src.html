@@ -381,11 +381,11 @@ Algorithms {#audiodecoder-algorithms}
   <dd>
     Run these steps:
     1. For each |output| in |outputs|:
-        1. Let |frameInit| be an {{AudioFrameInit}} with the following keys:
+        1. Let |init| be an {{AudioFrameInit}} with the following keys:
             1. Let {{AudioFrameInit/buffer}} be an {{AudioBuffer}} containing
                 the decoded audio data from |output|.
             2. Let {{AudioFrameInit/timestamp}} be the timestamp from |output|.
-        2. Let |frame| be an {{AudioFrame}} constructed with |frameInit|.
+        2. Let |frame| be an {{AudioFrame}} constructed with |init|.
         3. Invoke {{AudioDecoder/[[output callback]]}} with frame.
   </dd>
   <dt><dfn>Reset AudioDecoder</dfn></dt>
@@ -620,28 +620,28 @@ Algorithms {#videodecoder-algorithms}
         1. Let |planes| be a sequence of {{Plane}}s containing the decoded
             video frame data from |output|.
         2. Let |pixelFormat| be the {{PixelFormat}} of |planes|.
-        3. Let |frameInit| be a {{VideoFramePlanesInit}} with the following
+        3. Let |init| be a {{VideoFramePlaneInit}} with the following
             keys:
-            1. Let {{VideoFramePlanesInit/timestamp}} and
-                {{VideoFramePlanesInit/duration}}
+            1. Let {{VideoFramePlaneInit/timestamp}} and
+                {{VideoFramePlaneInit/duration}}
                 be the {{EncodedVideoChunk/timestamp}} and
                 {{EncodedVideoChunk/duration}} from the {{EncodedVideoChunk}}
                 associated with |output|.
-            2. Let {{VideoFramePlanesInit/codedWidth}} and
-                {{VideoFramePlanesInit/codedHeight}}
+            2. Let {{VideoFramePlaneInit/codedWidth}} and
+                {{VideoFramePlaneInit/codedHeight}}
                 be the width and height of the decoded video frame |output| in
                 pixels, prior to any cropping or aspect ratio adjustments.
-            3. Let {{VideoFramePlanesInit/cropLeft}},
-                {{VideoFramePlanesInit/cropTop}},
-                {{VideoFramePlanesInit/cropWidth}}, and
-                {{VideoFramePlanesInit/cropHeight}}
+            3. Let {{VideoFramePlaneInit/cropLeft}},
+                {{VideoFramePlaneInit/cropTop}},
+                {{VideoFramePlaneInit/cropWidth}}, and
+                {{VideoFramePlaneInit/cropHeight}}
                 be the crop region of the decoded video frame |output| in
                 pixels, prior to any aspect ratio adjustments.
-            4. Let {{VideoFramePlanesInit/displayWidth}} and
-                {{VideoFramePlanesInit/displayHeight}} be the display size of
+            4. Let {{VideoFramePlaneInit/displayWidth}} and
+                {{VideoFramePlaneInit/displayHeight}} be the display size of
                 the decoded video frame in pixels.
         4. Let |frame| be a {{VideoFrame}}, constructed with |pixelFormat|,
-            |planes|, and |frameInit|.
+            |planes|, and |init|.
         5. Invoke {{VideoDecoder/[[output callback]]}} with |frame|.
   </dd>
   <dt><dfn>Reset VideoDecoder</dfn></dt>
@@ -2025,9 +2025,9 @@ VideoFrame Interface {#videoframe-interface}
 <xmp>
 [Exposed=(Window,DedicatedWorker)]
 interface VideoFrame {
-  constructor(ImageBitmap imageBitmap, optional VideoFrameInit frameInit = {});
-  constructor(PixelFormat format, sequence<(Plane or PlaneInit)> planesInit,
-              optional VideoFrameInit frameInit = {});
+  constructor(ImageBitmap imageBitmap, optional VideoFrameInit init = {});
+  constructor(sequence<(Plane or PlaneInit)> planes,
+              VideoFramePlaneInit init);
 
   readonly attribute PixelFormat format;
   readonly attribute FrozenArray<Plane>? planes;
@@ -2055,7 +2055,8 @@ dictionary VideoFrameInit {
   unsigned long long timestamp;
 };
 
-dictionary VideoFramePlanesInit {
+dictionary VideoFramePlaneInit {
+  required PixelFormat format;
   required unsigned long codedWidth;
   required unsigned long codedHeight;
   unsigned long cropLeft;
@@ -2080,8 +2081,8 @@ dictionary VideoFramePlanesInit {
 
 ### Constructors ###{#videoframe-constructors}
 
-<dfn constructor for=VideoFrame title="VideoFrame(imageBitmap, frameInit)">
-  VideoFrame(imageBitmap, frameInit)
+<dfn constructor for=VideoFrame title="VideoFrame(imageBitmap, init)">
+  VideoFrame(imageBitmap, init)
 </dfn>
 1. If the value of |imageBitmap|'s' {{PlatformObject/[[Detached]]}} internal
     slot is `true`, then throw an {{InvalidStateError}}
@@ -2111,28 +2112,28 @@ dictionary VideoFramePlanesInit {
         {{VideoFrame/codedHeight}}, {{VideoFrame/cropHeight}}, and
         {{VideoFrame/displayHeight}}.
     6. Assign `0` to {{VideoFrame/cropTop}} and {{VideoFrame/cropLeft}}.
-    7. If {{VideoFrameInit/timestamp}} [=map/exists=] in |frameInit|, assign
-        `frameInit.timestamp` to {{VideoFrame/timestamp}}. Otherwise, assign
+    7. If {{VideoFrameInit/timestamp}} [=map/exists=] in |init|, assign
+        `init.timestamp` to {{VideoFrame/timestamp}}. Otherwise, assign
         `null` to {{VideoFrame/timestamp}}.
-    8. If {{VideoFrameInit/duration}} [=map/exists=] in |frameInit|, assign
-        `frameInit.duration` to {{VideoFrame/duration}}. Otherwise, assign
+    8. If {{VideoFrameInit/duration}} [=map/exists=] in |init|, assign
+        `init.duration` to {{VideoFrame/duration}}. Otherwise, assign
         `null` to {{VideoFrame/duration}}.
 5. Return |frame|.
 
-<dfn constructor for=VideoFrame title="VideoFrame(format, planesInit, frameInit)">
-  VideoFrame(format, planesInit, frameInit)
+<dfn constructor for=VideoFrame title="VideoFrame(planes, init)">
+  VideoFrame(planes, init)
 </dfn>
-1. If |frameInit| is not a [=valid VideoFramePlanesInit=], throw a
+1. If |init| is not a [=valid VideoFramePlaneInit=], throw a
     {{TypeError}}.
-2. If |planesInit| is incompatible with the given |format| (e.g. wrong
-    number of planes), throw a TypeError.
+2. If |planes| is incompatible with the given {{VideoFramePlaneInit/format}}
+    (e.g. wrong number of planes), throw a {{TypeError}}.
 
     ISSUE: The spec should list additional format specific validation steps (
         e.g. number and order of planes, acceptable sizing, etc...).  See
         [#165](https://github.com/w3c/webcodecs/issues/165).
 
 3. Let |resource| be a new [=frame resource=] allocated in accordance with
-    |frameInit|.
+    |init|.
 
     ISSUE: The spec should define explicit rules for each
         {{PixelFormat}} and reference them in the steps above. See
@@ -2147,13 +2148,13 @@ dictionary VideoFramePlanesInit {
 5. Let |frame| be a new {{VideoFrame}} object initialized as follows:
     1. Assign |resourceReference| to
             {{VideoFrame/[[resource reference]]}}.
-    2. Assign |format| to {{VideoFrame/format}}.
+    2. Assign {{VideoFramePlaneInit/format}} to {{VideoFrame/format}}.
     3. Assign a new [=list=] to {{VideoFrame/planes}}.
-    4. For each |planeInit| in |planesInit|:
+    4. For each |planeInit| in |planes|:
         1. Copy |planeInit|.{{PlaneInit/src}} to |resource|.
 
-            NOTE: The user agent may use {{VideoFramePlanesInit/cropLeft}}
-                and {{VideoFramePlanesInit/cropTop}} to copy only the crop
+            NOTE: The user agent may use {{VideoFramePlaneInit/cropLeft}}
+                and {{VideoFramePlaneInit/cropTop}} to copy only the crop
                 region. It may also reposition the crop region within
                 |resource|. The final position will be reflected by
                 {{VideoFrame/cropLeft}} and {{VideoFrame/cropTop}}.
@@ -2188,20 +2189,20 @@ dictionary VideoFramePlanesInit {
         and |resourceCropTop| to {{VideoFrame/codedWidth}},
         {{VideoFrame/codedHeight}}, {{VideoFrame/cropLeft}}, and
         {{VideoFrame/cropTop}} respectively.
-    10. If |init|.{{VideoFramePlanesInit/cropWidth}} [=map/exists=], assign it
+    10. If |init|.{{VideoFramePlaneInit/cropWidth}} [=map/exists=], assign it
         to {{VideoFrame/cropWidth}}. Otherwise, assign
         {{VideoFrame/codedWidth}} to {{VideoFrame/cropWidth}}.
-    11. If |init|.{{VideoFramePlanesInit/cropHeight}} [=map/exists=], assign it
+    11. If |init|.{{VideoFramePlaneInit/cropHeight}} [=map/exists=], assign it
         to {{VideoFrame/cropHeight}}. Otehrwise, assign
         {{VideoFrame/codedHeight}} to {{VideoFrame/cropHeight}}.
-    12. If |init|.{{VideoFramePlanesInit/displayWidth}} [=map/exists=], assign
+    12. If |init|.{{VideoFramePlaneInit/displayWidth}} [=map/exists=], assign
         it to {{VideoFrame/displayWidth}}. Otherwise, assign
         {{VideoFrame/cropWidth}} to {{VideoFrame/displayWidth}}.
-    13. If |init|.{{VideoFramePlanesInit/displayHeight}} [=map/exists=], assign
+    13. If |init|.{{VideoFramePlaneInit/displayHeight}} [=map/exists=], assign
         it to {{VideoFrame/displayHeight}}. Otherwise, assign
         {{VideoFrame/cropHeight}} to {{VideoFrame/displayHeight}}.
-    14. Assign |init|'s {{VideoFramePlanesInit/timestamp}} and
-        {{VideoFramePlanesInit/duration}} to {{VideoFrame/timestamp}} and
+    14. Assign |init|'s {{VideoFramePlaneInit/timestamp}} and
+        {{VideoFramePlaneInit/duration}} to {{VideoFrame/timestamp}} and
         {{VideoFrame/duration}} respectively.
 6. Return |frame|.
 
@@ -2308,20 +2309,20 @@ dictionary VideoFramePlanesInit {
       1. Resolve p with imageBitmap.
 
 ### Algorithms ###{#videoframe-algorithms}
-: To check if a {{VideoFramePlanesInit}} is a
-    <dfn>valid VideoFramePlanesInit</dfn>, run these steps:
-:: 1. If {{VideoFramePlanesInit/codedWidth}} = 0 or
-        {{VideoFramePlanesInit/codedHeight}} = 0,return `false`.
-    2. If {{VideoFramePlanesInit/cropWidth}} = 0 or
-        {{VideoFramePlanesInit/cropHeight}} = 0, return `false`.
-    3. If {{VideoFramePlanesInit/cropTop}} +
-        {{VideoFramePlanesInit/cropHeight}} >=
-        {{VideoFramePlanesInit/codedHeight}}, return `false`.
-    4. If {{VideoFramePlanesInit/cropLeft}} +
-        {{VideoFramePlanesInit/cropWidth}} >=
-        {{VideoFramePlanesInit/codedWidth}}, return `false`.
-    5. If {{VideoFramePlanesInit/displayWidth}} = 0 or
-        {{VideoFramePlanesInit/displayHeight}} = 0, return `false`.
+: To check if a {{VideoFramePlaneInit}} is a
+    <dfn>valid VideoFramePlaneInit</dfn>, run these steps:
+:: 1. If {{VideoFramePlaneInit/codedWidth}} = 0 or
+        {{VideoFramePlaneInit/codedHeight}} = 0,return `false`.
+    2. If {{VideoFramePlaneInit/cropWidth}} = 0 or
+        {{VideoFramePlaneInit/cropHeight}} = 0, return `false`.
+    3. If {{VideoFramePlaneInit/cropTop}} +
+        {{VideoFramePlaneInit/cropHeight}} >=
+        {{VideoFramePlaneInit/codedHeight}}, return `false`.
+    4. If {{VideoFramePlaneInit/cropLeft}} +
+        {{VideoFramePlaneInit/cropWidth}} >=
+        {{VideoFramePlaneInit/codedWidth}}, return `false`.
+    5. If {{VideoFramePlaneInit/displayWidth}} = 0 or
+        {{VideoFramePlaneInit/displayHeight}} = 0, return `false`.
     6. Return `true`.
 
 : <dfn>Clone VideoFrame</dfn> (with |frame|)
