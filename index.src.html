@@ -39,7 +39,16 @@ spec: html; urlPrefix: https://html.spec.whatwg.org/multipage/;
         type: attribute; text: resizeWidth; url:#dom-imagebitmapoptions-resizewidth
         type: attribute; text: resizeHeight; url:#dom-imagebitmapoptions-resizeheight
         type: dfn; text: cropped to the source rectangle with formatting; url: imagebitmap-and-animations.html#cropped-to-the-source-rectangle-with-formatting
-    type: dfn; text: global object; url: webappapis.html#global-object
+        type: dfn; text: bitmap data; url: imagebitmap-and-animations.html#concept-imagebitmap-bitmap-data
+    for: Canvas;
+        type: dfn; text: Check the usability of the image argument; url: canvas.html#check-the-usability-of-the-image-argument
+    for: origin;
+        type: dfn; text: origin; url: origin.html#concept-origin
+    for: webappapis;
+        type: dfn; text: global object; url: webappapis.html#global-object
+        type: dfn; text: entry settings object; url: webappapis.html#entry-settings-object
+    for: media;
+        type: dfn; text: current playback position; url: media.html#current-playback-position
 
 spec: mediacapture-streams; urlPrefix: https://www.w3.org/TR/mediacapture-streams/
     for: mediaDevices;
@@ -74,6 +83,11 @@ spec: webaudio; urlPrefix: https://www.w3.org/TR/webaudio/
     type: dfn; text: acquire the content; url: #acquire-the-content
     for: AudioBuffer
         type: method;  text: copyToChannel(); url: #dom-audiobuffer-copytochannel
+
+spec: css-images-3; urlPrefix: https://www.w3.org/TR/css-images-3/
+    type: dfn; text: natural dimensions; url: #natural-dimensions
+    type: dfn; text: natural width; url: #natural-width
+    type: dfn; text: natural height; url: #natural-height
 </pre>
 
 <pre class='biblio'>
@@ -139,14 +153,16 @@ a [=codec thread=].
 The <dfn>control thread</dfn> is the thread from which authors will construct
 a [=codec=] and invoke its methods. Invoking a codec's methods will typically
 result in the creation of [=control messages=] which are later executed on the
-[=codec thread=]. Each [=global object=] has a separate control thread.
+[=codec thread=]. Each [=webappapis/global object=] has a separate control
+thread.
 
 The <dfn>codec thread</dfn> is the thread from which a [=codec=] will
 [=dequeue=] [=control messages=] and execute their steps. Each [=codec=]
 instance has a separate codec thread. The lifetime of a codec thread matches
 that of its associated [=codec=] instance.
 
-The [=control thread=] uses a traditional event loop, as described in [[!HTML]].
+The [=control thread=] uses a traditional event loop, as described in
+[[!HTML]].
 
 The [=codec thread=] uses a specialized [=codec processing loop=].
 
@@ -1017,7 +1033,7 @@ Methods {#videoencoder-methods}
     2. Set {{VideoEncoder/[[active encoder config]]}} to `config`.
   </dd>
 
-  <dt><dfn method for=VideoEncoder>encode(frame, options)</dfn></dt>
+  <dt><dfn method for=VideoEncoder>encode(|frame|, |options|)</dfn></dt>
   <dd>
     [=Enqueues a control message=] to encode the given |frame|.
 
@@ -2021,11 +2037,15 @@ dictionary AudioFrameInit {
 VideoFrame Interface {#videoframe-interface}
 --------------------------------------------
 
+NOTE: {{VideoFrame}} is a {{CanvasImageSource}}. A {{VideoFrame}} may be
+    passed to any method accepting a {{CanvasImageSource}}, including
+    {{CanvasDrawImage}}'s {{CanvasDrawImage/drawImage()}}.
+
 <pre class='idl'>
 <xmp>
 [Exposed=(Window,DedicatedWorker)]
 interface VideoFrame {
-  constructor(ImageBitmap imageBitmap, optional VideoFrameInit init = {});
+  constructor(CanvasImageSource image, optional VideoFrameInit init = {});
   constructor(sequence<(Plane or PlaneInit)> planes,
               VideoFramePlaneInit init);
 
@@ -2044,10 +2064,6 @@ interface VideoFrame {
 
   VideoFrame clone();
   undefined close();
-
-  Promise<ImageBitmap> createImageBitmap(
-    optional ImageBitmapOptions options = {});
-
 };
 
 dictionary VideoFrameInit {
@@ -2081,44 +2097,61 @@ dictionary VideoFramePlaneInit {
 
 ### Constructors ###{#videoframe-constructors}
 
-<dfn constructor for=VideoFrame title="VideoFrame(imageBitmap, init)">
-  VideoFrame(imageBitmap, init)
+<dfn constructor for=VideoFrame title="VideoFrame(image, init)">
+  VideoFrame(image, init)
 </dfn>
-1. If the value of |imageBitmap|'s' {{PlatformObject/[[Detached]]}} internal
-    slot is `true`, then throw an {{InvalidStateError}}
+1. [=Canvas/Check the usability of the image argument=]. If this throws an
+    exception or returns <var ignore=''>bad</var>, then throw an  {{InvalidStateError}} {{DOMException}}.
+2. If the [=origin/origin=] of |image|'s image data is not [=same origin=]
+    with the [=webappapis/entry settings object=]'s
+    [=origin/origin=], then throw a {{SecurityError}}
     {{DOMException}}.
-2. Let |resource| be the [=frame resource=] containing the bitmap data for
-    |imageBitmap|.
-3. Let |resourceReference| be a reference to |resource|.
-4. Let |frame| be a new {{VideoFrame}}, initialized as follows:
-    1. Assign |resourceReference| to
-        {{VideoFrame/[[resource reference]]}}.
-    2. If |resource| uses a recognized {{PixelFormat}}:
-        1. Assign the {{PixelFormat}} of |resource| to {{VideoFrame/format}}.
-        2. Let |planes| be a list of {{Plane}}s describing the
-            [=frame resource=] in accordance with the {{VideoFrame/format}}.
+3. Let |frame| be a new {{VideoFrame}}.
+5. Switch on |image|:
+    - {{HTMLImageElement}}
+    - {{SVGImageElement}}
+        1. If {{VideoFramePlaneInit/timestamp}} does not [=map/exist=] in
+            |init|, throw a {{TypeError}}.
+        2. If image's media data has no [=natural dimensions=]
+            (e.g., it's a vector graphic with no specified content size), then
+            throw an {{InvalidStateError}} {{DOMException}}.
+        3. Let |resource| be a new [=frame resource=] containing a copy of
+            |image|'s media data. If this is an animated image, |image|'s
+            [=bitmap data=] must only be taken from the default image of the
+            animation (the one that the format defines is to be used when
+            animation is not supported or is disabled), or, if there is no
+            such image, the first frame of the animation.
+        4. Let |width| and |height| be the [=natural width=] and
+            [=natural height=] of |image|.
+        5. Run the [=VideoFrame/Initialize Frame With Resource and Size=]
+            algorithm with |init|, |frame|, |resource|, |width|, and |height|
 
-            ISSUE: The spec should define explicit rules for each
-                {{PixelFormat}} and reference them in the step above. See
-                [#165](https://github.com/w3c/webcodecs/issues/165).
+    - {{HTMLVideoElement}}
+        1. If |image|'s {{HTMLMediaElement/networkState}} attribute is
+            {{HTMLMediaElement/NETWORK_EMPTY}}, then throw an
+            {{InvalidStateError}} {{DOMException}}.
+        2. Let |currentPlaybackFrame| be the {{VideoFrame}} at the [=current
+            playback position=].
+        3. Run the [=VideoFrame/Initialize Frame From Other Frame=] algoirhtm
+            with |init|, |frame|, and |currentPlaybackFrame|.
 
-        3. Assign |planes| to {{VideoFrame/planes}}.
-    3. Otherwise (|resource| does not use a recognized {{PixelFormat}}):
-        1. Assign `""` to {{VideoFrame/format}}.
-        2. Assign `null` to {{VideoFrame/planes}}.
-    4. Assign |imageBitmap|.{{ImageBitmap/width}} to {{VideoFrame/codedWidth}},
-        {{VideoFrame/cropWidth}}, and {{VideoFrame/displayWidth}}.
-    5. Assign |imageBitmap|.{{ImageBitmap/height}} to
-        {{VideoFrame/codedHeight}}, {{VideoFrame/cropHeight}}, and
-        {{VideoFrame/displayHeight}}.
-    6. Assign `0` to {{VideoFrame/cropTop}} and {{VideoFrame/cropLeft}}.
-    7. If {{VideoFrameInit/timestamp}} [=map/exists=] in |init|, assign
-        `init.timestamp` to {{VideoFrame/timestamp}}. Otherwise, assign
-        `null` to {{VideoFrame/timestamp}}.
-    8. If {{VideoFrameInit/duration}} [=map/exists=] in |init|, assign
-        `init.duration` to {{VideoFrame/duration}}. Otherwise, assign
-        `null` to {{VideoFrame/duration}}.
-5. Return |frame|.
+    - {{HTMLCanvasElement}}
+    - {{ImageBitmap}}
+    - {{OffscreenCanvas}}
+        1. If {{VideoFramePlaneInit/timestamp}} does not [=map/exist=] in
+            |init|, throw a {{TypeError}}.
+        2. Let |resource| be a new [=frame resource=] containing a copy of
+            |image|'s [=bitmap data=].
+        3. Let |width| be `image.width` and |height| be `image.height`.
+        4. Run the [=VideoFrame/Initialize Frame With Resource and Size=]
+            algorithm with |init|, |frame|, |resource|, |width|, and |height|.
+
+    - {{VideoFrame}}
+        1. Run the [=VideoFrame/Initialize Frame From Other Frame=] algorithm
+            with |init|, |frame|, and |image|.
+
+6. Return |frame|.
+
 
 <dfn constructor for=VideoFrame title="VideoFrame(planes, init)">
   VideoFrame(planes, init)
@@ -2286,28 +2319,6 @@ dictionary VideoFramePlaneInit {
         {{VideoFrame/displayWidth}}, and {{VideoFrame/displayHeight}}.
     6. Assign `null` to {{VideoFrame/duration}} and {{VideoFrame/timestamp}}.
 
-: <dfn method for=VideoFrame>createImageBitmap(options)</dfn>
-:: Creates an ImageBitmap from this {{VideoFrame}}.
-
-    When invoked, run these steps:
-    1. Let |p| be a new Promise.
-    2. If either |options|'s {{ImageBitmapOptions/resizeWidth}} or
-        {{ImageBitmap/resizeHeight}} is present and is 0, then return |p|
-        rejected with an {{InvalidStateError}} {{DOMException}}.
-    3. If the <a>this'</a> {{VideoFrame/[[detached]]}} internal slot is set to
-        `true`, then return |p| rejected with an {{InvalidStateError}}
-        {{DOMException}}.
-    4. Let |imageBitmap| be a new {{ImageBitmap}} object.
-    5. Set |imageBitmap|'s bitmap data to a copy of the {{VideoFrame}} pixel
-        data, at the frame's intrinsic width and intrinsic height (`i.e`.,
-        after any aspect-ratio correction has been applied),
-        [=ImageBitmap/cropped to the source rectangle with formatting=].
-    6. If the origin of |imageBitmap|'s image is not same origin with entry
-        settings object's origin, then set the origin-clean flag of
-        |imageBitmap|'s bitmap to `false`.
-    7. Run this step in parallel:
-      1. Resolve p with imageBitmap.
-
 ### Algorithms ###{#videoframe-algorithms}
 : To check if a {{VideoFramePlaneInit}} is a
     <dfn>valid VideoFramePlaneInit</dfn>, run these steps:
@@ -2324,6 +2335,66 @@ dictionary VideoFramePlaneInit {
     5. If {{VideoFramePlaneInit/displayWidth}} = 0 or
         {{VideoFramePlaneInit/displayHeight}} = 0, return `false`.
     6. Return `true`.
+
+: <dfn for=VideoFrame>Initialize Frame From Other Frame</dfn> (with |init|,
+    |frame|, and |otherFrame|)
+:: 1. Let |resource| be the [=frame resource=] referenced by |otherFrame|'s
+        {{VideoFrame/[[resource reference]]}}.
+    2. Assign a new reference for |resource| to |frame|'s
+        {{VideoFrame/[[resource reference]]}}.
+    3. Assign the following attributes from |otherFrame| to |frame|:
+        {{VideoFrame/format}}, {{VideoFrame/codedWidth}},
+        {{VideoFrame/codedHeight}}, {{VideoFrame/cropLeft}},
+        {{VideoFrame/cropTop}}, {{VideoFrame/cropWidth}},
+        {{VideoFrame/cropHeight}}, {{VideoFrame/displayWidth}},
+        {{VideoFrame/displayHeight}}.
+    4. Let |planes| be a new [=list=].
+    5. For each |otherPlane| in |otherFrame|.{{VideoFrame/planes}}:
+        1. Let |plane| be a new {{Plane}}.
+        2. Assign a reference for |frame| to |plane|'s
+            {{Plane/[[parent frame]]}}.
+        3. Assign the following attributes from |otherPlane| to |plane|:
+            {{Plane/stride}}, {{Plane/rows}}, {{Plane/length}}.
+        4. Append |plane| to |planes|.
+    6. Assign |planes| to |frame|.{{VideoFrame/planes}}.
+    7. If {{VideoFrameInit/duration}} [=map/exists=] in |init|, assign it to
+        |frame|.{{VideoFrame/duration}}. Otherwise, assign
+        |otherFrame|.{{VideoFrame/duration}} to
+        |frame|.{{VideoFrame/duration}}.
+    8. If {{VideoFrameInit/timestamp}} [=map/exists=] in |init|, assign it to
+        |frame|.{{VideoFrame/timestamp}}. Otherwise, assign
+        |otherFrame|.{{VideoFrame/timestamp}} to
+        |frame|.{{VideoFrame/timestamp}}.
+
+: <dfn for=VideoFrame>Initialize Frame With Resource and Size</dfn> (with
+    |init|,  |frame|, |resource|, |width| and |height|)
+:: 1. Assign a new reference for |resource| to |frame|'s
+        {{VideoFrame/[[resource reference]]}}.
+    2. If |resource| uses a recognized {{PixelFormat}}:
+        1. Assign the {{PixelFormat}} of |resource| to {{VideoFrame/format}}.
+        2. Let |planes| be a list of {{Plane}}s describing the
+            [=frame resource=] in accordance with the {{VideoFrame/format}}.
+
+            ISSUE: The spec should define explicit rules for each
+                {{PixelFormat}} and reference them in the step above. See
+                [#165](https://github.com/w3c/webcodecs/issues/165).
+
+        3. Assign |planes| to {{VideoFrame/planes}}.
+    3. Otherwise (|resource| does not use a recognized {{PixelFormat}}):
+        1. Assign `""` to {{VideoFrame/format}}.
+        2. Assign `null` to {{VideoFrame/planes}}.
+    4. Assign |width| to the following attributes of |frame|:
+        {{VideoFrame/codedWidth}}, {{VideoFrame/cropWidth}},
+        {{VideoFrame/displayWidth}}.
+    5. Assign |height| to the following attributes of |frame|:
+        {{VideoFrame/codedHeight}}, {{VideoFrame/cropHeight}},
+        {{VideoFrame/displayHeight}}.
+    6. Assign `0` to frame's {{VideoFrame/cropTop}} and
+        {{VideoFrame/cropLeft}}.
+    7. Assign `init`.{{VideoFrameInit/duration}} to
+        |frame|.{{VideoFrame/duration}}.
+    8. Assign `init`.{{VideoFrameInit/timestamp}} to
+        |frame|.{{VideoFrame/timestamp}}.
 
 : <dfn>Clone VideoFrame</dfn> (with |frame|)
 :: 1. Let |clone| be a new {{VideoFrame}} initialized as follows:
