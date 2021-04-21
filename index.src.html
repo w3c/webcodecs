@@ -2699,28 +2699,32 @@ interface ImageDecoder {
         first):
         1. {{ImageDecoder/[[encoded data]]}} contains enough bytes to
             completely decode |encodedFrame|.
-        2. {{ImageDecoder/complete}} is `true`.
-        3. {{ImageDecoder/[[closed]]}} is `true`.
-    5. If {{ImageDecoder/[[encoded data]]}} does not contain enough bytes to
+        2. {{ImageDecoder/[[encoded data]]}} is found to be malformed.
+        3. {{ImageDecoder/complete}} is `true`.
+        4. {{ImageDecoder/[[closed]]}} is `true`.
+    5. If {{ImageDecoder/[[encoded data]]}} is found to be malformed, run the
+        [=ImageDecoder/Fatally Reject Bad Data=] algorithm and abort these
+        steps.
+    6. If {{ImageDecoder/[[encoded data]]}} does not contain enough bytes to
         completely decode |encodedFrame|, run the
         [=ImageDecoder/Reject Infeasible Decode=] algorithm with |promise| and
         abort these steps.
-    6. Attempt to use {{ImageDecoder/[[codec implementation]]}} to decode
+    7. Attempt to use {{ImageDecoder/[[codec implementation]]}} to decode
         |encodedFrame|.
-    7. If decoding produces an error, run the
-        [=ImageDecoder/Reject Failed Decode=] algorithm with |promise| and
-        abort these steps.
-    8. If {{ImageDecoder/[[progressive frame generations]]}} contains an entry
+    8. If decoding produces an error, run the
+        [=ImageDecoder/Fatally Reject Bad Data=] algorithm and abort these
+        steps.
+    9. If {{ImageDecoder/[[progressive frame generations]]}} contains an entry
         keyed by |frameIndex|, remove the entry from the map.
-    9. Let |output| be the decoded image data emitted by
+    10. Let |output| be the decoded image data emitted by
         {{ImageDecoder/[[codec implementation]]}} corresponding to
         |encodedFrame|.
-    10. Let |decodeResult| be a new {{ImageDecodeResult}} initialized as
+    11. Let |decodeResult| be a new {{ImageDecodeResult}} initialized as
         follows:
         1. Assign 'true' to {{ImageDecodeResult/complete}}.
         2. Assign {{ImageDecodeResult/image}} with the result of running the
             [=Create a VideoFrame=] algorithm with |output|.
-    11. Run the [=ImageDecoder/Resolve Decode=] algorithm with |promise| and
+    12. Run the [=ImageDecoder/Resolve Decode=] algorithm with |promise| and
         |decodeResult|.
 
 : <dfn for=ImageDecoder>Decode Progressive Frame</dfn> (with |frameIndex| and
@@ -2739,37 +2743,41 @@ interface ImageDecoder {
         1. {{ImageDecoder/[[encoded data]]}} contains enough bytes to decode
             |encodedFrame| to produce an output who's [=Progressive Image
             Frame Generation=] exceeds |lastFrameGeneration|.
-        2. {{ImageDecoder/complete}} is `true`.
-        3. {{ImageDecoder/[[closed]]}} is `true`.
-    7. If {{ImageDecoder/[[encoded data]]}} does not contain enough bytes to
-        decode |encodedFrame| to produce an output who's
+        2. {{ImageDecoder/[[encoded data]]}} is found to be malformed.
+        3. {{ImageDecoder/complete}} is `true`.
+        4. {{ImageDecoder/[[closed]]}} is `true`.
+    7. If {{ImageDecoder/[[encoded data]]}} is found to be malformed, run the
+        [=ImageDecoder/Fatally Reject Bad Data=] algorithm and abort these
+        steps.
+    8. Otherwise, if {{ImageDecoder/[[encoded data]]}} does not contain enough
+        bytes to decode |encodedFrame| to produce an output who's
         [=Progressive Image Frame Generation=] exceeds |lastFrameGeneration|,
         run the [=ImageDecoder/Reject Infeasible Decode=] algorithm with
         |promise| and abort these steps.
-    8. Attempt to use {{ImageDecoder/[[codec implementation]]}} to decode
+    9. Attempt to use {{ImageDecoder/[[codec implementation]]}} to decode
         |encodedFrame|.
-    9. If decoding produces an error, run the
-        [=ImageDecoder/Reject Failed Decode=] algorithm with |promise| and
-        abort these steps.
-    10. Let |output| be the decoded image data emitted by
+    10. If decoding produces an error, run the
+        [=ImageDecoder/Fatally Reject Bad Data=] algorithm and abort these
+        steps.
+    11. Let |output| be the decoded image data emitted by
         {{ImageDecoder/[[codec implementation]]}} corresponding to
         |encodedFrame|.
-    11. Let |decodeResult| be a new {{ImageDecodeResult}}.
-    12. If |output| is the final full-detail progressive output corresponding
+    12. Let |decodeResult| be a new {{ImageDecodeResult}}.
+    13. If |output| is the final full-detail progressive output corresponding
         to |encodedFrame|:
         1. Assign `true` to |decodeResult|'s {{ImageDecodeResult/complete}}.
         2. If {{ImageDecoder/[[progressive frame generations]]}} contains an
             entry keyed by |frameIndex|, remove the entry from the map.
-    13. Otherwise:
+    14. Otherwise:
         1. Assign `false` to |decodeResult|'s {{ImageDecodeResult/complete}}.
         2. Let |frameGeneration| be the [=Progressive Image Frame Generation=]
             for |output|.
         3. Add a new entry to {{ImageDecoder/[[progressive frame
             generations]]}} with key |frameIndex| and value |frameGeneration|.
-    14. Assign |decodeResult|.{{ImageDecodeResult/image}} with the result of
+    15. Assign |decodeResult|.{{ImageDecodeResult/image}} with the result of
         running the [=Create a VideoFrame=] algorithm with |output|.
-    15. Remove |promise| from {{ImageDecoder/[[pending decode promises]]}}.
-    16. Resolve |promise| with |decodeResult|.
+    16. Remove |promise| from {{ImageDecoder/[[pending decode promises]]}}.
+    17. Resolve |promise| with |decodeResult|.
 
 : <dfn for=ImageDecoder>Resolve Decode</dfn> (with |promise| and |result|)
 :: 1. Queue a task on the [=control thread=] event loop to run these steps:
@@ -2792,13 +2800,11 @@ interface ImageDecoder {
         3. Remove |promise| from {{ImageDecoder/[[pending decode promises]]}}.
         4. Reject |promise| with |exception|.
 
-: <dfn for=ImageDecoder>Reject Failed Decode</dfn> (with |promise|)
+: <dfn for=ImageDecoder>Fatally Reject Bad Data</dfn>
 :: 1. Queue a task on the [=control thread=] event loop to run these steps:
         1. If {{ImageDecoder/[[closed]]}}, abort these steps.
-        2. Assert that |promise| is an element of
-            {{ImageDecoder/[[pending decode promises]]}}.
-        3. Remove |promise| from {{ImageDecoder/[[pending decode promises]]}}.
-        4. Reject |promise| with {{EncodingError}} {{DOMException}}.
+        2. Run the [=ImageDecoder/Close ImageDecoder=] algorithm with an
+            {{EncodingError}} {{DOMException}}.
 
 : <dfn for=ImageDecoder>Check Type Support</dfn> (with |type|)
 :: 1. If the user agent can provide a codec to support decoding |type|, return
@@ -2824,6 +2830,9 @@ interface ImageDecoder {
     1. Assign `true` to {{ImageDecoder/[[closed]]}}.
     2. Clear {{ImageDecoder/[[codec implementation]]}} and release associated
         [=system resources=].
+    3. Remove all entries from {{ImageDecoder/[[ImageTrackList]]}}.
+    4. Assign `-1` to {{ImageDecoder/[[ImageTrackList]]}}'s
+        {{ImageTrackList/[[selected index]]}}.
 
 
 ImageDecoderInit Interface {#imagedecoderinit-interface}
@@ -2965,7 +2974,7 @@ interface ImageTrackList {
 
   readonly attribute unsigned long length;
   readonly attribute long selectedIndex;
-  readonly attribute ImageTrack? selected;
+  readonly attribute ImageTrack? selectedTrack;
 };
 </xmp>
 </pre>
@@ -2989,8 +2998,8 @@ interface ImageTrackList {
 :: The {{ImageTrackList/selectedIndex}} getter steps are to return
     {{ImageTrackList/[[selected index]]}};
 
-: <dfn attribute for=ImageTrackList>selected</dfn>
-:: The {{ImageTrackList/selected}} getter steps are:
+: <dfn attribute for=ImageTrackList>selectedTrack</dfn>
+:: The {{ImageTrackList/selectedTrack}} getter steps are:
     1. If {{ImageTrackList/[[selected index]]}} is `-1`, return `null`.
     2. Otherwise, return the ImageTrack from {{ImageTrackList/[[track list]]}}
         at the position indicated by {{ImageTrackList/[[selected index]]}}.
@@ -3057,27 +3066,29 @@ interface ImageTrack : EventTarget {
     {{ImageTrack/[[selected]]}}.
 
     The {{ImageTrack/selected}} setter steps are:
-    1. Let |newValue| be [=the given value=].
-    2. If |newValue| equals {{ImageTrack/[[selected]]}}, abort these steps.
-    3. Assign |newValue| to {{ImageTrack/[[selected]]}}.
-    4. Let |parentTrackList| be {{ImageTrack/[[ImageTrackList]]}}
-    5. Let |oldSelectedIndex| be the value of |parentTrackList|
+    1. If {{ImageTrack/[[ImageDecoder]]}}'s {{ImageDecoder/[[closed]]}} slot is
+        `true`, abort these steps.
+    2. Let |newValue| be [=the given value=].
+    3. If |newValue| equals {{ImageTrack/[[selected]]}}, abort these steps.
+    4. Assign |newValue| to {{ImageTrack/[[selected]]}}.
+    5. Let |parentTrackList| be {{ImageTrack/[[ImageTrackList]]}}
+    6. Let |oldSelectedIndex| be the value of |parentTrackList|
         {{ImageTrackList/[[selected index]]}}.
-    6. If |oldSelectedIndex| is not `-1`:
+    7. If |oldSelectedIndex| is not `-1`:
         1. Let |oldSelectedTrack| be the {{ImageTrack}} in |parentTrackList|
             {{ImageTrackList/[[track list]]}} at the position of
             |oldSelectedIndex|.
         2. Assign `false` to |oldSelectedTrack| {{ImageTrack/[[selected]]}}
 
-    7. If |newValue| is `true`, let |selectedIndex| be the index of [=this=]
+    8. If |newValue| is `true`, let |selectedIndex| be the index of [=this=]
         {{ImageTrack}} within |parentTrackList|'s
         {{ImageTrackList/[[track list]]}}. Otherwise, let |selectedIndex| be
         `-1`.
-    8. Assign |selectedIndex| to |parentTrackList|
+    9. Assign |selectedIndex| to |parentTrackList|
         {{ImageTrackList/[[selected index]]}}.
-    9. Run the [=ImageDecoder/Reset ImageDecoder=] algorithm on
+    10. Run the [=ImageDecoder/Reset ImageDecoder=] algorithm on
         {{ImageTrack/[[ImageDecoder]]}}.
-    10. [=Queue a control message=] to {{ImageTrack/[[ImageDecoder]]}}'s
+    11. [=Queue a control message=] to {{ImageTrack/[[ImageDecoder]]}}'s
         [=control message queue=] to update the internal selected track
         index with |selectedIndex|.
 
