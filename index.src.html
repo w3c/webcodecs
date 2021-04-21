@@ -70,6 +70,9 @@ spec: mediastream-recording; urlPrefix: https://www.w3.org/TR/mediastream-record
 spec: media-capabilities; urlPrefix: https://w3c.github.io/media-capabilities/#
     type: method; text: decodingInfo(); url: dom-mediacapabilities-decodinginfo
     type: attribute; text: powerEfficient; url: dom-mediacapabilitiesinfo-powerefficient
+
+spec: webrtc-svc; urlPrefix: https://w3c.github.io/webrtc-svc/
+    type: dfn; text: scalability mode identifier; url:#scalabilitymodes*
 </pre>
 
 
@@ -663,7 +666,13 @@ dictionary AudioEncoderInit {
   required WebCodecsErrorCallback error;
 };
 
-callback EncodedAudioChunkOutputCallback = undefined(EncodedAudioChunk output);
+dictionary EncodedAudioChunkMetadata {
+  AudioDecoderConfig decoderConfig;
+};
+
+callback EncodedAudioChunkOutputCallback =
+    undefined (EncodedAudioChunk output,
+               optional EncodedAudioChunkMetadata metadata);
 </xmp>
 
 Internal Slots {#audioencoder-internal-slots}
@@ -901,7 +910,14 @@ dictionary VideoEncoderInit {
   required WebCodecsErrorCallback error;
 };
 
-callback EncodedVideoChunkOutputCallback = undefined(EncodedVideoChunk output, VideoDecoderConfig? output_config);
+dictionary EncodedVideoChunkMetadata {
+  VideoDecoderConfig decoderConfig;
+  unsigned long temporalLayerId;
+};
+
+callback EncodedVideoChunkOutputCallback =
+    undefined (EncodedVideoChunk chunk,
+               optional EncodedVideoChunkMetadata metadata);
 </xmp>
 
 Internal Slots {#videoencoder-internal-slots}
@@ -1501,6 +1517,7 @@ dictionary VideoEncoderConfig {
   unsigned long displayWidth;
   unsigned long displayHeight;
   HardwareAcceleration hardwareAcceleration = "allow";
+  DOMString scalabilityMode;
 };
 </xmp>
 
@@ -1583,6 +1600,11 @@ To check if a {{VideoEncoderConfig}} is a <dfn>valid VideoEncoderConfig</dfn>,
   <dd>
     Configures hardware acceleration for this codec. See
     {{HardwareAcceleration}}.
+  </dd>
+
+  <dt><dfn dict-member for=VideoEncoderConfig>scalabilityMode</dfn></dt>
+  <dd>
+    An encoding [=scalability mode identifier=] as defined by [[WebRTC-SVC]].
   </dd>
 </dl>
 
