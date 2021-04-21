@@ -1356,8 +1356,8 @@ VideoDecoderConfig{#video-decoder-config}
 dictionary VideoDecoderConfig {
   required DOMString codec;
   BufferSource description;
-  required unsigned long codedWidth;
-  required unsigned long codedHeight;
+  unsigned long codedWidth;
+  unsigned long codedHeight;
   unsigned long cropLeft;
   unsigned long cropTop;
   unsigned long cropWidth;
@@ -1496,8 +1496,8 @@ VideoEncoderConfig{#video-encoder-config}
 dictionary VideoEncoderConfig {
   required DOMString codec;
   unsigned long long bitrate;
-  required unsigned long cropWidth;
-  required unsigned long cropHeight;
+  required unsigned long width;
+  required unsigned long height;
   unsigned long displayWidth;
   unsigned long displayHeight;
   HardwareAcceleration hardwareAcceleration = "allow";
@@ -1511,7 +1511,7 @@ To check if a {{VideoEncoderConfig}} is a <dfn>valid VideoEncoderConfig</dfn>,
     run these steps:
 1. If {{VideoEncoderConfig/codec}} is not a <a>valid codec string</a>, return
     `false`.
-2. If {{VideoEncoderConfig/cropWidth}} = 0 or {{VideoEncoderConfig/cropHeight}}
+2. If {{VideoEncoderConfig/width}} = 0 or {{VideoEncoderConfig/height}}
     = 0, return `false`.
 3. If {{VideoEncoderConfig/displayWidth}} = 0 or
     {{VideoEncoderConfig/displayHeight}} = 0, return `false`.
@@ -1524,7 +1524,7 @@ To check if a {{VideoEncoderConfig}} is a <dfn>valid VideoEncoderConfig</dfn>,
   <dt><dfn dict-member for=VideoEncoderConfig>bitrate</dfn></dt>
   <dd>The average bitrate of the encoded video given in units of bits per second.</dd>
 
-  <dt><dfn dict-member for=VideoEncoderConfig>cropWidth</dfn></dt>
+  <dt><dfn dict-member for=VideoEncoderConfig>width</dfn></dt>
   <dd>
     The encoded width of output {{EncodedVideoChunk}}s in pixels, prior to any
     display aspect ratio adjustments.
@@ -1533,7 +1533,7 @@ To check if a {{VideoEncoderConfig}} is a <dfn>valid VideoEncoderConfig</dfn>,
     differs from this value.
   </dd>
 
-  <dt><dfn dict-member for=VideoEncoderConfig>cropHeight</dfn></dt>
+  <dt><dfn dict-member for=VideoEncoderConfig>height</dfn></dt>
   <dd>
     The encoded height of output {{EncodedVideoChunk}}s in pixels, prior to any
     display aspect ratio adjustments.
@@ -1543,35 +1543,25 @@ To check if a {{VideoEncoderConfig}} is a <dfn>valid VideoEncoderConfig</dfn>,
   </dd>
 </dl>
 
-<div class='note'>
-  NOTE: The {{VideoEncoder}} will scale, not crop, input {{VideoFrame}}s to the
-      specified {{VideoEncoderConfig/cropWidth}} and
-      {{VideoEncoderConfig/cropHeight}}.
-
-      The naming of {{VideoEncoderConfig/cropWidth}} and
-      {{VideoEncoderConfig/cropHeight}} reflects that the encoded chunks may be
-      decoded to produce {{VideoFrame}}s who's {{VideoFrame/cropWidth}}
-      and {{VideoFrame/cropHeight}} will match these values.
-</div>
-
 <dl>
   <dt><dfn dict-member for=VideoEncoderConfig>displayWidth</dfn></dt>
   <dd>
     The intended display width of output {{EncodedVideoChunk}}s in pixels.
-    Defaults to {{VideoEncoderConfig/cropWidth}} if not present.
+    Defaults to {{VideoEncoderConfig/width}} if not present.
   </dd>
 
   <dt><dfn dict-member for=VideoEncoderConfig>displayHeight</dfn></dt>
   <dd>
     The intended display height of output {{EncodedVideoChunk}}s in pixels.
-    Defaults to {{VideoEncoderConfig/cropWidth}} if not present.
+    Defaults to {{VideoEncoderConfig/width}} if not present.
   </dd>
 </dl>
 
 <div class='note'>
   NOTE: Providing a {{VideoEncoderConfig/displayWidth}} or
-      {{VideoEncoderConfig/displayHeight}} that differs from the crop dimensions
-      signals that chunks should be scaled after decoding to arrive at the final
+      {{VideoEncoderConfig/displayHeight}} that differs from
+      {{VideoEncoderConfig/width}} and {{VideoEncoderConfig/height}} signals
+      that chunks should be scaled after decoding to arrive at the final
       display aspect ratio.
 
       For many codecs this is merely pass-through information, but some codecs
