@@ -1,0 +1,174 @@
+<pre class='metadata'>
+Title: AVC (H.264) WebCodecs Registration
+Repository: w3c/webcodecs
+Status: ED
+Shortname: webcodecs-avc-codec-registration
+Level: none
+Group: mediawg
+ED: https://w3c.github.io/webcodecs/avc_codec_registration.html
+TR: https://www.w3.org/TR/webcodecs-avc-codec-registration/
+Previous Version: from biblio
+Editor: Chris Cunningham, w3cid 114832, Google Inc. https://www.google.com/
+Editor: Paul Adenot, w3cid 62410, Mozilla https://www.mozilla.org/
+Editor: Bernard Aboba, w3cid 65611, Microsoft Corporation https://www.microsoft.com/
+
+Boilerplate: omit conformance
+Text macro: NOTE yes
+
+Abstract: This registration is entered into the [[webcodecs-codec-registry]].
+    It describes, for AVC (H.264), the (1) fully qualified codec strings, (2)
+    the {{VideoDecoderConfig.description}} bytes, and (3) the
+    codec-specific extensions to the {{VideoEncoderConfig}}.
+
+    The registration is not intended to include any information on whether a
+    codec format is encumbered by intellectual property claims. Implementers and
+    authors are advised to seek appropriate legal counsel in this matter if they
+    intend to implement or use a specific codec format. Implementers of
+    WebCodecs are not required to support the AVC / H.264 codec.
+
+    This registration is non-normative.
+
+Markup Shorthands:css no, markdown yes, dfn yes
+!Participate: <a href="https://github.com/w3c/webcodecs">Git Repository.</a>
+!Participate: <a href="https://github.com/w3c/webcodecs/issues/new">File an issue.</a>
+!Version History: <a href="https://github.com/w3c/webcodecs/commits">https://github.com/w3c/webcodecs/commits</a>
+</pre>
+
+<pre class='anchors'>
+spec: WEBCODECS; urlPrefix: https://w3c.github.io/webcodecs/#
+    type: attribute
+        text: VideoDecoderConfig.description; url: dom-videodecoderconfig-description
+    type: interface
+        text: EncodedVideoChunk; url: encodedvideochunk
+        text: VideoEncoder; url: videoencoder
+    type: dictionary
+        text: VideoEncoderConfig; url: dictdef-videoencoderconfig
+        text: VideoDecoderConfig; url: dictdef-videodecoderconfig
+</pre>
+
+<pre class='biblio'>
+{
+  "ITU-T-REC-H.264": {
+    "href": "https://www.itu.int/rec/T-REC-H.264",
+    "title": "H.264 : Advanced video coding for generic audiovisual services",
+    "publisher": "ITU",
+    "date": "June 2019"
+  }
+}
+</pre>
+
+Fully qualified codec strings {#fully-qualified-codec-strings}
+==============================================================
+
+The codec string must begin with the prefix "avc1.", and contain a suffix of 6
+characters as described in Section 3.4 of [[rfc6381]].
+
+NOTE: The common "avc3." prefix is intentionally not included. This prefix does
+  not signal a material difference to decoder inputs, so it is omitted for
+  simplification. For the purposes of this registration, authors should simply
+  map "avc3." to "avc1.".
+
+VideoDecoderConfig description {#videodecoderconfig-description}
+================================================================
+
+A {{VideoDecoderConfig.description}} may or may not be required by the
+AVC codec depending on the bitstream format of the AVC content to be decoded.
+
+If the {{VideoDecoderConfig.description}} includes an
+`AVCDecoderConfigurationRecord`, as defined by [[iso14496-15]], section
+5.3.3.1, it will be assumed that the bitstream is in "avc" format.
+
+NOTE: This format is commonly used in .MP4 files, where the player generally
+    has random access to the media data.
+
+If the {{VideoDecoderConfig.description}} is not provided, it will be
+assumed that the bitstream is in “annexb” format.
+
+NOTE: "annexb" format is described in greater detail by [[ITU-T-REC-H.264]],
+    Annex B. This format is commonly used in live-streaming applications, where
+    including the SPS and PPS data periodically allows users to easily start
+    from the middle of the stream.
+
+VideoEncoderConfig extensions {#videoencoderconfig-extensions}
+==============================================================
+
+<pre class='idl'>
+<xmp>
+partial dictionary VideoEncoderConfig {
+  AvcEncoderConfig avc;
+};
+</xmp>
+</pre>
+
+<dl>
+  <dt><dfn dict-member for=VideoEncoderConfig>avc</dfn></dt>
+  <dd>
+    Contains codec specific configuration options for the AVC (H.264) codec.
+  </dd>
+</dl>
+
+AvcEncoderConfig {#avc-encoder-config}
+--------------------------------------
+<pre class='idl'>
+<xmp>
+dictionary AvcEncoderConfig {
+  AvcBitstreamFormat format = "avc";
+};
+</xmp>
+</pre>
+
+<dl>
+  <dt><dfn dict-member for=AvcEncoderConfig>format</dfn></dt>
+  <dd>
+    Configures the format of output {{EncodedVideoChunk}}s. See
+    {{AvcBitstreamFormat}}.
+  </dd>
+</dl>
+
+AvcBitstreamFormat {#avc-bitstream-format}
+------------------------------------------
+<pre class='idl'>
+<xmp>
+enum AvcBitstreamFormat {
+  "annexb",
+  "avc",
+};
+</xmp>
+</pre>
+
+The {{AvcBitstreamFormat}} determines the location of AVC Sequence Parameter
+Set (SPS) and Picture Parameter Set (PPS) data, and mechanisms for packaging
+the bitstream.
+
+SPS and PPS are described in greater detail in sections G.3.41 and G.3.55 of
+[[ITU-T-REC-H.264]].
+
+<dl>
+  <dt><dfn enum-value for=AvcBitstreamFormat>annexb</dfn></dt>
+  <dd>
+    SPS and PPS data are included periodically throughout the bitstream.
+
+    NOTE: This format is described in greater detail by [[ITU-T-REC-H.264]],
+        Annex B. This format is commonly used in live-streaming applications,
+        where including the SPS and PPS data periodically allows users to easily
+        start from the middle of the stream.
+  </dd>
+  <dt><dfn enum-value for=AvcBitstreamFormat>avc</dfn></dt>
+  <dd>
+    SPS and PPS data are not included in the bitstream and are instead emitted
+    via the {{VideoEncoder}} [[output callback]] as the
+    {{VideoDecoderConfig.description}} of the
+    {{VideoDecoderConfig}}.
+    <var ignore=''>output_config</var>.
+
+    NOTE: This format is described in greater detail by [[iso14496-15]],
+        section 5.3.3.1. This format is commonly used in .MP4 files, where the
+        player generally has random access to the media data.
+</dl>
+
+Privacy and Security Considerations {#privacy-and-security-considerations}
+==========================================================================
+
+Please refer to the [[WEBCODECS#privacy-considerations|Privacy Considerations]]
+and [[WEBCODECS#security-considerations|Security Considerations]] sections in
+[[WEBCODECS]].
