@@ -614,29 +614,32 @@ Algorithms {#videodecoder-algorithms}
   <dd>
     Run these steps:
     1. For each |output| in |outputs|:
-        1. Let |frame| be the result of running the [=Create a VideoFrame=]
-            algorithm with |output|.
-        5. Invoke {{VideoDecoder/[[output callback]]}} with |frame|.
+        1. Let |timestamp| and |duration| be the
+            {{EncodedVideoChunk/timestamp}} and {{EncodedVideoChunk/duration}}
+            from the {{EncodedVideoChunk}} associated with |output|.
+        2. Let |frame| be the result of running the [=Create a VideoFrame=]
+            algorithm with |output|, |timestamp|, and |duration|.
+        3. Invoke {{VideoDecoder/[[output callback]]}} with |frame|.
   </dd>
-  <dt><dfn>Create a VideoFrame</dfn> (with |output|)</dt>
+  <dt>
+    <dfn>Create a VideoFrame</dfn> (with |output|, |timestamp|, and |duration|)
+  </dt>
   <dd>
     1. Let |planes| be a sequence of {{Plane}}s containing the decoded video
             frame data from |output|.
     2. Let |pixelFormat| be the {{PixelFormat}} of |planes|.
     3. Let |frameInit| be a {{VideoFrameInit}} with the following keys:
-        1. Let {{VideoFrameInit/timestamp}} and {{VideoFrameInit/duration}}
-            be the {{EncodedVideoChunk/timestamp}} and
-            {{EncodedVideoChunk/duration}} from the {{EncodedVideoChunk}}
-            associated with |output|.
-        2. Let {{VideoFrameInit/codedWidth}} and
+        1. Assign |timestamp| to {{VideoFrameInit/timestamp}}.
+        2. Assign |duration| to {{VideoFrameInit/duration}}.
+        3. Let {{VideoFrameInit/codedWidth}} and
             {{VideoFrameInit/codedHeight}}
             be the width and height of the decoded video frame |output| in
             pixels, prior to any cropping or aspect ratio adjustments.
-        3. Let {{VideoFrameInit/cropLeft}}, {{VideoFrameInit/cropTop}},
+        4. Let {{VideoFrameInit/cropLeft}}, {{VideoFrameInit/cropTop}},
             {{VideoFrameInit/cropWidth}}, and {{VideoFrameInit/cropHeight}}
             be the crop region of the decoded video frame |output| in
             pixels, prior to any aspect ratio adjustments.
-        4. Let {{VideoFrameInit/displayWidth}} and
+        5. Let {{VideoFrameInit/displayWidth}} and
             {{VideoFrameInit/displayHeight}} be the display size of the
             decoded video frame in pixels.
     4. Return a new {{VideoFrame}}, constructed with |pixelFormat|,
@@ -2325,7 +2328,6 @@ interface ImageDecoder {
   readonly attribute boolean complete;
   readonly attribute ImageTrackList tracks;
 
-  Promise<undefined> decodeMetadata();
   Promise<ImageDecodeResult> decode(optional ImageDecodeOptions options);
   undefined reset();
   undefined close();
@@ -2355,19 +2357,12 @@ interface ImageDecoder {
 :: A boolean reflecting the value of {{ImageDecoderInit/preferAnimation}} given
     at construction.
 
-: <dfn attribute for=ImageDecoder>[[pending metadata promises]]</dfn>
-:: A list of unresolved promises returned by calls to decodeMetadata().
-
 : <dfn attribute for=ImageDecoder>[[pending decode promises]]</dfn>
 :: A list of unresolved promises returned by calls to decode().
 
 : <dfn attribute for=ImageDecoder>[[internal selected track index]]</dfn>
 :: Identifies the image track within {{ImageDecoder/[[encoded data]]}} that is
     used by decoding algorithms on the [=codec thread=].
-
-: <dfn attribute for=ImageDecoder>[[decode metadata requested]]</dfn>
-:: A boolean indicating whether a [=control message=] to [=ImageDecoder/decode
-    track metadata=] has been enqueued to the [=control message queue=].
 
 : <dfn attribute for=ImageDecoder>[[tracks established]]</dfn>
 :: A boolean indicating whether the track list has been established in
@@ -2408,15 +2403,13 @@ interface ImageDecoder {
     5. If `init.preferAnimation` [=map/exists=], assign `init.preferAnimation`
         to the {{ImageDecoder/[[prefer animation]]}} internal slot. Otherwise,
         assign 'null' to {{ImageDecoder/[[prefer animation]]}} internal slot.
-    6. Assign a new [=list=] to {{ImageDecoder/[[pending metadata promises]]}}.
     7. Assign a new [=list=] to {{ImageDecoder/[[pending decode promises]]}}.
     8. Assign `-1` to {{ImageDecoder/[[internal selected track index]]}}.
-    9. Assign `false` to {{ImageDecoder/[[decode metadata requested]]}}.
-    10. Assign `false` to {{ImageDecoder/[[tracks established]]}}.
-    11. Assign `false` to {{ImageDecoder/[[closed]]}}.
-    12. Assign a new [=map=] to {{ImageDecoder/[[progressive frame
+    9. Assign `false` to {{ImageDecoder/[[tracks established]]}}.
+    10. Assign `false` to {{ImageDecoder/[[closed]]}}.
+    11. Assign a new [=map=] to {{ImageDecoder/[[progressive frame
         generations]]}}.
-    13. If |init|'s {{ImageDecoderInit/data}} member is of type
+    12. If |init|'s {{ImageDecoderInit/data}} member is of type
         {{ReadableStream}}:
         1. Assign a new [=list=] to {{ImageDecoder/[[encoded data]]}}.
         2. Assign `false` to {{ImageDecoder/complete}}
@@ -2426,13 +2419,14 @@ interface ImageDecoder {
             {{ImageDecoderInit/data}}.
         5. In parallel, perform the [=Fetch Stream Data Loop=] on |d| with
             |reader|.
-    14. Otherwise:
+    13. Otherwise:
         1. Assert that `init.data` is of type {{BufferSource}}.
         2. Assign a copy of `init.data` to  {{ImageDecoder/[[encoded data]]}}.
         3. Assign `true` to {{ImageDecoder/complete}}
-    15. Queue a control message to [=configure the image decoder=] with
-        |init|.
-    16. return |d|.
+        4. Queue a control message to [=configure the image decoder=] with
+            |init|.
+        5. Queue a control message to [=decode track metadata=].
+    14. return |d|.
 
     [=Running a control message=] to <dfn>configure the image decoder</dfn>
     means running these steps:
@@ -2451,6 +2445,10 @@ interface ImageDecoder {
         {{ImageDecoderInit/desiredWidth}}, and
         {{ImageDecoderInit/desiredHeight}}.
 
+    [=Running a control message=] to <dfn>decode track metadata</dfn> means
+    running these steps:
+    1. Run the [=ImageDecoder/Establish Tracks=] algorithm.
+
 ### Attributes ### {#imagedecoder-attributes}
 
 : <dfn attribute for=ImageDecoder>tracks</dfn>
@@ -2468,31 +2466,6 @@ interface ImageDecoder {
 
 
 ### Methods ### {#imagedecoder-methods}
-: <dfn method for=ImageDecoder>decodeMetadata()</dfn>
-:: Returns a promise which resolves once enough
-    {{ImageDecoder/[[encoded data]]}} has been buffered and decoded to
-    establish {{ImageDecoder/tracks}}.
-
-    NOTE: {{ImageTrack}} {{ImageTrack/frameCount}} may receive subsequent
-        updates until {{ImageDecoder/complete}} is `true`.
-
-    When invoked, run these steps:
-    1. If {{ImageDecoder/[[closed]]}} is `true`, return a {{Promise}}
-        rejected with an {{InvalidStateError}} {{DOMException}}.
-    2. If {{ImageDecoder/[[tracks established]]}} is `true`, return a resolved
-        {{Promise}}.
-    3. Let |promise| be a new {{Promise}}.
-    4. Append |promise| to {{ImageDecoder/[[pending metadata promises]]}}
-    5. If {{ImageDecoder/[[decode metadata requested]]}} is `false`:
-        1. [=Queue a control message=] to [=ImageDecoder/decode track
-            metadata=].
-        2. Assign `true` to {{ImageDecoder/[[decode metadata requested]]}}.
-    5. Return |promise|.
-
-    [=Running a control message=] to <dfn for=ImageDecoder>decode track
-    metadata</dfn> means running these steps:
-    1. Run the [=ImageDecoder/Establish Tracks=] algorithm.
-
 : <dfn method for=ImageDecoder>decode(options)</dfn>
 :: Enqueues a control message to decode the frame according to |options|.
 
@@ -2504,15 +2477,11 @@ interface ImageDecoder {
         rejected with an {{InvalidStateError}} {{DOMException}}.
     3. If |options| is `undefined`, assign a new {{ImageDecodeOptions}} to
         |options|.
-    4. If {{ImageDecoder/[[decode metadata requested]]}} is `false`:
-        1. [=Queue a control message=] to [=ImageDecoder/decode track
-            metadata=].
-        2. Assign `true` to {{ImageDecoder/[[decode metadata requested]]}}.
-    5. Let |promise| be a new {{Promise}}.
-    6. [=Queue a control message=] to decode the the image with |options|, and
+    4. Let |promise| be a new {{Promise}}.
+    5. [=Queue a control message=] to decode the the image with |options|, and
         |promise|.
-    7. Append |promise| to {{ImageDecoder/[[pending decode promises]]}}.
-    8. Return |promise|.
+    6. Append |promise| to {{ImageDecoder/[[pending decode promises]]}}.
+    7. Return |promise|.
 
     [=Running a control message=] to decode the image means running these
     steps:
@@ -2583,8 +2552,11 @@ interface ImageDecoder {
 :: Run these steps:
     1. Assert {{ImageDecoder/[[tracks established]]}} is `false`.
     2. If {{ImageDecoder/[[encoded data]]}} does not contain enough data to
-        determine the number of tracks, abort these steps.
-    3. If the number of tracks is found to be '0', queue a task on the
+        determine the number of tracks:
+        1. If {{ImageDecoder/complete}} is `true`, queue a task on the
+            [=control thread=] event loop to run the [=ImageDecoder/Close ImageDecoder=] algorithm.
+        2. Abort these steps.
+    3. If the number of tracks is found to be `0`, queue a task on the
         [=control thread=] event loop to run the
         [=ImageDecoder/Close ImageDecoder=] algorithm and abort these steps.
     4. Let |newTrackList| be a new [=list=].
@@ -2631,9 +2603,7 @@ interface ImageDecoder {
             {{ImageTrackList/[[track list]]}} internal slot.
         2. Assign |selectedTrackIndex| to {{ImageDecoder/tracks}}
             {{ImageTrackList/[[selected index]]}}.
-        3. For each |promise| in
-            {{ImageDecoder/[[pending metadata promises]]}}, resolve |promise|
-            and remove it from the list.
+        3. Resolve {{ImageTrackList/[[ready promise]]}}.
 
 : <dfn for=ImageDecoder>Get Default Selected Track Index</dfn> (with
     |trackList|)
@@ -2722,8 +2692,14 @@ interface ImageDecoder {
     11. Let |decodeResult| be a new {{ImageDecodeResult}} initialized as
         follows:
         1. Assign 'true' to {{ImageDecodeResult/complete}}.
+        2. Let |timestamp| and |duration| be the presentation timestamp and
+            duration for |output| as described by the
+            {{ImageDecoder/[[encoded data]]}}. If
+            {{ImageDecoder/[[encoded data]]}} does not describe a timestamp or
+            duration, assign `null` to the corresponding variable.
         2. Assign {{ImageDecodeResult/image}} with the result of running the
-            [=Create a VideoFrame=] algorithm with |output|.
+            [=Create a VideoFrame=] algorithm with |output|, |timestamp|, and
+            |duration|.
     12. Run the [=ImageDecoder/Resolve Decode=] algorithm with |promise| and
         |decodeResult|.
 
@@ -2814,12 +2790,7 @@ interface ImageDecoder {
 : <dfn for=ImageDecoder>Reset ImageDecoder</dfn> (with |exception|)
 :: 1. Signal {{ImageDecoder/[[codec implementation]]}} to abort any active
         decoding operation.
-    2. For each |metadataPromise| in
-        {{ImageDecoder/[[pending metadata promises]]}}:
-        1. Reject |metadataPromise| with |exception|.
-        2. Remove |metadataPromise| from
-            {{ImageDecoder/[[pending metadata promises]]}}.
-    3. For each |decodePromise| in
+    2. For each |decodePromise| in
         {{ImageDecoder/[[pending decode promises]]}}:
         1. Reject |decodePromise| with |exception|.
         2. Remove |decodePromise| from
@@ -2972,6 +2943,7 @@ ImageTrackList Interface {#imagetracklist-interface}
 interface ImageTrackList {
   getter ImageTrack (unsigned long index);
 
+  readonly attribute Promise<undefined> ready;
   readonly attribute unsigned long length;
   readonly attribute long selectedIndex;
   readonly attribute ImageTrack? selectedTrack;
@@ -2980,6 +2952,12 @@ interface ImageTrackList {
 </pre>
 
 ### Internal Slots ### {#imagetracklist-internal-slots}
+: <dfn attribute for=ImageTrackList>[[ready promise]]</dfn>
+:: The promise used to signal when the {{ImageTrackList}} has been poplated
+    with {{ImageTrack}}s.
+
+    NOTE: {{ImageTrack}} {{ImageTrack/frameCount}} may receive subsequent
+        updates until {{ImageDecoder/complete}} is `true`.
 
 : <dfn attribute for=ImageTrackList>[[track list]]</dfn>
 :: The list of {{ImageTrack}}s describe by this {{ImageTrackList}}.
@@ -2989,6 +2967,9 @@ interface ImageTrackList {
     value of `-1` indeicates that no track is selected.
 
 ### Attributes ### {#imagetracklist-attributes}
+: <dfn attribute for=ImageTrackList>ready</dfn>
+:: The {{ImageTrackList/ready}} getter steps are to return the
+    {{ImageTrackList/[[ready promise]]}}.
 
 : <dfn attribute for=ImageTrackList>length</dfn>
 :: The {{ImageTrackList/length}} getter steps are to return the length of
@@ -3046,7 +3027,7 @@ interface ImageTrack : EventTarget {
 
     NOTE: This attribute provides an early indication that
         {{ImageTrack/frameCount}} will ultimately exceed 0 for images where the
-        {{ImageTrack/frameCount}} starts at '0' and later increments as new
+        {{ImageTrack/frameCount}} starts at `0` and later increments as new
         chunks of the {{ReadableStream}} {{ImageDecoderInit/data}} arrive.
 
 : <dfn attribute for=ImageTrack>frameCount</dfn>
