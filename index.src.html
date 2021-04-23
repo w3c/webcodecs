@@ -2693,11 +2693,10 @@ interface ImageDecoder {
         follows:
         1. Assign 'true' to {{ImageDecodeResult/complete}}.
         2. Let |timestamp| and |duration| be the presentation timestamp and
-            duration for |output| as described by the
-            {{ImageDecoder/[[encoded data]]}}. If
-            {{ImageDecoder/[[encoded data]]}} does not describe a timestamp or
+            duration for |output| as described by |encodedFrame|. If
+            |encodedFrame| does not describe a timestamp or
             duration, assign `null` to the corresponding variable.
-        2. Assign {{ImageDecodeResult/image}} with the result of running the
+        3. Assign {{ImageDecodeResult/image}} with the result of running the
             [=Create a VideoFrame=] algorithm with |output|, |timestamp|, and
             |duration|.
     12. Run the [=ImageDecoder/Resolve Decode=] algorithm with |promise| and
@@ -2750,10 +2749,15 @@ interface ImageDecoder {
             for |output|.
         3. Add a new entry to {{ImageDecoder/[[progressive frame
             generations]]}} with key |frameIndex| and value |frameGeneration|.
-    15. Assign |decodeResult|.{{ImageDecodeResult/image}} with the result of
-        running the [=Create a VideoFrame=] algorithm with |output|.
-    16. Remove |promise| from {{ImageDecoder/[[pending decode promises]]}}.
-    17. Resolve |promise| with |decodeResult|.
+    15. Let |timestamp| and |duration| be the presentation timestamp and
+            duration for |output| as described by |encodedFrame|. If
+            |encodedFrame| does not describe a timestamp or
+            duration, assign `null` to the corresponding variable.
+    16. Assign {{ImageDecodeResult/image}} with the result of running the
+            [=Create a VideoFrame=] algorithm with |output|, |timestamp|, and
+            |duration|.
+    17. Remove |promise| from {{ImageDecoder/[[pending decode promises]]}}.
+    18. Resolve |promise| with |decodeResult|.
 
 : <dfn for=ImageDecoder>Resolve Decode</dfn> (with |promise| and |result|)
 :: 1. Queue a task on the [=control thread=] event loop to run these steps:
