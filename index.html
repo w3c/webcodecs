@@ -1823,9 +1823,10 @@ from <var>output</var>.</p>
           <li data-md>
            <p>Let <code class="idl"><a data-link-type="idl" href="#dom-encodedvideochunkinit-type" id="ref-for-dom-encodedvideochunkinit-type">type</a></code> be the <code class="idl"><a data-link-type="idl" href="#enumdef-encodedvideochunktype" id="ref-for-enumdef-encodedvideochunktype">EncodedVideoChunkType</a></code> of <var>output</var>.</p>
           <li data-md>
-           <p>Let <code class="idl"><a data-link-type="idl" href="#dom-encodedvideochunkinit-timestamp" id="ref-for-dom-encodedvideochunkinit-timestamp">timestamp</a></code> be the <code class="idl"><a data-link-type="idl" href="#dom-videoframe-timestamp" id="ref-for-dom-videoframe-timestamp">timestamp</a></code> from the <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe⑤">VideoFrame</a></code> associated with <var>output</var>.</p>
+           <p>Let <code class="idl"><a data-link-type="idl" href="#dom-encodedvideochunkinit-timestamp" id="ref-for-dom-encodedvideochunkinit-timestamp">timestamp</a></code> be the <code class="idl"><a data-link-type="idl" href="#dom-videoframe-timestamp-slot" id="ref-for-dom-videoframe-timestamp-slot">[[timestamp]]</a></code> from the <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe⑤">VideoFrame</a></code> associated with <var>output</var>.</p>
           <li data-md>
-           <p>Let <code class="idl"><a data-link-type="idl" href="#dom-encodedvideochunkinit-duration" id="ref-for-dom-encodedvideochunkinit-duration">duration</a></code> be the <code class="idl"><a data-link-type="idl" href="#dom-videoframe-duration" id="ref-for-dom-videoframe-duration">duration</a></code> from the <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe⑥">VideoFrame</a></code> associated with <var>output</var>.</p>
+           <p>Let <code class="idl"><a data-link-type="idl" href="#dom-encodedvideochunkinit-duration" id="ref-for-dom-encodedvideochunkinit-duration">duration</a></code> be the <code class="idl"><a data-link-type="idl" href="#dom-videoframe-duration-slot" id="ref-for-dom-videoframe-duration-slot">[[duration]]</a></code> from the <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe⑥">VideoFrame</a></code> associated
+with <var>output</var>.</p>
          </ol>
         <li data-md>
          <p>Let <var>chunk</var> be a new <code class="idl"><a data-link-type="idl" href="#encodedvideochunk" id="ref-for-encodedvideochunk④">EncodedVideoChunk</a></code> constructed with <var>chunkInit</var>.</p>
@@ -2133,12 +2134,12 @@ run these steps:</p>
     <dd>
       The encoded width of output <code class="idl"><a data-link-type="idl" href="#encodedvideochunk" id="ref-for-encodedvideochunk⑤">EncodedVideoChunk</a></code>s in pixels, prior to any
     display aspect ratio adjustments. 
-     <p>The encoder must scale any <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe⑦">VideoFrame</a></code> who’s <code class="idl"><a data-link-type="idl" href="#dom-videoframe-cropwidth" id="ref-for-dom-videoframe-cropwidth">cropWidth</a></code> differs from this value.</p>
+     <p>The encoder must scale any <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe⑦">VideoFrame</a></code> who’s <code class="idl"><a data-link-type="idl" href="#dom-videoframe-crop-width-slot" id="ref-for-dom-videoframe-crop-width-slot">[[crop width]]</a></code> differs from this value.</p>
     <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoEncoderConfig" data-dfn-type="dict-member" data-export id="dom-videoencoderconfig-height"><code>height</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#idl-unsigned-long" id="ref-for-idl-unsigned-long②⑨">unsigned long</a></span>
     <dd>
       The encoded height of output <code class="idl"><a data-link-type="idl" href="#encodedvideochunk" id="ref-for-encodedvideochunk⑥">EncodedVideoChunk</a></code>s in pixels, prior to any
     display aspect ratio adjustments. 
-     <p>The encoder must scale any <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe⑧">VideoFrame</a></code> who’s <code class="idl"><a data-link-type="idl" href="#dom-videoframe-cropheight" id="ref-for-dom-videoframe-cropheight">cropHeight</a></code> differs from this value.</p>
+     <p>The encoder must scale any <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe⑧">VideoFrame</a></code> who’s <code class="idl"><a data-link-type="idl" href="#dom-videoframe-crop-height-slot" id="ref-for-dom-videoframe-crop-height-slot">[[crop height]]</a></code> differs from this value.</p>
    </dl>
    <dl>
     <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoEncoderConfig" data-dfn-type="dict-member" data-export id="dom-videoencoderconfig-displaywidth"><code>displayWidth</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#idl-unsigned-long" id="ref-for-idl-unsigned-long③⓪">unsigned long</a></span>
@@ -2423,12 +2424,12 @@ keys and values. For nested dictionaries, apply this definition recursively.
   <c- b>readonly</c-> <c- b>attribute</c-> <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-unsigned-long" id="ref-for-idl-unsigned-long③③"><c- b>unsigned</c-> <c- b>long</c-></a> <a class="idl-code" data-link-type="attribute" data-readonly data-type="unsigned long" href="#dom-videoframe-codedheight" id="ref-for-dom-videoframe-codedheight"><c- g>codedHeight</c-></a>;
   <c- b>readonly</c-> <c- b>attribute</c-> <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-unsigned-long" id="ref-for-idl-unsigned-long③④"><c- b>unsigned</c-> <c- b>long</c-></a> <a class="idl-code" data-link-type="attribute" data-readonly data-type="unsigned long" href="#dom-videoframe-cropleft" id="ref-for-dom-videoframe-cropleft"><c- g>cropLeft</c-></a>;
   <c- b>readonly</c-> <c- b>attribute</c-> <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-unsigned-long" id="ref-for-idl-unsigned-long③⑤"><c- b>unsigned</c-> <c- b>long</c-></a> <a class="idl-code" data-link-type="attribute" data-readonly data-type="unsigned long" href="#dom-videoframe-croptop" id="ref-for-dom-videoframe-croptop"><c- g>cropTop</c-></a>;
-  <c- b>readonly</c-> <c- b>attribute</c-> <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-unsigned-long" id="ref-for-idl-unsigned-long③⑥"><c- b>unsigned</c-> <c- b>long</c-></a> <a class="idl-code" data-link-type="attribute" data-readonly data-type="unsigned long" href="#dom-videoframe-cropwidth" id="ref-for-dom-videoframe-cropwidth①"><c- g>cropWidth</c-></a>;
-  <c- b>readonly</c-> <c- b>attribute</c-> <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-unsigned-long" id="ref-for-idl-unsigned-long③⑦"><c- b>unsigned</c-> <c- b>long</c-></a> <a class="idl-code" data-link-type="attribute" data-readonly data-type="unsigned long" href="#dom-videoframe-cropheight" id="ref-for-dom-videoframe-cropheight①"><c- g>cropHeight</c-></a>;
+  <c- b>readonly</c-> <c- b>attribute</c-> <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-unsigned-long" id="ref-for-idl-unsigned-long③⑥"><c- b>unsigned</c-> <c- b>long</c-></a> <a class="idl-code" data-link-type="attribute" data-readonly data-type="unsigned long" href="#dom-videoframe-cropwidth" id="ref-for-dom-videoframe-cropwidth"><c- g>cropWidth</c-></a>;
+  <c- b>readonly</c-> <c- b>attribute</c-> <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-unsigned-long" id="ref-for-idl-unsigned-long③⑦"><c- b>unsigned</c-> <c- b>long</c-></a> <a class="idl-code" data-link-type="attribute" data-readonly data-type="unsigned long" href="#dom-videoframe-cropheight" id="ref-for-dom-videoframe-cropheight"><c- g>cropHeight</c-></a>;
   <c- b>readonly</c-> <c- b>attribute</c-> <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-unsigned-long" id="ref-for-idl-unsigned-long③⑧"><c- b>unsigned</c-> <c- b>long</c-></a> <a class="idl-code" data-link-type="attribute" data-readonly data-type="unsigned long" href="#dom-videoframe-displaywidth" id="ref-for-dom-videoframe-displaywidth"><c- g>displayWidth</c-></a>;
   <c- b>readonly</c-> <c- b>attribute</c-> <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-unsigned-long" id="ref-for-idl-unsigned-long③⑨"><c- b>unsigned</c-> <c- b>long</c-></a> <a class="idl-code" data-link-type="attribute" data-readonly data-type="unsigned long" href="#dom-videoframe-displayheight" id="ref-for-dom-videoframe-displayheight"><c- g>displayHeight</c-></a>;
-  <c- b>readonly</c-> <c- b>attribute</c-> <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-unsigned-long-long" id="ref-for-idl-unsigned-long-long①⑥"><c- b>unsigned</c-> <c- b>long</c-> <c- b>long</c-></a>? <a class="idl-code" data-link-type="attribute" data-readonly data-type="unsigned long long?" href="#dom-videoframe-duration" id="ref-for-dom-videoframe-duration①"><c- g>duration</c-></a>;
-  <c- b>readonly</c-> <c- b>attribute</c-> <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-unsigned-long-long" id="ref-for-idl-unsigned-long-long①⑦"><c- b>unsigned</c-> <c- b>long</c-> <c- b>long</c-></a>? <a class="idl-code" data-link-type="attribute" data-readonly data-type="unsigned long long?" href="#dom-videoframe-timestamp" id="ref-for-dom-videoframe-timestamp①"><c- g>timestamp</c-></a>;
+  <c- b>readonly</c-> <c- b>attribute</c-> <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-unsigned-long-long" id="ref-for-idl-unsigned-long-long①⑥"><c- b>unsigned</c-> <c- b>long</c-> <c- b>long</c-></a>? <a class="idl-code" data-link-type="attribute" data-readonly data-type="unsigned long long?" href="#dom-videoframe-duration" id="ref-for-dom-videoframe-duration"><c- g>duration</c-></a>;
+  <c- b>readonly</c-> <c- b>attribute</c-> <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-unsigned-long-long" id="ref-for-idl-unsigned-long-long①⑦"><c- b>unsigned</c-> <c- b>long</c-> <c- b>long</c-></a>? <a class="idl-code" data-link-type="attribute" data-readonly data-type="unsigned long long?" href="#dom-videoframe-timestamp" id="ref-for-dom-videoframe-timestamp"><c- g>timestamp</c-></a>;
 
   <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-undefined" id="ref-for-idl-undefined②⑥"><c- b>undefined</c-></a> <a class="idl-code" data-link-type="method" href="#dom-videoframe-destroy" id="ref-for-dom-videoframe-destroy"><c- g>destroy</c-></a>();
   <a data-link-type="idl-name" href="#videoframe" id="ref-for-videoframe⑨"><c- n>VideoFrame</c-></a> <a class="idl-code" data-link-type="method" href="#dom-videoframe-clone" id="ref-for-dom-videoframe-clone"><c- g>clone</c-></a>();
@@ -2453,9 +2454,55 @@ keys and values. For nested dictionaries, apply this definition recursively.
 </pre>
    <h4 class="heading settled" data-level="9.2.1" id="videoframe-internal-slots"><span class="secno">9.2.1. </span><span class="content">Internal Slots</span><a class="self-link" href="#videoframe-internal-slots"></a></h4>
    <dl>
-    <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoFrame" data-dfn-type="attribute" data-export id="dom-videoframe-detached-slot"><code>[[detached]]</code></dfn>
-    <dd> Boolean indicating whether <code class="idl"><a data-link-type="idl" href="#dom-videoframe-destroy" id="ref-for-dom-videoframe-destroy①">destroy()</a></code> was invoked and underlying
-        resources have been released. 
+    <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="VideoFrame" data-dfn-type="attribute" data-export id="dom-videoframe-detached-slot"><code>[[detached]]</code></dfn>
+    <dd data-md>
+     <p>A boolean indicating whether <code class="idl"><a data-link-type="idl" href="#dom-videoframe-destroy" id="ref-for-dom-videoframe-destroy①">destroy()</a></code> was invoked and underlying
+resources have been released.</p>
+    <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="VideoFrame" data-dfn-type="attribute" data-export id="dom-videoframe-format-slot"><code>[[format]]</code></dfn>
+    <dd data-md>
+     <p>A <code class="idl"><a data-link-type="idl" href="#enumdef-pixelformat" id="ref-for-enumdef-pixelformat③">PixelFormat</a></code> describing the pixel format of the <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe①⓪">VideoFrame</a></code>.</p>
+    <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="VideoFrame" data-dfn-type="attribute" data-export id="dom-videoframe-planes-slot"><code>[[planes]]</code></dfn>
+    <dd data-md>
+     <p>A list of <code class="idl"><a data-link-type="idl" href="#plane" id="ref-for-plane③">Plane</a></code>s describing the memory layout of the pixel data in <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe①①">VideoFrame</a></code>. The number of <code class="idl"><a data-link-type="idl" href="#plane" id="ref-for-plane④">Plane</a></code>s and their semantics are
+determined by <code class="idl"><a data-link-type="idl" href="#dom-videoframe-format-slot" id="ref-for-dom-videoframe-format-slot">[[format]]</a></code>.</p>
+    <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="VideoFrame" data-dfn-type="attribute" data-export id="dom-videoframe-coded-width-slot"><code>[[coded width]]</code></dfn>
+    <dd data-md>
+     <p>Width of the <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe①②">VideoFrame</a></code> in pixels, prior to any cropping or aspect
+ratio adjustments.</p>
+    <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="VideoFrame" data-dfn-type="attribute" data-export id="dom-videoframe-coded-height-slot"><code>[[coded height]]</code></dfn>
+    <dd data-md>
+     <p>Height of the <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe①③">VideoFrame</a></code> in pixels, prior to any cropping or aspect
+ratio adjustments.</p>
+    <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="VideoFrame" data-dfn-type="attribute" data-export id="dom-videoframe-crop-left-slot"><code>[[crop left]]</code></dfn>
+    <dd data-md>
+     <p>The number of pixels to remove from the left of the <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe①④">VideoFrame</a></code>,
+prior to aspect ratio adjustments.</p>
+    <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="VideoFrame" data-dfn-type="attribute" data-export id="dom-videoframe-crop-top-slot"><code>[[crop top]]</code></dfn>
+    <dd data-md>
+     <p>The number of pixels to remove from the top of the <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe①⑤">VideoFrame</a></code>,
+prior to aspect ratio adjustments.</p>
+    <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="VideoFrame" data-dfn-type="attribute" data-export id="dom-videoframe-crop-width-slot"><code>[[crop width]]</code></dfn>
+    <dd data-md>
+     <p>The width of pixels to include in the crop, starting from cropLeft.</p>
+    <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="VideoFrame" data-dfn-type="attribute" data-export id="dom-videoframe-crop-height-slot"><code>[[crop height]]</code></dfn>
+    <dd data-md>
+     <p>The height of pixels to include in the crop, starting from cropLeft.</p>
+    <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="VideoFrame" data-dfn-type="attribute" data-export id="dom-videoframe-display-width-slot"><code>[[display width]]</code></dfn>
+    <dd data-md>
+     <p>Width of the <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe①⑥">VideoFrame</a></code> when displayed after applying aspect ratio
+adjustments.</p>
+    <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="VideoFrame" data-dfn-type="attribute" data-export id="dom-videoframe-display-height-slot"><code>[[display height]]</code></dfn>
+    <dd data-md>
+     <p>Height of the <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe①⑦">VideoFrame</a></code> when displayed after applying aspect ratio
+adjustments.</p>
+    <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="VideoFrame" data-dfn-type="attribute" data-export id="dom-videoframe-duration-slot"><code>[[duration]]</code></dfn>
+    <dd data-md>
+     <p>The presentation duration, given in microseconds. The duration is copied
+    from the <code class="idl"><a data-link-type="idl" href="#encodedvideochunk" id="ref-for-encodedvideochunk①⓪">EncodedVideoChunk</a></code> corresponding to this <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe①⑧">VideoFrame</a></code>.</p>
+    <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="VideoFrame" data-dfn-type="attribute" data-export id="dom-videoframe-timestamp-slot"><code>[[timestamp]]</code></dfn>
+    <dd data-md>
+     <p>The presentation timestamp, given in microseconds. The timestamp is copied
+from the <code class="idl"><a data-link-type="idl" href="#encodedvideochunk" id="ref-for-encodedvideochunk①①">EncodedVideoChunk</a></code> corresponding to this <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe①⑨">VideoFrame</a></code>.</p>
    </dl>
    <h4 class="heading settled" data-level="9.2.2" id="videoframe-constructors"><span class="secno">9.2.2. </span><span class="content">Constructors</span><a class="self-link" href="#videoframe-constructors"></a></h4>
    <p class="note" role="note"><span>NOTE:</span> this section needs work. Current wording assumes a VideoFrame can always
@@ -2474,50 +2521,44 @@ keys and values. For nested dictionaries, apply this definition recursively.
      <p>If the value of <var>imageBitmap</var>’s' <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/structured-data.html#detached" id="ref-for-detached">[[Detached]]</a></code> internal
 slot is set to <code>true</code>, then throw an <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#invalidstateerror" id="ref-for-invalidstateerror①⑥">InvalidStateError</a></code> DOMException.</p>
     <li data-md>
-     <p>Let <var>frame</var> be a new <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe①⓪">VideoFrame</a></code>.</p>
+     <p>Let <var>frame</var> be a new <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe②⓪">VideoFrame</a></code>.</p>
     <li data-md>
      <p>Assign <code>false</code> to <var>frame</var>’s <code class="idl"><a data-link-type="idl" href="#dom-videoframe-detached-slot" id="ref-for-dom-videoframe-detached-slot①">[[detached]]</a></code> internal slot.</p>
     <li data-md>
-     <p>Use a copy of the pixel data in <var>imageBitmap</var> to initialize to following
-frame attributes:</p>
+     <p>Use a copy of the pixel data in <var>imageBitmap</var> to initialize to following <var>frame</var> internal slots:</p>
      <ol>
       <li data-md>
-       <p>Initialize <code>frame.pixelFormat</code> be the underlying format of imageBitmap.</p>
+       <p>Initialize <code class="idl"><a data-link-type="idl" href="#dom-videoframe-format-slot" id="ref-for-dom-videoframe-format-slot①">[[format]]</a></code> be the underlying format of
+imageBitmap.</p>
       <li data-md>
-       <p>Initialize <code>frame.planes</code> to describe the arrangement of memory of the
-copied pixel data.</p>
+       <p>Initialize <code class="idl"><a data-link-type="idl" href="#dom-videoframe-planes-slot" id="ref-for-dom-videoframe-planes-slot">[[planes]]</a></code> to describe the arrangement of
+memory of the copied pixel data.</p>
       <li data-md>
        <p>Assign regions of the copied pixel data to the <code class="idl"><a data-link-type="idl" href="#dom-plane-plane-buffer-slot" id="ref-for-dom-plane-plane-buffer-slot">[[plane buffer]]</a></code> internal slot of each plane as
 appropriate for the pixel format.</p>
       <li data-md>
-       <p>Initialize <code>frame.codedWidth</code> and <code>frame.codedHeight</code> describe the width
-and height of the imageBitamp prior to any cropping or aspect ratio
-adjustments.</p>
+       <p>Initialize <code class="idl"><a data-link-type="idl" href="#dom-videoframe-coded-width-slot" id="ref-for-dom-videoframe-coded-width-slot">[[coded width]]</a></code> and <code class="idl"><a data-link-type="idl" href="#dom-videoframe-coded-height-slot" id="ref-for-dom-videoframe-coded-height-slot">[[coded height]]</a></code> to describe the width and height of
+the imageBitamp prior to any cropping or aspect ratio adjustments.</p>
      </ol>
     <li data-md>
-     <p>Use <var>frameInit</var> to initialize the remaining frame attributes:</p>
+     <p>Use <var>frameInit</var> to initialize the remaining <var>frame</var> internal slots:</p>
      <ol>
       <li data-md>
-       <p>If <code>frameInit.cropLeft</code> is present, initialize it <code>frame.cropLeft</code>.
-Otherwise, default <code>frame.cropLeft</code> to zero.</p>
+       <p>If <code>frameInit.cropLeft</code> is present, assign it to <code class="idl"><a data-link-type="idl" href="#dom-videoframe-crop-left-slot" id="ref-for-dom-videoframe-crop-left-slot">[[crop left]]</a></code>. Otherwise, assign <code>0</code> to <code class="idl"><a data-link-type="idl" href="#dom-videoframe-crop-left-slot" id="ref-for-dom-videoframe-crop-left-slot①">[[crop left]]</a></code>.</p>
       <li data-md>
-       <p>If <code>frameInit.cropTop</code> is present, initialize it to <code>frame.cropTop</code>.
-Otherwise, default <code>frame.cropTop</code> to zero.</p>
+       <p>If <code>frameInit.cropTop</code> is present, assign it to <code class="idl"><a data-link-type="idl" href="#dom-videoframe-crop-top-slot" id="ref-for-dom-videoframe-crop-top-slot">[[crop top]]</a></code>. Otherwise, assign <code>0</code> to <code class="idl"><a data-link-type="idl" href="#dom-videoframe-crop-top-slot" id="ref-for-dom-videoframe-crop-top-slot①">[[crop top]]</a></code></p>
       <li data-md>
-       <p>If <code>frameInit.cropWidth</code> is present, initialize it to <code>frame.cropWidth</code>.
-Otherwise, default <code>frame.cropWidth</code> to <code>frame.codedWidth</code>.</p>
+       <p>If <code>frameInit.cropWidth</code> is present, assign it to <code class="idl"><a data-link-type="idl" href="#dom-videoframe-crop-width-slot" id="ref-for-dom-videoframe-crop-width-slot①">[[crop width]]</a></code>. Otherwise, assign <code class="idl"><a data-link-type="idl" href="#dom-videoframe-coded-width-slot" id="ref-for-dom-videoframe-coded-width-slot①">[[coded width]]</a></code> to <code class="idl"><a data-link-type="idl" href="#dom-videoframe-crop-width-slot" id="ref-for-dom-videoframe-crop-width-slot②">[[crop width]]</a></code>.</p>
       <li data-md>
-       <p>If <code>frameInit.cropHeight</code> is present, initialize it to <code>frame.cropHeight</code>. Otherwise, default <code>frame.cropHeight</code> to <code>frame.codedHeight</code>.</p>
+       <p>If <code>frameInit.cropHeight</code> is present, assign it to <code class="idl"><a data-link-type="idl" href="#dom-videoframe-crop-height-slot" id="ref-for-dom-videoframe-crop-height-slot①">[[crop height]]</a></code>. Otherwise, assign <code class="idl"><a data-link-type="idl" href="#dom-videoframe-coded-height-slot" id="ref-for-dom-videoframe-coded-height-slot①">[[coded height]]</a></code> to <code class="idl"><a data-link-type="idl" href="#dom-videoframe-crop-height-slot" id="ref-for-dom-videoframe-crop-height-slot②">[[crop height]]</a></code>.</p>
       <li data-md>
-       <p>If <code>frameInit.displayWidth</code> is present, initialize it to <code>frame.displayWidth</code>. Otherwise, default <code>frame.displayWidth</code> to <code>frame.codedWidth</code>.</p>
+       <p>If <code>frameInit.displayWidth</code> is present, assign it to <code class="idl"><a data-link-type="idl" href="#dom-videoframe-display-width-slot" id="ref-for-dom-videoframe-display-width-slot">[[display width]]</a></code>. Otherwise, assign <code class="idl"><a data-link-type="idl" href="#dom-videoframe-crop-width-slot" id="ref-for-dom-videoframe-crop-width-slot③">[[crop width]]</a></code> to <code class="idl"><a data-link-type="idl" href="#dom-videoframe-display-width-slot" id="ref-for-dom-videoframe-display-width-slot①">[[display width]]</a></code>.</p>
       <li data-md>
-       <p>If <code>frameInit.displayHeight</code> is present, initialize it to <code>frame.displayHeight</code>. Otherwise, default <code>frame.displayHeight</code> to <code>frame.codedHeight</code>.</p>
+       <p>If <code>frameInit.displayHeight</code> is present, assign it to <code class="idl"><a data-link-type="idl" href="#dom-videoframe-display-height-slot" id="ref-for-dom-videoframe-display-height-slot">[[display height]]</a></code>. Otherwise, assign <code class="idl"><a data-link-type="idl" href="#dom-videoframe-crop-height-slot" id="ref-for-dom-videoframe-crop-height-slot③">[[crop height]]</a></code> to <code class="idl"><a data-link-type="idl" href="#dom-videoframe-display-height-slot" id="ref-for-dom-videoframe-display-height-slot①">[[display height]]</a></code>.</p>
       <li data-md>
-       <p>If <code>frameInit.duration</code> is present, initialize it to <code>frame.duration</code>.
-Otherwise, default <code>frame.duration</code> to null.</p>
+       <p>If <code>frameInit.duration</code> is present, assign it to <code class="idl"><a data-link-type="idl" href="#dom-videoframe-duration-slot" id="ref-for-dom-videoframe-duration-slot①">[[duration]]</a></code>. Otherwise, assign <code>null</code> to <code class="idl"><a data-link-type="idl" href="#dom-videoframe-duration-slot" id="ref-for-dom-videoframe-duration-slot②">[[duration]]</a></code>.</p>
       <li data-md>
-       <p>If <code>frameInit.timestamp</code> is present, initialize it to <code>frame.timestamp</code>.
-Otherwise default <code>frame.timestamp</code> to null.</p>
+       <p>If <code>frameInit.timestamp</code> is present, assign it to <code class="idl"><a data-link-type="idl" href="#dom-videoframe-timestamp-slot" id="ref-for-dom-videoframe-timestamp-slot①">[[timestamp]]</a></code>. Otherwise, assign <code>null</code> to <code class="idl"><a data-link-type="idl" href="#dom-videoframe-timestamp-slot" id="ref-for-dom-videoframe-timestamp-slot②">[[timestamp]]</a></code>.</p>
      </ol>
     <li data-md>
      <p>Return <var>frame</var>.</p>
@@ -2530,29 +2571,27 @@ not present in <var>frameInit</var>, throw a <code class="idl"><a data-link-type
     <li data-md>
      <p>If <var>frameInit</var> is not a <a data-link-type="dfn" href="#valid-videoframeinit" id="ref-for-valid-videoframeinit①">valid VideoFrameInit</a>, throw a <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#exceptiondef-typeerror" id="ref-for-exceptiondef-typeerror①②">TypeError</a></code>.</p>
     <li data-md>
-     <p>If the length of <var>planes</var> is incompatible with the given pixelFormat, throw a
-TypeError.</p>
+     <p>If the length of <var>planes</var> is incompatible with the given pixelFormat, throw
+a <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#exceptiondef-typeerror" id="ref-for-exceptiondef-typeerror①③">TypeError</a></code>.</p>
     <li data-md>
-     <p>Let <var>frame</var> be a new <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe①①">VideoFrame</a></code> object.</p>
+     <p>Let <var>frame</var> be a new <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe②①">VideoFrame</a></code> object.</p>
     <li data-md>
      <p>Assign <code>false</code> to <var>frame</var>’s <code class="idl"><a data-link-type="idl" href="#dom-videoframe-detached-slot" id="ref-for-dom-videoframe-detached-slot②">[[detached]]</a></code> internal slot.</p>
     <li data-md>
-     <p>Assign <code>init.pixelFormat</code> to <code>frame.pixelFormat</code>.</p>
+     <p>Assign <code>init.format</code> to <var>frame</var>’s <code class="idl"><a data-link-type="idl" href="#dom-videoframe-format-slot" id="ref-for-dom-videoframe-format-slot②">[[format]]</a></code>.</p>
     <li data-md>
      <p>For each element <var>p</var> in <var>planes</var>:</p>
      <ol>
       <li data-md>
-       <p>If <var>p</var> is a <code class="idl"><a data-link-type="idl" href="#plane" id="ref-for-plane③">Plane</a></code>, append a copy of p to <code>frame.planes</code>. Continue
-processing the next element.</p>
+       <p>If <var>p</var> is a <code class="idl"><a data-link-type="idl" href="#plane" id="ref-for-plane⑤">Plane</a></code>, append a copy of p to <var>frame</var>’s <code class="idl"><a data-link-type="idl" href="#dom-videoframe-planes-slot" id="ref-for-dom-videoframe-planes-slot①">[[planes]]</a></code> and <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#iteration-continue" id="ref-for-iteration-continue②">continue</a>.</p>
       <li data-md>
-       <p>If <var>p</var> is a <code class="idl"><a data-link-type="idl" href="#dictdef-planeinit" id="ref-for-dictdef-planeinit①">PlaneInit</a></code>, append a new <code class="idl"><a data-link-type="idl" href="#plane" id="ref-for-plane④">Plane</a></code> <var>q</var> to <code>frame.planes</code> initialized as follows:</p>
-       <ol start="2">
+       <p>If <var>p</var> is a <code class="idl"><a data-link-type="idl" href="#dictdef-planeinit" id="ref-for-dictdef-planeinit①">PlaneInit</a></code>, append a new <code class="idl"><a data-link-type="idl" href="#plane" id="ref-for-plane⑥">Plane</a></code> <var>q</var> to <var>frame</var>’s <code class="idl"><a data-link-type="idl" href="#dom-videoframe-planes-slot" id="ref-for-dom-videoframe-planes-slot②">[[planes]]</a></code>, initialized as follows:</p>
+       <ol>
         <li data-md>
-         <p>Assign a copy of <code>p.src</code> to q’s [[plane buffer]] internal slot.</p>
-       </ol>
-       <p class="note" role="note"><span>NOTE:</span> the samples should be copied exactly, but the user agent may add
-    row padding as needed to improve memory alignment.</p>
-       <ol start="3">
+         <p>Assign a copy of <code>p.src</code> to q’s <code class="idl"><a data-link-type="idl" href="#dom-plane-plane-buffer-slot" id="ref-for-dom-plane-plane-buffer-slot①">[[plane buffer]]</a></code> internal
+slot.</p>
+         <p class="note" role="note"><span>NOTE:</span> the samples should be copied exactly, but the user agent may
+    add row padding as needed to improve memory alignment.</p>
         <li data-md>
          <p>Assign the width of each row in [[plane buffer]], including any
 padding, to <code>q.stride</code>.</p>
@@ -2563,70 +2602,88 @@ padding, to <code>q.stride</code>.</p>
        </ol>
      </ol>
     <li data-md>
-     <p>Assign <code>frameInit.codedWidth</code> to <code>frame.codedWidth</code>.</p>
+     <p>Assign <code>frameInit.codedWidth</code> to <var>frame</var>’s <code class="idl"><a data-link-type="idl" href="#dom-videoframe-coded-width-slot" id="ref-for-dom-videoframe-coded-width-slot②">[[coded width]]</a></code>.</p>
     <li data-md>
-     <p>Assign <code>frameInit.codedHeight</code> to <code>frame.codedHeight</code>.</p>
+     <p>Assign <code>frameInit.codedHeight</code> to <var>frame</var>’s <code class="idl"><a data-link-type="idl" href="#dom-videoframe-coded-height-slot" id="ref-for-dom-videoframe-coded-height-slot②">[[coded height]]</a></code>.</p>
     <li data-md>
-     <p>If <code>frameInit.cropLeft</code> is present, assign it <code>frame.cropLeft</code>. Otherwise,
-default <code>frame.cropLeft</code> to zero.</p>
+     <p>If <code>frameInit.cropLeft</code> is present, assign it <var>frame</var>’s <code class="idl"><a data-link-type="idl" href="#dom-videoframe-crop-left-slot" id="ref-for-dom-videoframe-crop-left-slot②">[[crop left]]</a></code>. Otherwise, assign <code>0</code> to <code class="idl"><a data-link-type="idl" href="#dom-videoframe-crop-left-slot" id="ref-for-dom-videoframe-crop-left-slot③">[[crop left]]</a></code>.</p>
     <li data-md>
-     <p>If <code>frameInit.cropTop</code> is present, assign it to <code>frame.cropTop</code>. Otherwise,
-default <code>frame.cropTop</code> to zero.</p>
+     <p>If <code>frameInit.cropTop</code> is present, assign it to <var>frame</var>’s <code class="idl"><a data-link-type="idl" href="#dom-videoframe-crop-top-slot" id="ref-for-dom-videoframe-crop-top-slot②">[[crop top]]</a></code>. Otherwise, assign <code>0</code> to <code class="idl"><a data-link-type="idl" href="#dom-videoframe-crop-top-slot" id="ref-for-dom-videoframe-crop-top-slot③">[[crop top]]</a></code>.</p>
     <li data-md>
-     <p>If <code>frameInit.cropWidth</code> is present, assign it to <code>frame.cropWidth</code>.
-Otherwise, default <code>frame.cropWidth</code> to <code>frame.codedWidth</code>.</p>
+     <p>If <code>frameInit.cropWidth</code> is present, assign it to <var>frame</var>’s <code class="idl"><a data-link-type="idl" href="#dom-videoframe-crop-width-slot" id="ref-for-dom-videoframe-crop-width-slot④">[[crop width]]</a></code>. Otherwise, assign <code class="idl"><a data-link-type="idl" href="#dom-videoframe-coded-width-slot" id="ref-for-dom-videoframe-coded-width-slot③">[[coded width]]</a></code> to <code class="idl"><a data-link-type="idl" href="#dom-videoframe-crop-width-slot" id="ref-for-dom-videoframe-crop-width-slot⑤">[[crop width]]</a></code>.</p>
     <li data-md>
-     <p>If <code>frameInit.cropHeight</code> is present, assign it to <code>frame.cropHeight</code>.
-Otherwise, default <code>frame.cropHeight</code> to <code>frame.codedHeight</code>.</p>
+     <p>If <code>frameInit.cropHeight</code> is present, assign it to <var>frame</var>’s <code class="idl"><a data-link-type="idl" href="#dom-videoframe-crop-height-slot" id="ref-for-dom-videoframe-crop-height-slot④">[[crop height]]</a></code>. Otherwise, assign <code class="idl"><a data-link-type="idl" href="#dom-videoframe-coded-height-slot" id="ref-for-dom-videoframe-coded-height-slot③">[[coded height]]</a></code> to <code class="idl"><a data-link-type="idl" href="#dom-videoframe-crop-height-slot" id="ref-for-dom-videoframe-crop-height-slot⑤">[[crop height]]</a></code>.</p>
     <li data-md>
-     <p>If <code>frameInit.displayWidth</code> is present, assign it to <code>frame.displayWidth</code>.
-Otherwise, default <code>frame.displayWidth</code> to <code>frame.codedWidth</code>.</p>
+     <p>If <code>frameInit.displayWidth</code> is present, assign it to <var>frame</var>’s <code class="idl"><a data-link-type="idl" href="#dom-videoframe-display-width-slot" id="ref-for-dom-videoframe-display-width-slot②">[[display width]]</a></code>. Otherwise, assign <code class="idl"><a data-link-type="idl" href="#dom-videoframe-crop-width-slot" id="ref-for-dom-videoframe-crop-width-slot⑥">[[crop width]]</a></code> to <code class="idl"><a data-link-type="idl" href="#dom-videoframe-display-width-slot" id="ref-for-dom-videoframe-display-width-slot③">[[display width]]</a></code>.</p>
     <li data-md>
-     <p>If <code>frameInit.displayHeight</code> is present, assign it to <code>frame.displayHeight</code>.
-Otherwise, default <code>frame.displayHeight</code> to <code>frame.codedHeight</code>.</p>
+     <p>If <code>frameInit.displayHeight</code> is present, assign it to <var>frame</var>’s <code class="idl"><a data-link-type="idl" href="#dom-videoframe-display-height-slot" id="ref-for-dom-videoframe-display-height-slot②">[[display height]]</a></code>. Otherwise, assign <code class="idl"><a data-link-type="idl" href="#dom-videoframe-crop-height-slot" id="ref-for-dom-videoframe-crop-height-slot⑥">[[crop height]]</a></code> to <code class="idl"><a data-link-type="idl" href="#dom-videoframe-display-height-slot" id="ref-for-dom-videoframe-display-height-slot③">[[display height]]</a></code>.</p>
     <li data-md>
-     <p>If <code>frameInit.duration</code> is present, assign it to <code>frame.duration</code>.
-Otherwise, default <code>frame.duration</code> to null.</p>
+     <p>If <code>frameInit.duration</code> is present, assign it to <code class="idl"><a data-link-type="idl" href="#dom-videoframe-duration-slot" id="ref-for-dom-videoframe-duration-slot③">[[duration]]</a></code>. Otherwise, assign <code>null</code> to <code class="idl"><a data-link-type="idl" href="#dom-videoframe-duration-slot" id="ref-for-dom-videoframe-duration-slot④">[[duration]]</a></code>.</p>
     <li data-md>
-     <p>If <code>frameInit.timestamp</code> is present, assign it to <code>frame.timestamp</code>.
-Otherwise, default <code>frame.timestamp</code> to null.</p>
+     <p>If <code>frameInit.timestamp</code> is present, assign it to <code class="idl"><a data-link-type="idl" href="#dom-videoframe-timestamp-slot" id="ref-for-dom-videoframe-timestamp-slot③">[[timestamp]]</a></code>. Otherwise, assign <code>null</code> to <code class="idl"><a data-link-type="idl" href="#dom-videoframe-timestamp-slot" id="ref-for-dom-videoframe-timestamp-slot④">[[timestamp]]</a></code>.</p>
     <li data-md>
      <p>Return frame.</p>
    </ol>
    <h4 class="heading settled" data-level="9.2.3" id="videoframe-attributes"><span class="secno">9.2.3. </span><span class="content">Attributes</span><a class="self-link" href="#videoframe-attributes"></a></h4>
    <dl>
-    <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoFrame" data-dfn-type="attribute" data-export id="dom-videoframe-timestamp"><code>timestamp</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#idl-unsigned-long-long" id="ref-for-idl-unsigned-long-long②⓪">unsigned long long</a>, readonly, nullable</span>
-    <dd> The presentation timestamp, given in microseconds. The timestamp is copied
-        from the EncodedVideoChunk corresponding to this VideoFrame. 
-    <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoFrame" data-dfn-type="attribute" data-export id="dom-videoframe-duration"><code>duration</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#idl-unsigned-long-long" id="ref-for-idl-unsigned-long-long②①">unsigned long long</a>, readonly, nullable</span>
-    <dd> The presentation duration, given in microseconds. The duration is copied
-        from the EncodedVideoChunk corresponding to this VideoFrame. 
-    <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoFrame" data-dfn-type="attribute" data-export id="dom-videoframe-format"><code>format</code></dfn>, <span> of type <a data-link-type="idl-name" href="#enumdef-pixelformat" id="ref-for-enumdef-pixelformat③">PixelFormat</a>, readonly</span>
-    <dd> Describes the arrangement of bytes in each plane as well as the number and
-        order of the planes. 
-    <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoFrame" data-dfn-type="attribute" data-export id="dom-videoframe-planes"><code>planes</code></dfn>, <span> of type FrozenArray&lt;<a data-link-type="idl-name" href="#plane" id="ref-for-plane⑤">Plane</a>>, readonly</span>
-    <dd> Holds pixel data data, laid out as described by format and Plane
-        attributes. 
-    <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoFrame" data-dfn-type="attribute" data-export id="dom-videoframe-codedwidth"><code>codedWidth</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#idl-unsigned-long" id="ref-for-idl-unsigned-long④⑧">unsigned long</a>, readonly</span>
-    <dd> Width of the VideoFrame in pixels, prior to any cropping or aspect ratio
-        adjustments. 
-    <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoFrame" data-dfn-type="attribute" data-export id="dom-videoframe-codedheight"><code>codedHeight</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#idl-unsigned-long" id="ref-for-idl-unsigned-long④⑨">unsigned long</a>, readonly</span>
-    <dd> Height of the VideoFrame in pixels, prior to any cropping or aspect ratio
-        adjustments. 
-    <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoFrame" data-dfn-type="attribute" data-export id="dom-videoframe-cropleft"><code>cropLeft</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#idl-unsigned-long" id="ref-for-idl-unsigned-long⑤⓪">unsigned long</a>, readonly</span>
-    <dd> The number of pixels to remove from the left of the VideoFrame, prior to
-        aspect ratio adjustments. 
-    <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoFrame" data-dfn-type="attribute" data-export id="dom-videoframe-croptop"><code>cropTop</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#idl-unsigned-long" id="ref-for-idl-unsigned-long⑤①">unsigned long</a>, readonly</span>
-    <dd> The number of pixels to remove from the top of the VideoFrame, prior to
-        aspect ratio adjustments. 
-    <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoFrame" data-dfn-type="attribute" data-export id="dom-videoframe-cropwidth"><code>cropWidth</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#idl-unsigned-long" id="ref-for-idl-unsigned-long⑤②">unsigned long</a>, readonly</span>
-    <dd>The width of pixels to include in the crop, starting from cropLeft.
-    <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoFrame" data-dfn-type="attribute" data-export id="dom-videoframe-cropheight"><code>cropHeight</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#idl-unsigned-long" id="ref-for-idl-unsigned-long⑤③">unsigned long</a>, readonly</span>
-    <dd>The height of pixels to include in the crop, starting from cropLeft.
-    <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoFrame" data-dfn-type="attribute" data-export id="dom-videoframe-displaywidth"><code>displayWidth</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#idl-unsigned-long" id="ref-for-idl-unsigned-long⑤④">unsigned long</a>, readonly</span>
-    <dd>Width of the VideoFrame when displayed.
-    <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoFrame" data-dfn-type="attribute" data-export id="dom-videoframe-displayheight"><code>displayHeight</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#idl-unsigned-long" id="ref-for-idl-unsigned-long⑤⑤">unsigned long</a>, readonly</span>
-    <dd>Height of the VideoFrame when displayed.
+    <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="VideoFrame" data-dfn-type="attribute" data-export id="dom-videoframe-format"><code>format</code></dfn>, <span> of type <a data-link-type="idl-name" href="#enumdef-pixelformat" id="ref-for-enumdef-pixelformat④">PixelFormat</a>, readonly</span>
+    <dd data-md>
+     <p>Describes the arrangement of bytes in each plane as well as the number and
+order of the planes.</p>
+     <p>The <code class="idl"><a data-link-type="idl" href="#dom-videoframe-format" id="ref-for-dom-videoframe-format①">format</a></code> getter steps are to return <code class="idl"><a data-link-type="idl" href="#dom-videoframe-format-slot" id="ref-for-dom-videoframe-format-slot③">[[format]]</a></code>.</p>
+    <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="VideoFrame" data-dfn-type="attribute" data-export id="dom-videoframe-planes"><code>planes</code></dfn>, <span> of type FrozenArray&lt;<a data-link-type="idl-name" href="#plane" id="ref-for-plane⑦">Plane</a>>, readonly</span>
+    <dd data-md>
+     <p>Holds pixel data data, laid out as described by format and Plane
+attributes.</p>
+     <p>The <code class="idl"><a data-link-type="idl" href="#dom-videoframe-planes" id="ref-for-dom-videoframe-planes①">planes</a></code> getter steps are to return <code class="idl"><a data-link-type="idl" href="#dom-videoframe-planes-slot" id="ref-for-dom-videoframe-planes-slot③">[[planes]]</a></code>.</p>
+    <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="VideoFrame" data-dfn-type="attribute" data-export id="dom-videoframe-codedwidth"><code>codedWidth</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#idl-unsigned-long" id="ref-for-idl-unsigned-long④⑧">unsigned long</a>, readonly</span>
+    <dd data-md>
+     <p>Width of the <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe②②">VideoFrame</a></code> in pixels, prior to any cropping or aspect ratio
+adjustments.</p>
+     <p>The <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedwidth" id="ref-for-dom-videoframe-codedwidth①">codedWidth</a></code> getter steps are to return <code class="idl"><a data-link-type="idl" href="#dom-videoframe-coded-width-slot" id="ref-for-dom-videoframe-coded-width-slot④">[[coded width]]</a></code>.</p>
+    <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="VideoFrame" data-dfn-type="attribute" data-export id="dom-videoframe-codedheight"><code>codedHeight</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#idl-unsigned-long" id="ref-for-idl-unsigned-long④⑨">unsigned long</a>, readonly</span>
+    <dd data-md>
+     <p>Height of the VideoFrame in pixels, prior to any cropping or aspect ratio
+adjustments.</p>
+     <p>The <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedheight" id="ref-for-dom-videoframe-codedheight①">codedHeight</a></code> getter steps are to return <code class="idl"><a data-link-type="idl" href="#dom-videoframe-coded-height-slot" id="ref-for-dom-videoframe-coded-height-slot④">[[coded height]]</a></code>.</p>
+    <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="VideoFrame" data-dfn-type="attribute" data-export id="dom-videoframe-cropleft"><code>cropLeft</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#idl-unsigned-long" id="ref-for-idl-unsigned-long⑤⓪">unsigned long</a>, readonly</span>
+    <dd data-md>
+     <p>The number of pixels to remove from the left of the VideoFrame, prior to
+aspect ratio adjustments.</p>
+     <p>The <code class="idl"><a data-link-type="idl" href="#dom-videoframe-cropleft" id="ref-for-dom-videoframe-cropleft①">cropLeft</a></code> getter steps are to return <code class="idl"><a data-link-type="idl" href="#dom-videoframe-crop-left-slot" id="ref-for-dom-videoframe-crop-left-slot④">[[crop left]]</a></code>.</p>
+    <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="VideoFrame" data-dfn-type="attribute" data-export id="dom-videoframe-croptop"><code>cropTop</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#idl-unsigned-long" id="ref-for-idl-unsigned-long⑤①">unsigned long</a>, readonly</span>
+    <dd data-md>
+     <p>The number of pixels to remove from the top of the VideoFrame, prior to
+aspect ratio adjustments.</p>
+     <p>The <code class="idl"><a data-link-type="idl" href="#dom-videoframe-croptop" id="ref-for-dom-videoframe-croptop①">cropTop</a></code> getter steps are to return <code class="idl"><a data-link-type="idl" href="#dom-videoframe-crop-top-slot" id="ref-for-dom-videoframe-crop-top-slot④">[[crop top]]</a></code>.</p>
+    <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="VideoFrame" data-dfn-type="attribute" data-export id="dom-videoframe-cropwidth"><code>cropWidth</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#idl-unsigned-long" id="ref-for-idl-unsigned-long⑤②">unsigned long</a>, readonly</span>
+    <dd data-md>
+     <p>The width of pixels to include in the crop, starting from cropLeft.</p>
+     <p>The <code class="idl"><a data-link-type="idl" href="#dom-videoframe-cropwidth" id="ref-for-dom-videoframe-cropwidth①">cropWidth</a></code> getter steps are to return <code class="idl"><a data-link-type="idl" href="#dom-videoframe-crop-width-slot" id="ref-for-dom-videoframe-crop-width-slot⑦">[[crop width]]</a></code>.</p>
+    <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="VideoFrame" data-dfn-type="attribute" data-export id="dom-videoframe-cropheight"><code>cropHeight</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#idl-unsigned-long" id="ref-for-idl-unsigned-long⑤③">unsigned long</a>, readonly</span>
+    <dd data-md>
+     <p>The height of pixels to include in the crop, starting from cropLeft.</p>
+     <p>The <code class="idl"><a data-link-type="idl" href="#dom-videoframe-cropheight" id="ref-for-dom-videoframe-cropheight①">cropHeight</a></code> getter steps are to return <code class="idl"><a data-link-type="idl" href="#dom-videoframe-crop-height-slot" id="ref-for-dom-videoframe-crop-height-slot⑦">[[crop height]]</a></code>.</p>
+    <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="VideoFrame" data-dfn-type="attribute" data-export id="dom-videoframe-displaywidth"><code>displayWidth</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#idl-unsigned-long" id="ref-for-idl-unsigned-long⑤④">unsigned long</a>, readonly</span>
+    <dd data-md>
+     <p>Width of the VideoFrame when displayed after applying aspect ratio
+adjustments.</p>
+     <p>The <code class="idl"><a data-link-type="idl" href="#dom-videoframe-displaywidth" id="ref-for-dom-videoframe-displaywidth①">displayWidth</a></code> getter steps are to return <code class="idl"><a data-link-type="idl" href="#dom-videoframe-display-width-slot" id="ref-for-dom-videoframe-display-width-slot④">[[display width]]</a></code>.</p>
+    <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="VideoFrame" data-dfn-type="attribute" data-export id="dom-videoframe-displayheight"><code>displayHeight</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#idl-unsigned-long" id="ref-for-idl-unsigned-long⑤⑤">unsigned long</a>, readonly</span>
+    <dd data-md>
+     <p>Height of the VideoFrame when displayed after applying aspect ratio
+adjustments.</p>
+     <p>The <code class="idl"><a data-link-type="idl" href="#dom-videoframe-displayheight" id="ref-for-dom-videoframe-displayheight①">displayHeight</a></code> getter steps are to return <code class="idl"><a data-link-type="idl" href="#dom-videoframe-display-height-slot" id="ref-for-dom-videoframe-display-height-slot④">[[display height]]</a></code>.</p>
+    <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="VideoFrame" data-dfn-type="attribute" data-export id="dom-videoframe-timestamp"><code>timestamp</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#idl-unsigned-long-long" id="ref-for-idl-unsigned-long-long②⓪">unsigned long long</a>, readonly, nullable</span>
+    <dd data-md>
+     <p>The presentation timestamp, given in microseconds. The timestamp is copied
+from the <code class="idl"><a data-link-type="idl" href="#encodedvideochunk" id="ref-for-encodedvideochunk①②">EncodedVideoChunk</a></code> corresponding to this VideoFrame.</p>
+     <p>The <code class="idl"><a data-link-type="idl" href="#dom-videoframe-timestamp" id="ref-for-dom-videoframe-timestamp①">timestamp</a></code> getter steps are to return <code class="idl"><a data-link-type="idl" href="#dom-videoframe-timestamp-slot" id="ref-for-dom-videoframe-timestamp-slot⑤">[[timestamp]]</a></code>.</p>
+    <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="VideoFrame" data-dfn-type="attribute" data-export id="dom-videoframe-duration"><code>duration</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#idl-unsigned-long-long" id="ref-for-idl-unsigned-long-long②①">unsigned long long</a>, readonly, nullable</span>
+    <dd data-md>
+     <p>The presentation duration, given in microseconds. The duration is copied
+from the <code class="idl"><a data-link-type="idl" href="#encodedvideochunk" id="ref-for-encodedvideochunk①③">EncodedVideoChunk</a></code> corresponding to this VideoFrame.</p>
+     <p>The <code class="idl"><a data-link-type="idl" href="#dom-videoframe-duration" id="ref-for-dom-videoframe-duration①">duration</a></code> getter steps are to return <code class="idl"><a data-link-type="idl" href="#dom-videoframe-duration-slot" id="ref-for-dom-videoframe-duration-slot⑤">[[duration]]</a></code>.</p>
    </dl>
    <h4 class="heading settled" data-level="9.2.4" id="videoframe-methods"><span class="secno">9.2.4. </span><span class="content">Methods</span><a class="self-link" href="#videoframe-methods"></a></h4>
     <dfn class="dfn-paneled idl-code" data-dfn-for="VideoFrame" data-dfn-type="method" data-export id="dom-videoframe-destroy"><code>destroy()</code></dfn> Immediately frees <a data-link-type="dfn" href="#system-resources" id="ref-for-system-resources①①">system resources</a>. Destruction applies to all
@@ -2640,12 +2697,12 @@ Otherwise, default <code>frame.timestamp</code> to null.</p>
     <li data-md>
      <p>If <code class="idl"><a data-link-type="idl" href="#dom-videoframe-detached-slot" id="ref-for-dom-videoframe-detached-slot③">[[detached]]</a></code> is <code>true</code>, throw an <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#invalidstateerror" id="ref-for-invalidstateerror①⑦">InvalidStateError</a></code>.</p>
     <li data-md>
-     <p>Remove all <code class="idl"><a data-link-type="idl" href="#plane" id="ref-for-plane⑥">Plane</a></code>s from <code class="idl"><a data-link-type="idl" href="#dom-videoframe-planes" id="ref-for-dom-videoframe-planes①">planes</a></code> and release associated
+     <p>Remove all <code class="idl"><a data-link-type="idl" href="#plane" id="ref-for-plane⑧">Plane</a></code>s from <code class="idl"><a data-link-type="idl" href="#dom-videoframe-planes-slot" id="ref-for-dom-videoframe-planes-slot④">[[planes]]</a></code> and release associated
 memory.</p>
     <li data-md>
      <p>Assign <code>true</code> to the <code class="idl"><a data-link-type="idl" href="#dom-videoframe-detached-slot" id="ref-for-dom-videoframe-detached-slot④">[[detached]]</a></code> internal slot.</p>
    </ol>
-   <p><dfn class="dfn-paneled idl-code" data-dfn-for="VideoFrame" data-dfn-type="method" data-export id="dom-videoframe-clone"><code>clone()</code></dfn> Creates a new <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe①②">VideoFrame</a></code> with a separate lifetime containing a deep copy of
+   <p><dfn class="dfn-paneled idl-code" data-dfn-for="VideoFrame" data-dfn-type="method" data-export id="dom-videoframe-clone"><code>clone()</code></dfn> Creates a new <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe②③">VideoFrame</a></code> with a separate lifetime containing a deep copy of
     this frame’s resources.</p>
    <p class="note" role="note"><span>NOTE:</span> VideoFrames may require a large amount of memory. Use <code class="idl"><a data-link-type="idl" href="#dom-videoframe-clone" id="ref-for-dom-videoframe-clone①">clone()</a></code> sparingly.</p>
    <p>When invoked, run the following steps:</p>
@@ -2659,7 +2716,7 @@ memory.</p>
     <li data-md>
      <p>Return <var>p</var>.</p>
    </ol>
-   <p><dfn class="dfn-paneled idl-code" data-dfn-for="VideoFrame" data-dfn-type="method" data-export data-lt="createImageBitmap(options)|createImageBitmap()" id="dom-videoframe-createimagebitmap"><code>createImageBitmap(options)</code></dfn> Creates an ImageBitmap from this <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe①③">VideoFrame</a></code>.</p>
+   <p><dfn class="dfn-paneled idl-code" data-dfn-for="VideoFrame" data-dfn-type="method" data-export data-lt="createImageBitmap(options)|createImageBitmap()" id="dom-videoframe-createimagebitmap"><code>createImageBitmap(options)</code></dfn> Creates an ImageBitmap from this <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe②④">VideoFrame</a></code>.</p>
    <p>When invoked, run these steps:</p>
    <ol>
     <li data-md>
@@ -2672,7 +2729,7 @@ with an <code class="idl"><a data-link-type="idl" href="https://heycam.github.io
     <li data-md>
      <p>Let <var>imageBitmap</var> be a new <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/imagebitmap-and-animations.html#imagebitmap" id="ref-for-imagebitmap②">ImageBitmap</a></code> object.</p>
     <li data-md>
-     <p>Set <var>imageBitmap</var>’s bitmap data to a copy of the <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe①④">VideoFrame</a></code> pixel data,
+     <p>Set <var>imageBitmap</var>’s bitmap data to a copy of the <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe②⑤">VideoFrame</a></code> pixel data,
 at the frame’s intrinsic width and intrinsic height (<code>i.e</code>., after any
 aspect-ratio correction has been applied), cropped to the source rectangle
 with formatting.</p>
@@ -2704,14 +2761,14 @@ return <code>false</code>.</p>
      <p>Return <code>true</code>.</p>
    </ol>
    <h3 class="heading settled" data-level="9.3" id="plane-interface"><span class="secno">9.3. </span><span class="content">Plane Interface</span><a class="self-link" href="#plane-interface"></a></h3>
-    A <code class="idl"><a data-link-type="idl" href="#plane" id="ref-for-plane⑦">Plane</a></code> acts like a thin wrapper around an <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-ArrayBuffer" id="ref-for-idl-ArrayBuffer④">ArrayBuffer</a></code>, but may actually
-    be backed by a texture. <code class="idl"><a data-link-type="idl" href="#plane" id="ref-for-plane⑧">Plane</a></code>s hide any padding before the first sample
+    A <code class="idl"><a data-link-type="idl" href="#plane" id="ref-for-plane⑨">Plane</a></code> acts like a thin wrapper around an <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-ArrayBuffer" id="ref-for-idl-ArrayBuffer④">ArrayBuffer</a></code>, but may actually
+    be backed by a texture. <code class="idl"><a data-link-type="idl" href="#plane" id="ref-for-plane①⓪">Plane</a></code>s hide any padding before the first sample
     or after the last row. 
-   <p>A <code class="idl"><a data-link-type="idl" href="#plane" id="ref-for-plane⑨">Plane</a></code> is solely constructed by its <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe①⑤">VideoFrame</a></code>. During construction,
-    the User Agent may use knowledge of the frame’s <code class="idl"><a data-link-type="idl" href="#enumdef-pixelformat" id="ref-for-enumdef-pixelformat④">PixelFormat</a></code> to add
-    padding to the <code class="idl"><a data-link-type="idl" href="#plane" id="ref-for-plane①⓪">Plane</a></code> to improve memory alignment.</p>
-   <p>A <code class="idl"><a data-link-type="idl" href="#plane" id="ref-for-plane①①">Plane</a></code> cannot be used after the <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe①⑥">VideoFrame</a></code> is destroyed. A new <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe①⑦">VideoFrame</a></code> can be assembled from existing <code class="idl"><a data-link-type="idl" href="#plane" id="ref-for-plane①②">Plane</a></code>s, and the new <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe①⑧">VideoFrame</a></code> will remain valid when the original is destroyed. This makes
-    it possible to efficiently add an alpha plane to an existing <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe①⑨">VideoFrame</a></code>.</p>
+   <p>A <code class="idl"><a data-link-type="idl" href="#plane" id="ref-for-plane①①">Plane</a></code> is solely constructed by its <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe②⑥">VideoFrame</a></code>. During construction,
+    the User Agent may use knowledge of the frame’s <code class="idl"><a data-link-type="idl" href="#enumdef-pixelformat" id="ref-for-enumdef-pixelformat⑤">PixelFormat</a></code> to add
+    padding to the <code class="idl"><a data-link-type="idl" href="#plane" id="ref-for-plane①②">Plane</a></code> to improve memory alignment.</p>
+   <p>A <code class="idl"><a data-link-type="idl" href="#plane" id="ref-for-plane①③">Plane</a></code> cannot be used after the <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe②⑦">VideoFrame</a></code> is destroyed. A new <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe②⑧">VideoFrame</a></code> can be assembled from existing <code class="idl"><a data-link-type="idl" href="#plane" id="ref-for-plane①④">Plane</a></code>s, and the new <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe②⑨">VideoFrame</a></code> will remain valid when the original is destroyed. This makes
+    it possible to efficiently add an alpha plane to an existing <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe③⓪">VideoFrame</a></code>.</p>
 <pre class="idl highlight def">[<a class="idl-code" data-link-type="extended-attribute" href="https://heycam.github.io/webidl/#Exposed" id="ref-for-Exposed⑧"><c- g>Exposed</c-></a>=(<c- n>Window</c->,<c- n>DedicatedWorker</c->)]
 <c- b>interface</c-> <dfn class="dfn-paneled idl-code" data-dfn-type="interface" data-export id="plane"><code><c- g>Plane</c-></code></dfn> {
   <c- b>readonly</c-> <c- b>attribute</c-> <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-unsigned-long" id="ref-for-idl-unsigned-long⑤⑥"><c- b>unsigned</c-> <c- b>long</c-></a> <a class="idl-code" data-link-type="attribute" data-readonly data-type="unsigned long" href="#dom-plane-stride" id="ref-for-dom-plane-stride"><c- g>stride</c-></a>;
@@ -2730,7 +2787,7 @@ return <code>false</code>.</p>
    <h4 class="heading settled" data-level="9.3.1" id="plane-internal-slots"><span class="secno">9.3.1. </span><span class="content">Internal Slots</span><a class="self-link" href="#plane-internal-slots"></a></h4>
    <dl>
     <dt><dfn class="dfn-paneled idl-code" data-dfn-for="Plane" data-dfn-type="attribute" data-export id="dom-plane-parent-frame-slot"><code>[[parent frame]]</code></dfn>
-    <dd>Refers to the <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe②⓪">VideoFrame</a></code> that constructed and owns this plane.
+    <dd>Refers to the <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe③①">VideoFrame</a></code> that constructed and owns this plane.
     <dt><dfn class="dfn-paneled idl-code" data-dfn-for="Plane" data-dfn-type="attribute" data-export id="dom-plane-plane-buffer-slot"><code>[[plane buffer]]</code></dfn>
     <dd>Internal storage for the plane’s pixel data.
    </dl>
@@ -2751,9 +2808,9 @@ return <code>false</code>.</p>
     <li data-md>
      <p>If <code class="idl"><a data-link-type="idl" href="#dom-plane-parent-frame-slot" id="ref-for-dom-plane-parent-frame-slot">[[parent frame]]</a></code> has been destroyed, throw an <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#invalidstateerror" id="ref-for-invalidstateerror②①">InvalidStateError</a></code>.</p>
     <li data-md>
-     <p>If <code class="idl"><a data-link-type="idl" href="#dom-plane-length" id="ref-for-dom-plane-length①">length</a></code> is greater than |<code>dst.byteLength</code>|, throw a <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#exceptiondef-typeerror" id="ref-for-exceptiondef-typeerror①③">TypeError</a></code>.</p>
+     <p>If <code class="idl"><a data-link-type="idl" href="#dom-plane-length" id="ref-for-dom-plane-length①">length</a></code> is greater than |<code>dst.byteLength</code>|, throw a <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#exceptiondef-typeerror" id="ref-for-exceptiondef-typeerror①④">TypeError</a></code>.</p>
     <li data-md>
-     <p>Copy the <code class="idl"><a data-link-type="idl" href="#dom-plane-plane-buffer-slot" id="ref-for-dom-plane-plane-buffer-slot①">[[plane buffer]]</a></code> into <var>dst</var>.</p>
+     <p>Copy the <code class="idl"><a data-link-type="idl" href="#dom-plane-plane-buffer-slot" id="ref-for-dom-plane-plane-buffer-slot②">[[plane buffer]]</a></code> into <var>dst</var>.</p>
    </ol>
    <h3 class="heading settled" data-level="9.4" id="pixel-format"><span class="secno">9.4. </span><span class="content">Pixel Format</span><a class="self-link" href="#pixel-format"></a></h3>
     Pixel formats describe the arrangement of bytes in each plane as well as the
@@ -2775,12 +2832,12 @@ number and order of the planes.
     <dd>
      <ol>
       <li data-md>
-       <p>Let <var>cloneFrame</var> be a new object of the same type as frame (either <code class="idl"><a data-link-type="idl" href="#audioframe" id="ref-for-audioframe⑤">AudioFrame</a></code> or <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe②①">VideoFrame</a></code>).</p>
+       <p>Let <var>cloneFrame</var> be a new object of the same type as frame (either <code class="idl"><a data-link-type="idl" href="#audioframe" id="ref-for-audioframe⑤">AudioFrame</a></code> or <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe③②">VideoFrame</a></code>).</p>
       <li data-md>
        <p>Initialize each attribute and internal slot of clone with a copy of the
 value from the corresponding attribute of this frame.</p>
        <p class="note" role="note"><span>NOTE:</span> User Agents are encouraged to avoid expensive copies of large
-    objects (for instance, <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe②②">VideoFrame</a></code> pixel data). Frame types are
+    objects (for instance, <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe③③">VideoFrame</a></code> pixel data). Frame types are
     immutable, so the above step may be implemented using memory sharing
     techniques such as reference counting.</p>
       <li data-md>
@@ -2924,6 +2981,7 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
    <li><a href="#enumdef-codecstate">CodecState</a><span>, in §7.12</span>
    <li><a href="#codec-string">Codec String</a><span>, in §7.4</span>
    <li><a href="#codec-thread">codec thread</a><span>, in §2.2</span>
+   <li><a href="#dom-videoframe-coded-height-slot">[[coded height]]</a><span>, in §9.2.1</span>
    <li>
     codedHeight
     <ul>
@@ -2931,6 +2989,7 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
      <li><a href="#dom-videodecoderconfig-codedheight">dict-member for VideoDecoderConfig</a><span>, in §7.6</span>
      <li><a href="#dom-videoframeinit-codedheight">dict-member for VideoFrameInit</a><span>, in §9.2</span>
     </ul>
+   <li><a href="#dom-videoframe-coded-width-slot">[[coded width]]</a><span>, in §9.2.1</span>
    <li>
     codedWidth
     <ul>
@@ -2977,6 +3036,7 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
    <li><a href="#control-thread">control thread</a><span>, in §2.2</span>
    <li><a href="#dom-videoframe-createimagebitmap">createImageBitmap()</a><span>, in §9.2.4</span>
    <li><a href="#dom-videoframe-createimagebitmap">createImageBitmap(options)</a><span>, in §9.2.4</span>
+   <li><a href="#dom-videoframe-crop-height-slot">[[crop height]]</a><span>, in §9.2.1</span>
    <li>
     cropHeight
     <ul>
@@ -2984,6 +3044,7 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
      <li><a href="#dom-videodecoderconfig-cropheight">dict-member for VideoDecoderConfig</a><span>, in §7.6</span>
      <li><a href="#dom-videoframeinit-cropheight">dict-member for VideoFrameInit</a><span>, in §9.2</span>
     </ul>
+   <li><a href="#dom-videoframe-crop-left-slot">[[crop left]]</a><span>, in §9.2.1</span>
    <li>
     cropLeft
     <ul>
@@ -2991,6 +3052,7 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
      <li><a href="#dom-videodecoderconfig-cropleft">dict-member for VideoDecoderConfig</a><span>, in §7.6</span>
      <li><a href="#dom-videoframeinit-cropleft">dict-member for VideoFrameInit</a><span>, in §9.2</span>
     </ul>
+   <li><a href="#dom-videoframe-crop-top-slot">[[crop top]]</a><span>, in §9.2.1</span>
    <li>
     cropTop
     <ul>
@@ -2998,6 +3060,7 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
      <li><a href="#dom-videodecoderconfig-croptop">dict-member for VideoDecoderConfig</a><span>, in §7.6</span>
      <li><a href="#dom-videoframeinit-croptop">dict-member for VideoFrameInit</a><span>, in §9.2</span>
     </ul>
+   <li><a href="#dom-videoframe-crop-width-slot">[[crop width]]</a><span>, in §9.2.1</span>
    <li>
     cropWidth
     <ul>
@@ -3046,6 +3109,7 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
      <li><a href="#dom-audioframe-detached-slot">attribute for AudioFrame</a><span>, in §9.1.1</span>
      <li><a href="#dom-videoframe-detached-slot">attribute for VideoFrame</a><span>, in §9.2.1</span>
     </ul>
+   <li><a href="#dom-videoframe-display-height-slot">[[display height]]</a><span>, in §9.2.1</span>
    <li>
     displayHeight
     <ul>
@@ -3054,6 +3118,7 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
      <li><a href="#dom-videoencoderconfig-displayheight">dict-member for VideoEncoderConfig</a><span>, in §7.8</span>
      <li><a href="#dom-videoframeinit-displayheight">dict-member for VideoFrameInit</a><span>, in §9.2</span>
     </ul>
+   <li><a href="#dom-videoframe-display-width-slot">[[display width]]</a><span>, in §9.2.1</span>
    <li>
     displayWidth
     <ul>
@@ -3062,6 +3127,7 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
      <li><a href="#dom-videoencoderconfig-displaywidth">dict-member for VideoEncoderConfig</a><span>, in §7.8</span>
      <li><a href="#dom-videoframeinit-displaywidth">dict-member for VideoFrameInit</a><span>, in §9.2</span>
     </ul>
+   <li><a href="#dom-videoframe-duration-slot">[[duration]]</a><span>, in §9.2.1</span>
    <li>
     duration
     <ul>
@@ -3119,6 +3185,7 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
      <li><a href="#dom-videodecoder-flush">method for VideoDecoder</a><span>, in §4.4</span>
      <li><a href="#dom-videoencoder-flush">method for VideoEncoder</a><span>, in §6.4</span>
     </ul>
+   <li><a href="#dom-videoframe-format-slot">[[format]]</a><span>, in §9.2.1</span>
    <li><a href="#dom-videoframe-format">format</a><span>, in §9.2.3</span>
    <li><a href="#enumdef-hardwareacceleration">HardwareAcceleration</a><span>, in §7.9</span>
    <li>
@@ -3179,6 +3246,7 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
    <li><a href="#plane">Plane</a><span>, in §9.3</span>
    <li><a href="#dom-plane-plane-buffer-slot">[[plane buffer]]</a><span>, in §9.3.1</span>
    <li><a href="#dictdef-planeinit">PlaneInit</a><span>, in §9.3</span>
+   <li><a href="#dom-videoframe-planes-slot">[[planes]]</a><span>, in §9.2.1</span>
    <li><a href="#dom-videoframe-planes">planes</a><span>, in §9.2.3</span>
    <li><a href="#enqueues-a-control-message">Queue a control message</a><span>, in §2.2</span>
    <li><a href="#dom-plane-readinto">readInto(dst)</a><span>, in §9.3.3</span>
@@ -3234,6 +3302,7 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
      <li><a href="#dom-videoencodersupport-supported">dict-member for VideoEncoderSupport</a><span>, in §7.3.4</span>
     </ul>
    <li><a href="#system-resources">system resources</a><span>, in §1</span>
+   <li><a href="#dom-videoframe-timestamp-slot">[[timestamp]]</a><span>, in §9.2.1</span>
    <li>
     timestamp
     <ul>
@@ -3352,6 +3421,7 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
    <ul>
     <li><a href="#ref-for-iteration-continue">2.2. Control Thread and Codec Thread</a>
     <li><a href="#ref-for-iteration-continue①">7.2. Clone Configuration (with config)</a>
+    <li><a href="#ref-for-iteration-continue②">9.2.2. Constructors</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-queue-dequeue">
@@ -3536,8 +3606,8 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
     <li><a href="#ref-for-exceptiondef-typeerror②">4.4. Methods</a> <a href="#ref-for-exceptiondef-typeerror③">(2)</a>
     <li><a href="#ref-for-exceptiondef-typeerror④">5.4. Methods</a> <a href="#ref-for-exceptiondef-typeerror⑤">(2)</a> <a href="#ref-for-exceptiondef-typeerror⑥">(3)</a>
     <li><a href="#ref-for-exceptiondef-typeerror⑦">6.4. Methods</a> <a href="#ref-for-exceptiondef-typeerror⑧">(2)</a> <a href="#ref-for-exceptiondef-typeerror⑨">(3)</a>
-    <li><a href="#ref-for-exceptiondef-typeerror①⓪">9.2.2. Constructors</a> <a href="#ref-for-exceptiondef-typeerror①①">(2)</a> <a href="#ref-for-exceptiondef-typeerror①②">(3)</a>
-    <li><a href="#ref-for-exceptiondef-typeerror①③">9.3.3. Methods</a>
+    <li><a href="#ref-for-exceptiondef-typeerror①⓪">9.2.2. Constructors</a> <a href="#ref-for-exceptiondef-typeerror①①">(2)</a> <a href="#ref-for-exceptiondef-typeerror①②">(3)</a> <a href="#ref-for-exceptiondef-typeerror①③">(4)</a>
+    <li><a href="#ref-for-exceptiondef-typeerror①④">9.3.3. Methods</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-a-promise-rejected-with">
@@ -5114,6 +5184,8 @@ data. See <a href="https://github.com/w3c/webcodecs/issues/80">#80</a>.<a href="
     <li><a href="#ref-for-encodedvideochunk④">6.5. Algorithms</a>
     <li><a href="#ref-for-encodedvideochunk⑤">7.8. VideoEncoderConfig</a> <a href="#ref-for-encodedvideochunk⑥">(2)</a> <a href="#ref-for-encodedvideochunk⑦">(3)</a> <a href="#ref-for-encodedvideochunk⑧">(4)</a>
     <li><a href="#ref-for-encodedvideochunk⑨">8.2.1. Constructors</a>
+    <li><a href="#ref-for-encodedvideochunk①⓪">9.2.1. Internal Slots</a> <a href="#ref-for-encodedvideochunk①①">(2)</a>
+    <li><a href="#ref-for-encodedvideochunk①②">9.2.3. Attributes</a> <a href="#ref-for-encodedvideochunk①③">(2)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dictdef-encodedvideochunkinit">
@@ -5247,11 +5319,13 @@ data. See <a href="https://github.com/w3c/webcodecs/issues/80">#80</a>.<a href="
     <li><a href="#ref-for-videoframe⑤">6.5. Algorithms</a> <a href="#ref-for-videoframe⑥">(2)</a>
     <li><a href="#ref-for-videoframe⑦">7.8. VideoEncoderConfig</a> <a href="#ref-for-videoframe⑧">(2)</a>
     <li><a href="#ref-for-videoframe⑨">9.2. VideoFrame Interface</a>
-    <li><a href="#ref-for-videoframe①⓪">9.2.2. Constructors</a> <a href="#ref-for-videoframe①①">(2)</a>
-    <li><a href="#ref-for-videoframe①②">9.2.4. Methods</a> <a href="#ref-for-videoframe①③">(2)</a> <a href="#ref-for-videoframe①④">(3)</a>
-    <li><a href="#ref-for-videoframe①⑤">9.3. Plane Interface</a> <a href="#ref-for-videoframe①⑥">(2)</a> <a href="#ref-for-videoframe①⑦">(3)</a> <a href="#ref-for-videoframe①⑧">(4)</a> <a href="#ref-for-videoframe①⑨">(5)</a>
-    <li><a href="#ref-for-videoframe②⓪">9.3.1. Internal Slots</a>
-    <li><a href="#ref-for-videoframe②①">9.5. Algorithms</a> <a href="#ref-for-videoframe②②">(2)</a>
+    <li><a href="#ref-for-videoframe①⓪">9.2.1. Internal Slots</a> <a href="#ref-for-videoframe①①">(2)</a> <a href="#ref-for-videoframe①②">(3)</a> <a href="#ref-for-videoframe①③">(4)</a> <a href="#ref-for-videoframe①④">(5)</a> <a href="#ref-for-videoframe①⑤">(6)</a> <a href="#ref-for-videoframe①⑥">(7)</a> <a href="#ref-for-videoframe①⑦">(8)</a> <a href="#ref-for-videoframe①⑧">(9)</a> <a href="#ref-for-videoframe①⑨">(10)</a>
+    <li><a href="#ref-for-videoframe②⓪">9.2.2. Constructors</a> <a href="#ref-for-videoframe②①">(2)</a>
+    <li><a href="#ref-for-videoframe②②">9.2.3. Attributes</a>
+    <li><a href="#ref-for-videoframe②③">9.2.4. Methods</a> <a href="#ref-for-videoframe②④">(2)</a> <a href="#ref-for-videoframe②⑤">(3)</a>
+    <li><a href="#ref-for-videoframe②⑥">9.3. Plane Interface</a> <a href="#ref-for-videoframe②⑦">(2)</a> <a href="#ref-for-videoframe②⑧">(3)</a> <a href="#ref-for-videoframe②⑨">(4)</a> <a href="#ref-for-videoframe③⓪">(5)</a>
+    <li><a href="#ref-for-videoframe③①">9.3.1. Internal Slots</a>
+    <li><a href="#ref-for-videoframe③②">9.5. Algorithms</a> <a href="#ref-for-videoframe③③">(2)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dictdef-videoframeinit">
@@ -5340,6 +5414,96 @@ data. See <a href="https://github.com/w3c/webcodecs/issues/80">#80</a>.<a href="
     <li><a href="#ref-for-dom-videoframe-detached-slot③">9.2.4. Methods</a> <a href="#ref-for-dom-videoframe-detached-slot④">(2)</a> <a href="#ref-for-dom-videoframe-detached-slot⑤">(3)</a> <a href="#ref-for-dom-videoframe-detached-slot⑥">(4)</a>
    </ul>
   </aside>
+  <aside class="dfn-panel" data-for="dom-videoframe-format-slot">
+   <b><a href="#dom-videoframe-format-slot">#dom-videoframe-format-slot</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-dom-videoframe-format-slot">9.2.1. Internal Slots</a>
+    <li><a href="#ref-for-dom-videoframe-format-slot①">9.2.2. Constructors</a> <a href="#ref-for-dom-videoframe-format-slot②">(2)</a>
+    <li><a href="#ref-for-dom-videoframe-format-slot③">9.2.3. Attributes</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="dom-videoframe-planes-slot">
+   <b><a href="#dom-videoframe-planes-slot">#dom-videoframe-planes-slot</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-dom-videoframe-planes-slot">9.2.2. Constructors</a> <a href="#ref-for-dom-videoframe-planes-slot①">(2)</a> <a href="#ref-for-dom-videoframe-planes-slot②">(3)</a>
+    <li><a href="#ref-for-dom-videoframe-planes-slot③">9.2.3. Attributes</a>
+    <li><a href="#ref-for-dom-videoframe-planes-slot④">9.2.4. Methods</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="dom-videoframe-coded-width-slot">
+   <b><a href="#dom-videoframe-coded-width-slot">#dom-videoframe-coded-width-slot</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-dom-videoframe-coded-width-slot">9.2.2. Constructors</a> <a href="#ref-for-dom-videoframe-coded-width-slot①">(2)</a> <a href="#ref-for-dom-videoframe-coded-width-slot②">(3)</a> <a href="#ref-for-dom-videoframe-coded-width-slot③">(4)</a>
+    <li><a href="#ref-for-dom-videoframe-coded-width-slot④">9.2.3. Attributes</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="dom-videoframe-coded-height-slot">
+   <b><a href="#dom-videoframe-coded-height-slot">#dom-videoframe-coded-height-slot</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-dom-videoframe-coded-height-slot">9.2.2. Constructors</a> <a href="#ref-for-dom-videoframe-coded-height-slot①">(2)</a> <a href="#ref-for-dom-videoframe-coded-height-slot②">(3)</a> <a href="#ref-for-dom-videoframe-coded-height-slot③">(4)</a>
+    <li><a href="#ref-for-dom-videoframe-coded-height-slot④">9.2.3. Attributes</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="dom-videoframe-crop-left-slot">
+   <b><a href="#dom-videoframe-crop-left-slot">#dom-videoframe-crop-left-slot</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-dom-videoframe-crop-left-slot">9.2.2. Constructors</a> <a href="#ref-for-dom-videoframe-crop-left-slot①">(2)</a> <a href="#ref-for-dom-videoframe-crop-left-slot②">(3)</a> <a href="#ref-for-dom-videoframe-crop-left-slot③">(4)</a>
+    <li><a href="#ref-for-dom-videoframe-crop-left-slot④">9.2.3. Attributes</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="dom-videoframe-crop-top-slot">
+   <b><a href="#dom-videoframe-crop-top-slot">#dom-videoframe-crop-top-slot</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-dom-videoframe-crop-top-slot">9.2.2. Constructors</a> <a href="#ref-for-dom-videoframe-crop-top-slot①">(2)</a> <a href="#ref-for-dom-videoframe-crop-top-slot②">(3)</a> <a href="#ref-for-dom-videoframe-crop-top-slot③">(4)</a>
+    <li><a href="#ref-for-dom-videoframe-crop-top-slot④">9.2.3. Attributes</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="dom-videoframe-crop-width-slot">
+   <b><a href="#dom-videoframe-crop-width-slot">#dom-videoframe-crop-width-slot</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-dom-videoframe-crop-width-slot">7.8. VideoEncoderConfig</a>
+    <li><a href="#ref-for-dom-videoframe-crop-width-slot①">9.2.2. Constructors</a> <a href="#ref-for-dom-videoframe-crop-width-slot②">(2)</a> <a href="#ref-for-dom-videoframe-crop-width-slot③">(3)</a> <a href="#ref-for-dom-videoframe-crop-width-slot④">(4)</a> <a href="#ref-for-dom-videoframe-crop-width-slot⑤">(5)</a> <a href="#ref-for-dom-videoframe-crop-width-slot⑥">(6)</a>
+    <li><a href="#ref-for-dom-videoframe-crop-width-slot⑦">9.2.3. Attributes</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="dom-videoframe-crop-height-slot">
+   <b><a href="#dom-videoframe-crop-height-slot">#dom-videoframe-crop-height-slot</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-dom-videoframe-crop-height-slot">7.8. VideoEncoderConfig</a>
+    <li><a href="#ref-for-dom-videoframe-crop-height-slot①">9.2.2. Constructors</a> <a href="#ref-for-dom-videoframe-crop-height-slot②">(2)</a> <a href="#ref-for-dom-videoframe-crop-height-slot③">(3)</a> <a href="#ref-for-dom-videoframe-crop-height-slot④">(4)</a> <a href="#ref-for-dom-videoframe-crop-height-slot⑤">(5)</a> <a href="#ref-for-dom-videoframe-crop-height-slot⑥">(6)</a>
+    <li><a href="#ref-for-dom-videoframe-crop-height-slot⑦">9.2.3. Attributes</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="dom-videoframe-display-width-slot">
+   <b><a href="#dom-videoframe-display-width-slot">#dom-videoframe-display-width-slot</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-dom-videoframe-display-width-slot">9.2.2. Constructors</a> <a href="#ref-for-dom-videoframe-display-width-slot①">(2)</a> <a href="#ref-for-dom-videoframe-display-width-slot②">(3)</a> <a href="#ref-for-dom-videoframe-display-width-slot③">(4)</a>
+    <li><a href="#ref-for-dom-videoframe-display-width-slot④">9.2.3. Attributes</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="dom-videoframe-display-height-slot">
+   <b><a href="#dom-videoframe-display-height-slot">#dom-videoframe-display-height-slot</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-dom-videoframe-display-height-slot">9.2.2. Constructors</a> <a href="#ref-for-dom-videoframe-display-height-slot①">(2)</a> <a href="#ref-for-dom-videoframe-display-height-slot②">(3)</a> <a href="#ref-for-dom-videoframe-display-height-slot③">(4)</a>
+    <li><a href="#ref-for-dom-videoframe-display-height-slot④">9.2.3. Attributes</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="dom-videoframe-duration-slot">
+   <b><a href="#dom-videoframe-duration-slot">#dom-videoframe-duration-slot</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-dom-videoframe-duration-slot">6.5. Algorithms</a>
+    <li><a href="#ref-for-dom-videoframe-duration-slot①">9.2.2. Constructors</a> <a href="#ref-for-dom-videoframe-duration-slot②">(2)</a> <a href="#ref-for-dom-videoframe-duration-slot③">(3)</a> <a href="#ref-for-dom-videoframe-duration-slot④">(4)</a>
+    <li><a href="#ref-for-dom-videoframe-duration-slot⑤">9.2.3. Attributes</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="dom-videoframe-timestamp-slot">
+   <b><a href="#dom-videoframe-timestamp-slot">#dom-videoframe-timestamp-slot</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-dom-videoframe-timestamp-slot">6.5. Algorithms</a>
+    <li><a href="#ref-for-dom-videoframe-timestamp-slot①">9.2.2. Constructors</a> <a href="#ref-for-dom-videoframe-timestamp-slot②">(2)</a> <a href="#ref-for-dom-videoframe-timestamp-slot③">(3)</a> <a href="#ref-for-dom-videoframe-timestamp-slot④">(4)</a>
+    <li><a href="#ref-for-dom-videoframe-timestamp-slot⑤">9.2.3. Attributes</a>
+   </ul>
+  </aside>
   <aside class="dfn-panel" data-for="dom-videoframe-videoframe">
    <b><a href="#dom-videoframe-videoframe">#dom-videoframe-videoframe</a></b><b>Referenced in:</b>
    <ul>
@@ -5352,81 +5516,88 @@ data. See <a href="https://github.com/w3c/webcodecs/issues/80">#80</a>.<a href="
     <li><a href="#ref-for-dom-videoframe-videoframe-pixelformat-planes-frameinit">9.2. VideoFrame Interface</a>
    </ul>
   </aside>
-  <aside class="dfn-panel" data-for="dom-videoframe-timestamp">
-   <b><a href="#dom-videoframe-timestamp">#dom-videoframe-timestamp</a></b><b>Referenced in:</b>
-   <ul>
-    <li><a href="#ref-for-dom-videoframe-timestamp">6.5. Algorithms</a>
-    <li><a href="#ref-for-dom-videoframe-timestamp①">9.2. VideoFrame Interface</a>
-   </ul>
-  </aside>
-  <aside class="dfn-panel" data-for="dom-videoframe-duration">
-   <b><a href="#dom-videoframe-duration">#dom-videoframe-duration</a></b><b>Referenced in:</b>
-   <ul>
-    <li><a href="#ref-for-dom-videoframe-duration">6.5. Algorithms</a>
-    <li><a href="#ref-for-dom-videoframe-duration①">9.2. VideoFrame Interface</a>
-   </ul>
-  </aside>
   <aside class="dfn-panel" data-for="dom-videoframe-format">
    <b><a href="#dom-videoframe-format">#dom-videoframe-format</a></b><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-dom-videoframe-format">9.2. VideoFrame Interface</a>
+    <li><a href="#ref-for-dom-videoframe-format①">9.2.3. Attributes</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dom-videoframe-planes">
    <b><a href="#dom-videoframe-planes">#dom-videoframe-planes</a></b><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-dom-videoframe-planes">9.2. VideoFrame Interface</a>
-    <li><a href="#ref-for-dom-videoframe-planes①">9.2.4. Methods</a>
+    <li><a href="#ref-for-dom-videoframe-planes①">9.2.3. Attributes</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dom-videoframe-codedwidth">
    <b><a href="#dom-videoframe-codedwidth">#dom-videoframe-codedwidth</a></b><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-dom-videoframe-codedwidth">9.2. VideoFrame Interface</a>
+    <li><a href="#ref-for-dom-videoframe-codedwidth①">9.2.3. Attributes</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dom-videoframe-codedheight">
    <b><a href="#dom-videoframe-codedheight">#dom-videoframe-codedheight</a></b><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-dom-videoframe-codedheight">9.2. VideoFrame Interface</a>
+    <li><a href="#ref-for-dom-videoframe-codedheight①">9.2.3. Attributes</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dom-videoframe-cropleft">
    <b><a href="#dom-videoframe-cropleft">#dom-videoframe-cropleft</a></b><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-dom-videoframe-cropleft">9.2. VideoFrame Interface</a>
+    <li><a href="#ref-for-dom-videoframe-cropleft①">9.2.3. Attributes</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dom-videoframe-croptop">
    <b><a href="#dom-videoframe-croptop">#dom-videoframe-croptop</a></b><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-dom-videoframe-croptop">9.2. VideoFrame Interface</a>
+    <li><a href="#ref-for-dom-videoframe-croptop①">9.2.3. Attributes</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dom-videoframe-cropwidth">
    <b><a href="#dom-videoframe-cropwidth">#dom-videoframe-cropwidth</a></b><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-dom-videoframe-cropwidth">7.8. VideoEncoderConfig</a>
-    <li><a href="#ref-for-dom-videoframe-cropwidth①">9.2. VideoFrame Interface</a>
+    <li><a href="#ref-for-dom-videoframe-cropwidth">9.2. VideoFrame Interface</a>
+    <li><a href="#ref-for-dom-videoframe-cropwidth①">9.2.3. Attributes</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dom-videoframe-cropheight">
    <b><a href="#dom-videoframe-cropheight">#dom-videoframe-cropheight</a></b><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-dom-videoframe-cropheight">7.8. VideoEncoderConfig</a>
-    <li><a href="#ref-for-dom-videoframe-cropheight①">9.2. VideoFrame Interface</a>
+    <li><a href="#ref-for-dom-videoframe-cropheight">9.2. VideoFrame Interface</a>
+    <li><a href="#ref-for-dom-videoframe-cropheight①">9.2.3. Attributes</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dom-videoframe-displaywidth">
    <b><a href="#dom-videoframe-displaywidth">#dom-videoframe-displaywidth</a></b><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-dom-videoframe-displaywidth">9.2. VideoFrame Interface</a>
+    <li><a href="#ref-for-dom-videoframe-displaywidth①">9.2.3. Attributes</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dom-videoframe-displayheight">
    <b><a href="#dom-videoframe-displayheight">#dom-videoframe-displayheight</a></b><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-dom-videoframe-displayheight">9.2. VideoFrame Interface</a>
+    <li><a href="#ref-for-dom-videoframe-displayheight①">9.2.3. Attributes</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="dom-videoframe-timestamp">
+   <b><a href="#dom-videoframe-timestamp">#dom-videoframe-timestamp</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-dom-videoframe-timestamp">9.2. VideoFrame Interface</a>
+    <li><a href="#ref-for-dom-videoframe-timestamp①">9.2.3. Attributes</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="dom-videoframe-duration">
+   <b><a href="#dom-videoframe-duration">#dom-videoframe-duration</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-dom-videoframe-duration">9.2. VideoFrame Interface</a>
+    <li><a href="#ref-for-dom-videoframe-duration①">9.2.3. Attributes</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dom-videoframe-destroy">
@@ -5461,10 +5632,11 @@ data. See <a href="https://github.com/w3c/webcodecs/issues/80">#80</a>.<a href="
    <ul>
     <li><a href="#ref-for-plane">4.5. Algorithms</a>
     <li><a href="#ref-for-plane①">9.2. VideoFrame Interface</a> <a href="#ref-for-plane②">(2)</a>
-    <li><a href="#ref-for-plane③">9.2.2. Constructors</a> <a href="#ref-for-plane④">(2)</a>
-    <li><a href="#ref-for-plane⑤">9.2.3. Attributes</a>
-    <li><a href="#ref-for-plane⑥">9.2.4. Methods</a>
-    <li><a href="#ref-for-plane⑦">9.3. Plane Interface</a> <a href="#ref-for-plane⑧">(2)</a> <a href="#ref-for-plane⑨">(3)</a> <a href="#ref-for-plane①⓪">(4)</a> <a href="#ref-for-plane①①">(5)</a> <a href="#ref-for-plane①②">(6)</a>
+    <li><a href="#ref-for-plane③">9.2.1. Internal Slots</a> <a href="#ref-for-plane④">(2)</a>
+    <li><a href="#ref-for-plane⑤">9.2.2. Constructors</a> <a href="#ref-for-plane⑥">(2)</a>
+    <li><a href="#ref-for-plane⑦">9.2.3. Attributes</a>
+    <li><a href="#ref-for-plane⑧">9.2.4. Methods</a>
+    <li><a href="#ref-for-plane⑨">9.3. Plane Interface</a> <a href="#ref-for-plane①⓪">(2)</a> <a href="#ref-for-plane①①">(3)</a> <a href="#ref-for-plane①②">(4)</a> <a href="#ref-for-plane①③">(5)</a> <a href="#ref-for-plane①④">(6)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dictdef-planeinit">
@@ -5483,8 +5655,8 @@ data. See <a href="https://github.com/w3c/webcodecs/issues/80">#80</a>.<a href="
   <aside class="dfn-panel" data-for="dom-plane-plane-buffer-slot">
    <b><a href="#dom-plane-plane-buffer-slot">#dom-plane-plane-buffer-slot</a></b><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-dom-plane-plane-buffer-slot">9.2.2. Constructors</a>
-    <li><a href="#ref-for-dom-plane-plane-buffer-slot①">9.3.3. Methods</a>
+    <li><a href="#ref-for-dom-plane-plane-buffer-slot">9.2.2. Constructors</a> <a href="#ref-for-dom-plane-plane-buffer-slot①">(2)</a>
+    <li><a href="#ref-for-dom-plane-plane-buffer-slot②">9.3.3. Methods</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dom-plane-stride">
@@ -5517,8 +5689,9 @@ data. See <a href="https://github.com/w3c/webcodecs/issues/80">#80</a>.<a href="
    <ul>
     <li><a href="#ref-for-enumdef-pixelformat">4.5. Algorithms</a>
     <li><a href="#ref-for-enumdef-pixelformat①">9.2. VideoFrame Interface</a> <a href="#ref-for-enumdef-pixelformat②">(2)</a>
-    <li><a href="#ref-for-enumdef-pixelformat③">9.2.3. Attributes</a>
-    <li><a href="#ref-for-enumdef-pixelformat④">9.3. Plane Interface</a>
+    <li><a href="#ref-for-enumdef-pixelformat③">9.2.1. Internal Slots</a>
+    <li><a href="#ref-for-enumdef-pixelformat④">9.2.3. Attributes</a>
+    <li><a href="#ref-for-enumdef-pixelformat⑤">9.3. Plane Interface</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dom-pixelformat-i420">
