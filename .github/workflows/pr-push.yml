@@ -23,17 +23,17 @@ jobs:
         include:
           - source: index.src.html
             destination: index.html
-            echidna_token: ${{ secrets.ECHIDNA_TOKEN_WEBCODECS }}
+            echidna_token: ECHIDNA_TOKEN_WEBCODECS
             build_override: |
               status: WD
           - source: codec_registry.src.html
             destination: codec_registry.html
-            echidna_token: ${{ secrets.ECHIDNA_TOKEN_REGISTRY }}
+            echidna_token: ECHIDNA_TOKEN_REGISTRY
             build_override: |
               status: NOTE-WD
           - source: avc_codec_registration.src.html
             destination: avc_codec_registration.html
-            echidna_token: ${{ secrets.ECHIDNA_TOKEN_AVC_REGISTRATION }}
+            echidna_token: ECHIDNA_TOKEN_AVC_REGISTRATION
             build_override: |
               status: NOTE-WD
     steps:
@@ -47,10 +47,11 @@ jobs:
       - name: Build and validate index.html, push to gh-pages branch if needed
         uses: w3c/spec-prod@v2
         with:
+          TOOLCHAIN: bikeshed
           SOURCE: ${{ matrix.source }}
           DESTINATION: ${{ matrix.destination }}
           BUILD_FAIL_ON: warning
           GH_PAGES_BRANCH: gh-pages
-          W3C_ECHIDNA_TOKEN: ${{ matrix.echidna_token }}
+          W3C_ECHIDNA_TOKEN: ${{ secrets[matrix.echidna_token] }}
           W3C_WG_DECISION_URL: https://github.com/w3c/media-wg/issues/27
           W3C_BUILD_OVERRIDE: ${{ matrix.build_override }}
