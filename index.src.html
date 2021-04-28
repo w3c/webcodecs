@@ -3,10 +3,12 @@ Title: WebCodecs
 Repository: w3c/webcodecs
 Status: ED
 ED: https://w3c.github.io/webcodecs/
+TR: https://www.w3.org/TR/webcodecs/
+Previous Version: from biblio
 Shortname: webcodecs
 Level: None
 Group: mediawg
-Editor: Chris Cunningham, w3cid 114832, Google Inc. https://google.com/
+Editor: Chris Cunningham, w3cid 114832, Google Inc. https://www.google.com/
 Editor: Paul Adenot, w3cid 62410, Mozilla https://www.mozilla.org/
 Editor: Bernard Aboba, w3cid 65611, Microsoft Corporation https://www.microsoft.com/
 
@@ -74,16 +76,6 @@ spec: webaudio; urlPrefix: https://www.w3.org/TR/webaudio/
     type: dfn; text: acquire the content; url: #acquire-the-content
     for: AudioBuffer
         type: method;  text: copyToChannel(); url: #dom-audiobuffer-copytochannel
-</pre>
-
-<pre class='biblio'>
-{
-  "WEBCODECS-CODEC-REGISTRY": {
-      "href": "https://w3c.github.io/webcodecs/codec_registry.html",
-      "title": "WebCodecs Codec Registry",
-      "publisher": "W3C"
-  }
-}
 </pre>
 
 
@@ -183,8 +175,7 @@ The <dfn>codec processing loop</dfn> must run these steps:
 AudioDecoder Interface {#audiodecoder-interface}
 ================================================
 
-<pre class='idl'>
-<xmp>
+<xmp class='idl'>
 [Exposed=(Window,DedicatedWorker)]
 interface AudioDecoder {
   constructor(AudioDecoderInit init);
@@ -208,7 +199,6 @@ dictionary AudioDecoderInit {
 
 callback AudioFrameOutputCallback = undefined(AudioFrame output);
 </xmp>
-</pre>
 
 Internal Slots {#audiodecoder-internal-slots}
 ---------------------------------------------
@@ -413,8 +403,7 @@ Algorithms {#audiodecoder-algorithms}
 VideoDecoder Interface {#videodecoder-interface}
 ================================================
 
-<pre class='idl'>
-<xmp>
+<xmp class='idl'>
 [Exposed=(Window,DedicatedWorker)]
 interface VideoDecoder {
   constructor(VideoDecoderInit init);
@@ -438,7 +427,6 @@ dictionary VideoDecoderInit {
 
 callback VideoFrameOutputCallback = undefined(VideoFrame output);
 </xmp>
-</pre>
 
 Internal Slots {#videodecoder-internal-slots}
 ---------------------------------------------
@@ -670,8 +658,7 @@ Algorithms {#videodecoder-algorithms}
 AudioEncoder Interface {#audioencoder-interface}
 ================================================
 
-<pre class='idl'>
-<xmp>
+<xmp class='idl'>
 [Exposed=(Window,DedicatedWorker)]
 interface AudioEncoder {
   constructor(AudioEncoderInit init);
@@ -695,7 +682,6 @@ dictionary AudioEncoderInit {
 
 callback EncodedAudioChunkOutputCallback = undefined(EncodedAudioChunk output);
 </xmp>
-</pre>
 
 Internal Slots {#audioencoder-internal-slots}
 ---------------------------------------------
@@ -770,9 +756,6 @@ Methods {#audioencoder-methods}
   <dd>
     [=Enqueues a control message=] to encode the given |frame|.
 
-    NOTE: This method will destroy the AudioFrame. Authors who wish to retain a
-    copy, should call `frame.clone()` prior to calling encode().
-
     When invoked, run these steps:
     1. If the value of |frame|'s {{AudioFrame/[[detached]]}} internal slot is
         `true`, throw a {{TypeError}}.
@@ -780,9 +763,8 @@ Methods {#audioencoder-methods}
         {{InvalidStateError}}.
     3. Let |frameClone| hold the result of running the [=Clone AudioFrame=]
         algorithm with |frame|.
-    4. Destroy the original |frame| by invoking `frame.destroy()`.
-    5. Increment {{AudioEncoder/encodeQueueSize}}.
-    6. [=Queue a control message=] to encode |frameClone|.
+    4. Increment {{AudioEncoder/encodeQueueSize}}.
+    5. [=Queue a control message=] to encode |frameClone|.
 
     Running a control message to encode the frame means performing these steps.
     1. Attempt to use {{AudioEncoder/[[codec implementation]]}} to encode
@@ -913,8 +895,7 @@ Algorithms {#audioencoder-algorithms}
 VideoEncoder Interface {#videoencoder-interface}
 ================================================
 
-<pre class='idl'>
-<xmp>
+<xmp class='idl'>
 [Exposed=(Window,DedicatedWorker)]
 interface VideoEncoder {
   constructor(VideoEncoderInit init);
@@ -938,7 +919,6 @@ dictionary VideoEncoderInit {
 
 callback EncodedVideoChunkOutputCallback = undefined(EncodedVideoChunk output, VideoDecoderConfig? output_config);
 </xmp>
-</pre>
 
 Internal Slots {#videoencoder-internal-slots}
 ---------------------------------------------
@@ -1021,9 +1001,6 @@ Methods {#videoencoder-methods}
   <dd>
     [=Enqueues a control message=] to encode the given |frame|.
 
-    NOTE: This method will destroy the VideoFrame. Authors who wish to retain a
-    copy, should call `frame.clone()` prior to calling encode().
-
     When invoked, run these steps:
     1. If the value of |frame|'s {{VideoFrame/[[detached]]}} internal slot is
         `true`, throw a {{TypeError}}.
@@ -1031,9 +1008,8 @@ Methods {#videoencoder-methods}
         {{InvalidStateError}}.
     3. Let |frameClone| hold the result of running the [=Clone VideoFrame=]
         algorithm with |frame|.
-    4. Destroy the original |frame| by invoking `frame.destroy()`.
-    5. Increment {{VideoEncoder/encodeQueueSize}}.
-    6. [=Queue a control message=] to encode |frameClone|.
+    4. Increment {{VideoEncoder/encodeQueueSize}}.
+    5. [=Queue a control message=] to encode |frameClone|.
 
     Running a control message to encode the frame means performing these steps.
     1. Attempt to use {{VideoEncoder/[[codec implementation]]}} to encode
@@ -1140,8 +1116,8 @@ Algorithms {#videoencoder-algorithms}
         2. Let |output_config| be a {{VideoDecoderConfig}} that describes
             |output|. Initialize |output_config| as follows:
             1. Assign `encoder_config.codec` to `output_config.codec`.
-            2. Assign `encoder_config.cropWidth` to `output_config.cropWidth`.
-            3. Assign `encoder_config.cropHeight` to `output_config.cropHeight`.
+            2. Assign `encoder_config.width` to `output_config.cropWidth`.
+            3. Assign `encoder_config.height` to `output_config.cropHeight`.
             4. Assign `encoder_config.displayWidth` to
                 `output_config.displayWidth`.
             5. Assign `encoder_config.displayHeight` to
@@ -1172,11 +1148,11 @@ Algorithms {#videoencoder-algorithms}
             2. Let {{EncodedVideoChunkInit/type}} be the
                 {{EncodedVideoChunkType}} of |output|.
             3. Let {{EncodedVideoChunkInit/timestamp}} be the
-                {{VideoFrame/timestamp}} from the {{VideoFrame}} associated with
-                |output|.
+                {{VideoFrame/[[timestamp]]}} from the {{VideoFrame}}
+                associated with |output|.
             4. Let {{EncodedVideoChunkInit/duration}} be the
-                {{VideoFrame/duration}} from the {{VideoFrame}} associated with
-                |output|.
+                {{VideoFrame/[[duration]]}} from the {{VideoFrame}} associated
+                with |output|.
         5. Let |chunk| be a new {{EncodedVideoChunk}} constructed with
             |chunkInit|.
         6. Invoke {{VideoEncoder/[[output callback]]}} with |chunk|.
@@ -1249,14 +1225,12 @@ Signalling Configuration Support{#config-support-info}
 ------------------------------------------------------
 
 ### AudioDecoderSupport ### {#audio-decoder-support}
-<pre class='idl'>
-<xmp>
+<xmp class='idl'>
 dictionary AudioDecoderSupport {
   boolean supported;
   AudioDecoderConfig config;
 };
 </xmp>
-</pre>
 
 <dl>
   <dt><dfn dict-member for=AudioDecoderSupport>supported</dfn></dt>
@@ -1272,14 +1246,12 @@ dictionary AudioDecoderSupport {
 </dl>
 
 ### VideoDecoderSupport ### {#video-decoder-support}
-<pre class='idl'>
-<xmp>
+<xmp class='idl'>
 dictionary VideoDecoderSupport {
   boolean supported;
   VideoDecoderConfig config;
 };
 </xmp>
-</pre>
 
 <dl>
   <dt><dfn dict-member for=VideoDecoderSupport>supported</dfn></dt>
@@ -1295,14 +1267,12 @@ dictionary VideoDecoderSupport {
 </dl>
 
 ### AudioEncoderSupport ### {#audio-encoder-support}
-<pre class='idl'>
-<xmp>
+<xmp class='idl'>
 dictionary AudioEncoderSupport {
   boolean supported;
   AudioEncoderConfig config;
 };
 </xmp>
-</pre>
 
 <dl>
   <dt><dfn dict-member for=AudioEncoderSupport>supported</dfn></dt>
@@ -1318,14 +1288,12 @@ dictionary AudioEncoderSupport {
 </dl>
 
 ### VideoEncoderSupport ### {#video-encoder-support}
-<pre class='idl'>
-<xmp>
+<xmp class='idl'>
 dictionary VideoEncoderSupport {
   boolean supported;
   VideoEncoderConfig config;
 };
 </xmp>
-</pre>
 
 <dl>
   <dt><dfn dict-member for=VideoEncoderSupport>supported</dfn></dt>
@@ -1363,8 +1331,7 @@ combination of codec registrations or none at all.
 
 AudioDecoderConfig{#audio-decoder-config}
 -----------------------------------------
-<pre class='idl'>
-<xmp>
+<xmp class='idl'>
 dictionary AudioDecoderConfig {
   required DOMString codec;
   required unsigned long sampleRate;
@@ -1372,7 +1339,6 @@ dictionary AudioDecoderConfig {
   BufferSource description;
 };
 </xmp>
-</pre>
 
 To check if an {{AudioDecoderConfig}} is a <dfn>valid AudioDecoderConfig</dfn>,
     run these steps:
@@ -1402,13 +1368,12 @@ To check if an {{AudioDecoderConfig}} is a <dfn>valid AudioDecoderConfig</dfn>,
 
 VideoDecoderConfig{#video-decoder-config}
 -----------------------------------------
-<pre class='idl'>
-<xmp>
+<xmp class='idl'>
 dictionary VideoDecoderConfig {
   required DOMString codec;
   BufferSource description;
-  required unsigned long codedWidth;
-  required unsigned long codedHeight;
+  unsigned long codedWidth;
+  unsigned long codedHeight;
   unsigned long cropLeft;
   unsigned long cropTop;
   unsigned long cropWidth;
@@ -1418,7 +1383,6 @@ dictionary VideoDecoderConfig {
   HardwareAcceleration hardwareAcceleration = "allow";
 };
 </xmp>
-</pre>
 
 To check if a {{VideoDecoderConfig}} is a <dfn>valid VideoDecoderConfig</dfn>,
 run these steps:
@@ -1507,15 +1471,14 @@ run these steps:
 
 AudioEncoderConfig{#audio-encoder-config}
 -----------------------------------------
-<pre class='idl'>
-<xmp>
+<xmp class='idl'>
 dictionary AudioEncoderConfig {
   required DOMString codec;
   unsigned long sampleRate;
   unsigned long numberOfChannels;
+  unsigned long long bitrate;
 };
 </xmp>
-</pre>
 
 NOTE: Codec-specific extensions to {{AudioEncoderConfig}} may be defined by the
     registrations in the [[WEBCODECS-CODEC-REGISTRY]].
@@ -1535,24 +1498,27 @@ run these steps:
 
   <dt><dfn dict-member for=AudioEncoderConfig>numberOfChannels</dfn></dt>
   <dd>The number of audio channels.</dd>
+
+  <dt><dfn dict-member for=AudioEncoderConfig>bitrate</dfn></dt>
+  <dd>
+    The average bitrate of the encoded audio given in units of bits per second.
+  </dd>
 </dl>
 
 
 VideoEncoderConfig{#video-encoder-config}
 -----------------------------------------
-<pre class='idl'>
-<xmp>
+<xmp class='idl'>
 dictionary VideoEncoderConfig {
   required DOMString codec;
   unsigned long long bitrate;
-  required unsigned long cropWidth;
-  required unsigned long cropHeight;
+  required unsigned long width;
+  required unsigned long height;
   unsigned long displayWidth;
   unsigned long displayHeight;
   HardwareAcceleration hardwareAcceleration = "allow";
 };
 </xmp>
-</pre>
 
 NOTE: Codec-specific extensions to {{VideoEncoderConfig}} may be defined by the
     registrations in the [[WEBCODECS-CODEC-REGISTRY]].
@@ -1561,7 +1527,7 @@ To check if a {{VideoEncoderConfig}} is a <dfn>valid VideoEncoderConfig</dfn>,
     run these steps:
 1. If {{VideoEncoderConfig/codec}} is not a <a>valid codec string</a>, return
     `false`.
-2. If {{VideoEncoderConfig/cropWidth}} = 0 or {{VideoEncoderConfig/cropHeight}}
+2. If {{VideoEncoderConfig/width}} = 0 or {{VideoEncoderConfig/height}}
     = 0, return `false`.
 3. If {{VideoEncoderConfig/displayWidth}} = 0 or
     {{VideoEncoderConfig/displayHeight}} = 0, return `false`.
@@ -1574,54 +1540,44 @@ To check if a {{VideoEncoderConfig}} is a <dfn>valid VideoEncoderConfig</dfn>,
   <dt><dfn dict-member for=VideoEncoderConfig>bitrate</dfn></dt>
   <dd>The average bitrate of the encoded video given in units of bits per second.</dd>
 
-  <dt><dfn dict-member for=VideoEncoderConfig>cropWidth</dfn></dt>
+  <dt><dfn dict-member for=VideoEncoderConfig>width</dfn></dt>
   <dd>
     The encoded width of output {{EncodedVideoChunk}}s in pixels, prior to any
     display aspect ratio adjustments.
 
-    The encoder must scale any {{VideoFrame}} who's {{VideoFrame/cropWidth}}
-    differs from this value.
+    The encoder must scale any {{VideoFrame}} who's
+    {{VideoFrame/[[crop width]]}} differs from this value.
   </dd>
 
-  <dt><dfn dict-member for=VideoEncoderConfig>cropHeight</dfn></dt>
+  <dt><dfn dict-member for=VideoEncoderConfig>height</dfn></dt>
   <dd>
     The encoded height of output {{EncodedVideoChunk}}s in pixels, prior to any
     display aspect ratio adjustments.
 
-    The encoder must scale any {{VideoFrame}} who's {{VideoFrame/cropHeight}}
-    differs from this value.
+    The encoder must scale any {{VideoFrame}} who's
+    {{VideoFrame/[[crop height]]}} differs from this value.
   </dd>
 </dl>
-
-<div class='note'>
-  NOTE: The {{VideoEncoder}} will scale, not crop, input {{VideoFrame}}s to the
-      specified {{VideoEncoderConfig/cropWidth}} and
-      {{VideoEncoderConfig/cropHeight}}.
-
-      The naming of {{VideoEncoderConfig/cropWidth}} and
-      {{VideoEncoderConfig/cropHeight}} reflects that the encoded chunks may be
-      decoded to produce {{VideoFrame}}s who's {{VideoFrame/cropWidth}}
-      and {{VideoFrame/cropHeight}} will match these values.
-</div>
 
 <dl>
   <dt><dfn dict-member for=VideoEncoderConfig>displayWidth</dfn></dt>
   <dd>
     The intended display width of output {{EncodedVideoChunk}}s in pixels.
-    Defaults to {{VideoEncoderConfig/cropWidth}} if not present.
+    Defaults to {{VideoEncoderConfig/width}} if not present.
   </dd>
 
   <dt><dfn dict-member for=VideoEncoderConfig>displayHeight</dfn></dt>
   <dd>
     The intended display height of output {{EncodedVideoChunk}}s in pixels.
-    Defaults to {{VideoEncoderConfig/cropWidth}} if not present.
+    Defaults to {{VideoEncoderConfig/width}} if not present.
   </dd>
 </dl>
 
 <div class='note'>
   NOTE: Providing a {{VideoEncoderConfig/displayWidth}} or
-      {{VideoEncoderConfig/displayHeight}} that differs from the crop dimensions
-      signals that chunks should be scaled after decoding to arrive at the final
+      {{VideoEncoderConfig/displayHeight}} that differs from
+      {{VideoEncoderConfig/width}} and {{VideoEncoderConfig/height}} signals
+      that chunks should be scaled after decoding to arrive at the final
       display aspect ratio.
 
       For many codecs this is merely pass-through information, but some codecs
@@ -1638,15 +1594,13 @@ To check if a {{VideoEncoderConfig}} is a <dfn>valid VideoEncoderConfig</dfn>,
 
 Hardware Acceleration{#hardware-acceleration}
 ---------------------------------------------
-<pre class='idl'>
-<xmp>
+<xmp class='idl'>
 enum HardwareAcceleration {
   "allow",
   "deny",
   "require",
 };
 </xmp>
-</pre>
 
 When supported, hardware acceleration offloads encoding or decoding to
 specialized hardware.
@@ -1718,13 +1672,11 @@ keys and values. For nested dictionaries, apply this definition recursively.
 VideoEncoderEncodeOptions{#video-encoder-options}
 -------------------------------------------------
 
-<pre class='idl'>
-<xmp>
+<xmp class='idl'>
 dictionary VideoEncoderEncodeOptions {
   boolean keyFrame = false;
 };
 </xmp>
-</pre>
 
 <dl>
   <dt><dfn dict-member for=VideoEncoderEncodeOptions>keyFrame</dfn></dt>
@@ -1738,15 +1690,13 @@ dictionary VideoEncoderEncodeOptions {
 
 CodecState{#codec-state}
 ------------------------
-<pre class='idl'>
-<xmp>
+<xmp class='idl'>
 enum CodecState {
   "unconfigured",
   "configured",
   "closed"
 };
 </xmp>
-</pre>
 
 <dl>
   <dt><dfn enum-value for=CodecState>unconfigured</dfn></dt>
@@ -1765,11 +1715,9 @@ enum CodecState {
 
 WebCodecsErrorCallback{#error-callback}
 ---------------------------------------
-<pre class='idl'>
-<xmp>
+<xmp class='idl'>
 callback WebCodecsErrorCallback = undefined(DOMException error);
 </xmp>
-</pre>
 
 
 Encoded Media Interfaces (Chunks) {#encoded-media-interfaces}
@@ -1778,8 +1726,7 @@ These interfaces represent chunks of encoded media.
 
 EncodedAudioChunk Interface {#encodedaudiochunk-interface}
 ------------------------------------------------------------
-<pre class='idl'>
-<xmp>
+<xmp class='idl'>
 [Exposed=(Window,DedicatedWorker)]
 interface EncodedAudioChunk {
   constructor(EncodedAudioChunkInit init);
@@ -1799,7 +1746,6 @@ enum EncodedAudioChunkType {
     "delta",
 };
 </xmp>
-</pre>
 
 ### Constructors ###{#encodedaudiochunk-constructors}
 <dfn constructor for=EncodedAudioChunk title="EncodedAudioChunk(init)">
@@ -1825,8 +1771,7 @@ enum EncodedAudioChunkType {
 
 EncodedVideoChunk Interface{#encodedvideochunk-interface}
 -----------------------------------------------------------
-<pre class='idl'>
-<xmp>
+<xmp class='idl'>
 [Exposed=(Window,DedicatedWorker)]
 interface EncodedVideoChunk {
   constructor(EncodedVideoChunkInit init);
@@ -1848,7 +1793,6 @@ enum EncodedVideoChunkType {
     "delta",
 };
 </xmp>
-</pre>
 
 ### Constructors ###{#encodedvideochunk-constructors}
 <dfn constructor for=EncodedVideoChunk title="EncodedVideoChunk(init)">
@@ -1925,8 +1869,7 @@ NOTE: When a [=frame resource=] is no longer referenced by a
 AudioFrame Interface {#audioframe-interface}
 ---------------------------------------------
 
-<pre class='idl'>
-<xmp>
+<xmp class='idl'>
 [Exposed=(Window,DedicatedWorker)]
 interface AudioFrame {
   constructor(AudioFrameInit init);
@@ -1943,7 +1886,6 @@ dictionary AudioFrameInit {
   required AudioBuffer buffer;
 };
 </xmp>
-</pre>
 
 ### Internal Slots ###{#audioframe-internal-slots}
 : <dfn attribute for=AudioFrame>\[[detached]]</dfn>
@@ -2021,8 +1963,7 @@ dictionary AudioFrameInit {
 VideoFrame Interface {#videoframe-interface}
 --------------------------------------------
 
-<pre class='idl'>
-<xmp>
+<xmp class='idl'>
 [Exposed=(Window,DedicatedWorker)]
 interface VideoFrame {
   constructor(ImageBitmap imageBitmap, optional VideoFrameInit init = {});
@@ -2069,15 +2010,62 @@ dictionary VideoFramePlaneInit {
   unsigned long long timestamp;
 };
 </xmp>
-</pre>
 
 ### Internal Slots ###{#videoframe-internal-slots}
-: <dfn attribute for=VideoFrame>\[[detached]]</dfn></dt>
-:: A boolean indicating whether {{VideoFrame/close()}} was invoked.
+
+: <dfn attribute for=VideoFrame>\[[detached]]</dfn>
+:: A boolean indicating whether {{destroy()}} was invoked and underlying
+    resources have been released.
 
 : <dfn attribute for=VideoFrame>[[resource reference]]</dfn>
 :: A reference to the [=frame resource=] that stores the pixel data for
     this frame.
+
+: <dfn attribute for=VideoFrame>\[[format]]</dfn>
+:: A {{PixelFormat}} describing the pixel format of the {{VideoFrame}}.
+
+: <dfn attribute for=VideoFrame>\[[planes]]</dfn>
+:: A list of {{Plane}}s describing the memory layout of the pixel data in
+    {{VideoFrame}}. The number of {{Plane}}s and their semantics are
+    determined by {{VideoFrame/[[format]]}}.
+
+: <dfn attribute for=VideoFrame>[[coded width]]</dfn>
+:: Width of the {{VideoFrame}} in pixels, prior to any cropping or aspect
+    ratio adjustments.
+
+: <dfn attribute for=VideoFrame>[[coded height]]</dfn>
+:: Height of the {{VideoFrame}} in pixels, prior to any cropping or aspect
+    ratio adjustments.
+
+: <dfn attribute for=VideoFrame>[[crop left]]</dfn>
+:: The number of pixels to remove from the left of the {{VideoFrame}},
+    prior to aspect ratio adjustments.
+
+: <dfn attribute for=VideoFrame>[[crop top]]</dfn>
+:: The number of pixels to remove from the top of the {{VideoFrame}},
+    prior to aspect ratio adjustments.
+
+: <dfn attribute for=VideoFrame>[[crop width]]</dfn>
+:: The width of pixels to include in the crop, starting from cropLeft.
+
+: <dfn attribute for=VideoFrame>[[crop height]]</dfn>
+:: The height of pixels to include in the crop, starting from cropLeft.
+
+: <dfn attribute for=VideoFrame>[[display width]]</dfn>
+:: Width of the {{VideoFrame}} when displayed after applying aspect ratio
+    adjustments.
+
+: <dfn attribute for=VideoFrame>[[display height]]</dfn>
+:: Height of the {{VideoFrame}} when displayed after applying aspect ratio
+    adjustments.
+
+: <dfn attribute for=VideoFrame>\[[duration]]</dfn>
+:: The presentation duration, given in microseconds. The duration is copied
+        from the {{EncodedVideoChunk}} corresponding to this {{VideoFrame}}.
+
+: <dfn attribute for=VideoFrame>\[[timestamp]]</dfn>
+::  The presentation timestamp, given in microseconds. The timestamp is copied
+    from the {{EncodedVideoChunk}} corresponding to this {{VideoFrame}}.
 
 ### Constructors ###{#videoframe-constructors}
 
@@ -2094,30 +2082,34 @@ dictionary VideoFramePlaneInit {
     1. Assign |resourceReference| to
         {{VideoFrame/[[resource reference]]}}.
     2. If |resource| uses a recognized {{PixelFormat}}:
-        1. Assign the {{PixelFormat}} of |resource| to {{VideoFrame/format}}.
+        1. Assign the {{PixelFormat}} of |resource| to
+            {{VideoFrame/[[format]]}}.
         2. Let |planes| be a list of {{Plane}}s describing the
-            [=frame resource=] in accordance with the {{VideoFrame/format}}.
+            [=frame resource=] in accordance with the
+            {{VideoFrame/[[format]]}}.
 
             ISSUE: The spec should define explicit rules for each
                 {{PixelFormat}} and reference them in the step above. See
                 [#165](https://github.com/w3c/webcodecs/issues/165).
 
-        3. Assign |planes| to {{VideoFrame/planes}}.
+        3. Assign |planes| to {{VideoFrame/[[planes]]}}.
     3. Otherwise (|resource| does not use a recognized {{PixelFormat}}):
-        1. Assign `""` to {{VideoFrame/format}}.
-        2. Assign `null` to {{VideoFrame/planes}}.
-    4. Assign |imageBitmap|.{{ImageBitmap/width}} to {{VideoFrame/codedWidth}},
-        {{VideoFrame/cropWidth}}, and {{VideoFrame/displayWidth}}.
+        1. Assign `""` to {{VideoFrame/[[format]]}}.
+        2. Assign `null` to {{VideoFrame/[[planes]]}}.
+    4. Assign |imageBitmap|.{{ImageBitmap/width}} to
+        {{VideoFrame/[[coded width]]}},
+        {{VideoFrame/[[crop width]]}}, and {{VideoFrame/[[display width]]}}.
     5. Assign |imageBitmap|.{{ImageBitmap/height}} to
-        {{VideoFrame/codedHeight}}, {{VideoFrame/cropHeight}}, and
-        {{VideoFrame/displayHeight}}.
-    6. Assign `0` to {{VideoFrame/cropTop}} and {{VideoFrame/cropLeft}}.
+        {{VideoFrame/[[coded height]]}}, {{VideoFrame/[[crop height]]}}, and
+        {{VideoFrame/[[display height]]}}.
+    6. Assign `0` to {{VideoFrame/[[crop top]]}} and
+        {{VideoFrame/[[crop left]]}}.
     7. If {{VideoFrameInit/timestamp}} [=map/exists=] in |init|, assign
-        `init.timestamp` to {{VideoFrame/timestamp}}. Otherwise, assign
-        `null` to {{VideoFrame/timestamp}}.
+        `init.timestamp` to {{VideoFrame/[[timestamp]]}}. Otherwise, assign
+        `null` to {{VideoFrame/[[timestamp]]}}.
     8. If {{VideoFrameInit/duration}} [=map/exists=] in |init|, assign
-        `init.duration` to {{VideoFrame/duration}}. Otherwise, assign
-        `null` to {{VideoFrame/duration}}.
+        `init.duration` to {{VideoFrame/[[duration]]}}. Otherwise, assign
+        `null` to {{VideoFrame/[[duration]]}}.
 5. Return |frame|.
 
 <dfn constructor for=VideoFrame title="VideoFrame(planes, init)">
@@ -2148,8 +2140,8 @@ dictionary VideoFramePlaneInit {
 5. Let |frame| be a new {{VideoFrame}} object initialized as follows:
     1. Assign |resourceReference| to
             {{VideoFrame/[[resource reference]]}}.
-    2. Assign {{VideoFramePlaneInit/format}} to {{VideoFrame/format}}.
-    3. Assign a new [=list=] to {{VideoFrame/planes}}.
+    2. Assign {{VideoFramePlaneInit/format}} to {{VideoFrame/[[format]]}}.
+    3. Assign a new [=list=] to {{VideoFrame/[[planes]]}}.
     4. For each |planeInit| in |planes|:
         1. Copy |planeInit|.{{PlaneInit/src}} to |resource|.
 
@@ -2172,7 +2164,7 @@ dictionary VideoFramePlaneInit {
             4. Assign |planeInit|.{{PlaneInit/rows}} to {{Plane/rows}}.
             5. Assign the product of ({{Plane/stride}} * {{Plane/rows}}) to
                 {{Plane/length}}.
-        3. Append |plane| to {{VideoFrame/planes}}.
+        3. Append |plane| to {{VideoFrame/[[planes]]}}.
 
     5. Let |resourceCodedWidth| be the coded width of |resource|.
     6. Let |resourceCodedHeight| be the coded height of |resource|.
@@ -2186,78 +2178,108 @@ dictionary VideoFramePlaneInit {
             [#166](https://github.com/w3c/webcodecs/issues/166).
 
     9. Assign |resourceCodedWidth|, |resourceCodedHeight|, |resourceCropLeft|,
-        and |resourceCropTop| to {{VideoFrame/codedWidth}},
-        {{VideoFrame/codedHeight}}, {{VideoFrame/cropLeft}}, and
-        {{VideoFrame/cropTop}} respectively.
-    10. If |init|.{{VideoFramePlaneInit/cropWidth}} [=map/exists=], assign it
-        to {{VideoFrame/cropWidth}}. Otherwise, assign
-        {{VideoFrame/codedWidth}} to {{VideoFrame/cropWidth}}.
+        and |resourceCropTop| to {{VideoFrame/[[coded width]]}},
+        {{VideoFrame/[[coded height]]}}, {{VideoFrame/[[crop left]]}}, and
+        {{VideoFrame/[[crop top]]}} respectively.
+    10. If |init|.{{VideoFramePlaneInit/cropWidth}} [=map/exists=], assign
+        it to {{VideoFrame/[[crop width]]}}. Otherwise, assign
+        {{VideoFrame/[[coded width]]}} to {{VideoFrame/[[crop width]]}}.
     11. If |init|.{{VideoFramePlaneInit/cropHeight}} [=map/exists=], assign it
-        to {{VideoFrame/cropHeight}}. Otehrwise, assign
-        {{VideoFrame/codedHeight}} to {{VideoFrame/cropHeight}}.
+        to {{VideoFrame/[[crop height]]}}. Otehrwise, assign
+        {{VideoFrame/[[coded height]]}} to {{VideoFrame/[[crop height]]}}.
     12. If |init|.{{VideoFramePlaneInit/displayWidth}} [=map/exists=], assign
-        it to {{VideoFrame/displayWidth}}. Otherwise, assign
-        {{VideoFrame/cropWidth}} to {{VideoFrame/displayWidth}}.
+        it to {{VideoFrame/[[display width]]}}. Otherwise, assign
+        {{VideoFrame/[[crop width]]}} to {{VideoFrame/[[display width]]}}.
     13. If |init|.{{VideoFramePlaneInit/displayHeight}} [=map/exists=], assign
-        it to {{VideoFrame/displayHeight}}. Otherwise, assign
-        {{VideoFrame/cropHeight}} to {{VideoFrame/displayHeight}}.
+        it to {{VideoFrame/[[display height]]}}. Otherwise, assign
+        {{VideoFrame/[[crop height]]}} to {{VideoFrame/[[display height]]}}.
     14. Assign |init|'s {{VideoFramePlaneInit/timestamp}} and
-        {{VideoFramePlaneInit/duration}} to {{VideoFrame/timestamp}} and
-        {{VideoFrame/duration}} respectively.
+        {{VideoFramePlaneInit/duration}} to {{VideoFrame/[[timestamp]]}} and
+        {{VideoFrame/[[duration]]}} respectively.
 6. Return |frame|.
 
-
 ### Attributes ###{#videoframe-attributes}
-<dl>
-  <dt><dfn attribute for=VideoFrame>timestamp</dfn></dt>
-  <dd>
-    The presentation timestamp, given in microseconds. The timestamp is copied
-        from the EncodedVideoChunk corresponding to this VideoFrame.
-  </dd>
-  <dt><dfn attribute for=VideoFrame>duration</dfn></dt>
-  <dd>
-    The presentation duration, given in microseconds. The duration is copied
-        from the EncodedVideoChunk corresponding to this VideoFrame.
-  </dd>
-  <dt><dfn attribute for=VideoFrame>format</dfn></dt>
-  <dd>
-    Describes the arrangement of bytes in each plane as well as the number and
-        order of the planes.
-  </dd>
-  <dt><dfn attribute for=VideoFrame>planes</dfn></dt>
-  <dd>
-    Holds pixel data data, laid out as described by format and Plane
-        attributes.
-  </dd>
-  <dt><dfn attribute for=VideoFrame>codedWidth</dfn></dt>
-  <dd>
-    Width of the VideoFrame in pixels, prior to any cropping or aspect ratio
-        adjustments.
-  </dd>
-  <dt><dfn attribute for=VideoFrame>codedHeight</dfn></dt>
-  <dd>
-    Height of the VideoFrame in pixels, prior to any cropping or aspect ratio
-        adjustments.
-  </dd>
-  <dt><dfn attribute for=VideoFrame>cropLeft</dfn></dt>
-  <dd>
-    The number of pixels to remove from the left of the VideoFrame, prior to
-        aspect ratio adjustments.
-  </dd>
-  <dt><dfn attribute for=VideoFrame>cropTop</dfn></dt>
-  <dd>
-    The number of pixels to remove from the top of the VideoFrame, prior to
-        aspect ratio adjustments.
-  </dd>
-  <dt><dfn attribute for=VideoFrame>cropWidth</dfn></dt>
-  <dd>The width of pixels to include in the crop, starting from cropLeft.</dd>
-  <dt><dfn attribute for=VideoFrame>cropHeight</dfn></dt>
-  <dd>The height of pixels to include in the crop, starting from cropLeft.</dd>
-  <dt><dfn attribute for=VideoFrame>displayWidth</dfn>
-  <dd>Width of the VideoFrame when displayed.</dd>
-  <dt><dfn attribute for=VideoFrame>displayHeight</dfn></dt>
-  <dd>Height of the VideoFrame when displayed.</dd>
-</dl>
+: <dfn attribute for=VideoFrame>format</dfn>
+:: Describes the arrangement of bytes in each plane as well as the number and
+    order of the planes.
+
+    The {{VideoFrame/format}} getter steps are to return
+    {{VideoFrame/[[format]]}}.
+
+: <dfn attribute for=VideoFrame>planes</dfn>
+:: Holds pixel data data, laid out as described by format and Plane
+    attributes.
+
+    The {{VideoFrame/planes}} getter steps are to return
+    {{VideoFrame/[[planes]]}}.
+
+: <dfn attribute for=VideoFrame>codedWidth</dfn>
+:: Width of the {{VideoFrame}} in pixels, prior to any cropping or aspect ratio
+    adjustments.
+
+    The {{VideoFrame/codedWidth}} getter steps are to return
+    {{VideoFrame/[[coded width]]}}.
+
+: <dfn attribute for=VideoFrame>codedHeight</dfn>
+:: Height of the VideoFrame in pixels, prior to any cropping or aspect ratio
+    adjustments.
+
+    The {{VideoFrame/codedHeight}} getter steps are to return
+    {{VideoFrame/[[coded height]]}}.
+
+: <dfn attribute for=VideoFrame>cropLeft</dfn>
+:: The number of pixels to remove from the left of the VideoFrame, prior to
+    aspect ratio adjustments.
+
+    The {{VideoFrame/cropLeft}} getter steps are to return
+    {{VideoFrame/[[crop left]]}}.
+
+: <dfn attribute for=VideoFrame>cropTop</dfn>
+:: The number of pixels to remove from the top of the VideoFrame, prior to
+    aspect ratio adjustments.
+
+    The {{VideoFrame/cropTop}} getter steps are to return
+    {{VideoFrame/[[crop top]]}}.
+
+: <dfn attribute for=VideoFrame>cropWidth</dfn>
+:: The width of pixels to include in the crop, starting from cropLeft.
+
+    The {{VideoFrame/cropWidth}} getter steps are to return
+    {{VideoFrame/[[crop width]]}}.
+
+: <dfn attribute for=VideoFrame>cropHeight</dfn>
+:: The height of pixels to include in the crop, starting from cropLeft.
+
+    The {{VideoFrame/cropHeight}} getter steps are to return
+    {{VideoFrame/[[crop height]]}}.
+
+: <dfn attribute for=VideoFrame>displayWidth</dfn>
+:: Width of the VideoFrame when displayed after applying aspect ratio
+    adjustments.
+
+    The {{VideoFrame/displayWidth}} getter steps are to return
+    {{VideoFrame/[[display width]]}}.
+
+: <dfn attribute for=VideoFrame>displayHeight</dfn>
+:: Height of the VideoFrame when displayed after applying aspect ratio
+    adjustments.
+
+    The {{VideoFrame/displayHeight}} getter steps are to return
+    {{VideoFrame/[[display height]]}}.
+
+: <dfn attribute for=VideoFrame>timestamp</dfn>
+:: The presentation timestamp, given in microseconds. The timestamp is copied
+    from the {{EncodedVideoChunk}} corresponding to this VideoFrame.
+
+    The {{VideoFrame/timestamp}} getter steps are to return
+    {{VideoFrame/[[timestamp]]}}.
+
+: <dfn attribute for=VideoFrame>duration</dfn>
+:: The presentation duration, given in microseconds. The duration is copied
+    from the {{EncodedVideoChunk}} corresponding to this VideoFrame.
+
+    The {{VideoFrame/duration}} getter steps are to return
+    {{VideoFrame/[[duration]]}}.
 
 ### Methods ###{#videoframe-methods}
 : <dfn method for=VideoFrame>clone()</dfn>
@@ -2355,8 +2377,8 @@ A {{Plane}} cannot be used after the {{VideoFrame}} is destroyed. A new
     {{VideoFrame}}.
 
 
-<pre class='idl'>
-<xmp>
+<xmp class='idl'>
+[Exposed=(Window,DedicatedWorker)]
 interface Plane {
   readonly attribute unsigned long stride;
   readonly attribute unsigned long rows;
@@ -2371,7 +2393,6 @@ dictionary PlaneInit {
   required unsigned long rows;
 };
 </xmp>
-</pre>
 
 ### Internal Slots ###{#plane-internal-slots}
 <dl>
@@ -2417,13 +2438,11 @@ NOTE: This section needs work. We expect to add more pixel formats and offer
     http://www.fourcc.org/pixel-format/yuv-i420/</a> for a more complete
     description.
 
-<pre class='idl'>
-<xmp>
+<xmp class='idl'>
 enum PixelFormat {
   "I420"
 };
 </xmp>
-</pre>
 
 <dl>
   <dt><dfn enum-value for=PixelFormat>I420</dfn></dt>
