@@ -27,6 +27,10 @@ Markup Shorthands:css no, markdown yes, dfn yes
 !Version History: <a href="https://github.com/w3c/webcodecs/commits">https://github.com/w3c/webcodecs/commits</a>
 </pre>
 
+<pre class=link-defaults>
+spec:webidl; type:interface; text:Promise
+</pre>
+
 <pre class='anchors'>
 spec: media-source; urlPrefix: https://www.w3.org/TR/media-source/
     type: method
@@ -1131,8 +1135,8 @@ Algorithms {#videoencoder-algorithms}
         2. Let |output_config| be a {{VideoDecoderConfig}} that describes
             |output|. Initialize |output_config| as follows:
             1. Assign `encoder_config.codec` to `output_config.codec`.
-            2. Assign `encoder_config.cropWidth` to `output_config.cropWidth`.
-            3. Assign `encoder_config.cropHeight` to `output_config.cropHeight`.
+            2. Assign `encoder_config.width` to `output_config.cropWidth`.
+            3. Assign `encoder_config.height` to `output_config.cropHeight`.
             4. Assign `encoder_config.displayWidth` to
                 `output_config.displayWidth`.
             5. Assign `encoder_config.displayHeight` to
@@ -1163,11 +1167,11 @@ Algorithms {#videoencoder-algorithms}
             2. Let {{EncodedVideoChunkInit/type}} be the
                 {{EncodedVideoChunkType}} of |output|.
             3. Let {{EncodedVideoChunkInit/timestamp}} be the
-                {{VideoFrame/timestamp}} from the {{VideoFrame}} associated with
-                |output|.
+                {{VideoFrame/[[timestamp]]}} from the {{VideoFrame}}
+                associated with |output|.
             4. Let {{EncodedVideoChunkInit/duration}} be the
-                {{VideoFrame/duration}} from the {{VideoFrame}} associated with
-                |output|.
+                {{VideoFrame/[[duration]]}} from the {{VideoFrame}} associated
+                with |output|.
         5. Let |chunk| be a new {{EncodedVideoChunk}} constructed with
             |chunkInit|.
         6. Invoke {{VideoEncoder/[[output callback]]}} with |chunk|.
@@ -1387,8 +1391,8 @@ VideoDecoderConfig{#video-decoder-config}
 dictionary VideoDecoderConfig {
   required DOMString codec;
   BufferSource description;
-  required unsigned long codedWidth;
-  required unsigned long codedHeight;
+  unsigned long codedWidth;
+  unsigned long codedHeight;
   unsigned long cropLeft;
   unsigned long cropTop;
   unsigned long cropWidth;
@@ -1527,8 +1531,8 @@ VideoEncoderConfig{#video-encoder-config}
 dictionary VideoEncoderConfig {
   required DOMString codec;
   unsigned long long bitrate;
-  required unsigned long cropWidth;
-  required unsigned long cropHeight;
+  required unsigned long width;
+  required unsigned long height;
   unsigned long displayWidth;
   unsigned long displayHeight;
   HardwareAcceleration hardwareAcceleration = "allow";
@@ -1542,7 +1546,7 @@ To check if a {{VideoEncoderConfig}} is a <dfn>valid VideoEncoderConfig</dfn>,
     run these steps:
 1. If {{VideoEncoderConfig/codec}} is not a <a>valid codec string</a>, return
     `false`.
-2. If {{VideoEncoderConfig/cropWidth}} = 0 or {{VideoEncoderConfig/cropHeight}}
+2. If {{VideoEncoderConfig/width}} = 0 or {{VideoEncoderConfig/height}}
     = 0, return `false`.
 3. If {{VideoEncoderConfig/displayWidth}} = 0 or
     {{VideoEncoderConfig/displayHeight}} = 0, return `false`.
@@ -1555,54 +1559,44 @@ To check if a {{VideoEncoderConfig}} is a <dfn>valid VideoEncoderConfig</dfn>,
   <dt><dfn dict-member for=VideoEncoderConfig>bitrate</dfn></dt>
   <dd>The average bitrate of the encoded video given in units of bits per second.</dd>
 
-  <dt><dfn dict-member for=VideoEncoderConfig>cropWidth</dfn></dt>
+  <dt><dfn dict-member for=VideoEncoderConfig>width</dfn></dt>
   <dd>
     The encoded width of output {{EncodedVideoChunk}}s in pixels, prior to any
     display aspect ratio adjustments.
 
-    The encoder must scale any {{VideoFrame}} who's {{VideoFrame/cropWidth}}
-    differs from this value.
+    The encoder must scale any {{VideoFrame}} who's
+    {{VideoFrame/[[crop width]]}} differs from this value.
   </dd>
 
-  <dt><dfn dict-member for=VideoEncoderConfig>cropHeight</dfn></dt>
+  <dt><dfn dict-member for=VideoEncoderConfig>height</dfn></dt>
   <dd>
     The encoded height of output {{EncodedVideoChunk}}s in pixels, prior to any
     display aspect ratio adjustments.
 
-    The encoder must scale any {{VideoFrame}} who's {{VideoFrame/cropHeight}}
-    differs from this value.
+    The encoder must scale any {{VideoFrame}} who's
+    {{VideoFrame/[[crop height]]}} differs from this value.
   </dd>
 </dl>
-
-<div class='note'>
-  NOTE: The {{VideoEncoder}} will scale, not crop, input {{VideoFrame}}s to the
-      specified {{VideoEncoderConfig/cropWidth}} and
-      {{VideoEncoderConfig/cropHeight}}.
-
-      The naming of {{VideoEncoderConfig/cropWidth}} and
-      {{VideoEncoderConfig/cropHeight}} reflects that the encoded chunks may be
-      decoded to produce {{VideoFrame}}s who's {{VideoFrame/cropWidth}}
-      and {{VideoFrame/cropHeight}} will match these values.
-</div>
 
 <dl>
   <dt><dfn dict-member for=VideoEncoderConfig>displayWidth</dfn></dt>
   <dd>
     The intended display width of output {{EncodedVideoChunk}}s in pixels.
-    Defaults to {{VideoEncoderConfig/cropWidth}} if not present.
+    Defaults to {{VideoEncoderConfig/width}} if not present.
   </dd>
 
   <dt><dfn dict-member for=VideoEncoderConfig>displayHeight</dfn></dt>
   <dd>
     The intended display height of output {{EncodedVideoChunk}}s in pixels.
-    Defaults to {{VideoEncoderConfig/cropWidth}} if not present.
+    Defaults to {{VideoEncoderConfig/width}} if not present.
   </dd>
 </dl>
 
 <div class='note'>
   NOTE: Providing a {{VideoEncoderConfig/displayWidth}} or
-      {{VideoEncoderConfig/displayHeight}} that differs from the crop dimensions
-      signals that chunks should be scaled after decoding to arrive at the final
+      {{VideoEncoderConfig/displayHeight}} that differs from
+      {{VideoEncoderConfig/width}} and {{VideoEncoderConfig/height}} signals
+      that chunks should be scaled after decoding to arrive at the final
       display aspect ratio.
 
       For many codecs this is merely pass-through information, but some codecs
@@ -1961,13 +1955,56 @@ dictionary VideoFrameInit {
 </xmp>
 
 ### Internal Slots ###{#videoframe-internal-slots}
-<dl>
-  <dt><dfn attribute for=VideoFrame>\[[detached]]</dfn></dt>
-  <dd>
-    Boolean indicating whether {{destroy()}} was invoked and underlying
-        resources have been released.
-  </dd>
-</dl>
+
+: <dfn attribute for=VideoFrame>\[[detached]]</dfn>
+:: A boolean indicating whether {{destroy()}} was invoked and underlying
+    resources have been released.
+
+: <dfn attribute for=VideoFrame>\[[format]]</dfn>
+:: A {{PixelFormat}} describing the pixel format of the {{VideoFrame}}.
+
+: <dfn attribute for=VideoFrame>\[[planes]]</dfn>
+:: A list of {{Plane}}s describing the memory layout of the pixel data in
+    {{VideoFrame}}. The number of {{Plane}}s and their semantics are
+    determined by {{VideoFrame/[[format]]}}.
+
+: <dfn attribute for=VideoFrame>[[coded width]]</dfn>
+:: Width of the {{VideoFrame}} in pixels, prior to any cropping or aspect
+    ratio adjustments.
+
+: <dfn attribute for=VideoFrame>[[coded height]]</dfn>
+:: Height of the {{VideoFrame}} in pixels, prior to any cropping or aspect
+    ratio adjustments.
+
+: <dfn attribute for=VideoFrame>[[crop left]]</dfn>
+:: The number of pixels to remove from the left of the {{VideoFrame}},
+    prior to aspect ratio adjustments.
+
+: <dfn attribute for=VideoFrame>[[crop top]]</dfn>
+:: The number of pixels to remove from the top of the {{VideoFrame}},
+    prior to aspect ratio adjustments.
+
+: <dfn attribute for=VideoFrame>[[crop width]]</dfn>
+:: The width of pixels to include in the crop, starting from cropLeft.
+
+: <dfn attribute for=VideoFrame>[[crop height]]</dfn>
+:: The height of pixels to include in the crop, starting from cropLeft.
+
+: <dfn attribute for=VideoFrame>[[display width]]</dfn>
+:: Width of the {{VideoFrame}} when displayed after applying aspect ratio
+    adjustments.
+
+: <dfn attribute for=VideoFrame>[[display height]]</dfn>
+:: Height of the {{VideoFrame}} when displayed after applying aspect ratio
+    adjustments.
+
+: <dfn attribute for=VideoFrame>\[[duration]]</dfn>
+:: The presentation duration, given in microseconds. The duration is copied
+        from the {{EncodedVideoChunk}} corresponding to this {{VideoFrame}}.
+
+: <dfn attribute for=VideoFrame>\[[timestamp]]</dfn>
+::  The presentation timestamp, given in microseconds. The timestamp is copied
+    from the {{EncodedVideoChunk}} corresponding to this {{VideoFrame}}.
 
 ### Constructors ###{#videoframe-constructors}
 
@@ -1990,36 +2027,42 @@ NOTE: this section needs work. Current wording assumes a VideoFrame can always
 3. Let |frame| be a new {{VideoFrame}}.
 4. Assign `false` to |frame|’s {{VideoFrame/[[detached]]}} internal slot.
 5. Use a copy of the pixel data in |imageBitmap| to initialize to following
-    frame attributes:
-    1. Initialize `frame.pixelFormat` be the underlying format of imageBitmap.
-    2. Initialize `frame.planes` to describe the arrangement of memory of the
-        copied pixel data.
+    |frame| internal slots:
+    1. Initialize {{VideoFrame/[[format]]}} be the underlying format of
+        imageBitmap.
+    2. Initialize {{VideoFrame/[[planes]]}} to describe the arrangement of
+        memory of the copied pixel data.
     3. Assign regions of the copied pixel data to the
         {{Plane/[[plane buffer]]}} internal slot of each plane as
         appropriate for the pixel format.
-    4. Initialize `frame.codedWidth` and `frame.codedHeight` describe the width
-        and height of the imageBitamp prior to any cropping or aspect ratio
-        adjustments.
-6. Use |frameInit| to initialize the remaining frame attributes:
-    1. If `frameInit.cropLeft` is present, initialize it `frame.cropLeft`.
-        Otherwise, default `frame.cropLeft` to zero.
-    2. If `frameInit.cropTop` is present, initialize it to `frame.cropTop`.
-        Otherwise, default `frame.cropTop` to zero.
-    3. If `frameInit.cropWidth` is present, initialize it to `frame.cropWidth`.
-        Otherwise, default `frame.cropWidth` to `frame.codedWidth`.
-    4. If `frameInit.cropHeight` is present, initialize it to
-        `frame.cropHeight`. Otherwise, default `frame.cropHeight` to
-        `frame.codedHeight`.
-    5. If `frameInit.displayWidth` is present, initialize it to
-        `frame.displayWidth`. Otherwise, default `frame.displayWidth` to
-        `frame.codedWidth`.
-    6. If `frameInit.displayHeight` is present, initialize it to
-        `frame.displayHeight`. Otherwise, default `frame.displayHeight` to
-        `frame.codedHeight`.
-    7. If `frameInit.duration` is present, initialize it to `frame.duration`.
-        Otherwise, default `frame.duration` to null.
-    8. If `frameInit.timestamp` is present, initialize it to `frame.timestamp`.
-        Otherwise default `frame.timestamp` to null.
+    4. Initialize {{VideoFrame/[[coded width]]}} and
+        {{VideoFrame/[[coded height]]}} to describe the width and height of
+        the imageBitamp prior to any cropping or aspect ratio adjustments.
+6. Use |frameInit| to initialize the remaining |frame| internal slots:
+    1. If `frameInit.cropLeft` is present, assign it to
+        {{VideoFrame/[[crop left]]}}. Otherwise, assign `0` to
+        {{VideoFrame/[[crop left]]}}.
+    2. If `frameInit.cropTop` is present, assign it to
+        {{VideoFrame/[[crop top]]}}. Otherwise, assign `0` to
+        {{VideoFrame/[[crop top]]}}
+    3. If `frameInit.cropWidth` is present, assign it to
+        {{VideoFrame/[[crop width]]}}. Otherwise, assign
+        {{VideoFrame/[[coded width]]}} to {{VideoFrame/[[crop width]]}}.
+    4. If `frameInit.cropHeight` is present, assign it to
+        {{VideoFrame/[[crop height]]}}. Otherwise, assign
+        {{VideoFrame/[[coded height]]}} to {{VideoFrame/[[crop height]]}}.
+    5. If `frameInit.displayWidth` is present, assign it to
+        {{VideoFrame/[[display width]]}}. Otherwise, assign
+        {{VideoFrame/[[crop width]]}} to {{VideoFrame/[[display width]]}}.
+    6. If `frameInit.displayHeight` is present, assign it to
+        {{VideoFrame/[[display height]]}}. Otherwise, assign
+        {{VideoFrame/[[crop height]]}} to {{VideoFrame/[[display height]]}}.
+    7. If `frameInit.duration` is present, assign it to
+        {{VideoFrame/[[duration]]}}. Otherwise, assign `null` to
+        {{VideoFrame/[[duration]]}}.
+    8. If `frameInit.timestamp` is present, assign it to
+        {{VideoFrame/[[timestamp]]}}. Otherwise, assign `null` to
+        {{VideoFrame/[[timestamp]]}}.
 7. Return |frame|.
 
 <dfn constructor for=VideoFrame title="VideoFrame(pixelFormat, planes, frameInit)">
@@ -2028,96 +2071,136 @@ NOTE: this section needs work. Current wording assumes a VideoFrame can always
 1. If either {{VideoFrameInit/codedWidth}} or {{VideoFrameInit/codedHeight}} is
     not present in |frameInit|, throw a {{TypeError}}.
 2. If |frameInit| is not a [=valid VideoFrameInit=], throw a {{TypeError}}.
-3. If the length of |planes| is incompatible with the given pixelFormat, throw a
-    TypeError.
+3. If the length of |planes| is incompatible with the given pixelFormat, throw
+    a {{TypeError}}.
 4. Let |frame| be a new {{VideoFrame}} object.
 5. Assign `false` to |frame|’s {{VideoFrame/[[detached]]}} internal slot.
-6. Assign `init.pixelFormat` to `frame.pixelFormat`.
+6. Assign `init.format` to |frame|'s {{VideoFrame/[[format]]}}.
 7. For each element |p| in |planes|:
-    1. If |p| is a {{Plane}}, append a copy of p to `frame.planes`. Continue
-        processing the next element.
+    1. If |p| is a {{Plane}}, append a copy of p to |frame|'s
+        {{VideoFrame/[[planes]]}} and [=continue=].
     2. If |p| is a {{PlaneInit}}, append a new {{Plane}} <var ignore>q</var> to
-        `frame.planes` initialized as follows:
-        2. Assign a copy of `p.src` to q's [[plane buffer]] internal slot.
+        |frame|'s {{VideoFrame/[[planes]]}}, initialized as follows:
+        1. Assign a copy of `p.src` to q's {{Plane/[[plane buffer]]}} internal
+            slot.
 
-        NOTE: the samples should be copied exactly, but the user agent may add
-            row padding as needed to improve memory alignment.
+            NOTE: the samples should be copied exactly, but the user agent may
+                add row padding as needed to improve memory alignment.
 
-        3. Assign the width of each row in [[plane buffer]], including any
+        2. Assign the width of each row in [[plane buffer]], including any
             padding, to  `q.stride`.
-        4. Assign `p.rows` to `q.rows`.
-        5. Assign the product of (`q.rows` * `q.stride)` to `q.length`
-8. Assign `frameInit.codedWidth` to `frame.codedWidth`.
-9. Assign `frameInit.codedHeight` to `frame.codedHeight`.
-10. If `frameInit.cropLeft` is present, assign it `frame.cropLeft`. Otherwise,
-    default `frame.cropLeft` to zero.
-11. If `frameInit.cropTop` is present, assign it to `frame.cropTop`. Otherwise,
-    default `frame.cropTop` to zero.
-12. If `frameInit.cropWidth` is present, assign it to `frame.cropWidth`.
-    Otherwise, default `frame.cropWidth` to `frame.codedWidth`.
-13. If `frameInit.cropHeight` is present, assign it to `frame.cropHeight`.
-    Otherwise, default `frame.cropHeight` to `frame.codedHeight`.
-14. If `frameInit.displayWidth` is present, assign it to `frame.displayWidth`.
-    Otherwise, default `frame.displayWidth` to `frame.codedWidth`.
-15. If `frameInit.displayHeight` is present, assign it to `frame.displayHeight`.
-    Otherwise, default `frame.displayHeight` to `frame.codedHeight`.
-16. If `frameInit.duration` is present, assign it to `frame.duration`.
-    Otherwise, default `frame.duration` to null.
-17. If `frameInit.timestamp` is present, assign it to `frame.timestamp`.
-    Otherwise, default `frame.timestamp` to null.
+        3. Assign `p.rows` to `q.rows`.
+        4. Assign the product of (`q.rows` * `q.stride)` to `q.length`
+8. Assign `frameInit.codedWidth` to |frame|'s {{VideoFrame/[[coded width]]}}.
+9. Assign `frameInit.codedHeight` to |frame|'s {{VideoFrame/[[coded height]]}}.
+10. If `frameInit.cropLeft` is present, assign it |frame|'s
+    {{VideoFrame/[[crop left]]}}. Otherwise, assign `0` to
+    {{VideoFrame/[[crop left]]}}.
+11. If `frameInit.cropTop` is present, assign it to |frame|'s
+    {{VideoFrame/[[crop top]]}}. Otherwise, assign `0` to
+    {{VideoFrame/[[crop top]]}}.
+12. If `frameInit.cropWidth` is present, assign it to |frame|'s
+    {{VideoFrame/[[crop width]]}}. Otherwise, assign
+    {{VideoFrame/[[coded width]]}} to {{VideoFrame/[[crop width]]}}.
+13. If `frameInit.cropHeight` is present, assign it to |frame|'s
+    {{VideoFrame/[[crop height]]}}. Otherwise, assign
+    {{VideoFrame/[[coded height]]}} to {{VideoFrame/[[crop height]]}}.
+14. If `frameInit.displayWidth` is present, assign it to |frame|'s
+    {{VideoFrame/[[display width]]}}. Otherwise, assign
+    {{VideoFrame/[[crop width]]}} to {{VideoFrame/[[display width]]}}.
+15. If `frameInit.displayHeight` is present, assign it to |frame|'s
+    {{VideoFrame/[[display height]]}}. Otherwise, assign
+    {{VideoFrame/[[crop height]]}} to {{VideoFrame/[[display height]]}}.
+16. If `frameInit.duration` is present, assign it to
+    {{VideoFrame/[[duration]]}}. Otherwise, assign `null` to
+    {{VideoFrame/[[duration]]}}.
+17. If `frameInit.timestamp` is present, assign it to
+    {{VideoFrame/[[timestamp]]}}. Otherwise, assign `null` to
+    {{VideoFrame/[[timestamp]]}}.
 18. Return frame.
 
 ### Attributes ###{#videoframe-attributes}
-<dl>
-  <dt><dfn attribute for=VideoFrame>timestamp</dfn></dt>
-  <dd>
-    The presentation timestamp, given in microseconds. The timestamp is copied
-        from the EncodedVideoChunk corresponding to this VideoFrame.
-  </dd>
-  <dt><dfn attribute for=VideoFrame>duration</dfn></dt>
-  <dd>
-    The presentation duration, given in microseconds. The duration is copied
-        from the EncodedVideoChunk corresponding to this VideoFrame.
-  </dd>
-  <dt><dfn attribute for=VideoFrame>format</dfn></dt>
-  <dd>
-    Describes the arrangement of bytes in each plane as well as the number and
-        order of the planes.
-  </dd>
-  <dt><dfn attribute for=VideoFrame>planes</dfn></dt>
-  <dd>
-    Holds pixel data data, laid out as described by format and Plane
-        attributes.
-  </dd>
-  <dt><dfn attribute for=VideoFrame>codedWidth</dfn></dt>
-  <dd>
-    Width of the VideoFrame in pixels, prior to any cropping or aspect ratio
-        adjustments.
-  </dd>
-  <dt><dfn attribute for=VideoFrame>codedHeight</dfn></dt>
-  <dd>
-    Height of the VideoFrame in pixels, prior to any cropping or aspect ratio
-        adjustments.
-  </dd>
-  <dt><dfn attribute for=VideoFrame>cropLeft</dfn></dt>
-  <dd>
-    The number of pixels to remove from the left of the VideoFrame, prior to
-        aspect ratio adjustments.
-  </dd>
-  <dt><dfn attribute for=VideoFrame>cropTop</dfn></dt>
-  <dd>
-    The number of pixels to remove from the top of the VideoFrame, prior to
-        aspect ratio adjustments.
-  </dd>
-  <dt><dfn attribute for=VideoFrame>cropWidth</dfn></dt>
-  <dd>The width of pixels to include in the crop, starting from cropLeft.</dd>
-  <dt><dfn attribute for=VideoFrame>cropHeight</dfn></dt>
-  <dd>The height of pixels to include in the crop, starting from cropLeft.</dd>
-  <dt><dfn attribute for=VideoFrame>displayWidth</dfn>
-  <dd>Width of the VideoFrame when displayed.</dd>
-  <dt><dfn attribute for=VideoFrame>displayHeight</dfn></dt>
-  <dd>Height of the VideoFrame when displayed.</dd>
-</dl>
+: <dfn attribute for=VideoFrame>format</dfn>
+:: Describes the arrangement of bytes in each plane as well as the number and
+    order of the planes.
+
+    The {{VideoFrame/format}} getter steps are to return
+    {{VideoFrame/[[format]]}}.
+
+: <dfn attribute for=VideoFrame>planes</dfn>
+:: Holds pixel data data, laid out as described by format and Plane
+    attributes.
+
+    The {{VideoFrame/planes}} getter steps are to return
+    {{VideoFrame/[[planes]]}}.
+
+: <dfn attribute for=VideoFrame>codedWidth</dfn>
+:: Width of the {{VideoFrame}} in pixels, prior to any cropping or aspect ratio
+    adjustments.
+
+    The {{VideoFrame/codedWidth}} getter steps are to return
+    {{VideoFrame/[[coded width]]}}.
+
+: <dfn attribute for=VideoFrame>codedHeight</dfn>
+:: Height of the VideoFrame in pixels, prior to any cropping or aspect ratio
+    adjustments.
+
+    The {{VideoFrame/codedHeight}} getter steps are to return
+    {{VideoFrame/[[coded height]]}}.
+
+: <dfn attribute for=VideoFrame>cropLeft</dfn>
+:: The number of pixels to remove from the left of the VideoFrame, prior to
+    aspect ratio adjustments.
+
+    The {{VideoFrame/cropLeft}} getter steps are to return
+    {{VideoFrame/[[crop left]]}}.
+
+: <dfn attribute for=VideoFrame>cropTop</dfn>
+:: The number of pixels to remove from the top of the VideoFrame, prior to
+    aspect ratio adjustments.
+
+    The {{VideoFrame/cropTop}} getter steps are to return
+    {{VideoFrame/[[crop top]]}}.
+
+: <dfn attribute for=VideoFrame>cropWidth</dfn>
+:: The width of pixels to include in the crop, starting from cropLeft.
+
+    The {{VideoFrame/cropWidth}} getter steps are to return
+    {{VideoFrame/[[crop width]]}}.
+
+: <dfn attribute for=VideoFrame>cropHeight</dfn>
+:: The height of pixels to include in the crop, starting from cropLeft.
+
+    The {{VideoFrame/cropHeight}} getter steps are to return
+    {{VideoFrame/[[crop height]]}}.
+
+: <dfn attribute for=VideoFrame>displayWidth</dfn>
+:: Width of the VideoFrame when displayed after applying aspect ratio
+    adjustments.
+
+    The {{VideoFrame/displayWidth}} getter steps are to return
+    {{VideoFrame/[[display width]]}}.
+
+: <dfn attribute for=VideoFrame>displayHeight</dfn>
+:: Height of the VideoFrame when displayed after applying aspect ratio
+    adjustments.
+
+    The {{VideoFrame/displayHeight}} getter steps are to return
+    {{VideoFrame/[[display height]]}}.
+
+: <dfn attribute for=VideoFrame>timestamp</dfn>
+:: The presentation timestamp, given in microseconds. The timestamp is copied
+    from the {{EncodedVideoChunk}} corresponding to this VideoFrame.
+
+    The {{VideoFrame/timestamp}} getter steps are to return
+    {{VideoFrame/[[timestamp]]}}.
+
+: <dfn attribute for=VideoFrame>duration</dfn>
+:: The presentation duration, given in microseconds. The duration is copied
+    from the {{EncodedVideoChunk}} corresponding to this VideoFrame.
+
+    The {{VideoFrame/duration}} getter steps are to return
+    {{VideoFrame/[[duration]]}}.
 
 ### Methods ###{#videoframe-methods}
 <dfn method for=VideoFrame>destroy()</dfn>
@@ -2133,7 +2216,7 @@ NOTE: Use clone() to create a deep copy. Cloned frames have their own lifetime
 
 When invoked, run these steps:
 1. If {{VideoFrame/[[detached]]}} is `true`, throw an {{InvalidStateError}}.
-2. Remove all {{Plane}}s from {{VideoFrame/planes}} and release associated
+2. Remove all {{Plane}}s from {{VideoFrame/[[planes]]}} and release associated
     memory.
 3. Assign `true` to the {{VideoFrame/[[detached]]}} internal slot.
 
