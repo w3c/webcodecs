@@ -2004,7 +2004,7 @@ dictionary AudioDataInit {
 
 ### Methods ###{#audiodata-methods}
 : <dfn method for=AudioData>
-      copyFromChannel(destination, channelNumber)
+      copyFromChannel(|destination|, |channelNumber|)
     </dfn>
 :: Copies the samples from the specified channel of the {{AudioData}} to the
     destination buffer.
@@ -2019,7 +2019,7 @@ dictionary AudioDataInit {
         {{TypeError}}.
     4. Let |resource| be the [=media resource=] referenced by
         {{AudioData/[[resource reference]]}}.
-    5. Copy the bytes of |resource| into <var ignore=''>destination</var>.
+    5. Copy the bytes of |resource| into |destination|</var>.
 
 : <dfn method for=AudioData>clone()</dfn>
 :: Creates a new AudioData with a reference to the same [=media resource=].
@@ -2450,9 +2450,8 @@ dictionary VideoFramePlaneInit {
     2. If either |options|'s {{ImageBitmapOptions/resizeWidth}} or
         {{ImageBitmap/resizeHeight}} is present and is 0, then return |p|
         rejected with an {{InvalidStateError}} {{DOMException}}.
-    3. If the <a>this'</a> {{VideoFrame/[[detached]]}} internal slot is set to
-        `true`, then return |p| rejected with an {{InvalidStateError}}
-        {{DOMException}}.
+    3. If the <a>this'</a> {{VideoFrame/[[detached]]}} is `true`, then return
+        |p| rejected with an {{InvalidStateError}} {{DOMException}}.
     4. Let |imageBitmap| be a new {{ImageBitmap}} object.
     5. Set |imageBitmap|'s bitmap data to a copy of the {{VideoFrame}} pixel
         data, at the frame's intrinsic width and intrinsic height (`i.e`.,
@@ -2545,7 +2544,7 @@ dictionary PlaneInit {
 </dl>
 
 ### Methods ###{#plane-methods}
-<dfn method for=Plane>readInto(dst)</dfn>
+<dfn method for=Plane>readInto(|dst|)</dfn>
 
 Copies the plane data into dst.
 
@@ -2558,7 +2557,7 @@ When invoked, run these steps:
     {{Plane/[[parent frame]]}}'s {{VideoFrame/[[resource reference]]}}.
 4. Let |plane bytes| be the region of bytes in [=media resource=] coresponding
     to this plane.
-5. Copy the |plane bytes| into <var ignore>dst</var>.
+5. Copy the |plane bytes| into |dst|.
 
 
 Pixel Format{#pixel-format}
