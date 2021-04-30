@@ -74,11 +74,6 @@ spec: mediastream-recording; urlPrefix: https://www.w3.org/TR/mediastream-record
 spec: media-capabilities; urlPrefix: https://w3c.github.io/media-capabilities/#
     type: method; text: decodingInfo(); url: dom-mediacapabilities-decodinginfo
     type: attribute; text: powerEfficient; url: dom-mediacapabilitiesinfo-powerefficient
-
-spec: webaudio; urlPrefix: https://www.w3.org/TR/webaudio/
-    type: dfn; text: acquire the content; url: #acquire-the-content
-    for: AudioBuffer
-        type: method;  text: copyToChannel(); url: #dom-audiobuffer-copytochannel
 </pre>
 
 
@@ -102,7 +97,7 @@ Definitions {#definitions}
 : <dfn lt="system resources">Codec System Resources</dfn>
 :: Resources including CPU memory, GPU memory, and exclusive handles to specific
     decoding/encoding hardware that may be allocated by the User Agent as part
-    of codec configuration or generation of {{AudioFrame}} and {{VideoFrame}}
+    of codec configuration or generation of {{AudioData}} and {{VideoFrame}}
     objects. Such resources may be quickly exhuasted and should be released
     immediately when no longer in use.
 
@@ -196,11 +191,11 @@ interface AudioDecoder {
 };
 
 dictionary AudioDecoderInit {
-  required AudioFrameOutputCallback output;
+  required AudioDataOutputCallback output;
   required WebCodecsErrorCallback error;
 };
 
-callback AudioFrameOutputCallback = undefined(AudioFrame output);
+callback AudioDataOutputCallback = undefined(AudioData output);
 </xmp>
 
 Internal Slots {#audiodecoder-internal-slots}
@@ -293,7 +288,7 @@ Methods {#audiodecoder-methods}
     4. Let |decoded outputs| be a [=list=] of decoded video data outputs emitted
         by {{AudioDecoder/[[codec implementation]]}}.
     5. If |decoded outputs| is not empty, queue a task on the [=control thread=]
-        event loop to run the [=Output VideoFrames=] algorithm with
+        event loop to run the [=Output AudioDatas=] algorithm with
         |decoded outputs|.
   </dd>
 
@@ -316,7 +311,7 @@ Methods {#audiodecoder-methods}
     2. Let |decoded outputs| be a [=list=] of decoded audio data outputs emitted
         by {{AudioDecoder/[[codec implementation]]}}.
     3. If |decoded outputs| is not empty, queue a task on the [=control thread=]
-        event loop to run the [=Output AudioFrames=] algorithm with
+        event loop to run the [=Output AudioDatas=] algorithm with
         |decoded outputs|.
     4. Queue a task on the [=control thread=] event loop to resolve |promise|.
   </dd>
@@ -370,16 +365,24 @@ Methods {#audiodecoder-methods}
 Algorithms {#audiodecoder-algorithms}
 -------------------------------------
 <dl>
-  <dt><dfn>Output AudioFrames</dfn> (with |outputs|)</dt>
+  <dt><dfn>Output AudioDatas</dfn> (with |outputs|)</dt>
   <dd>
     Run these steps:
     1. For each |output| in |outputs|:
-        1. Let |frameInit| be an {{AudioFrameInit}} with the following keys:
-            1. Let {{AudioFrameInit/buffer}} be an {{AudioBuffer}} containing
-                the decoded audio data from |output|.
-            2. Let {{AudioFrameInit/timestamp}} be the timestamp from |output|.
-        2. Let |frame| be an {{AudioFrame}} constructed with |frameInit|.
-        3. Invoke {{AudioDecoder/[[output callback]]}} with frame.
+        1. Let |data| be an {{AudioData}}, intialized as follows:
+            1. Assign `false` to {{AudioData/[[detached]]}}.
+            2. Let |resource| be the [=media resource=] described by |output|.
+            3. Let |resourceReference| be a reference to |resource|.
+            4. Assign |resourceReference| to
+                {{AudioData/[[resource reference]]}}.
+            5. Let |timestamp| be the {{EncodedAudioChunk/timestamp}} of the
+                {{EncodedAudioChunk}} associated with |output|.
+            6. Assign |timestamp| to {{AudioData/[[timestamp]]}}.
+            7. Assign values to {{AudioData/[[sample format]]}},
+                {{AudioData/[[sample rate]]}},
+                {{AudioData/[[number of frames]]}}, and
+                {{AudioData/[[number of channels]]}} as determined by |output|.
+        3. Invoke {{AudioDecoder/[[output callback]]}} with |data|.
   </dd>
   <dt><dfn>Reset AudioDecoder</dfn></dt>
   <dd>
@@ -660,7 +663,7 @@ interface AudioEncoder {
   readonly attribute long encodeQueueSize;
 
   undefined configure(AudioEncoderConfig config);
-  undefined encode(AudioFrame frame);
+  undefined encode(AudioData data);
   Promise<undefined> flush();
   undefined reset();
   undefined close();
@@ -745,23 +748,23 @@ Methods {#audioencoder-methods}
         {{NotSupportedError}}.
   </dd>
 
-  <dt><dfn method for=AudioEncoder>encode(frame)</dfn></dt>
+  <dt><dfn method for=AudioEncoder>encode(data)</dfn></dt>
   <dd>
-    [=Enqueues a control message=] to encode the given |frame|.
+    [=Enqueues a control message=] to encode the given |data|.
 
     When invoked, run these steps:
-    1. If the value of |frame|'s {{AudioFrame/[[detached]]}} internal slot is
+    1. If the value of |data|'s {{AudioData/[[detached]]}} internal slot is
         `true`, throw a {{TypeError}}.
     2. If {{AudioEncoder/state}} is not `"configured"`, throw an
         {{InvalidStateError}}.
-    3. Let |frameClone| hold the result of running the [=Clone AudioFrame=]
-        algorithm with |frame|.
+    3. Let |dataClone| hold the result of running the [=Clone AudioData=]
+        algorithm with |data|.
     4. Increment {{AudioEncoder/encodeQueueSize}}.
-    5. [=Queue a control message=] to encode |frameClone|.
+    5. [=Queue a control message=] to encode |dataClone|.
 
-    Running a control message to encode the frame means performing these steps.
+    Running a control message to encode the data means performing these steps.
     1. Attempt to use {{AudioEncoder/[[codec implementation]]}} to encode
-        the [=frame resource=] described by |frameClone|.
+        the [=media resource=] described by |dataClone|.
     2. If encoding results in an error, queue a task on the [=control thread=]
         event loop to run the [=Close AudioEncoder=] algorithm with
         {{EncodingError}}.
@@ -857,7 +860,7 @@ Algorithms {#audioencoder-algorithms}
             2. Let {{EncodedAudioChunkInit/type}} be the
                 {{EncodedAudioChunkType}} of |output|.
             3. Let {{EncodedAudioChunkInit/timestamp}} be the
-                {{AudioFrame/timestamp}} from the AudioFrame associated with
+                {{AudioData/timestamp}} from the AudioData associated with
                 |output|.
         2. Let |chunk| be a new {{EncodedAudioChunk}} constructed with
             |chunkInit|.
@@ -1815,7 +1818,7 @@ enum EncodedVideoChunkType {
 </dl>
 
 
-Raw Media Interfaces (Frames){#raw-media-interfaces}
+Raw Media Interfaces {#raw-media-interfaces}
 ====================================================
 These interfaces represent unencoded (raw) media.
 
@@ -1826,129 +1829,256 @@ Memory Model {#raw-media-memory-model}
 
 This section is non-normative.
 
-Decoded media data (frames) may occupy a large amount of system memory. To
-minimize the need for expensive copies, this specification defines a scheme
-for reference counting (`frame.clone()` and `frame.close()`).
+Decoded media data may occupy a large amount of system memory. To minimize the
+need for expensive copies, this specification defines a scheme for reference
+counting (`clone()` and `close()`).
 
 ### Reference Counting ### {#raw-media-memory-model-reference-counting}
 
-A <dfn>frame resource</dfn> is storage for the actual pixel data or the audio
-sample data described by a {{VideoFrame}} or {{AudioFrame}}.
+A <dfn>media resource</dfn> is storage for the actual pixel data or the audio
+sample data described by a {{VideoFrame}} or {{AudioData}}.
 
-The {{AudioFrame}} {{AudioFrame/[[resource reference]]}} and {{VideoFrame}}
+The {{AudioData}} {{AudioData/[[resource reference]]}} and {{VideoFrame}}
 {{VideoFrame/[[resource reference]]}} internal slots hold a reference to a
-[=frame resource=].
+[=media resource=].
 
 {{VideoFrame}}.{{VideoFrame/clone()}} and
-{{AudioFrame}}.{{AudioFrame/clone()}} return new frame objects who's
-`[[resource reference]]` points to the same [=frame resource=] as the original
+{{AudioData}}.{{AudioData/clone()}} return new frame objects who's
+`[[resource reference]]` points to the same [=media resource=] as the original
 frame.
 
-{{VideoFrame}}.{{VideoFrame/close()}} and {{AudioFrame}}.{{AudioFrame/close()}}
+{{VideoFrame}}.{{VideoFrame/close()}} and {{AudioData}}.{{AudioData/close()}}
 will clear their [[resource reference]] slot, releasing the reference their
-[=frame resource=]
+[=media resource=]
 
-A [=frame resource=] must remain alive as long as it continues to be referenced
+A [=media resource=] must remain alive as long as it continues to be referenced
 by a `[[resource reference]]`.
 
-NOTE: When a [=frame resource=] is no longer referenced by a
+NOTE: When a [=media resource=] is no longer referenced by a
     `[[resource reference]]`, the resource may be destroyed. User agents are
     encouraged to destroy such resources quickly to reduce memory pressure and
     facilitate resouce reuse.
 
-AudioFrame Interface {#audioframe-interface}
+AudioData Interface {#audiodata-interface}
 ---------------------------------------------
 
 <xmp class='idl'>
 [Exposed=(Window,DedicatedWorker)]
-interface AudioFrame {
-  constructor(AudioFrameInit init);
+interface AudioData {
+  constructor(AudioDataInit init);
 
+  readonly attribute AudioSampleFormat sampleFormat;
+  readonly attribute float sampleRate;
+  readonly attribute unsigned long numberOfFrames;
+  readonly attribute unsigned long numberOfChannels;
+  readonly attribute unsigned long allocationSize;
+  readonly attribute unsigned long long duration;
   readonly attribute unsigned long long timestamp;
-  readonly attribute AudioBuffer? buffer;
 
-  AudioFrame clone();
+  undefined copyFromChannel(BufferSource destination, unsigned long channelNumber);
+  AudioData clone();
   undefined close();
 };
 
-dictionary AudioFrameInit {
+dictionary AudioDataInit {
+  required AudioSampleFormat sampleFormat;
+  required float sampleRate;
+  required unsigned long numberOfFrames;
+  required unsigned long numberOfChannels;
   required unsigned long long timestamp;
-  required AudioBuffer buffer;
+  required BufferSource data;
 };
 </xmp>
 
-### Internal Slots ###{#audioframe-internal-slots}
-: <dfn attribute for=AudioFrame>\[[detached]]</dfn>
-:: Boolean indicating whether {{AudioFrame/close()}} was invoked.
+### Internal Slots ###{#audiodata-internal-slots}
+: <dfn attribute for=AudioData>\[[detached]]</dfn>
+:: Boolean indicating whether {{AudioData/close()}} was invoked on this
+    {{AudioData}}.
 
-: <dfn attribute for=AudioFrame>[[resource reference]]</dfn>
-:: A reference to a [=frame resource=] that stores the audio sample data for
-    this frame.
+: <dfn attribute for=AudioData>[[resource reference]]</dfn>
+:: A reference to a [=media resource=] that stores the audio sample data for
+    this {{AudioData}}.
 
-### Constructors ###{#audioframe-constructors}
-<dfn constructor for=AudioFrame title="AudioFrame(init)">
-  AudioFrame(init)
+: <dfn attribute for=AudioData>[[sample format]]</dfn>
+:: The {{AudioSampleFormat}} used by this {{AudioData}}.
+
+: <dfn attribute for=AudioData>[[sample rate]]</dfn>
+:: The sample-rate, in Hz, for this {{AudioData}}.
+
+: <dfn attribute for=AudioData>[[number of frames]]</dfn>
+:: The number of frames (samples per channel) for this {{AudioData}}.
+
+: <dfn attribute for=AudioData>[[number of channels]]</dfn>
+:: The number of audio channels for this {{AudioData}}.
+
+: <dfn attribute for=AudioData>\[[timestamp]]</dfn>
+:: The presentation timestamp, in microseconds, for this {{AudioData}}.
+
+### Constructors ###{#audiodata-constructors}
+<dfn constructor for=AudioData title="AudioData(init)">
+  AudioData(init)
 </dfn>
-1. Let |frame| be a new {{AudioFrame}} object, initialized as follows:
-    1. Assign |init|.{{AudioFrameInit/timestamp}} to {{AudioFrame/timestamp}}.
-    2. Assign |init|.{{AudioFrameInit/buffer}} to {{AudioFrame/buffer}}.
-    3. Let |resource| be a new [=frame resource=].
-    4. [=Acquire the content=] [[WEBAUDIO]] of {{AudioFrame/buffer}} and
-        assign the acquired content to |resource|.
-
-        NOTE: The acquired content stored in |resource| is an immutable
-            snapshot {{AudioFrameInit/buffer}}'s content. Mutating
-            {{AudioFrame/buffer}} after construction (e.g. via
-            {{AudioBuffer/copyToChannel()}}) will have no effect on the
-            |resource|.
-
-    5. Let |resourceReference| be a reference to |resource|.
-    6. Assign |resourceReference| to {{AudioFrame/[[resource reference]]}}.
-    7. Assign `false` to the {{AudioFrame/[[detached]]}} internal slot.
+1. Let |frame| be a new {{AudioData}} object, initialized as follows:
+    1. Assign `false` to {{AudioData/[[detached]]}}.
+    2. Assign |init|.{{AudioDataInit/sampleFormat}} to
+        {{AudioData/[[sample format]]}}.
+    3. Assign |init|.{{AudioDataInit/sampleRate}} to
+        {{AudioData/[[sample rate]]}}.
+    4. Assign |init|.{{AudioDataInit/numberOfFrames}} to
+        {{AudioData/[[number of frames]]}}.
+    5. Assign |init|.{{AudioDataInit/numberOfChannels}} to
+        {{AudioData/[[number of channels]]}}.
+    6. Assign |init|.{{AudioDataInit/timestamp}} to
+        {{AudioData/[[timestamp]]}}.
+    7. Let |resource| be a [=media resource=] containing a copy of
+        |init|.{{AudioDataInit/data}}.
+    8. Let |resourceReference| be a reference to |resource|.
+    9. Assign |resourceReference| to {{AudioData/[[resource reference]]}}.
 2. Return |frame|.
 
-### Attributes ###{#audioframe-attributes}
-: <dfn attribute for=AudioFrame>timestamp</dfn>
-:: The presentation timestamp, given in microseconds.
+### Attributes ###{#audiodata-attributes}
 
-: <dfn attribute for=AudioFrame>buffer</dfn>
-:: The buffer describing decoded audio data.
+: <dfn attribute for=AudioData>sampleFormat</dfn>
+:: The {{AudioSampleFormat}} used by this {{AudioData}}.
 
-    NOTE: The backing [=frame resource=] (referenced by
-        {{AudioFrame/[[resource reference]]}}) is immutable. Mutating
-        {{AudioFrame/buffer}} after construction (e.g. via
-        {{AudioBuffer/copyToChannel()}}) will have no effect on the
-        [=frame resource=].
+    The {{AudioData/sampleFormat}} getter steps are to return
+    {{AudioData/[[sample format]]}}.
 
-### Methods ###{#audioframe-methods}
-: <dfn method for=AudioFrame>clone()</dfn>
-:: Creates a new AudioFrame with a reference to the same [=frame resource=].
+: <dfn attribute for=AudioData>sampleRate</dfn>
+:: The sample-rate, in Hz, for this {{AudioData}}.
+
+    The {{AudioData/sampleRate}} getter steps are to return
+    {{AudioData/[[sample rate]]}}.
+
+: <dfn attribute for=AudioData>numberOfFrames</dfn>
+:: The number of frames (samples per channel) for this {{AudioData}}.
+
+    The {{AudioData/numberOfFrames}} getter steps are to return
+    {{AudioData/[[number of frames]]}}.
+
+: <dfn attribute for=AudioData>numberOfChannels</dfn>
+:: The number of audio channels for this {{AudioData}}.
+
+    The {{AudioData/numberOfChannels}} getter steps are to return
+    {{AudioData/[[number of channels]]}}.
+
+: <dfn attribute for=AudioData>allocationSize</dfn>
+:: The the number of bytes allocated to hold all of the samples in this
+    {{AudioData}}.
+
+    The {{AudioData/allocationSize}} getter steps are to:
+    1. Let |sampleSize| be the number of bytes per sample, as defined by the
+        {{AudioData/[[sample format]]}}.
+    2. Return the product of multiplying |sampleSize| by
+        {{AudioData/[[number of channels]]}} and
+        {{AudioData/[[number of frames]]}}.
+
+: <dfn attribute for=AudioData>timestamp</dfn>
+:: The presentation timestamp, in microseconds, for this {{AudioData}}.
+
+    The {{AudioData/numberOfChannels}} getter steps are to return
+    {{AudioData/[[timestamp]]}}.
+
+: <dfn attribute for=AudioData>duration</dfn>
+:: The duration, in microseconds, for this {{AudioData}}.
+
+    The {{AudioData/duration}} getter steps are to:
+    1. Let |microsecondsPerSecond| be `1,000,000`.
+    2. Let |durationInSeconds| be the result of dividing
+        {{AudioData/[[number of frames]]}} by {{AudioData/[[sample rate]]}}.
+    3. Return the product of |durationInSeconds| and |microsecondsPerSecond|.
+
+### Methods ###{#audiodata-methods}
+: <dfn method for=AudioData>
+      copyFromChannel(destination, channelNumber)
+    </dfn>
+:: Copies the samples from the specified channel of the {{AudioData}} to the
+    destination buffer.
 
     When invoked, run these steps:
-    1. If the value of |frame|'s {{AudioFrame/[[detached]]}} internal slot is
+    1. If the value of |frame|'s {{AudioData/[[detached]]}} internal slot is
         `true`, throw an {{InvalidStateError}} {{DOMException}}.
-    2. Return the result of running the [=Clone AudioFrame=] algorithm with
+    2. Let |allocationSize| be the number of bytes allocated to hold this
+        {{AudioData}}'s [=media resource=], as described by the getter steps of
+        {{AudioData/allocationSize}}.
+    3. If |allocationSize| is greater than `destination.byteLength`, throw a
+        {{TypeError}}.
+    4. Let |resource| be the [=media resource=] referenced by
+        {{AudioData/[[resource reference]]}}.
+    5. Copy the bytes of |resource| into <var ignore=''>destination</var>.
+
+: <dfn method for=AudioData>clone()</dfn>
+:: Creates a new AudioData with a reference to the same [=media resource=].
+
+    When invoked, run these steps:
+    1. If the value of |frame|'s {{AudioData/[[detached]]}} internal slot is
+        `true`, throw an {{InvalidStateError}} {{DOMException}}.
+    2. Return the result of running the [=Clone AudioData=] algorithm with
         [=this=].
 
-: <dfn method for=AudioFrame>close()</dfn>
-:: Clears all state and releases the reference to the [=frame resource=].
+: <dfn method for=AudioData>close()</dfn>
+:: Clears all state and releases the reference to the [=media resource=].
     Close is final.
 
     When invoked, run these steps:
-    1. Assign `null` to {{AudioFrame/[[resource reference]]}}.
-    2. Assign `null` to {{AudioFrame/buffer}}.
-    3. Assign `true` to the {{AudioFrame/[[detached]]}} internal slot.
+    1. Assign `true` to the {{AudioData/[[detached]]}} internal slot.
+    2. Assign `null` to {{AudioData/[[resource reference]]}}.
 
-### Algorithms ### {#audioframe-algorithms}
+### Algorithms ### {#audiodata-algorithms}
 
-: <dfn>Clone AudioFrame</dfn> (with |frame|)
+: <dfn>Clone AudioData</dfn> (with |data|)
 :: Run these steps:
-    1. Let |clone| be a new {{AudioFrame}} initialized as follows:
-        1. Assign |frame|.{{AudioFrame/[[resource reference]]}} to
-            {{AudioFrame/[[resource reference]]}}.
-        2. Assign |frame|.timestamp to {{AudioFrame/timestamp}}.
-        3. Assign |frame|.buffer to {{AudioFrame/buffer}}.
+    1. Let |clone| be a new {{AudioData}} initialized as follows:
+        1. Let |resource| be the [=media resource=] refrenced by |data|'s
+            {{AudioData/[[resource reference]]}}.
+        2. Let |reference| be a new reference to |resource|.
+        3. Assign |reference| to {{AudioData/[[resource reference]]}}.
+        4. Assign the values of |data|'s {{AudioData/[[detached]]}},
+            {{AudioData/[[sample format]]}}, {{AudioData/[[sample rate]]}},
+            {{AudioData/[[number of frames]]}},
+            {{AudioData/[[number of channels]]}}, and
+            {{AudioData/[[timestamp]]}} slots to the corresponding slots in
+            |clone|.
     2. Return |clone|.
+
+Audio Sample Format{#audio-sample-format}
+-----------------------------------------
+Audo sample formats describe the numeric type used to represent a single
+sample (e.g. 32-bit floating point) and the arrangement of samples from
+different channels as either interleaved or planar.
+
+<xmp class='idl'>
+enum AudioSampleFormat {
+  "U8",
+  "S16",
+  "S32",
+  "FLT",
+  "S16P",
+  "S32P",
+  "FLTP",
+};
+</xmp>
+
+: <dfn enum-value for=AudioSampleFormat>U8</dfn>
+:: 8-bit unsigned integer samples with interleaved channel arrangement.
+
+: <dfn enum-value for=AudioSampleFormat>S16</dfn>
+:: 16-bit signed integer samples with interleaved channel arrangement.
+
+: <dfn enum-value for=AudioSampleFormat>S32</dfn>
+:: 32-bit signed integer samples with interleaved channel arrangement.
+
+: <dfn enum-value for=AudioSampleFormat>FLT</dfn>
+:: 32-bit float samples with interleaved channel arrangement.
+
+: <dfn enum-value for=AudioSampleFormat>S16P</dfn>
+:: 16-bit signed integer samples with planar channel arrangement.
+
+: <dfn enum-value for=AudioSampleFormat>S32P</dfn>
+:: 32-bit signed integer samples with planar channel arrangement.
+
+: <dfn enum-value for=AudioSampleFormat>FLTP</dfn>
+:: 32-bit float samples with planar channel arrangement.
 
 VideoFrame Interface {#videoframe-interface}
 --------------------------------------------
@@ -2409,7 +2539,7 @@ Algorithms{#raw-media-algorithms}
   <dt><dfn>Clone Frame</dfn> (with |frame|)</dt>
   <dd>
     1. Let |cloneFrame| be a new object of the same type as frame (either
-        {{AudioFrame}} or {{VideoFrame}}).
+        {{AudioData}} or {{VideoFrame}}).
     2. Initialize each attribute and internal slot of clone with a copy of the
         value from the corresponding attribute of this frame.
 
