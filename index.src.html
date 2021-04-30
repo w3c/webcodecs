@@ -1990,7 +1990,7 @@ dictionary AudioDataInit {
 
 ### Methods ###{#audiodata-methods}
 : <dfn method for=AudioData>
-      copyFromChannel(destination, channelNumber)
+      copyFromChannel(|destination|, |channelNumber|)
     </dfn>
 :: Copies the samples from the specified channel of the {{AudioData}} to the
     destination buffer.
@@ -2005,7 +2005,9 @@ dictionary AudioDataInit {
         {{TypeError}}.
     4. Let |resource| be the [=media resource=] referenced by
         {{AudioData/[[resource reference]]}}.
-    5. Copy the bytes of |resource| into <var ignore=''>destination</var>.
+    5. Let |channelBytes| be the region of |resource| corresponding to
+        |channelNumber|.
+    6. Copy the |channelBytes| into |destination|.
 
 : <dfn method for=AudioData>clone()</dfn>
 :: Creates a new AudioData with a reference to the same [=media resource=].
