@@ -2410,6 +2410,7 @@ interface ImageDecoder {
   constructor(ImageDecoderInit init);
 
   readonly attribute boolean complete;
+  readonly attribute Promise<undefined> completed;
   readonly attribute ImageTrackList tracks;
 
   Promise<ImageDecodeResult> decode(optional ImageDecodeOptions options);
@@ -2430,6 +2431,10 @@ interface ImageDecoder {
 : <dfn attribute for=ImageDecoder>\[[complete]]</dfn>
 :: A boolean indicating whether {{ImageDecoder/[[encoded data]]}} is completely
     buffered.
+
+: <dfn attribute for=ImageDecoder>[[completed promise]]</dnf>
+:: The promise used to signal when {{ImageDecoder/[[complete]]}} becomes
+    `true`.
 
 : <dfn attribute for=ImageDecoder>[[codec implementation]]</dfn>
 :: An underlying image decoder implementation provided by the User Agent.
@@ -2506,10 +2511,11 @@ interface ImageDecoder {
     13. Otherwise:
         1. Assert that `init.data` is of type {{BufferSource}}.
         2. Assign a copy of `init.data` to  {{ImageDecoder/[[encoded data]]}}.
-        3. Assign `true` to {{ImageDecoder/complete}}
-        4. Queue a control message to [=configure the image decoder=] with
+        3. Assign `true` to {{ImageDecoder/complete}}.
+        4. Reslove {{ImageDecoder/[[completed promise]]}}.
+        5. Queue a control message to [=configure the image decoder=] with
             |init|.
-        5. Queue a control message to [=decode track metadata=].
+        6. Queue a control message to [=decode track metadata=].
     14. return |d|.
 
     [=Running a control message=] to <dfn>configure the image decoder</dfn>
@@ -2534,6 +2540,17 @@ interface ImageDecoder {
     1. Run the [=ImageDecoder/Establish Tracks=] algorithm.
 
 ### Attributes ### {#imagedecoder-attributes}
+: <dfn attribute for=ImageDecoder>complete</dfn>
+:: Indicates whether {{ImageDecoder/[[encoded data]]}} is completely buffered.
+
+    The {{ImageDecoder/complete}} getter steps are to return
+    {{ImageDecoder/[[complete]]}}.
+
+: <dfn attribute for=ImageDecoder>completed</dfn>
+:: The promise used to signal when {{ImageDecoder/complete}} becomes `true`.
+
+    The {{ImageDecoder/completed}} getter steps are to return
+    {{ImageDecoder/[[completed promise]]}}.
 
 : <dfn attribute for=ImageDecoder>tracks</dfn>
 :: Returns a [=live=] {{ImageTrackList}}, which provides metadata
@@ -2541,13 +2558,6 @@ interface ImageDecoder {
 
     The {{ImageDecoder/tracks}} getter steps are to return
     {{ImageDecoder/[[ImageTrackList]]}}.
-
-: <dfn attribute for=ImageDecoder>complete</dfn>
-:: Indicates whether {{ImageDecoder/[[encoded data]]}} is completely buffered.
-
-    The {{ImageDecoder/complete}} getter steps are to return
-    {{ImageDecoder/[[complete]]}}.
-
 
 ### Methods ### {#imagedecoder-methods}
 : <dfn method for=ImageDecoder>decode(options)</dfn>
@@ -2624,6 +2634,7 @@ interface ImageDecoder {
 
         : [=read request/close steps=]
         :: 1. Assign `true` to {{ImageDecoder/complete}}
+            2. Resolve {{ImageDecoder/[[completed promise]]}}.
 
         : [=read request/error steps=]
         :: 1. Queue a task on the [=control thread=] event loop to run the
@@ -3041,7 +3052,7 @@ interface ImageTrackList {
 
 ### Internal Slots ### {#imagetracklist-internal-slots}
 : <dfn attribute for=ImageTrackList>[[ready promise]]</dfn>
-:: The promise used to signal when the {{ImageTrackList}} has been poplated
+:: The promise used to signal when the {{ImageTrackList}} has been populated
     with {{ImageTrack}}s.
 
     NOTE: {{ImageTrack}} {{ImageTrack/frameCount}} may receive subsequent
