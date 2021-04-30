@@ -1381,10 +1381,7 @@ dictionary VideoDecoderConfig {
   BufferSource description;
   unsigned long codedWidth;
   unsigned long codedHeight;
-  unsigned long cropLeft;
-  unsigned long cropTop;
-  unsigned long cropWidth;
-  unsigned long cropHeight;
+  VideoFrameRegion visibleRegion;
   unsigned long displayWidth;
   unsigned long displayHeight;
   HardwareAcceleration hardwareAcceleration = "allow";
@@ -2110,14 +2107,28 @@ interface VideoFrame {
   readonly attribute FrozenArray<Plane>? planes;
   readonly attribute unsigned long codedWidth;
   readonly attribute unsigned long codedHeight;
-  readonly attribute unsigned long cropLeft;
-  readonly attribute unsigned long cropTop;
-  readonly attribute unsigned long cropWidth;
-  readonly attribute unsigned long cropHeight;
+
+  // Convenience accessor, origin is always (0, 0).
+  readonly attribute VideoFrameRegion codedRegion;
+
+  // Region of this frame's pixel data that is not padding.
+  readonly attribute VideoFrameRegion visibleRegion;
+
   readonly attribute unsigned long displayWidth;
   readonly attribute unsigned long displayHeight;
   readonly attribute unsigned long long? duration;
   readonly attribute unsigned long long? timestamp;
+
+  // Returns the minimum size (in bytes) of a buffer that readInto() could
+  // read this frame into with the given options.
+  unsigned long allocationSize(
+      optional VideoFrameReadIntoOptions options = {});
+
+  // Read the planes of this frame into |destination| according to |options|.
+  // The format of the data is the same as this frame's |format|.
+  Promise<sequence<PlaneLayout>> readInto(
+      BufferSource destination,
+      optional VideoFrameReadIntoOptions options = {});
 
   VideoFrame clone();
   undefined close();
@@ -2134,14 +2145,11 @@ dictionary VideoFrameInit {
 
 dictionary VideoFramePlaneInit {
   required PixelFormat format;
-  required unsigned long codedWidth;
-  required unsigned long codedHeight;
-  unsigned long cropLeft;
-  unsigned long cropTop;
-  unsigned long cropWidth;
-  unsigned long cropHeight;
-  unsigned long displayWidth;
-  unsigned long displayHeight;
+  required [EnforceRange] unsigned long codedWidth;
+  required [EnforceRange] unsigned long codedHeight;
+  VideoFrameRegion visibleRegion;
+  [EnforceRange] unsigned long displayWidth;
+  [EnforceRange] unsigned long displayHeight;
   unsigned long long duration;
   unsigned long long timestamp;
 };
@@ -2499,6 +2507,38 @@ dictionary VideoFramePlaneInit {
             {{VideoFrame/codedWidth}}, {{VideoFrame/codedHeight}}, etc.) to those of the same name in |clone|.
     2. Return |clone|.
 
+VideoFrame ReadInto() Options {#videoframe-readinto-options}
+------------------------------------------------------------
+Options to specify which {{VideoFrameRegion}} to read and the location and
+padding of planes in the destination buffer.
+
+<xmp class='idl'>
+dictionary VideoFrameReadIntoOptions {
+  // The region to read. If unspecified, the visible region will be used. The
+  // coded region can be easily specified by passing frame.codedRegion.
+  VideoFrameRegion region;
+
+  // The layout of each plane in the buffer. This allows the offset and stride
+  // of each plane to be specified. If unspecified, the planes will be tightly
+  // packed. It is invalid to specify planes that overlap.
+  sequence<PlaneLayout> layout;
+};
+</xmp>
+
+VideoFrame Region {#videoframe-region}
+--------------------------------------
+A dictionary specifying the position and dimensions of a region within a
+{{VideoFrame}}.
+
+<xmp class='idl'>
+dictionary VideoFrameRegion {
+  required [EnforceRange] unsigned long left;
+  required [EnforceRange] unsigned long top;
+  required [EnforceRange] unsigned long width;
+  required [EnforceRange] unsigned long height;
+};
+</xmp>
+
 Plane Interface {#plane-interface}
 ----------------------------------
 A {{Plane}} is solely constructed by its {{VideoFrame}}. During construction,
@@ -2523,9 +2563,9 @@ interface Plane {
 };
 
 dictionary PlaneInit {
-  required BufferSource src;
-  required unsigned long stride;
-  required unsigned long rows;
+  required BufferSource data;
+  required [EnforceRange] unsigned long stride;
+  unsigned long offset;
 };
 </xmp>
 
@@ -2560,6 +2600,19 @@ When invoked, run these steps:
 4. Let |plane bytes| be the region of bytes in [=media resource=] coresponding
     to this plane.
 5. Copy the |plane bytes| into |dst|.
+
+
+Plane Layout{#plane-layout}
+---------------------------
+Plane layouts describe the position (offset) and padded width (stride) of a
+plane within a buffer.
+
+<xmp class='idl'>
+dictionary PlaneLayout {
+  [EnforceRange] unsigned long offset;
+  [EnforceRange] unsigned long stride;
+};
+</xmp>
 
 
 Pixel Format{#pixel-format}
