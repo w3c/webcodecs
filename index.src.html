@@ -2264,12 +2264,12 @@ dictionary VideoFramePlaneInit {
 5. Switch on |image|:
     - {{HTMLImageElement}}
     - {{SVGImageElement}}
-        1. If {{VideoFramePlaneInit/timestamp}} does not [=map/exist=] in
+        1. If {{VideoFrameInit/timestamp}} does not [=map/exist=] in
             |init|, throw a {{TypeError}}.
-        2. If image's media data has no [=natural dimensions=]
+        2. If |image|'s media data has no [=natural dimensions=]
             (e.g., it's a vector graphic with no specified content size), then
             throw an {{InvalidStateError}} {{DOMException}}.
-        3. Let |resource| be a new [=frame resource=] containing a copy of
+        3. Let |resource| be a new [=media resource=] containing a copy of
             |image|'s media data. If this is an animated image, |image|'s
             [=bitmap data=] must only be taken from the default image of the
             animation (the one that the format defines is to be used when
@@ -2286,16 +2286,20 @@ dictionary VideoFramePlaneInit {
             {{InvalidStateError}} {{DOMException}}.
         2. Let |currentPlaybackFrame| be the {{VideoFrame}} at the [=current
             playback position=].
-        3. Run the [=VideoFrame/Initialize Frame From Other Frame=] algoirhtm
+        3. Run the [=VideoFrame/Initialize Frame From Other Frame=] algorithm
             with |init|, |frame|, and |currentPlaybackFrame|.
 
     - {{HTMLCanvasElement}}
     - {{ImageBitmap}}
     - {{OffscreenCanvas}}
-        1. If {{VideoFramePlaneInit/timestamp}} does not [=map/exist=] in
+        1. If {{VideoFrameInit/timestamp}} does not [=map/exist=] in
             |init|, throw a {{TypeError}}.
-        2. Let |resource| be a new [=frame resource=] containing a copy of
+        2. Let |resource| be a new [=media resource=] containing a copy of
             |image|'s [=bitmap data=].
+
+            NOTE: Implementers are should avoid a deep copy by using reference
+                coutning where feasible.
+
         3. Let |width| be `image.width` and |height| be `image.height`.
         4. Run the [=VideoFrame/Initialize Frame With Resource and Size=]
             algorithm with |init|, |frame|, |resource|, |width|, and |height|.
@@ -2522,7 +2526,7 @@ dictionary VideoFramePlaneInit {
 
 : <dfn for=VideoFrame>Initialize Frame From Other Frame</dfn> (with |init|,
     |frame|, and |otherFrame|)
-:: 1. Let |resource| be the [=frame resource=] referenced by |otherFrame|'s
+:: 1. Let |resource| be the [=media resource=] referenced by |otherFrame|'s
         {{VideoFrame/[[resource reference]]}}.
     2. Assign a new reference for |resource| to |frame|'s
         {{VideoFrame/[[resource reference]]}}.
@@ -2557,7 +2561,7 @@ dictionary VideoFramePlaneInit {
     2. If |resource| uses a recognized {{PixelFormat}}:
         1. Assign the {{PixelFormat}} of |resource| to {{VideoFrame/format}}.
         2. Let |planes| be a list of {{Plane}}s describing the
-            [=frame resource=] in accordance with the {{VideoFrame/format}}.
+            [=media resource=] in accordance with the {{VideoFrame/format}}.
 
             ISSUE: The spec should define explicit rules for each
                 {{PixelFormat}} and reference them in the step above. See
