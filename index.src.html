@@ -3,15 +3,17 @@ Title: WebCodecs
 Repository: w3c/webcodecs
 Status: ED
 ED: https://w3c.github.io/webcodecs/
+TR: https://www.w3.org/TR/webcodecs/
+Previous Version: from biblio
 Shortname: webcodecs
 Level: None
 Group: mediawg
-Editor: Chris Cunningham, w3cid 114832, Google Inc. https://google.com/
+Editor: Chris Cunningham, w3cid 114832, Google Inc. https://www.google.com/
 Editor: Paul Adenot, w3cid 62410, Mozilla https://www.mozilla.org/
 Editor: Bernard Aboba, w3cid 65611, Microsoft Corporation https://www.microsoft.com/
 
 Abstract: This specification defines interfaces to codecs for encoding and
-    decoding of audio and video.
+    decoding of audio, video, and images.
 
     This specification does not specify or require any particular codec or
     method of encoding or decoding. The purpose of this specification is to
@@ -23,6 +25,10 @@ Markup Shorthands:css no, markdown yes, dfn yes
 !Participate: <a href="https://github.com/w3c/webcodecs">Git Repository.</a>
 !Participate: <a href="https://github.com/w3c/webcodecs/issues/new">File an issue.</a>
 !Version History: <a href="https://github.com/w3c/webcodecs/commits">https://github.com/w3c/webcodecs/commits</a>
+</pre>
+
+<pre class=link-defaults>
+spec:webidl; type:interface; text:Promise
 </pre>
 
 <pre class='anchors'>
@@ -49,6 +55,7 @@ spec: html; urlPrefix: https://html.spec.whatwg.org/multipage/;
         type: dfn; text: entry settings object; url: webappapis.html#entry-settings-object
     for: media;
         type: dfn; text: current playback position; url: media.html#current-playback-position
+    type: dfn; text: live; url: infrastructure.html#live
 
 spec: mediacapture-streams; urlPrefix: https://www.w3.org/TR/mediacapture-streams/
     for: mediaDevices;
@@ -64,6 +71,7 @@ spec: mediacapture-main; urlPrefix: https://w3c.github.io/mediacapture-main/
 
 spec: mimesniff; urlPrefix: https://mimesniff.spec.whatwg.org/#
     type: dfn; text: MIME type; url: mime-type
+    type: dfn; text: valid MIME type string; url:valid-mime-type
 
 spec: infra; urlPrefix: https://infra.spec.whatwg.org/#
     type: dfn; text: queue; url: queues
@@ -79,26 +87,17 @@ spec: media-capabilities; urlPrefix: https://w3c.github.io/media-capabilities/#
     type: method; text: decodingInfo(); url: dom-mediacapabilities-decodinginfo
     type: attribute; text: powerEfficient; url: dom-mediacapabilitiesinfo-powerefficient
 
-spec: webaudio; urlPrefix: https://www.w3.org/TR/webaudio/
-    type: dfn; text: acquire the content; url: #acquire-the-content
-    for: AudioBuffer
-        type: method;  text: copyToChannel(); url: #dom-audiobuffer-copytochannel
-
 spec: css-images-3; urlPrefix: https://www.w3.org/TR/css-images-3/
     type: dfn; text: natural dimensions; url: #natural-dimensions
     type: dfn; text: natural width; url: #natural-width
     type: dfn; text: natural height; url: #natural-height
 </pre>
 
-<pre class='biblio'>
-{
-  "WEBCODECS-CODEC-REGISTRY": {
-      "href": "https://w3c.github.io/webcodecs/codec_registry.html",
-      "title": "WebCodecs Codec Registry",
-      "publisher": "W3C"
-  }
+<style>
+main > dl > dd {
+  margin-bottom: 1em;
 }
-</pre>
+</style>
 
 
 Definitions {#definitions}
@@ -121,12 +120,26 @@ Definitions {#definitions}
 : <dfn lt="system resources">Codec System Resources</dfn>
 :: Resources including CPU memory, GPU memory, and exclusive handles to specific
     decoding/encoding hardware that may be allocated by the User Agent as part
-    of codec configuration or generation of {{AudioFrame}} and {{VideoFrame}}
+    of codec configuration or generation of {{AudioData}} and {{VideoFrame}}
     objects. Such resources may be quickly exhuasted and should be released
     immediately when no longer in use.
 
-Codec Processing Model {#codec-processing-model}
-================================================
+: <dfn>Progressive Image</dfn>
+:: An image that supports decoding to multiple levels of detail, with lower
+    levels becoming available while the encoded data is not yet fully buffered.
+
+: <dfn>Progressive Image Frame Generation</dfn>
+:: A generational identifier for a given [=Progressive Image=] decoded output.
+    Each successive generation adds additional detail to the decoded output.
+    The mechanism for computing a frame's generation is implementer defined.
+
+: <dfn>Primary Image Track</dfn>
+:: An image track that is marked by the given image file as being the default
+    track. The mechanism for indiciating a primary track is format defined.
+
+
+<dfn>Codec Processing Model</dfn> {#codec-processing-model-section}
+===================================================================
 
 Background {#processing-model-background}
 -----------------------------------------
@@ -199,8 +212,7 @@ The <dfn>codec processing loop</dfn> must run these steps:
 AudioDecoder Interface {#audiodecoder-interface}
 ================================================
 
-<pre class='idl'>
-<xmp>
+<xmp class='idl'>
 [Exposed=(Window,DedicatedWorker)]
 interface AudioDecoder {
   constructor(AudioDecoderInit init);
@@ -218,13 +230,12 @@ interface AudioDecoder {
 };
 
 dictionary AudioDecoderInit {
-  required AudioFrameOutputCallback output;
+  required AudioDataOutputCallback output;
   required WebCodecsErrorCallback error;
 };
 
-callback AudioFrameOutputCallback = undefined(AudioFrame output);
+callback AudioDataOutputCallback = undefined(AudioData output);
 </xmp>
-</pre>
 
 Internal Slots {#audiodecoder-internal-slots}
 ---------------------------------------------
@@ -305,7 +316,8 @@ Methods {#audiodecoder-methods}
     2. Increment {{AudioDecoder/decodeQueueSize}}.
     3. [=Queue a control message=] to decode the |chunk|.
 
-    Running a control message to decode the chunk means performing these steps:
+    [=Running a control message=] to decode the chunk means performing these
+    steps:
     1. Attempt to use {{AudioDecoder/[[codec implementation]]}} to decode the
         chunk.
     2. If decoding results in an error, queue a task on the [=control thread=]
@@ -316,7 +328,7 @@ Methods {#audiodecoder-methods}
     4. Let |decoded outputs| be a [=list=] of decoded video data outputs emitted
         by {{AudioDecoder/[[codec implementation]]}}.
     5. If |decoded outputs| is not empty, queue a task on the [=control thread=]
-        event loop to run the [=Output VideoFrames=] algorithm with
+        event loop to run the [=Output AudioData=] algorithm with
         |decoded outputs|.
   </dd>
 
@@ -332,14 +344,14 @@ Methods {#audiodecoder-methods}
     3. [=Queue a control message=] to flush the codec with |promise|.
     4. Return |promise|.
 
-    Running a control message to flush the codec means performing these steps
+    [=Running a control message=] to flush the codec means performing these steps
         with |promise|.
     1. Signal {{AudioDecoder/[[codec implementation]]}} to emit all [=internal
         pending outputs=].
     2. Let |decoded outputs| be a [=list=] of decoded audio data outputs emitted
         by {{AudioDecoder/[[codec implementation]]}}.
     3. If |decoded outputs| is not empty, queue a task on the [=control thread=]
-        event loop to run the [=Output AudioFrames=] algorithm with
+        event loop to run the [=Output AudioData=] algorithm with
         |decoded outputs|.
     4. Queue a task on the [=control thread=] event loop to resolve |promise|.
   </dd>
@@ -393,16 +405,24 @@ Methods {#audiodecoder-methods}
 Algorithms {#audiodecoder-algorithms}
 -------------------------------------
 <dl>
-  <dt><dfn>Output AudioFrames</dfn> (with |outputs|)</dt>
+  <dt><dfn>Output AudioData</dfn> (with |outputs|)</dt>
   <dd>
     Run these steps:
     1. For each |output| in |outputs|:
-        1. Let |init| be an {{AudioFrameInit}} with the following keys:
-            1. Let {{AudioFrameInit/buffer}} be an {{AudioBuffer}} containing
-                the decoded audio data from |output|.
-            2. Let {{AudioFrameInit/timestamp}} be the timestamp from |output|.
-        2. Let |frame| be an {{AudioFrame}} constructed with |init|.
-        3. Invoke {{AudioDecoder/[[output callback]]}} with frame.
+        1. Let |data| be an {{AudioData}}, intialized as follows:
+            1. Assign `false` to {{AudioData/[[detached]]}}.
+            2. Let |resource| be the [=media resource=] described by |output|.
+            3. Let |resourceReference| be a reference to |resource|.
+            4. Assign |resourceReference| to
+                {{AudioData/[[resource reference]]}}.
+            5. Let |timestamp| be the {{EncodedAudioChunk/timestamp}} of the
+                {{EncodedAudioChunk}} associated with |output|.
+            6. Assign |timestamp| to {{AudioData/[[timestamp]]}}.
+            7. Assign values to {{AudioData/[[sample format]]}},
+                {{AudioData/[[sample rate]]}},
+                {{AudioData/[[number of frames]]}}, and
+                {{AudioData/[[number of channels]]}} as determined by |output|.
+        3. Invoke {{AudioDecoder/[[output callback]]}} with |data|.
   </dd>
   <dt><dfn>Reset AudioDecoder</dfn></dt>
   <dd>
@@ -429,8 +449,7 @@ Algorithms {#audiodecoder-algorithms}
 VideoDecoder Interface {#videodecoder-interface}
 ================================================
 
-<pre class='idl'>
-<xmp>
+<xmp class='idl'>
 [Exposed=(Window,DedicatedWorker)]
 interface VideoDecoder {
   constructor(VideoDecoderInit init);
@@ -454,7 +473,6 @@ dictionary VideoDecoderInit {
 
 callback VideoFrameOutputCallback = undefined(VideoFrame output);
 </xmp>
-</pre>
 
 Internal Slots {#videodecoder-internal-slots}
 ---------------------------------------------
@@ -531,7 +549,7 @@ Methods {#videodecoder-methods}
 
     NOTE: Authors should call {{VideoFrame/close()}} on ouput
         {{VideoFrame}}s immediately when frames are no longer needed. The
-        underlying [=frame resource=]s are owned by the {{VideoDecoder}} and
+        underlying [=media resource=]s are owned by the {{VideoDecoder}} and
         failing to release them (or waiting for garbage collection) may cause
         decoding to stall.
 
@@ -541,7 +559,7 @@ Methods {#videodecoder-methods}
     2. Increment {{VideoDecoder/decodeQueueSize}}.
     3. [=Queue a control message=] to decode the |chunk|.
 
-    Running a control message to decode the chunk means performing these steps:
+    [=Running a control message=] to decode the chunk means performing these steps:
     1. Attempt to use {{VideoDecoder/[[codec implementation]]}} to decode the
         chunk.
     2. If decoding results in an error, queue a task on the [=control thread=]
@@ -568,7 +586,7 @@ Methods {#videodecoder-methods}
     3. [=Queue a control message=] to flush the codec with |promise|.
     4. Return |promise|.
 
-    Running a control message to flush the codec means performing these steps
+    [=Running a control message=] to flush the codec means performing these steps
         with |promise|.
     1. Signal {{VideoDecoder/[[codec implementation]]}} to emit all [=internal
         pending outputs=].
@@ -633,32 +651,39 @@ Algorithms {#videodecoder-algorithms}
   <dd>
     Run these steps:
     1. For each |output| in |outputs|:
-        1. Let |planes| be a sequence of {{Plane}}s containing the decoded
-            video frame data from |output|.
-        2. Let |pixelFormat| be the {{PixelFormat}} of |planes|.
-        3. Let |init| be a {{VideoFramePlaneInit}} with the following
-            keys:
-            1. Let {{VideoFramePlaneInit/timestamp}} and
-                {{VideoFramePlaneInit/duration}}
-                be the {{EncodedVideoChunk/timestamp}} and
-                {{EncodedVideoChunk/duration}} from the {{EncodedVideoChunk}}
-                associated with |output|.
-            2. Let {{VideoFramePlaneInit/codedWidth}} and
-                {{VideoFramePlaneInit/codedHeight}}
-                be the width and height of the decoded video frame |output| in
-                pixels, prior to any cropping or aspect ratio adjustments.
-            3. Let {{VideoFramePlaneInit/cropLeft}},
-                {{VideoFramePlaneInit/cropTop}},
-                {{VideoFramePlaneInit/cropWidth}}, and
-                {{VideoFramePlaneInit/cropHeight}}
-                be the crop region of the decoded video frame |output| in
-                pixels, prior to any aspect ratio adjustments.
-            4. Let {{VideoFramePlaneInit/displayWidth}} and
-                {{VideoFramePlaneInit/displayHeight}} be the display size of
-                the decoded video frame in pixels.
-        4. Let |frame| be a {{VideoFrame}}, constructed with |pixelFormat|,
-            |planes|, and |init|.
-        5. Invoke {{VideoDecoder/[[output callback]]}} with |frame|.
+        1. Let |timestamp| and |duration| be the
+            {{EncodedVideoChunk/timestamp}} and {{EncodedVideoChunk/duration}}
+            from the {{EncodedVideoChunk}} associated with |output|.
+        2. Let |frame| be the result of running the [=Create a VideoFrame=]
+            algorithm with |output|, |timestamp|, and |duration|.
+        3. Invoke {{VideoDecoder/[[output callback]]}} with |frame|.
+  </dd>
+  <dt>
+    <dfn>Create a VideoFrame</dfn> (with |output|, |timestamp|, and |duration|)
+  </dt>
+  <dd>
+    1. Let |planes| be a sequence of {{Plane}}s containing the decoded
+        video frame data from |output|.
+    2. Let |pixelFormat| be the {{PixelFormat}} of |planes|.
+    3. Let |init| be a {{VideoFramePlaneInit}} with the following
+        keys:
+        1. Assign |timestamp| to {{VideoFrameInit/timestamp}}.
+        2. Assign |duration| to {{VideoFrameInit/duration}}.
+        3. Let {{VideoFramePlaneInit/codedWidth}} and
+            {{VideoFramePlaneInit/codedHeight}}
+            be the width and height of the decoded video frame |output| in
+            pixels, prior to any cropping or aspect ratio adjustments.
+        4. Let {{VideoFramePlaneInit/cropLeft}},
+            {{VideoFramePlaneInit/cropTop}},
+            {{VideoFramePlaneInit/cropWidth}}, and
+            {{VideoFramePlaneInit/cropHeight}}
+            be the crop region of the decoded video frame |output| in
+            pixels, prior to any aspect ratio adjustments.
+        5. Let {{VideoFramePlaneInit/displayWidth}} and
+            {{VideoFramePlaneInit/displayHeight}} be the display size of
+            the decoded video frame in pixels.
+    4. Return a new {{VideoFrame}}, constructed with |pixelFormat|,
+        |planes|, and |init|.
   </dd>
   <dt><dfn>Reset VideoDecoder</dfn></dt>
   <dd>
@@ -686,8 +711,7 @@ Algorithms {#videodecoder-algorithms}
 AudioEncoder Interface {#audioencoder-interface}
 ================================================
 
-<pre class='idl'>
-<xmp>
+<xmp class='idl'>
 [Exposed=(Window,DedicatedWorker)]
 interface AudioEncoder {
   constructor(AudioEncoderInit init);
@@ -696,7 +720,7 @@ interface AudioEncoder {
   readonly attribute long encodeQueueSize;
 
   undefined configure(AudioEncoderConfig config);
-  undefined encode(AudioFrame frame);
+  undefined encode(AudioData data);
   Promise<undefined> flush();
   undefined reset();
   undefined close();
@@ -711,7 +735,6 @@ dictionary AudioEncoderInit {
 
 callback EncodedAudioChunkOutputCallback = undefined(EncodedAudioChunk output);
 </xmp>
-</pre>
 
 Internal Slots {#audioencoder-internal-slots}
 ---------------------------------------------
@@ -771,7 +794,7 @@ Methods {#audioencoder-methods}
     3. Set {{AudioEncoder/state}} to `"configured"`.
     4. [=Queue a control message=] to configure the encoder using |config|.
 
-    Running a control message to configure the encoder means performing these
+    [=Running a control message=] to configure the encoder means performing these
     steps:
     1. Let |supported| be the result of running the <a>Check Configuration
         Support</a> algorith with |config|.
@@ -782,27 +805,23 @@ Methods {#audioencoder-methods}
         {{NotSupportedError}}.
   </dd>
 
-  <dt><dfn method for=AudioEncoder>encode(frame)</dfn></dt>
+  <dt><dfn method for=AudioEncoder>encode(data)</dfn></dt>
   <dd>
-    [=Enqueues a control message=] to encode the given |frame|.
-
-    NOTE: This method will destroy the AudioFrame. Authors who wish to retain a
-    copy, should call `frame.clone()` prior to calling encode().
+    [=Enqueues a control message=] to encode the given |data|.
 
     When invoked, run these steps:
-    1. If the value of |frame|'s {{AudioFrame/[[detached]]}} internal slot is
+    1. If the value of |data|'s {{AudioData/[[detached]]}} internal slot is
         `true`, throw a {{TypeError}}.
     2. If {{AudioEncoder/state}} is not `"configured"`, throw an
         {{InvalidStateError}}.
-    3. Let |frameClone| hold the result of running the [=Clone AudioFrame=]
-        algorithm with |frame|.
-    4. Destroy the original |frame| by invoking `frame.destroy()`.
-    5. Increment {{AudioEncoder/encodeQueueSize}}.
-    6. [=Queue a control message=] to encode |frameClone|.
+    3. Let |dataClone| hold the result of running the [=Clone AudioData=]
+        algorithm with |data|.
+    4. Increment {{AudioEncoder/encodeQueueSize}}.
+    5. [=Queue a control message=] to encode |dataClone|.
 
-    Running a control message to encode the frame means performing these steps.
+    [=Running a control message=] to encode the data means performing these steps.
     1. Attempt to use {{AudioEncoder/[[codec implementation]]}} to encode
-        the [=frame resource=] described by |frameClone|.
+        the [=media resource=] described by |dataClone|.
     2. If encoding results in an error, queue a task on the [=control thread=]
         event loop to run the [=Close AudioEncoder=] algorithm with
         {{EncodingError}}.
@@ -826,7 +845,7 @@ Methods {#audioencoder-methods}
     3. [=Queue a control message=] to flush the codec with |promise|.
     4. Return |promise|.
 
-    Running a control message to flush the codec means performing these steps
+    [=Running a control message=] to flush the codec means performing these steps
         with |promise|.
     1. Signal {{AudioEncoder/[[codec implementation]]}} to emit all [=internal
         pending outputs=].
@@ -898,7 +917,7 @@ Algorithms {#audioencoder-algorithms}
             2. Let {{EncodedAudioChunkInit/type}} be the
                 {{EncodedAudioChunkType}} of |output|.
             3. Let {{EncodedAudioChunkInit/timestamp}} be the
-                {{AudioFrame/timestamp}} from the AudioFrame associated with
+                {{AudioData/timestamp}} from the AudioData associated with
                 |output|.
         2. Let |chunk| be a new {{EncodedAudioChunk}} constructed with
             |chunkInit|.
@@ -929,8 +948,7 @@ Algorithms {#audioencoder-algorithms}
 VideoEncoder Interface {#videoencoder-interface}
 ================================================
 
-<pre class='idl'>
-<xmp>
+<xmp class='idl'>
 [Exposed=(Window,DedicatedWorker)]
 interface VideoEncoder {
   constructor(VideoEncoderInit init);
@@ -954,7 +972,6 @@ dictionary VideoEncoderInit {
 
 callback EncodedVideoChunkOutputCallback = undefined(EncodedVideoChunk output, VideoDecoderConfig? output_config);
 </xmp>
-</pre>
 
 Internal Slots {#videoencoder-internal-slots}
 ---------------------------------------------
@@ -1021,7 +1038,7 @@ Methods {#videoencoder-methods}
     3. Set {{VideoEncoder/state}} to `"configured"`.
     4. [=Queue a control message=] to configure the encoder using |config|.
 
-    Running a control message to configure the encoder means performing these
+    [=Running a control message=] to configure the encoder means performing these
     steps:
     1. Let |supported| be the result of running the <a>Check Configuration
         Support</a> algorith with |config|.
@@ -1037,9 +1054,6 @@ Methods {#videoencoder-methods}
   <dd>
     [=Enqueues a control message=] to encode the given |frame|.
 
-    NOTE: This method will destroy the VideoFrame. Authors who wish to retain a
-    copy, should call `frame.clone()` prior to calling encode().
-
     When invoked, run these steps:
     1. If the value of |frame|'s {{VideoFrame/[[detached]]}} internal slot is
         `true`, throw a {{TypeError}}.
@@ -1047,11 +1061,10 @@ Methods {#videoencoder-methods}
         {{InvalidStateError}}.
     3. Let |frameClone| hold the result of running the [=Clone VideoFrame=]
         algorithm with |frame|.
-    4. Destroy the original |frame| by invoking `frame.destroy()`.
-    5. Increment {{VideoEncoder/encodeQueueSize}}.
-    6. [=Queue a control message=] to encode |frameClone|.
+    4. Increment {{VideoEncoder/encodeQueueSize}}.
+    5. [=Queue a control message=] to encode |frameClone|.
 
-    Running a control message to encode the frame means performing these steps.
+    [=Running a control message=] to encode the frame means performing these steps.
     1. Attempt to use {{VideoEncoder/[[codec implementation]]}} to encode
         |frameClone| according to |options|.
     2. If encoding results in an error, queue a task on the [=control thread=]
@@ -1078,7 +1091,7 @@ Methods {#videoencoder-methods}
     3. [=Queue a control message=] to flush the codec with |promise|.
     4. Return |promise|.
 
-    Running a control message to flush the codec means performing these steps
+    [=Running a control message=] to flush the codec means performing these steps
         with |promise|.
     1. Signal {{VideoEncoder/[[codec implementation]]}} to emit all [=internal
         pending outputs=].
@@ -1156,8 +1169,8 @@ Algorithms {#videoencoder-algorithms}
         2. Let |output_config| be a {{VideoDecoderConfig}} that describes
             |output|. Initialize |output_config| as follows:
             1. Assign `encoder_config.codec` to `output_config.codec`.
-            2. Assign `encoder_config.cropWidth` to `output_config.cropWidth`.
-            3. Assign `encoder_config.cropHeight` to `output_config.cropHeight`.
+            2. Assign `encoder_config.width` to `output_config.cropWidth`.
+            3. Assign `encoder_config.height` to `output_config.cropHeight`.
             4. Assign `encoder_config.displayWidth` to
                 `output_config.displayWidth`.
             5. Assign `encoder_config.displayHeight` to
@@ -1188,11 +1201,11 @@ Algorithms {#videoencoder-algorithms}
             2. Let {{EncodedVideoChunkInit/type}} be the
                 {{EncodedVideoChunkType}} of |output|.
             3. Let {{EncodedVideoChunkInit/timestamp}} be the
-                {{VideoFrame/timestamp}} from the {{VideoFrame}} associated with
-                |output|.
+                {{VideoFrame/[[timestamp]]}} from the {{VideoFrame}}
+                associated with |output|.
             4. Let {{EncodedVideoChunkInit/duration}} be the
-                {{VideoFrame/duration}} from the {{VideoFrame}} associated with
-                |output|.
+                {{VideoFrame/[[duration]]}} from the {{VideoFrame}} associated
+                with |output|.
         5. Let |chunk| be a new {{EncodedVideoChunk}} constructed with
             |chunkInit|.
         6. Invoke {{VideoEncoder/[[output callback]]}} with |chunk|.
@@ -1265,14 +1278,12 @@ Signalling Configuration Support{#config-support-info}
 ------------------------------------------------------
 
 ### AudioDecoderSupport ### {#audio-decoder-support}
-<pre class='idl'>
-<xmp>
+<xmp class='idl'>
 dictionary AudioDecoderSupport {
   boolean supported;
   AudioDecoderConfig config;
 };
 </xmp>
-</pre>
 
 <dl>
   <dt><dfn dict-member for=AudioDecoderSupport>supported</dfn></dt>
@@ -1288,14 +1299,12 @@ dictionary AudioDecoderSupport {
 </dl>
 
 ### VideoDecoderSupport ### {#video-decoder-support}
-<pre class='idl'>
-<xmp>
+<xmp class='idl'>
 dictionary VideoDecoderSupport {
   boolean supported;
   VideoDecoderConfig config;
 };
 </xmp>
-</pre>
 
 <dl>
   <dt><dfn dict-member for=VideoDecoderSupport>supported</dfn></dt>
@@ -1311,14 +1320,12 @@ dictionary VideoDecoderSupport {
 </dl>
 
 ### AudioEncoderSupport ### {#audio-encoder-support}
-<pre class='idl'>
-<xmp>
+<xmp class='idl'>
 dictionary AudioEncoderSupport {
   boolean supported;
   AudioEncoderConfig config;
 };
 </xmp>
-</pre>
 
 <dl>
   <dt><dfn dict-member for=AudioEncoderSupport>supported</dfn></dt>
@@ -1334,14 +1341,12 @@ dictionary AudioEncoderSupport {
 </dl>
 
 ### VideoEncoderSupport ### {#video-encoder-support}
-<pre class='idl'>
-<xmp>
+<xmp class='idl'>
 dictionary VideoEncoderSupport {
   boolean supported;
   VideoEncoderConfig config;
 };
 </xmp>
-</pre>
 
 <dl>
   <dt><dfn dict-member for=VideoEncoderSupport>supported</dfn></dt>
@@ -1379,8 +1384,7 @@ combination of codec registrations or none at all.
 
 AudioDecoderConfig{#audio-decoder-config}
 -----------------------------------------
-<pre class='idl'>
-<xmp>
+<xmp class='idl'>
 dictionary AudioDecoderConfig {
   required DOMString codec;
   required unsigned long sampleRate;
@@ -1388,7 +1392,6 @@ dictionary AudioDecoderConfig {
   BufferSource description;
 };
 </xmp>
-</pre>
 
 To check if an {{AudioDecoderConfig}} is a <dfn>valid AudioDecoderConfig</dfn>,
     run these steps:
@@ -1418,13 +1421,12 @@ To check if an {{AudioDecoderConfig}} is a <dfn>valid AudioDecoderConfig</dfn>,
 
 VideoDecoderConfig{#video-decoder-config}
 -----------------------------------------
-<pre class='idl'>
-<xmp>
+<xmp class='idl'>
 dictionary VideoDecoderConfig {
   required DOMString codec;
   BufferSource description;
-  required unsigned long codedWidth;
-  required unsigned long codedHeight;
+  unsigned long codedWidth;
+  unsigned long codedHeight;
   unsigned long cropLeft;
   unsigned long cropTop;
   unsigned long cropWidth;
@@ -1434,7 +1436,6 @@ dictionary VideoDecoderConfig {
   HardwareAcceleration hardwareAcceleration = "allow";
 };
 </xmp>
-</pre>
 
 To check if a {{VideoDecoderConfig}} is a <dfn>valid VideoDecoderConfig</dfn>,
 run these steps:
@@ -1523,15 +1524,14 @@ run these steps:
 
 AudioEncoderConfig{#audio-encoder-config}
 -----------------------------------------
-<pre class='idl'>
-<xmp>
+<xmp class='idl'>
 dictionary AudioEncoderConfig {
   required DOMString codec;
   unsigned long sampleRate;
   unsigned long numberOfChannels;
+  unsigned long long bitrate;
 };
 </xmp>
-</pre>
 
 NOTE: Codec-specific extensions to {{AudioEncoderConfig}} may be defined by the
     registrations in the [[WEBCODECS-CODEC-REGISTRY]].
@@ -1551,24 +1551,27 @@ run these steps:
 
   <dt><dfn dict-member for=AudioEncoderConfig>numberOfChannels</dfn></dt>
   <dd>The number of audio channels.</dd>
+
+  <dt><dfn dict-member for=AudioEncoderConfig>bitrate</dfn></dt>
+  <dd>
+    The average bitrate of the encoded audio given in units of bits per second.
+  </dd>
 </dl>
 
 
 VideoEncoderConfig{#video-encoder-config}
 -----------------------------------------
-<pre class='idl'>
-<xmp>
+<xmp class='idl'>
 dictionary VideoEncoderConfig {
   required DOMString codec;
   unsigned long long bitrate;
-  required unsigned long cropWidth;
-  required unsigned long cropHeight;
+  required unsigned long width;
+  required unsigned long height;
   unsigned long displayWidth;
   unsigned long displayHeight;
   HardwareAcceleration hardwareAcceleration = "allow";
 };
 </xmp>
-</pre>
 
 NOTE: Codec-specific extensions to {{VideoEncoderConfig}} may be defined by the
     registrations in the [[WEBCODECS-CODEC-REGISTRY]].
@@ -1577,7 +1580,7 @@ To check if a {{VideoEncoderConfig}} is a <dfn>valid VideoEncoderConfig</dfn>,
     run these steps:
 1. If {{VideoEncoderConfig/codec}} is not a <a>valid codec string</a>, return
     `false`.
-2. If {{VideoEncoderConfig/cropWidth}} = 0 or {{VideoEncoderConfig/cropHeight}}
+2. If {{VideoEncoderConfig/width}} = 0 or {{VideoEncoderConfig/height}}
     = 0, return `false`.
 3. If {{VideoEncoderConfig/displayWidth}} = 0 or
     {{VideoEncoderConfig/displayHeight}} = 0, return `false`.
@@ -1590,54 +1593,44 @@ To check if a {{VideoEncoderConfig}} is a <dfn>valid VideoEncoderConfig</dfn>,
   <dt><dfn dict-member for=VideoEncoderConfig>bitrate</dfn></dt>
   <dd>The average bitrate of the encoded video given in units of bits per second.</dd>
 
-  <dt><dfn dict-member for=VideoEncoderConfig>cropWidth</dfn></dt>
+  <dt><dfn dict-member for=VideoEncoderConfig>width</dfn></dt>
   <dd>
     The encoded width of output {{EncodedVideoChunk}}s in pixels, prior to any
     display aspect ratio adjustments.
 
-    The encoder must scale any {{VideoFrame}} who's {{VideoFrame/cropWidth}}
-    differs from this value.
+    The encoder must scale any {{VideoFrame}} who's
+    {{VideoFrame/[[crop width]]}} differs from this value.
   </dd>
 
-  <dt><dfn dict-member for=VideoEncoderConfig>cropHeight</dfn></dt>
+  <dt><dfn dict-member for=VideoEncoderConfig>height</dfn></dt>
   <dd>
     The encoded height of output {{EncodedVideoChunk}}s in pixels, prior to any
     display aspect ratio adjustments.
 
-    The encoder must scale any {{VideoFrame}} who's {{VideoFrame/cropHeight}}
-    differs from this value.
+    The encoder must scale any {{VideoFrame}} who's
+    {{VideoFrame/[[crop height]]}} differs from this value.
   </dd>
 </dl>
-
-<div class='note'>
-  NOTE: The {{VideoEncoder}} will scale, not crop, input {{VideoFrame}}s to the
-      specified {{VideoEncoderConfig/cropWidth}} and
-      {{VideoEncoderConfig/cropHeight}}.
-
-      The naming of {{VideoEncoderConfig/cropWidth}} and
-      {{VideoEncoderConfig/cropHeight}} reflects that the encoded chunks may be
-      decoded to produce {{VideoFrame}}s who's {{VideoFrame/cropWidth}}
-      and {{VideoFrame/cropHeight}} will match these values.
-</div>
 
 <dl>
   <dt><dfn dict-member for=VideoEncoderConfig>displayWidth</dfn></dt>
   <dd>
     The intended display width of output {{EncodedVideoChunk}}s in pixels.
-    Defaults to {{VideoEncoderConfig/cropWidth}} if not present.
+    Defaults to {{VideoEncoderConfig/width}} if not present.
   </dd>
 
   <dt><dfn dict-member for=VideoEncoderConfig>displayHeight</dfn></dt>
   <dd>
     The intended display height of output {{EncodedVideoChunk}}s in pixels.
-    Defaults to {{VideoEncoderConfig/cropWidth}} if not present.
+    Defaults to {{VideoEncoderConfig/width}} if not present.
   </dd>
 </dl>
 
 <div class='note'>
   NOTE: Providing a {{VideoEncoderConfig/displayWidth}} or
-      {{VideoEncoderConfig/displayHeight}} that differs from the crop dimensions
-      signals that chunks should be scaled after decoding to arrive at the final
+      {{VideoEncoderConfig/displayHeight}} that differs from
+      {{VideoEncoderConfig/width}} and {{VideoEncoderConfig/height}} signals
+      that chunks should be scaled after decoding to arrive at the final
       display aspect ratio.
 
       For many codecs this is merely pass-through information, but some codecs
@@ -1654,15 +1647,13 @@ To check if a {{VideoEncoderConfig}} is a <dfn>valid VideoEncoderConfig</dfn>,
 
 Hardware Acceleration{#hardware-acceleration}
 ---------------------------------------------
-<pre class='idl'>
-<xmp>
+<xmp class='idl'>
 enum HardwareAcceleration {
   "allow",
   "deny",
   "require",
 };
 </xmp>
-</pre>
 
 When supported, hardware acceleration offloads encoding or decoding to
 specialized hardware.
@@ -1734,13 +1725,11 @@ keys and values. For nested dictionaries, apply this definition recursively.
 VideoEncoderEncodeOptions{#video-encoder-options}
 -------------------------------------------------
 
-<pre class='idl'>
-<xmp>
+<xmp class='idl'>
 dictionary VideoEncoderEncodeOptions {
   boolean keyFrame = false;
 };
 </xmp>
-</pre>
 
 <dl>
   <dt><dfn dict-member for=VideoEncoderEncodeOptions>keyFrame</dfn></dt>
@@ -1754,15 +1743,13 @@ dictionary VideoEncoderEncodeOptions {
 
 CodecState{#codec-state}
 ------------------------
-<pre class='idl'>
-<xmp>
+<xmp class='idl'>
 enum CodecState {
   "unconfigured",
   "configured",
   "closed"
 };
 </xmp>
-</pre>
 
 <dl>
   <dt><dfn enum-value for=CodecState>unconfigured</dfn></dt>
@@ -1781,11 +1768,9 @@ enum CodecState {
 
 WebCodecsErrorCallback{#error-callback}
 ---------------------------------------
-<pre class='idl'>
-<xmp>
+<xmp class='idl'>
 callback WebCodecsErrorCallback = undefined(DOMException error);
 </xmp>
-</pre>
 
 
 Encoded Media Interfaces (Chunks) {#encoded-media-interfaces}
@@ -1794,8 +1779,7 @@ These interfaces represent chunks of encoded media.
 
 EncodedAudioChunk Interface {#encodedaudiochunk-interface}
 ------------------------------------------------------------
-<pre class='idl'>
-<xmp>
+<xmp class='idl'>
 [Exposed=(Window,DedicatedWorker)]
 interface EncodedAudioChunk {
   constructor(EncodedAudioChunkInit init);
@@ -1815,7 +1799,6 @@ enum EncodedAudioChunkType {
     "delta",
 };
 </xmp>
-</pre>
 
 ### Constructors ###{#encodedaudiochunk-constructors}
 <dfn constructor for=EncodedAudioChunk title="EncodedAudioChunk(init)">
@@ -1841,8 +1824,7 @@ enum EncodedAudioChunkType {
 
 EncodedVideoChunk Interface{#encodedvideochunk-interface}
 -----------------------------------------------------------
-<pre class='idl'>
-<xmp>
+<xmp class='idl'>
 [Exposed=(Window,DedicatedWorker)]
 interface EncodedVideoChunk {
   constructor(EncodedVideoChunkInit init);
@@ -1864,7 +1846,6 @@ enum EncodedVideoChunkType {
     "delta",
 };
 </xmp>
-</pre>
 
 ### Constructors ###{#encodedvideochunk-constructors}
 <dfn constructor for=EncodedVideoChunk title="EncodedVideoChunk(init)">
@@ -1894,7 +1875,7 @@ enum EncodedVideoChunkType {
 </dl>
 
 
-Raw Media Interfaces (Frames){#raw-media-interfaces}
+Raw Media Interfaces {#raw-media-interfaces}
 ====================================================
 These interfaces represent unencoded (raw) media.
 
@@ -1905,134 +1886,261 @@ Memory Model {#raw-media-memory-model}
 
 This section is non-normative.
 
-Decoded media data (frames) may occupy a large amount of system memory. To
-minimize the need for expensive copies, this specification defines a scheme
-for reference counting (`frame.clone()` and `frame.close()`).
+Decoded media data may occupy a large amount of system memory. To minimize the
+need for expensive copies, this specification defines a scheme for reference
+counting (`clone()` and `close()`).
 
 NOTE: Authors should take care to invoke `close()` immediately when frames are
     no longer needed.
 
 ### Reference Counting ### {#raw-media-memory-model-reference-counting}
 
-A <dfn>frame resource</dfn> is storage for the actual pixel data or the audio
-sample data described by a {{VideoFrame}} or {{AudioFrame}}.
+A <dfn>media resource</dfn> is storage for the actual pixel data or the audio
+sample data described by a {{VideoFrame}} or {{AudioData}}.
 
-The {{AudioFrame}} {{AudioFrame/[[resource reference]]}} and {{VideoFrame}}
+The {{AudioData}} {{AudioData/[[resource reference]]}} and {{VideoFrame}}
 {{VideoFrame/[[resource reference]]}} internal slots hold a reference to a
-[=frame resource=].
+[=media resource=].
 
 {{VideoFrame}}.{{VideoFrame/clone()}} and
-{{AudioFrame}}.{{AudioFrame/clone()}} return new frame objects who's
-`[[resource reference]]` points to the same [=frame resource=] as the original
+{{AudioData}}.{{AudioData/clone()}} return new frame objects who's
+`[[resource reference]]` points to the same [=media resource=] as the original
 frame.
 
-{{VideoFrame}}.{{VideoFrame/close()}} and {{AudioFrame}}.{{AudioFrame/close()}}
+{{VideoFrame}}.{{VideoFrame/close()}} and {{AudioData}}.{{AudioData/close()}}
 will clear their [[resource reference]] slot, releasing the reference their
-[=frame resource=]
+[=media resource=]
 
-A [=frame resource=] must remain alive as long as it continues to be referenced
-by a `[[resource reference]]`.
+A [=media resource=] must remain alive at least as long as it continues to be
+referenced by a `[[resource reference]]`.
 
-NOTE: When a [=frame resource=] is no longer referenced by a
+NOTE: When a [=media resource=] is no longer referenced by a
     `[[resource reference]]`, the resource may be destroyed. User agents are
     encouraged to destroy such resources quickly to reduce memory pressure and
     facilitate resouce reuse.
 
-AudioFrame Interface {#audioframe-interface}
+AudioData Interface {#audiodata-interface}
 ---------------------------------------------
 
-<pre class='idl'>
-<xmp>
+<xmp class='idl'>
 [Exposed=(Window,DedicatedWorker)]
-interface AudioFrame {
-  constructor(AudioFrameInit init);
+interface AudioData {
+  constructor(AudioDataInit init);
 
+  readonly attribute AudioSampleFormat sampleFormat;
+  readonly attribute float sampleRate;
+  readonly attribute unsigned long numberOfFrames;
+  readonly attribute unsigned long numberOfChannels;
+  readonly attribute unsigned long allocationSize;
+  readonly attribute unsigned long long duration;
   readonly attribute unsigned long long timestamp;
-  readonly attribute AudioBuffer? buffer;
 
-  AudioFrame clone();
+  undefined copyTo([AllowShared] BufferSource destination, unsigned long planeNumber);
+  AudioData clone();
   undefined close();
 };
 
-dictionary AudioFrameInit {
+dictionary AudioDataInit {
+  required AudioSampleFormat sampleFormat;
+  required float sampleRate;
+  required unsigned long numberOfFrames;
+  required unsigned long numberOfChannels;
   required unsigned long long timestamp;
-  required AudioBuffer buffer;
+  required BufferSource data;
 };
 </xmp>
-</pre>
 
-### Internal Slots ###{#audioframe-internal-slots}
-: <dfn attribute for=AudioFrame>\[[detached]]</dfn>
-:: Boolean indicating whether {{AudioFrame/close()}} was invoked.
+### Internal Slots ###{#audiodata-internal-slots}
+: <dfn attribute for=AudioData>\[[detached]]</dfn>
+:: Boolean indicating whether {{AudioData/close()}} was invoked on this
+    {{AudioData}}.
 
-: <dfn attribute for=AudioFrame>[[resource reference]]</dfn>
-:: A reference to a [=frame resource=] that stores the audio sample data for
-    this frame.
+: <dfn attribute for=AudioData>[[resource reference]]</dfn>
+:: A reference to a [=media resource=] that stores the audio sample data for
+    this {{AudioData}}.
 
-### Constructors ###{#audioframe-constructors}
-<dfn constructor for=AudioFrame title="AudioFrame(init)">
-  AudioFrame(init)
+: <dfn attribute for=AudioData>[[sample format]]</dfn>
+:: The {{AudioSampleFormat}} used by this {{AudioData}}.
+
+: <dfn attribute for=AudioData>[[sample rate]]</dfn>
+:: The sample-rate, in Hz, for this {{AudioData}}.
+
+: <dfn attribute for=AudioData>[[number of frames]]</dfn>
+:: The number of frames (samples per channel) for this {{AudioData}}.
+
+: <dfn attribute for=AudioData>[[number of channels]]</dfn>
+:: The number of audio channels for this {{AudioData}}.
+
+: <dfn attribute for=AudioData>\[[timestamp]]</dfn>
+:: The presentation timestamp, in microseconds, for this {{AudioData}}.
+
+### Constructors ###{#audiodata-constructors}
+<dfn constructor for=AudioData title="AudioData(init)">
+  AudioData(init)
 </dfn>
-1. Let |frame| be a new {{AudioFrame}} object, initialized as follows:
-    1. Assign |init|.{{AudioFrameInit/timestamp}} to {{AudioFrame/timestamp}}.
-    2. Assign |init|.{{AudioFrameInit/buffer}} to {{AudioFrame/buffer}}.
-    3. Let |resource| be a new [=frame resource=].
-    4. [=Acquire the content=] [[WEBAUDIO]] of {{AudioFrame/buffer}} and
-        assign the acquired content to |resource|.
-
-        NOTE: The acquired content stored in |resource| is an immutable
-            snapshot {{AudioFrameInit/buffer}}'s content. Mutating
-            {{AudioFrame/buffer}} after construction (e.g. via
-            {{AudioBuffer/copyToChannel()}}) will have no effect on the
-            |resource|.
-
-    5. Let |resourceReference| be a reference to |resource|.
-    6. Assign |resourceReference| to {{AudioFrame/[[resource reference]]}}.
-    7. Assign `false` to the {{AudioFrame/[[detached]]}} internal slot.
+1. Let |frame| be a new {{AudioData}} object, initialized as follows:
+    1. Assign `false` to {{AudioData/[[detached]]}}.
+    2. Assign |init|.{{AudioDataInit/sampleFormat}} to
+        {{AudioData/[[sample format]]}}.
+    3. Assign |init|.{{AudioDataInit/sampleRate}} to
+        {{AudioData/[[sample rate]]}}.
+    4. Assign |init|.{{AudioDataInit/numberOfFrames}} to
+        {{AudioData/[[number of frames]]}}.
+    5. Assign |init|.{{AudioDataInit/numberOfChannels}} to
+        {{AudioData/[[number of channels]]}}.
+    6. Assign |init|.{{AudioDataInit/timestamp}} to
+        {{AudioData/[[timestamp]]}}.
+    7. Let |resource| be a [=media resource=] containing a copy of
+        |init|.{{AudioDataInit/data}}.
+    8. Let |resourceReference| be a reference to |resource|.
+    9. Assign |resourceReference| to {{AudioData/[[resource reference]]}}.
 2. Return |frame|.
 
-### Attributes ###{#audioframe-attributes}
-: <dfn attribute for=AudioFrame>timestamp</dfn>
-:: The presentation timestamp, given in microseconds.
+### Attributes ###{#audiodata-attributes}
 
-: <dfn attribute for=AudioFrame>buffer</dfn>
-:: The buffer describing decoded audio data.
+: <dfn attribute for=AudioData>sampleFormat</dfn>
+:: The {{AudioSampleFormat}} used by this {{AudioData}}.
 
-    NOTE: The backing [=frame resource=] (referenced by
-        {{AudioFrame/[[resource reference]]}}) is immutable. Mutating
-        {{AudioFrame/buffer}} after construction (e.g. via
-        {{AudioBuffer/copyToChannel()}}) will have no effect on the
-        [=frame resource=].
+    The {{AudioData/sampleFormat}} getter steps are to return
+    {{AudioData/[[sample format]]}}.
 
-### Methods ###{#audioframe-methods}
-: <dfn method for=AudioFrame>clone()</dfn>
-:: Creates a new AudioFrame with a reference to the same [=frame resource=].
+: <dfn attribute for=AudioData>sampleRate</dfn>
+:: The sample-rate, in Hz, for this {{AudioData}}.
+
+    The {{AudioData/sampleRate}} getter steps are to return
+    {{AudioData/[[sample rate]]}}.
+
+: <dfn attribute for=AudioData>numberOfFrames</dfn>
+:: The number of frames (samples per channel) for this {{AudioData}}.
+
+    The {{AudioData/numberOfFrames}} getter steps are to return
+    {{AudioData/[[number of frames]]}}.
+
+: <dfn attribute for=AudioData>numberOfChannels</dfn>
+:: The number of audio channels for this {{AudioData}}.
+
+    The {{AudioData/numberOfChannels}} getter steps are to return
+    {{AudioData/[[number of channels]]}}.
+
+: <dfn attribute for=AudioData>allocationSize</dfn>
+:: The the number of bytes allocated to hold all of the samples in this
+    {{AudioData}}.
+
+    The {{AudioData/allocationSize}} getter steps are to:
+    1. Let |sampleSize| be the number of bytes per sample, as defined by the
+        {{AudioData/[[sample format]]}}.
+    2. Return the product of multiplying |sampleSize| by
+        {{AudioData/[[number of channels]]}} and
+        {{AudioData/[[number of frames]]}}.
+
+: <dfn attribute for=AudioData>timestamp</dfn>
+:: The presentation timestamp, in microseconds, for this {{AudioData}}.
+
+    The {{AudioData/numberOfChannels}} getter steps are to return
+    {{AudioData/[[timestamp]]}}.
+
+: <dfn attribute for=AudioData>duration</dfn>
+:: The duration, in microseconds, for this {{AudioData}}.
+
+    The {{AudioData/duration}} getter steps are to:
+    1. Let |microsecondsPerSecond| be `1,000,000`.
+    2. Let |durationInSeconds| be the result of dividing
+        {{AudioData/[[number of frames]]}} by {{AudioData/[[sample rate]]}}.
+    3. Return the product of |durationInSeconds| and |microsecondsPerSecond|.
+
+### Methods ###{#audiodata-methods}
+: <dfn method for=AudioData>
+      copyTo(|destination|, |planeNumber|)
+    </dfn>
+:: Copies the samples from the specified plane of the {{AudioData}} to the
+    destination buffer.
 
     When invoked, run these steps:
-    1. If the value of |frame|'s {{AudioFrame/[[detached]]}} internal slot is
+    1. If the value of |frame|'s {{AudioData/[[detached]]}} internal slot is
         `true`, throw an {{InvalidStateError}} {{DOMException}}.
-    2. Return the result of running the [=Clone AudioFrame=] algorithm with
+    2. Let |allocationSize| be the number of bytes allocated to hold this
+        {{AudioData}}'s [=media resource=], as described by the getter steps of
+        {{AudioData/allocationSize}}.
+    3. If |allocationSize| is greater than `destination.byteLength`, throw a
+        {{TypeError}}.
+    4. Let |resource| be the [=media resource=] referenced by
+        {{AudioData/[[resource reference]]}}.
+    5. Let |planeBytes| be the region of |resource| corresponding to
+        |planeNumber|.
+    6. Copy the |planeBytes| into |destination|.
+
+: <dfn method for=AudioData>clone()</dfn>
+:: Creates a new AudioData with a reference to the same [=media resource=].
+
+    When invoked, run these steps:
+    1. If the value of |frame|'s {{AudioData/[[detached]]}} internal slot is
+        `true`, throw an {{InvalidStateError}} {{DOMException}}.
+    2. Return the result of running the [=Clone AudioData=] algorithm with
         [=this=].
 
-: <dfn method for=AudioFrame>close()</dfn>
-:: Clears all state and releases the reference to the [=frame resource=].
+: <dfn method for=AudioData>close()</dfn>
+:: Clears all state and releases the reference to the [=media resource=].
     Close is final.
 
     When invoked, run these steps:
-    1. Assign `null` to {{AudioFrame/[[resource reference]]}}.
-    2. Assign `null` to {{AudioFrame/buffer}}.
-    3. Assign `true` to the {{AudioFrame/[[detached]]}} internal slot.
+    1. Assign `true` to the {{AudioData/[[detached]]}} internal slot.
+    2. Assign `null` to {{AudioData/[[resource reference]]}}.
 
-### Algorithms ### {#audioframe-algorithms}
+### Algorithms ### {#audiodata-algorithms}
 
-: <dfn>Clone AudioFrame</dfn> (with |frame|)
+: <dfn>Clone AudioData</dfn> (with |data|)
 :: Run these steps:
-    1. Let |clone| be a new {{AudioFrame}} initialized as follows:
-        1. Assign |frame|.{{AudioFrame/[[resource reference]]}} to
-            {{AudioFrame/[[resource reference]]}}.
-        2. Assign |frame|.timestamp to {{AudioFrame/timestamp}}.
-        3. Assign |frame|.buffer to {{AudioFrame/buffer}}.
+    1. Let |clone| be a new {{AudioData}} initialized as follows:
+        1. Let |resource| be the [=media resource=] refrenced by |data|'s
+            {{AudioData/[[resource reference]]}}.
+        2. Let |reference| be a new reference to |resource|.
+        3. Assign |reference| to {{AudioData/[[resource reference]]}}.
+        4. Assign the values of |data|'s {{AudioData/[[detached]]}},
+            {{AudioData/[[sample format]]}}, {{AudioData/[[sample rate]]}},
+            {{AudioData/[[number of frames]]}},
+            {{AudioData/[[number of channels]]}}, and
+            {{AudioData/[[timestamp]]}} slots to the corresponding slots in
+            |clone|.
     2. Return |clone|.
+
+Audio Sample Format{#audio-sample-format}
+-----------------------------------------
+Audo sample formats describe the numeric type used to represent a single
+sample (e.g. 32-bit floating point) and the arrangement of samples from
+different channels as either interleaved or planar.
+
+<xmp class='idl'>
+enum AudioSampleFormat {
+  "U8",
+  "S16",
+  "S32",
+  "FLT",
+  "S16P",
+  "S32P",
+  "FLTP",
+};
+</xmp>
+
+: <dfn enum-value for=AudioSampleFormat>U8</dfn>
+:: 8-bit unsigned integer samples with interleaved channel arrangement.
+
+: <dfn enum-value for=AudioSampleFormat>S16</dfn>
+:: 16-bit signed integer samples with interleaved channel arrangement.
+
+: <dfn enum-value for=AudioSampleFormat>S32</dfn>
+:: 32-bit signed integer samples with interleaved channel arrangement.
+
+: <dfn enum-value for=AudioSampleFormat>FLT</dfn>
+:: 32-bit float samples with interleaved channel arrangement.
+
+: <dfn enum-value for=AudioSampleFormat>S16P</dfn>
+:: 16-bit signed integer samples with planar channel arrangement.
+
+: <dfn enum-value for=AudioSampleFormat>S32P</dfn>
+:: 32-bit signed integer samples with planar channel arrangement.
+
+: <dfn enum-value for=AudioSampleFormat>FLTP</dfn>
+:: 32-bit float samples with planar channel arrangement.
 
 VideoFrame Interface {#videoframe-interface}
 --------------------------------------------
@@ -2041,8 +2149,7 @@ NOTE: {{VideoFrame}} is a {{CanvasImageSource}}. A {{VideoFrame}} may be
     passed to any method accepting a {{CanvasImageSource}}, including
     {{CanvasDrawImage}}'s {{CanvasDrawImage/drawImage()}}.
 
-<pre class='idl'>
-<xmp>
+<xmp class='idl'>
 [Exposed=(Window,DedicatedWorker)]
 interface VideoFrame {
   constructor(CanvasImageSource image, optional VideoFrameInit init = {});
@@ -2085,15 +2192,62 @@ dictionary VideoFramePlaneInit {
   unsigned long long timestamp;
 };
 </xmp>
-</pre>
 
 ### Internal Slots ###{#videoframe-internal-slots}
-: <dfn attribute for=VideoFrame>\[[detached]]</dfn></dt>
-:: A boolean indicating whether {{VideoFrame/close()}} was invoked.
+
+: <dfn attribute for=VideoFrame>\[[detached]]</dfn>
+:: A boolean indicating whether {{destroy()}} was invoked and underlying
+    resources have been released.
 
 : <dfn attribute for=VideoFrame>[[resource reference]]</dfn>
-:: A reference to the [=frame resource=] that stores the pixel data for
+:: A reference to the [=media resource=] that stores the pixel data for
     this frame.
+
+: <dfn attribute for=VideoFrame>\[[format]]</dfn>
+:: A {{PixelFormat}} describing the pixel format of the {{VideoFrame}}.
+
+: <dfn attribute for=VideoFrame>\[[planes]]</dfn>
+:: A list of {{Plane}}s describing the memory layout of the pixel data in
+    {{VideoFrame}}. The number of {{Plane}}s and their semantics are
+    determined by {{VideoFrame/[[format]]}}.
+
+: <dfn attribute for=VideoFrame>[[coded width]]</dfn>
+:: Width of the {{VideoFrame}} in pixels, prior to any cropping or aspect
+    ratio adjustments.
+
+: <dfn attribute for=VideoFrame>[[coded height]]</dfn>
+:: Height of the {{VideoFrame}} in pixels, prior to any cropping or aspect
+    ratio adjustments.
+
+: <dfn attribute for=VideoFrame>[[crop left]]</dfn>
+:: The number of pixels to remove from the left of the {{VideoFrame}},
+    prior to aspect ratio adjustments.
+
+: <dfn attribute for=VideoFrame>[[crop top]]</dfn>
+:: The number of pixels to remove from the top of the {{VideoFrame}},
+    prior to aspect ratio adjustments.
+
+: <dfn attribute for=VideoFrame>[[crop width]]</dfn>
+:: The width of pixels to include in the crop, starting from cropLeft.
+
+: <dfn attribute for=VideoFrame>[[crop height]]</dfn>
+:: The height of pixels to include in the crop, starting from cropLeft.
+
+: <dfn attribute for=VideoFrame>[[display width]]</dfn>
+:: Width of the {{VideoFrame}} when displayed after applying aspect ratio
+    adjustments.
+
+: <dfn attribute for=VideoFrame>[[display height]]</dfn>
+:: Height of the {{VideoFrame}} when displayed after applying aspect ratio
+    adjustments.
+
+: <dfn attribute for=VideoFrame>\[[duration]]</dfn>
+:: The presentation duration, given in microseconds. The duration is copied
+        from the {{EncodedVideoChunk}} corresponding to this {{VideoFrame}}.
+
+: <dfn attribute for=VideoFrame>\[[timestamp]]</dfn>
+::  The presentation timestamp, given in microseconds. The timestamp is copied
+    from the {{EncodedVideoChunk}} corresponding to this {{VideoFrame}}.
 
 ### Constructors ###{#videoframe-constructors}
 
@@ -2165,7 +2319,7 @@ dictionary VideoFramePlaneInit {
         e.g. number and order of planes, acceptable sizing, etc...).  See
         [#165](https://github.com/w3c/webcodecs/issues/165).
 
-3. Let |resource| be a new [=frame resource=] allocated in accordance with
+3. Let |resource| be a new [=media resource=] allocated in accordance with
     |init|.
 
     ISSUE: The spec should define explicit rules for each
@@ -2181,8 +2335,8 @@ dictionary VideoFramePlaneInit {
 5. Let |frame| be a new {{VideoFrame}} object initialized as follows:
     1. Assign |resourceReference| to
             {{VideoFrame/[[resource reference]]}}.
-    2. Assign {{VideoFramePlaneInit/format}} to {{VideoFrame/format}}.
-    3. Assign a new [=list=] to {{VideoFrame/planes}}.
+    2. Assign {{VideoFramePlaneInit/format}} to {{VideoFrame/[[format]]}}.
+    3. Assign a new [=list=] to {{VideoFrame/[[planes]]}}.
     4. For each |planeInit| in |planes|:
         1. Copy |planeInit|.{{PlaneInit/src}} to |resource|.
 
@@ -2205,7 +2359,7 @@ dictionary VideoFramePlaneInit {
             4. Assign |planeInit|.{{PlaneInit/rows}} to {{Plane/rows}}.
             5. Assign the product of ({{Plane/stride}} * {{Plane/rows}}) to
                 {{Plane/length}}.
-        3. Append |plane| to {{VideoFrame/planes}}.
+        3. Append |plane| to {{VideoFrame/[[planes]]}}.
 
     5. Let |resourceCodedWidth| be the coded width of |resource|.
     6. Let |resourceCodedHeight| be the coded height of |resource|.
@@ -2219,83 +2373,113 @@ dictionary VideoFramePlaneInit {
             [#166](https://github.com/w3c/webcodecs/issues/166).
 
     9. Assign |resourceCodedWidth|, |resourceCodedHeight|, |resourceCropLeft|,
-        and |resourceCropTop| to {{VideoFrame/codedWidth}},
-        {{VideoFrame/codedHeight}}, {{VideoFrame/cropLeft}}, and
-        {{VideoFrame/cropTop}} respectively.
-    10. If |init|.{{VideoFramePlaneInit/cropWidth}} [=map/exists=], assign it
-        to {{VideoFrame/cropWidth}}. Otherwise, assign
-        {{VideoFrame/codedWidth}} to {{VideoFrame/cropWidth}}.
+        and |resourceCropTop| to {{VideoFrame/[[coded width]]}},
+        {{VideoFrame/[[coded height]]}}, {{VideoFrame/[[crop left]]}}, and
+        {{VideoFrame/[[crop top]]}} respectively.
+    10. If |init|.{{VideoFramePlaneInit/cropWidth}} [=map/exists=], assign
+        it to {{VideoFrame/[[crop width]]}}. Otherwise, assign
+        {{VideoFrame/[[coded width]]}} to {{VideoFrame/[[crop width]]}}.
     11. If |init|.{{VideoFramePlaneInit/cropHeight}} [=map/exists=], assign it
-        to {{VideoFrame/cropHeight}}. Otehrwise, assign
-        {{VideoFrame/codedHeight}} to {{VideoFrame/cropHeight}}.
+        to {{VideoFrame/[[crop height]]}}. Otehrwise, assign
+        {{VideoFrame/[[coded height]]}} to {{VideoFrame/[[crop height]]}}.
     12. If |init|.{{VideoFramePlaneInit/displayWidth}} [=map/exists=], assign
-        it to {{VideoFrame/displayWidth}}. Otherwise, assign
-        {{VideoFrame/cropWidth}} to {{VideoFrame/displayWidth}}.
+        it to {{VideoFrame/[[display width]]}}. Otherwise, assign
+        {{VideoFrame/[[crop width]]}} to {{VideoFrame/[[display width]]}}.
     13. If |init|.{{VideoFramePlaneInit/displayHeight}} [=map/exists=], assign
-        it to {{VideoFrame/displayHeight}}. Otherwise, assign
-        {{VideoFrame/cropHeight}} to {{VideoFrame/displayHeight}}.
+        it to {{VideoFrame/[[display height]]}}. Otherwise, assign
+        {{VideoFrame/[[crop height]]}} to {{VideoFrame/[[display height]]}}.
     14. Assign |init|'s {{VideoFramePlaneInit/timestamp}} and
-        {{VideoFramePlaneInit/duration}} to {{VideoFrame/timestamp}} and
-        {{VideoFrame/duration}} respectively.
+        {{VideoFramePlaneInit/duration}} to {{VideoFrame/[[timestamp]]}} and
+        {{VideoFrame/[[duration]]}} respectively.
 6. Return |frame|.
 
-
 ### Attributes ###{#videoframe-attributes}
-<dl>
-  <dt><dfn attribute for=VideoFrame>timestamp</dfn></dt>
-  <dd>
-    The presentation timestamp, given in microseconds. The timestamp is copied
-        from the EncodedVideoChunk corresponding to this VideoFrame.
-  </dd>
-  <dt><dfn attribute for=VideoFrame>duration</dfn></dt>
-  <dd>
-    The presentation duration, given in microseconds. The duration is copied
-        from the EncodedVideoChunk corresponding to this VideoFrame.
-  </dd>
-  <dt><dfn attribute for=VideoFrame>format</dfn></dt>
-  <dd>
-    Describes the arrangement of bytes in each plane as well as the number and
-        order of the planes.
-  </dd>
-  <dt><dfn attribute for=VideoFrame>planes</dfn></dt>
-  <dd>
-    Holds pixel data data, laid out as described by format and Plane
-        attributes.
-  </dd>
-  <dt><dfn attribute for=VideoFrame>codedWidth</dfn></dt>
-  <dd>
-    Width of the VideoFrame in pixels, prior to any cropping or aspect ratio
-        adjustments.
-  </dd>
-  <dt><dfn attribute for=VideoFrame>codedHeight</dfn></dt>
-  <dd>
-    Height of the VideoFrame in pixels, prior to any cropping or aspect ratio
-        adjustments.
-  </dd>
-  <dt><dfn attribute for=VideoFrame>cropLeft</dfn></dt>
-  <dd>
-    The number of pixels to remove from the left of the VideoFrame, prior to
-        aspect ratio adjustments.
-  </dd>
-  <dt><dfn attribute for=VideoFrame>cropTop</dfn></dt>
-  <dd>
-    The number of pixels to remove from the top of the VideoFrame, prior to
-        aspect ratio adjustments.
-  </dd>
-  <dt><dfn attribute for=VideoFrame>cropWidth</dfn></dt>
-  <dd>The width of pixels to include in the crop, starting from cropLeft.</dd>
-  <dt><dfn attribute for=VideoFrame>cropHeight</dfn></dt>
-  <dd>The height of pixels to include in the crop, starting from cropLeft.</dd>
-  <dt><dfn attribute for=VideoFrame>displayWidth</dfn>
-  <dd>Width of the VideoFrame when displayed.</dd>
-  <dt><dfn attribute for=VideoFrame>displayHeight</dfn></dt>
-  <dd>Height of the VideoFrame when displayed.</dd>
-</dl>
+: <dfn attribute for=VideoFrame>format</dfn>
+:: Describes the arrangement of bytes in each plane as well as the number and
+    order of the planes.
+
+    The {{VideoFrame/format}} getter steps are to return
+    {{VideoFrame/[[format]]}}.
+
+: <dfn attribute for=VideoFrame>planes</dfn>
+:: Holds pixel data data, laid out as described by format and Plane
+    attributes.
+
+    The {{VideoFrame/planes}} getter steps are to return
+    {{VideoFrame/[[planes]]}}.
+
+: <dfn attribute for=VideoFrame>codedWidth</dfn>
+:: Width of the {{VideoFrame}} in pixels, prior to any cropping or aspect ratio
+    adjustments.
+
+    The {{VideoFrame/codedWidth}} getter steps are to return
+    {{VideoFrame/[[coded width]]}}.
+
+: <dfn attribute for=VideoFrame>codedHeight</dfn>
+:: Height of the VideoFrame in pixels, prior to any cropping or aspect ratio
+    adjustments.
+
+    The {{VideoFrame/codedHeight}} getter steps are to return
+    {{VideoFrame/[[coded height]]}}.
+
+: <dfn attribute for=VideoFrame>cropLeft</dfn>
+:: The number of pixels to remove from the left of the VideoFrame, prior to
+    aspect ratio adjustments.
+
+    The {{VideoFrame/cropLeft}} getter steps are to return
+    {{VideoFrame/[[crop left]]}}.
+
+: <dfn attribute for=VideoFrame>cropTop</dfn>
+:: The number of pixels to remove from the top of the VideoFrame, prior to
+    aspect ratio adjustments.
+
+    The {{VideoFrame/cropTop}} getter steps are to return
+    {{VideoFrame/[[crop top]]}}.
+
+: <dfn attribute for=VideoFrame>cropWidth</dfn>
+:: The width of pixels to include in the crop, starting from cropLeft.
+
+    The {{VideoFrame/cropWidth}} getter steps are to return
+    {{VideoFrame/[[crop width]]}}.
+
+: <dfn attribute for=VideoFrame>cropHeight</dfn>
+:: The height of pixels to include in the crop, starting from cropLeft.
+
+    The {{VideoFrame/cropHeight}} getter steps are to return
+    {{VideoFrame/[[crop height]]}}.
+
+: <dfn attribute for=VideoFrame>displayWidth</dfn>
+:: Width of the VideoFrame when displayed after applying aspect ratio
+    adjustments.
+
+    The {{VideoFrame/displayWidth}} getter steps are to return
+    {{VideoFrame/[[display width]]}}.
+
+: <dfn attribute for=VideoFrame>displayHeight</dfn>
+:: Height of the VideoFrame when displayed after applying aspect ratio
+    adjustments.
+
+    The {{VideoFrame/displayHeight}} getter steps are to return
+    {{VideoFrame/[[display height]]}}.
+
+: <dfn attribute for=VideoFrame>timestamp</dfn>
+:: The presentation timestamp, given in microseconds. The timestamp is copied
+    from the {{EncodedVideoChunk}} corresponding to this VideoFrame.
+
+    The {{VideoFrame/timestamp}} getter steps are to return
+    {{VideoFrame/[[timestamp]]}}.
+
+: <dfn attribute for=VideoFrame>duration</dfn>
+:: The presentation duration, given in microseconds. The duration is copied
+    from the {{EncodedVideoChunk}} corresponding to this VideoFrame.
+
+    The {{VideoFrame/duration}} getter steps are to return
+    {{VideoFrame/[[duration]]}}.
 
 ### Methods ###{#videoframe-methods}
 : <dfn method for=VideoFrame>clone()</dfn>
 :: Creates a new {{VideoFrame}} with a reference to the same
-    [=frame resource=].
+    [=media resource=].
 
     When invoked, run the these steps:
     1. If the value of |frame|’s {{VideoFrame/[[detached]]}} internal slot is
@@ -2305,7 +2489,7 @@ dictionary VideoFramePlaneInit {
 
 
 : <dfn method for=VideoFrame>close()</dfn>
-:: Clears all state and releases the reference to the [=frame resource=].
+:: Clears all state and releases the reference to the [=media resource=].
     Close is final.
 
     When invoked, run these steps:
@@ -2399,7 +2583,7 @@ dictionary VideoFramePlaneInit {
 : <dfn>Clone VideoFrame</dfn> (with |frame|)
 :: 1. Let |clone| be a new {{VideoFrame}} initialized as follows:
         1. Assign |frame|.{{VideoFrame/[[resource reference]]}} to
-            {{AudioFrame/[[resource reference]]}}.
+            {{VideoFrame/[[resource reference]]}}.
         2. Assign |frame|.{{VideoFrame/format}} to {{VideoFrame/format}}.
         3. Assign a new [=list=] to {{VideoFrame/planes}}.
         4. For each |plane| in {{VideoFrame/planes}}:
@@ -2426,8 +2610,8 @@ A {{Plane}} cannot be used after the {{VideoFrame}} is destroyed. A new
     {{VideoFrame}}.
 
 
-<pre class='idl'>
-<xmp>
+<xmp class='idl'>
+[Exposed=(Window,DedicatedWorker)]
 interface Plane {
   readonly attribute unsigned long stride;
   readonly attribute unsigned long rows;
@@ -2442,7 +2626,6 @@ dictionary PlaneInit {
   required unsigned long rows;
 };
 </xmp>
-</pre>
 
 ### Internal Slots ###{#plane-internal-slots}
 <dl>
@@ -2461,7 +2644,7 @@ dictionary PlaneInit {
 </dl>
 
 ### Methods ###{#plane-methods}
-<dfn method for=Plane>readInto(dst)</dfn>
+<dfn method for=Plane>readInto(|dst|)</dfn>
 
 Copies the plane data into dst.
 
@@ -2470,11 +2653,11 @@ When invoked, run these steps:
     {{InvalidStateError}}.
 2. If {{Plane/length}} is greater than |`dst.byteLength`|, throw a
     {{TypeError}}.
-3. Let |resource| be the [=frame resource=] refrenced by
+3. Let |resource| be the [=media resource=] refrenced by
     {{Plane/[[parent frame]]}}'s {{VideoFrame/[[resource reference]]}}.
-4. Let |plane bytes| be the region of bytes in [=frame resource=] coresponding
+4. Let |plane bytes| be the region of bytes in [=media resource=] coresponding
     to this plane.
-5. Copy the |plane bytes| into <var ignore>dst</var>.
+5. Copy the |plane bytes| into |dst|.
 
 
 Pixel Format{#pixel-format}
@@ -2488,13 +2671,11 @@ NOTE: This section needs work. We expect to add more pixel formats and offer
     http://www.fourcc.org/pixel-format/yuv-i420/</a> for a more complete
     description.
 
-<pre class='idl'>
-<xmp>
+<xmp class='idl'>
 enum PixelFormat {
   "I420"
 };
 </xmp>
-</pre>
 
 <dl>
   <dt><dfn enum-value for=PixelFormat>I420</dfn></dt>
@@ -2502,6 +2683,811 @@ enum PixelFormat {
     Planar 4:2:0 YUV.
   </dd>
 </dl>
+
+
+Image Decoding {#image-decoding}
+====================================
+
+Background {#image-decoding-background}
+-------------------------------------
+
+This section is non-normative.
+
+Image codec definitions are typically accompanied by a definition for a
+corresponding file format. Hence image decoders often perform both duties of
+unpacking (demuxing) as well as decoding the encoded image data. The WebCodecs
+{{ImageDecoder}} follows this pattern, which motivates an interface design that
+is notably different from that of {{VideoDecoder}} and {{AudioDecoder}}.
+
+In spite of these differences, {{ImageDecoder}} uses the same
+[=codec processing model=] as the other codec interfaces. Additionally,
+{{ImageDecoder}} uses the {{VideoFrame}} interface to describe decoded outputs.
+
+ImageDecoder Interface {#imagedecoder-interface}
+------------------------------------------------
+
+<pre class='idl'>
+<xmp>
+[Exposed=(Window,DedicatedWorker)]
+interface ImageDecoder {
+  constructor(ImageDecoderInit init);
+
+  readonly attribute boolean complete;
+  readonly attribute Promise<undefined> completed;
+  readonly attribute ImageTrackList tracks;
+
+  Promise<ImageDecodeResult> decode(optional ImageDecodeOptions options);
+  undefined reset();
+  undefined close();
+
+  static Promise<boolean> isTypeSupported(DOMString type);
+};
+</xmp>
+</pre>
+
+### Internal Slots ### {#imagedecoder-internal-slots}
+
+: <dfn attribute for=ImageDecoder>\[[ImageTrackList]]</dfn>
+:: An {{ImageTrackList}} describing the tracks found in
+    {{ImageDecoder/[[encoded data]]}}
+
+: <dfn attribute for=ImageDecoder>\[[complete]]</dfn>
+:: A boolean indicating whether {{ImageDecoder/[[encoded data]]}} is completely
+    buffered.
+
+: <dfn attribute for=ImageDecoder>[[completed promise]]</dnf>
+:: The promise used to signal when {{ImageDecoder/[[complete]]}} becomes
+    `true`.
+
+: <dfn attribute for=ImageDecoder>[[codec implementation]]</dfn>
+:: An underlying image decoder implementation provided by the User Agent.
+
+: <dfn attribute for=ImageDecoder>[[encoded data]]</dfn>
+:: A [=byte sequence=] containing the encoded image data to be decoded.
+
+: <dfn attribute for=ImageDecoder>[[prefer animation]]</dfn>
+:: A boolean reflecting the value of {{ImageDecoderInit/preferAnimation}} given
+    at construction.
+
+: <dfn attribute for=ImageDecoder>[[pending decode promises]]</dfn>
+:: A list of unresolved promises returned by calls to decode().
+
+: <dfn attribute for=ImageDecoder>[[internal selected track index]]</dfn>
+:: Identifies the image track within {{ImageDecoder/[[encoded data]]}} that is
+    used by decoding algorithms on the [=codec thread=].
+
+: <dfn attribute for=ImageDecoder>[[tracks established]]</dfn>
+:: A boolean indicating whether the track list has been established in
+    {{ImageDecoder/[[ImageTrackList]]}}.
+
+: <dfn attribute for=ImageDecoder>\[[closed]]</dfn>
+:: A boolean indicating that the ImageDecoder is in a permanent closed state
+    and can no longer be used.
+
+: <dfn attribute for=ImageDecoder>[[progressive frame generations]]</dfn>
+:: A mapping of frame indices to [=Progressive Image Frame Generations=]. The
+    values represent the Progressive Image Frame Generation for the
+    {{VideoFrame}} which was most recently output by a call to
+    {{ImageDecoder/decode()}} with the given frame index.
+
+
+### Constructor ### {#imagedecoder-constructor}
+
+: <dfn constructor for=ImageDecoder title="ImageDecoder(init)">
+    ImageDecoder(init)
+    </dfn>
+:: NOTE: Calling {{ImageDecoder/decode()}} on the constructed {{ImageDecoder}}
+    will trigger a {{NotSupportedError}} if the user agent does not support
+    |type|. Authors should first check support by calling
+    {{ImageDecoder/isTypeSupported()}} with |type|. User agents are not
+    required to support any particular type.
+
+    When invoked, run these steps:
+    1. If |init| is not [=valid ImageDecoderInit=], throw a {{TypeError}}.
+    2. Let |d| be a new {{ImageDecoder}} object. In the steps below, all
+        mentions of {{ImageDecoder}} members apply to |d| unless stated
+        otherwise.
+    3. Assign {{ImageDecoder/[[ImageTrackList]]}} a new {{ImageTrackList}}
+        initialized as follows:
+        1. Assign a new [=list=] to {{ImageTrackList/[[track list]]}}.
+        2. Assign `-1` to {{ImageTrackList/[[selected index]]}}.
+    4. Assign `null` to {{ImageDecoder/[[codec implementation]]}}.
+    5. If `init.preferAnimation` [=map/exists=], assign `init.preferAnimation`
+        to the {{ImageDecoder/[[prefer animation]]}} internal slot. Otherwise,
+        assign 'null' to {{ImageDecoder/[[prefer animation]]}} internal slot.
+    7. Assign a new [=list=] to {{ImageDecoder/[[pending decode promises]]}}.
+    8. Assign `-1` to {{ImageDecoder/[[internal selected track index]]}}.
+    9. Assign `false` to {{ImageDecoder/[[tracks established]]}}.
+    10. Assign `false` to {{ImageDecoder/[[closed]]}}.
+    11. Assign a new [=map=] to {{ImageDecoder/[[progressive frame
+        generations]]}}.
+    12. If |init|'s {{ImageDecoderInit/data}} member is of type
+        {{ReadableStream}}:
+        1. Assign a new [=list=] to {{ImageDecoder/[[encoded data]]}}.
+        2. Assign `false` to {{ImageDecoder/complete}}
+        3. [=Queue a control message=] to [=configure the image decoder=] with
+            |init|.
+        4. Let |reader| be the result of [=getting a reader=] for
+            {{ImageDecoderInit/data}}.
+        5. In parallel, perform the [=Fetch Stream Data Loop=] on |d| with
+            |reader|.
+    13. Otherwise:
+        1. Assert that `init.data` is of type {{BufferSource}}.
+        2. Assign a copy of `init.data` to  {{ImageDecoder/[[encoded data]]}}.
+        3. Assign `true` to {{ImageDecoder/complete}}.
+        4. Reslove {{ImageDecoder/[[completed promise]]}}.
+        5. Queue a control message to [=configure the image decoder=] with
+            |init|.
+        6. Queue a control message to [=decode track metadata=].
+    14. return |d|.
+
+    [=Running a control message=] to <dfn>configure the image decoder</dfn>
+    means running these steps:
+    1. Let |supported| be the result of running the [=ImageDecoder/Check Type
+        Support=] algorithm with `init.type`.
+    2. If |supported| is `false`, queue a task on the [=control thread=] event
+        loop to run the [=ImageDecoder/Close ImageDecoder=] algorithm
+        with a {{NotSupportedError}} {{DOMException}} and abort
+        these steps.
+    3. If |supported| is `true`, assign the
+        {{ImageDecoder/[[codec implementation]]}} internal slot with an
+        implementation supporting `init.type`
+    4. Configure {{ImageDecoder/[[codec implementation]]}} in accordance with
+        the values given for {{ImageDecoderInit/premultiplyAlpha}},
+        {{ImageDecoderInit/colorSpaceConversion}},
+        {{ImageDecoderInit/desiredWidth}}, and
+        {{ImageDecoderInit/desiredHeight}}.
+
+    [=Running a control message=] to <dfn>decode track metadata</dfn> means
+    running these steps:
+    1. Run the [=ImageDecoder/Establish Tracks=] algorithm.
+
+### Attributes ### {#imagedecoder-attributes}
+: <dfn attribute for=ImageDecoder>complete</dfn>
+:: Indicates whether {{ImageDecoder/[[encoded data]]}} is completely buffered.
+
+    The {{ImageDecoder/complete}} getter steps are to return
+    {{ImageDecoder/[[complete]]}}.
+
+: <dfn attribute for=ImageDecoder>completed</dfn>
+:: The promise used to signal when {{ImageDecoder/complete}} becomes `true`.
+
+    The {{ImageDecoder/completed}} getter steps are to return
+    {{ImageDecoder/[[completed promise]]}}.
+
+: <dfn attribute for=ImageDecoder>tracks</dfn>
+:: Returns a [=live=] {{ImageTrackList}}, which provides metadata
+    for the available tracks and a mechanism for selecting a track to decode.
+
+    The {{ImageDecoder/tracks}} getter steps are to return
+    {{ImageDecoder/[[ImageTrackList]]}}.
+
+### Methods ### {#imagedecoder-methods}
+: <dfn method for=ImageDecoder>decode(options)</dfn>
+:: Enqueues a control message to decode the frame according to |options|.
+
+    When invoked, run these steps:
+    1. If {{ImageDecoder/[[closed]]}} is `true`, return a {{Promise}}
+        rejected with an {{InvalidStateError}} {{DOMException}}.
+    2. If {{ImageDecoder/[[ImageTrackList]]}}'s
+        {{ImageTrackList/[[selected index]]}} is '-1', return a {{Promise}}
+        rejected with an {{InvalidStateError}} {{DOMException}}.
+    3. If |options| is `undefined`, assign a new {{ImageDecodeOptions}} to
+        |options|.
+    4. Let |promise| be a new {{Promise}}.
+    5. [=Queue a control message=] to decode the the image with |options|, and
+        |promise|.
+    6. Append |promise| to {{ImageDecoder/[[pending decode promises]]}}.
+    7. Return |promise|.
+
+    [=Running a control message=] to decode the image means running these
+    steps:
+    1. Wait for {{ImageDecoder/[[tracks established]]}} to become `true`.
+    2. If |options|.{{ImageDecodeOptions/completeFramesOnly}} is `false` and
+        the image is a [=Progressive Image=] for which the user agent supports
+        progressive decoding, run the [=Decode Progressive Frame=] algorithm with |options|.{{ImageDecodeOptions/frameIndex}} and |promise|.
+    3. Otherwise, run the [=Decode Complete Frame=] algorithm with
+        |options|.{{ImageDecodeOptions/frameIndex}} and |promise|.
+
+: <dfn method for=ImageDecoder>reset()</dfn>
+:: Immediately aborts all pending work.
+
+    When invoked, run the [=ImageDecoder/Reset ImageDecoder=] algorithm with
+    and {{AbortError}} {{DOMException}}.
+
+: <dfn method for=ImageDecoder>close()</dfn>
+:: Immediately aborts all pending work and releases system resources. Close is
+    final.
+
+    When invoked, run the [=ImageDecoder/Close ImageDecoder=] algorithm with
+    and {{AbortError}} {{DOMException}}.
+
+: <dfn method for=ImageDecoder>isTypeSupported(type)</dfn>
+:: Returns a promise indicating whether the provided config is supported by the
+    user agent.
+
+    When invoked, run these steps:
+    1. If |type| is not a [=valid image MIME type=], return a {{Promise}}
+        rejected with {{TypeError}}.
+    2. Let |p| be a new {{Promise}}.
+    3. In parallel, resolve |p| with the result of running the
+        [=Check Type Support=] algorithm with |type|.
+    4. Return |p|.
+
+### Algorithms ### {#imagedecoder-algorithms}
+
+: <dfn for=ImageDecoder>Fetch Stream Data Loop</dfn> (with |reader|)
+:: Run these steps:
+    1. Let |readRequest| be the following [=read request=].
+
+        : [=read request/chunk steps=], given |chunk|
+        :: 1. If {{ImageDecoder/[[closed]]}} is `true`, abort these steps.
+            2. If |chunk| is not a Uint8Array object, queue a task on the
+                [=control thread=] event loop to run the
+                [=ImageDecoder/Close ImageDecoder=] algorithm with a
+                {{DataError}} {{DOMException}} and abort these steps.
+            3. Let |bytes| be the byte sequence represented by the Uint8Array
+                object.
+            4. Append |bytes| to the  {{ImageDecoder/[[encoded data]]}}
+                internal slot.
+            5. If {{ImageDecoder/[[tracks established]]}} is `false`, run the
+                [=Establish Tracks=] algorithm.
+            6. Otherwise, run the [=Update Tracks=] algorithm.
+            7. Run the [=Fetch Stream Data Loop=] algorithm with |reader|.
+
+        : [=read request/close steps=]
+        :: 1. Assign `true` to {{ImageDecoder/complete}}
+            2. Resolve {{ImageDecoder/[[completed promise]]}}.
+
+        : [=read request/error steps=]
+        :: 1. Queue a task on the [=control thread=] event loop to run the
+                [=ImageDecoder/Close ImageDecoder=] algorithm with a
+                {{NotReadableError}} {{DOMException}}
+
+    2. Read a chunk from |reader| given |readRequest|.
+
+: <dfn for=ImageDecoder>Establish Tracks</dfn>
+:: Run these steps:
+    1. Assert {{ImageDecoder/[[tracks established]]}} is `false`.
+    2. If {{ImageDecoder/[[encoded data]]}} does not contain enough data to
+        determine the number of tracks:
+        1. If {{ImageDecoder/complete}} is `true`, queue a task on the
+            [=control thread=] event loop to run the [=ImageDecoder/Close ImageDecoder=] algorithm.
+        2. Abort these steps.
+    3. If the number of tracks is found to be `0`, queue a task on the
+        [=control thread=] event loop to run the
+        [=ImageDecoder/Close ImageDecoder=] algorithm and abort these steps.
+    4. Let |newTrackList| be a new [=list=].
+    5. For each |image track| found in {{ImageDecoder/[[encoded data]]}}:
+        1. Let |newTrack| be a new {{ImageTrack}}, initialized as follows:
+            1. Assign [=this=] to {{ImageTrack/[[ImageDecoder]]}}.
+            2. Assign {{ImageDecoder/tracks}} to
+                {{ImageTrack/[[ImageTrackList]]}}.
+            3. If |image track| is found to be animated, assign `true` to
+                |newTrack|'s {{ImageTrack/[[animated]]}} internal slot.
+                Otherwise, assign `false`.
+            4. If |image track| is found to describe a frame count, assign
+                that count to |newTrack|'s {{ImageTrack/[[frame count]]}}
+                internal slot. Otherwise, assign `0`.
+
+                NOTE: If [=this=] was constructed with
+                  {{ImageDecoderInit/data}} as a {{ReadableStream}}, the
+                  {{ImageTrack/frameCount}} may change as additional bytes are
+                  appended to {{ImageDecoder/[[encoded data]]}}. See the
+                  [=Update Tracks=] algorithm.
+
+            5. If |image track| is found to describe a repetition count,
+                assign that count to {{ImageTrack/[[repetition count]]}}
+                internal slot. Otherwise, assign `0`.
+
+                NOTE: A value of `Infinity` indicates infinite repetitions.
+
+            6. Assign `false` to |newTrack|'s {{ImageTrack/[[selected]]}}
+                internal slot.
+        2. Append |newTrack| to |newTrackList|.
+    6. Let |selectedTrackIndex| be the result of running the
+        [=ImageDecoder/Get Default Selected Track Index=] algorithm with
+        |newTrackList|.
+    7. Let |selectedTrack| be the track at position |selectedTrackIndex| within
+        |newTrackList|.
+    8. Assign `true` to |selectedTrack|'s {{ImageTrack/[[selected]]}} internal
+        slot.
+    8. Assign |selectedTrackIndex| to {{ImageDecoder/[[internal selected track
+        index]]}}.
+    9. Assign `true` to {{ImageDecoder/[[tracks established]]}}.
+    10. Queue a task on the [=control thread=] event loop to perform the
+        following steps:
+        1. Assign |newTrackList| to the {{ImageDecoder/tracks}}
+            {{ImageTrackList/[[track list]]}} internal slot.
+        2. Assign |selectedTrackIndex| to {{ImageDecoder/tracks}}
+            {{ImageTrackList/[[selected index]]}}.
+        3. Resolve {{ImageTrackList/[[ready promise]]}}.
+
+: <dfn for=ImageDecoder>Get Default Selected Track Index</dfn> (with
+    |trackList|)
+:: Run these steps:
+    1. If {{ImageDecoder/[[encoded data]]}} identifies a [=Primary Image
+        Track=]:
+        1. Let |primaryTrack| be the {{ImageTrack}} from |trackList| that
+            describes the [=Primary Image Track=].
+        2. Let |primaryTrackIndex| be position of |primaryTrack| within
+            |trackList|.
+        3. If {{ImageDecoder/[[prefer animation]]}} is `null`, return
+            |primaryTrackIndex|.
+        4. If |primaryTrack|.{{ImageTrack/animated}} equals
+            {{ImageDecoder/[[prefer animation]]}}, return |primaryTrackIndex|.
+    2. If any {{ImageTrack}}s in |trackList| have {{ImageTrack/animated}} equal
+        to {{ImageDecoder/[[prefer animation]]}}, return the position of the
+        earliest such track in |trackList|.
+    3. Return `0`.
+
+: <dfn for=ImageDecoder>Update Tracks</dfn>
+:: A <dfn>track update struct</dfn> is a [=struct=] that consists of a
+    <dfn for="track update struct">track index</dfn> ({{unsigned long}})
+    and a <dfn for="track update struct">frame count</dfn>
+    ({{unsigned long}}).
+
+    Run these steps:
+    1. Assert {{ImageDecoder/[[tracks established]]}} is `true`.
+    2. Let |trackChanges| be a new [=list=].
+    3. Let |trackList| be a copy of {{ImageDecoder/tracks}}'
+        {{ImageTrackList/[[track list]]}}.
+    4. For each |track| in |trackList|:
+        1. Let |trackIndex| be  the position of |track| in |trackList|.
+        2. Let |latestFrameCount| be the frame count as indicated by
+            {{ImageDecoder/[[encoded data]]}} for the track corresponding to
+            |track|.
+        3. Assert that |latestFrameCount| is greater than or equal to
+            `track.frameCount`.
+        4. If |latestFrameCount| is greater than `track.frameCount`:
+            1. Let |change| be a [=track update struct=] whose
+                [=track update struct/track index=] is |trackIndex| and
+                [=track update struct/frame count=] is |latestFrameCount|.
+            2. Append |change| to |tracksChanges|.
+    5. If |tracksChanges| is [=list/empty=], abort these steps.
+    6. Queue a task on the [=control thread=] event loop to perform the
+        following steps:
+        1. For each <var ignore=''>update</var> in |trackChanges|:
+            1. Let |updateTrack| be the {{ImageTrack}} at position
+                `update.trackIndex` within {{ImageDecoder/tracks}}'
+                {{ImageTrackList/[[track list]]}}.
+            2. Assign `update.frameCount` to |updateTrack|'s
+                {{ImageTrack/[[frame count]]}}.
+            3. Fire a simple event named {{ImageTrack/change}} at the
+                {{ImageDecoder/tracks}} object.
+
+: <dfn for=ImageDecoder>Decode Complete Frame</dfn> (with |frameIndex| and
+    |promise|)
+:: 1. Assert that {{ImageDecoder/[[tracks established]]}} is `true`.
+    2. Assert that {{ImageDecoder/[[internal selected track index]]}} is not
+        `-1`.
+    3. Let |encodedFrame| be the encoded frame identified by |frameIndex| and
+        {{ImageDecoder/[[internal selected track index]]}}.
+    4. Wait for any of the following conditions to be true (whichever happens
+        first):
+        1. {{ImageDecoder/[[encoded data]]}} contains enough bytes to
+            completely decode |encodedFrame|.
+        2. {{ImageDecoder/[[encoded data]]}} is found to be malformed.
+        3. {{ImageDecoder/complete}} is `true`.
+        4. {{ImageDecoder/[[closed]]}} is `true`.
+    5. If {{ImageDecoder/[[encoded data]]}} is found to be malformed, run the
+        [=ImageDecoder/Fatally Reject Bad Data=] algorithm and abort these
+        steps.
+    6. If {{ImageDecoder/[[encoded data]]}} does not contain enough bytes to
+        completely decode |encodedFrame|, run the
+        [=ImageDecoder/Reject Infeasible Decode=] algorithm with |promise| and
+        abort these steps.
+    7. Attempt to use {{ImageDecoder/[[codec implementation]]}} to decode
+        |encodedFrame|.
+    8. If decoding produces an error, run the
+        [=ImageDecoder/Fatally Reject Bad Data=] algorithm and abort these
+        steps.
+    9. If {{ImageDecoder/[[progressive frame generations]]}} contains an entry
+        keyed by |frameIndex|, remove the entry from the map.
+    10. Let |output| be the decoded image data emitted by
+        {{ImageDecoder/[[codec implementation]]}} corresponding to
+        |encodedFrame|.
+    11. Let |decodeResult| be a new {{ImageDecodeResult}} initialized as
+        follows:
+        1. Assign 'true' to {{ImageDecodeResult/complete}}.
+        2. Let |timestamp| and |duration| be the presentation timestamp and
+            duration for |output| as described by |encodedFrame|. If
+            |encodedFrame| does not describe a timestamp or
+            duration, assign `null` to the corresponding variable.
+        3. Assign {{ImageDecodeResult/image}} with the result of running the
+            [=Create a VideoFrame=] algorithm with |output|, |timestamp|, and
+            |duration|.
+    12. Run the [=ImageDecoder/Resolve Decode=] algorithm with |promise| and
+        |decodeResult|.
+
+: <dfn for=ImageDecoder>Decode Progressive Frame</dfn> (with |frameIndex| and
+    |promise|)
+:: 1. Assert that {{ImageDecoder/[[tracks established]]}} is `true`.
+    2. Assert that {{ImageDecoder/[[internal selected track index]]}} is not
+        `-1`.
+    3. Let |encodedFrame| be the encoded frame identified by |frameIndex| and
+        {{ImageDecoder/[[internal selected track index]]}}.
+    4. Let |lastFrameGeneration| be `null`.
+    5. If {{ImageDecoder/[[progressive frame generations]]}} contains a map
+        entry with the key |frameIndex|, assign the value of the map entry to
+        |lastFrameGeneration|.
+    6. Wait for any of the following conditions to be true (whichever happens
+        first):
+        1. {{ImageDecoder/[[encoded data]]}} contains enough bytes to decode
+            |encodedFrame| to produce an output who's [=Progressive Image
+            Frame Generation=] exceeds |lastFrameGeneration|.
+        2. {{ImageDecoder/[[encoded data]]}} is found to be malformed.
+        3. {{ImageDecoder/complete}} is `true`.
+        4. {{ImageDecoder/[[closed]]}} is `true`.
+    7. If {{ImageDecoder/[[encoded data]]}} is found to be malformed, run the
+        [=ImageDecoder/Fatally Reject Bad Data=] algorithm and abort these
+        steps.
+    8. Otherwise, if {{ImageDecoder/[[encoded data]]}} does not contain enough
+        bytes to decode |encodedFrame| to produce an output who's
+        [=Progressive Image Frame Generation=] exceeds |lastFrameGeneration|,
+        run the [=ImageDecoder/Reject Infeasible Decode=] algorithm with
+        |promise| and abort these steps.
+    9. Attempt to use {{ImageDecoder/[[codec implementation]]}} to decode
+        |encodedFrame|.
+    10. If decoding produces an error, run the
+        [=ImageDecoder/Fatally Reject Bad Data=] algorithm and abort these
+        steps.
+    11. Let |output| be the decoded image data emitted by
+        {{ImageDecoder/[[codec implementation]]}} corresponding to
+        |encodedFrame|.
+    12. Let |decodeResult| be a new {{ImageDecodeResult}}.
+    13. If |output| is the final full-detail progressive output corresponding
+        to |encodedFrame|:
+        1. Assign `true` to |decodeResult|'s {{ImageDecodeResult/complete}}.
+        2. If {{ImageDecoder/[[progressive frame generations]]}} contains an
+            entry keyed by |frameIndex|, remove the entry from the map.
+    14. Otherwise:
+        1. Assign `false` to |decodeResult|'s {{ImageDecodeResult/complete}}.
+        2. Let |frameGeneration| be the [=Progressive Image Frame Generation=]
+            for |output|.
+        3. Add a new entry to {{ImageDecoder/[[progressive frame
+            generations]]}} with key |frameIndex| and value |frameGeneration|.
+    15. Let |timestamp| and |duration| be the presentation timestamp and
+            duration for |output| as described by |encodedFrame|. If
+            |encodedFrame| does not describe a timestamp or
+            duration, assign `null` to the corresponding variable.
+    16. Assign {{ImageDecodeResult/image}} with the result of running the
+            [=Create a VideoFrame=] algorithm with |output|, |timestamp|, and
+            |duration|.
+    17. Remove |promise| from {{ImageDecoder/[[pending decode promises]]}}.
+    18. Resolve |promise| with |decodeResult|.
+
+: <dfn for=ImageDecoder>Resolve Decode</dfn> (with |promise| and |result|)
+:: 1. Queue a task on the [=control thread=] event loop to run these steps:
+        1. If {{ImageDecoder/[[closed]]}}, abort these steps.
+        2. Assert that |promise| is an element of
+            {{ImageDecoder/[[pending decode promises]]}}.
+        3. Remove |promise| from {{ImageDecoder/[[pending decode promises]]}}.
+        4. Resolve |promise| with |result|.
+
+: <dfn for=ImageDecoder>Reject Infeasible Decode</dfn> (with |promise|)
+:: 1. Assert that {{ImageDecoder/complete}} is `true` or
+        {{ImageDecoder/[[closed]]}} is `true`.
+    2. If {{ImageDecoder/complete}} is `true`, let |exception| be a
+            {{RangeError}}. Otherwise, let |exception| be an
+            {{InvalidStateError}} {{DOMException}}.
+    3. Queue a task on the [=control thread=] event loop to run these steps:
+        1. If {{ImageDecoder/[[closed]]}}, abort these steps.
+        2. Assert that |promise| is an element of
+            {{ImageDecoder/[[pending decode promises]]}}.
+        3. Remove |promise| from {{ImageDecoder/[[pending decode promises]]}}.
+        4. Reject |promise| with |exception|.
+
+: <dfn for=ImageDecoder>Fatally Reject Bad Data</dfn>
+:: 1. Queue a task on the [=control thread=] event loop to run these steps:
+        1. If {{ImageDecoder/[[closed]]}}, abort these steps.
+        2. Run the [=ImageDecoder/Close ImageDecoder=] algorithm with an
+            {{EncodingError}} {{DOMException}}.
+
+: <dfn for=ImageDecoder>Check Type Support</dfn> (with |type|)
+:: 1. If the user agent can provide a codec to support decoding |type|, return
+        `true`.
+    2. Otherwise, return `false`.
+
+: <dfn for=ImageDecoder>Reset ImageDecoder</dfn> (with |exception|)
+:: 1. Signal {{ImageDecoder/[[codec implementation]]}} to abort any active
+        decoding operation.
+    2. For each |decodePromise| in
+        {{ImageDecoder/[[pending decode promises]]}}:
+        1. Reject |decodePromise| with |exception|.
+        2. Remove |decodePromise| from
+            {{ImageDecoder/[[pending decode promises]]}}.
+
+: <dfn for=ImageDecoder>Close ImageDecoder</dfn> (with |exception|)
+:: 1. Run the [=ImageDecoder/Reset ImageDecoder=] algorithm with |exception|.
+    1. Assign `true` to {{ImageDecoder/[[closed]]}}.
+    2. Clear {{ImageDecoder/[[codec implementation]]}} and release associated
+        [=system resources=].
+    3. Remove all entries from {{ImageDecoder/[[ImageTrackList]]}}.
+    4. Assign `-1` to {{ImageDecoder/[[ImageTrackList]]}}'s
+        {{ImageTrackList/[[selected index]]}}.
+
+
+ImageDecoderInit Interface {#imagedecoderinit-interface}
+--------------------------------------------------------
+<pre class='idl'>
+<xmp>
+typedef (BufferSource or ReadableStream) ImageBufferSource;
+dictionary ImageDecoderInit {
+  required DOMString type;
+  required ImageBufferSource data;
+  PremultiplyAlpha premultiplyAlpha = "default";
+  ColorSpaceConversion colorSpaceConversion = "default";
+  unsigned long desiredWidth;
+  unsigned long desiredHeight;
+  boolean preferAnimation;
+};
+</xmp>
+</pre>
+
+To determine if an {{ImageDecoderInit}} is a <dfn>valid ImageDecoderInit</dfn>,
+run these steps:
+1. If |type| is not a [=valid image MIME type=], return `false`.
+2. If |data| is of type {{ReadableStream}} and the ReadableStream is
+    [=ReadableStream/disturbed=] or [=ReadableStream/locked=], return `false`.
+3. If |data| is of type {{BufferSource}}:
+    1. If the result of running  IsDetachedBuffer (described in
+        [[!ECMASCRIPT]]) on |data| is `false`, return `false`.
+    2. If |data| is [=empty=], return `false`.
+4. If {{ImageDecoderInit/desiredWidth}} [=map/exists=] and
+    {{ImageDecoderInit/desiredHeight}} does not exist, return `false`.
+5. If {{ImageDecoderInit/desiredHeight}} [=map/exists=] and
+    {{ImageDecoderInit/desiredWidth}} does not exist, return `false`.
+6. Return `true`.
+
+A <dfn>valid image MIME type</dfn> is a string that is a [=valid MIME type
+string=] and for which the `type`, per Section 3.1.1.1 of [[RFC7231]], is
+`image`.
+
+: <dfn dict-member for=ImageDecoderInit>type</dfn>
+:: String containing the MIME type of the image file to be decoded.
+
+: <dfn dict-member for=ImageDecoderInit>data</dfn>
+:: {{BufferSource}} or {{ReadableStream}} of bytes representing an encoded
+    image file as described by {{ImageDecoderInit/type}}.
+
+: <dfn dict-member for=ImageDecoderInit>premultiplyAlpha</dfn>
+:: Controls whether decoded outputs' color channels are to be premultiplied by
+    their alpha channel, as defined by {{ImageBitmapOptions/premultiplyAlpha}}
+    in {{ImageBitmapOptions}}.
+
+: <dfn dict-member for=ImageDecoderInit>colorSpaceConversion</dfn>
+:: Controls whether decoded outputs' color space is converted or ignored, as
+    defined by {{ImageBitmapOptions/colorSpaceConversion}} in
+    {{ImageBitmapOptions}}.
+
+: <dfn dict-member for=ImageDecoderInit>desiredWidth</dfn>
+:: Indicates a desired width for decoded outputs. Implementation is best
+    effort; decoding to a desired width may not be supported by all formats/
+    decoders.
+
+: <dfn dict-member for=ImageDecoderInit>desiredHeight</dfn>
+:: Indicates a desired height for decoded outputs. Implementation is best
+    effort; decoding to a desired height may not be supported by all
+    formats/decoders.
+
+: <dfn dict-member for=ImageDecoderInit>preferAnimation</dfn>
+:: For images with multiple tracks, this indicates whether the
+    initial track selection should prefer an animated track.
+
+    NOTE: See the [=ImageDecoder/Get Default Selected Track Index=] algorithm.
+
+ImageDecodeOptions Interface {#imagedecodeoptions-interface}
+------------------------------------------------------------
+<pre class='idl'>
+<xmp>
+dictionary ImageDecodeOptions {
+  unsigned long frameIndex = 0;
+  boolean completeFramesOnly = true;
+};
+</xmp>
+</pre>
+
+: <dfn dict-member for=ImageDecodeOptions>frameIndex</dfn>
+:: The index of the frame to decode.
+
+: <dfn dict-member for=ImageDecodeOptions>completeFramesOnly</dfn>
+:: For [=Progressive Images=], a value of `false` indicates that the decoder
+    may output an {{ImageDecodeResult/image}} with reduced detail. Each
+    subsequent call to {{ImageDecoder/decode()}} for the same
+    {{ImageDecodeOptions/frameIndex}} will resolve to produce an image with a
+    higher [=Progressive Image Frame Generation=] (more image detail) than the
+    previous call, until finally the full-detail image is produced.
+
+    If {{ImageDecodeOptions/completeFramesOnly}} is assigned `true`, or if the
+    image is not a [=Progressive Image=], or if the user agent does not support
+    progressive decoding for the given image type, calls to
+    {{ImageDecoder/decode()}} will only resolve once the full detail image is
+    decoded.
+
+    <div class='note'>
+      NOTE: For [=Progressive Images=], setting
+          {{ImageDecodeOptions/completeFramesOnly}} to `false` may be used to
+          offer users a preview an image that is still being buffered from the
+          network (via the {{ImageDecoderInit/data}} {{ReadableStream}}).
+
+          Upon decoding the full detail image, the {{ImageDecodeResult}}'s
+          {{ImageDecodeResult/complete}} will be set to true.
+    </div>
+
+
+ImageDecodeResult Interface {#imagedecoderesult-interface}
+----------------------------------------------------------
+<pre class='idl'>
+<xmp>
+dictionary ImageDecodeResult {
+  required VideoFrame image;
+  required boolean complete;
+};
+</xmp>
+</pre>
+
+: <dfn dict-member for=ImageDecodeResult>image</dfn>
+:: The decoded image.
+
+: <dfn dict-member for=ImageDecodeResult>complete</dfn>
+:: Indicates whether {{ImageDecodeResult/image}} contains the final full-detail
+    output.
+
+    NOTE: {{ImageDecodeResult/complete}} is always `true` when
+        {{ImageDecoder/decode()}} is invoked with
+        {{ImageDecodeOptions/completeFramesOnly}} set to `true`.
+
+ImageTrackList Interface {#imagetracklist-interface}
+----------------------------------------------------
+<pre class='idl'>
+<xmp>
+interface ImageTrackList {
+  getter ImageTrack (unsigned long index);
+
+  readonly attribute Promise<undefined> ready;
+  readonly attribute unsigned long length;
+  readonly attribute long selectedIndex;
+  readonly attribute ImageTrack? selectedTrack;
+};
+</xmp>
+</pre>
+
+### Internal Slots ### {#imagetracklist-internal-slots}
+: <dfn attribute for=ImageTrackList>[[ready promise]]</dfn>
+:: The promise used to signal when the {{ImageTrackList}} has been populated
+    with {{ImageTrack}}s.
+
+    NOTE: {{ImageTrack}} {{ImageTrack/frameCount}} may receive subsequent
+        updates until {{ImageDecoder/complete}} is `true`.
+
+: <dfn attribute for=ImageTrackList>[[track list]]</dfn>
+:: The list of {{ImageTrack}}s describe by this {{ImageTrackList}}.
+
+: <dfn attribute for=ImageTrackList>\[[selected index]]</dfn>
+:: The index of the selected track in {{ImageTrackList/[[track list]]}}. A
+    value of `-1` indeicates that no track is selected.
+
+### Attributes ### {#imagetracklist-attributes}
+: <dfn attribute for=ImageTrackList>ready</dfn>
+:: The {{ImageTrackList/ready}} getter steps are to return the
+    {{ImageTrackList/[[ready promise]]}}.
+
+: <dfn attribute for=ImageTrackList>length</dfn>
+:: The {{ImageTrackList/length}} getter steps are to return the length of
+    {{ImageTrackList/[[track list]]}}.
+
+: <dfn attribute for=ImageTrackList>selectedIndex</dfn>
+:: The {{ImageTrackList/selectedIndex}} getter steps are to return
+    {{ImageTrackList/[[selected index]]}};
+
+: <dfn attribute for=ImageTrackList>selectedTrack</dfn>
+:: The {{ImageTrackList/selectedTrack}} getter steps are:
+    1. If {{ImageTrackList/[[selected index]]}} is `-1`, return `null`.
+    2. Otherwise, return the ImageTrack from {{ImageTrackList/[[track list]]}}
+        at the position indicated by {{ImageTrackList/[[selected index]]}}.
+
+ImageTrack Interface {#imagetrack-interface}
+--------------------------------------------
+<pre class='idl'>
+<xmp>
+interface ImageTrack : EventTarget {
+  readonly attribute boolean animated;
+  readonly attribute unsigned long frameCount;
+  readonly attribute unrestricted float repetitionCount;
+  attribute EventHandler onchange;
+  attribute boolean selected;
+};
+</xmp>
+</pre>
+
+### Internal Slots ### {#imagetrack-internal-slots}
+: <dfn attribute for=ImageTrack>\[[ImageDecoder]]</dfn>
+:: The {{ImageDecoder}} instance that constructed this {{ImageTrack}}.
+
+: <dfn attribute for=ImageTrack>\[[ImageTrackList]]</dfn>
+:: The {{ImageTrackList}} instance that lists this {{ImageTrack}}.
+
+: <dfn attribute for=ImageTrack>\[[animated]]</dfn>
+:: Indicates whether this track contains an animated image with multiple
+    frames.
+
+: <dfn attribute for=ImageTrack>[[frame count]]</dfn>
+:: The number of frames in this track.
+
+: <dfn attribute for=ImageTrack>[[repetition count]]</dfn>
+:: The number of times the animation is intended to repeat.
+
+: <dfn attribute for=ImageTrack>\[[selected]]</dfn>
+:: Indicates whether this track is selected for decoding.
+
+### Attributes ### {#imagetrack-attributes}
+
+: <dfn attribute for=ImageTrack>animated</dfn>
+:: The {{ImageTrack/animated}} getter steps are to return the value of
+    {{ImageTrack/[[animated]]}}.
+
+    NOTE: This attribute provides an early indication that
+        {{ImageTrack/frameCount}} will ultimately exceed 0 for images where the
+        {{ImageTrack/frameCount}} starts at `0` and later increments as new
+        chunks of the {{ReadableStream}} {{ImageDecoderInit/data}} arrive.
+
+: <dfn attribute for=ImageTrack>frameCount</dfn>
+:: The {{ImageTrack/frameCount}} getter steps are to return the value of
+    {{ImageTrack/[[frame count]]}}.
+
+: <dfn attribute for=ImageTrack>repetitionCount</dfn>
+:: The {{ImageTrack/repetitionCount}} getter steps are to return the value of
+    {{ImageTrack/[[repetition count]]}}.
+
+: <dfn attribute for=ImageTrack>onchange</dfn>
+:: An [=event handler IDL attribute=] whose [=event handler event type=] is
+    {{ImageTrack/change}}.
+
+: <dfn attribute for=ImageTrack>selected</dfn>
+:: The {{ImageTrack/selected}} getter steps are to return the value of
+    {{ImageTrack/[[selected]]}}.
+
+    The {{ImageTrack/selected}} setter steps are:
+    1. If {{ImageTrack/[[ImageDecoder]]}}'s {{ImageDecoder/[[closed]]}} slot is
+        `true`, abort these steps.
+    2. Let |newValue| be [=the given value=].
+    3. If |newValue| equals {{ImageTrack/[[selected]]}}, abort these steps.
+    4. Assign |newValue| to {{ImageTrack/[[selected]]}}.
+    5. Let |parentTrackList| be {{ImageTrack/[[ImageTrackList]]}}
+    6. Let |oldSelectedIndex| be the value of |parentTrackList|
+        {{ImageTrackList/[[selected index]]}}.
+    7. If |oldSelectedIndex| is not `-1`:
+        1. Let |oldSelectedTrack| be the {{ImageTrack}} in |parentTrackList|
+            {{ImageTrackList/[[track list]]}} at the position of
+            |oldSelectedIndex|.
+        2. Assign `false` to |oldSelectedTrack| {{ImageTrack/[[selected]]}}
+
+    8. If |newValue| is `true`, let |selectedIndex| be the index of [=this=]
+        {{ImageTrack}} within |parentTrackList|'s
+        {{ImageTrackList/[[track list]]}}. Otherwise, let |selectedIndex| be
+        `-1`.
+    9. Assign |selectedIndex| to |parentTrackList|
+        {{ImageTrackList/[[selected index]]}}.
+    10. Run the [=ImageDecoder/Reset ImageDecoder=] algorithm on
+        {{ImageTrack/[[ImageDecoder]]}}.
+    11. [=Queue a control message=] to {{ImageTrack/[[ImageDecoder]]}}'s
+        [=control message queue=] to update the internal selected track
+        index with |selectedIndex|.
+
+    [=Running a control message=] to update the internal selected track index
+    means running these steps:
+    1. Assign |selectedIndex| to
+        {{ImageDecoder/[[internal selected track index]]}}.
+    2. Remove all entries from
+        {{ImageDecoder/[[progressive frame generations]]}}.
+
+
+### Event Summary ### {#imagetracklist-eventsummary}
+
+: <dfn event for=ImageTrack>change</dfn>
+:: Fired at the {{ImageTrack}} when the {{ImageTrack/frameCount}} is altered.
+
 
 Security Considerations{#security-considerations}
 =================================================
