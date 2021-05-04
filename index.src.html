@@ -311,7 +311,7 @@ Methods {#audiodecoder-methods}
     4. Let |decoded outputs| be a [=list=] of decoded video data outputs emitted
         by {{AudioDecoder/[[codec implementation]]}}.
     5. If |decoded outputs| is not empty, queue a task on the [=control thread=]
-        event loop to run the [=Output AudioDatas=] algorithm with
+        event loop to run the [=Output AudioData=] algorithm with
         |decoded outputs|.
   </dd>
 
@@ -334,7 +334,7 @@ Methods {#audiodecoder-methods}
     2. Let |decoded outputs| be a [=list=] of decoded audio data outputs emitted
         by {{AudioDecoder/[[codec implementation]]}}.
     3. If |decoded outputs| is not empty, queue a task on the [=control thread=]
-        event loop to run the [=Output AudioDatas=] algorithm with
+        event loop to run the [=Output AudioData=] algorithm with
         |decoded outputs|.
     4. Queue a task on the [=control thread=] event loop to resolve |promise|.
   </dd>
@@ -388,7 +388,7 @@ Methods {#audiodecoder-methods}
 Algorithms {#audiodecoder-algorithms}
 -------------------------------------
 <dl>
-  <dt><dfn>Output AudioDatas</dfn> (with |outputs|)</dt>
+  <dt><dfn>Output AudioData</dfn> (with |outputs|)</dt>
   <dd>
     Run these steps:
     1. For each |output| in |outputs|:
@@ -1906,7 +1906,7 @@ interface AudioData {
   readonly attribute unsigned long long duration;
   readonly attribute unsigned long long timestamp;
 
-  undefined copyFromChannel(BufferSource destination, unsigned long channelNumber);
+  undefined copyTo([AllowShared] BufferSource destination, unsigned long planeNumber);
   AudioData clone();
   undefined close();
 };
@@ -2021,9 +2021,9 @@ dictionary AudioDataInit {
 
 ### Methods ###{#audiodata-methods}
 : <dfn method for=AudioData>
-      copyFromChannel(|destination|, |channelNumber|)
+      copyTo(|destination|, |planeNumber|)
     </dfn>
-:: Copies the samples from the specified channel of the {{AudioData}} to the
+:: Copies the samples from the specified plane of the {{AudioData}} to the
     destination buffer.
 
     When invoked, run these steps:
@@ -2036,9 +2036,9 @@ dictionary AudioDataInit {
         {{TypeError}}.
     4. Let |resource| be the [=media resource=] referenced by
         {{AudioData/[[resource reference]]}}.
-    5. Let |channelBytes| be the region of |resource| corresponding to
-        |channelNumber|.
-    6. Copy the |channelBytes| into |destination|.
+    5. Let |planeBytes| be the region of |resource| corresponding to
+        |planeNumber|.
+    6. Copy the |planeBytes| into |destination|.
 
 : <dfn method for=AudioData>clone()</dfn>
 :: Creates a new AudioData with a reference to the same [=media resource=].
