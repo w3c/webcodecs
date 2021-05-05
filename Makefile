@@ -16,7 +16,6 @@ remote-index: index.src.html
 	                       --output index.html \
 	                       --write-out "%{http_code}" \
 	                       --header "Accept: text/plain, text/html" \
-	                       -F die-on=warning \
 	                       -F file=@index.src.html) && \
 	[[ "$$HTTP_STATUS" -eq "200" ]]) || ( \
 		echo ""; cat index.html; echo ""; \
