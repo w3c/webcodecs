@@ -2719,7 +2719,7 @@ interface ImageDecoder {
   readonly attribute Promise<undefined> completed;
   readonly attribute ImageTrackList tracks;
 
-  Promise<ImageDecodeResult> decode(optional ImageDecodeOptions options);
+  Promise<ImageDecodeResult> decode(optional ImageDecodeOptions options = {});
   undefined reset();
   undefined close();
 
@@ -3345,6 +3345,7 @@ ImageTrackList Interface {#imagetracklist-interface}
 ----------------------------------------------------
 <pre class='idl'>
 <xmp>
+[Exposed=(Window,DedicatedWorker)]
 interface ImageTrackList {
   getter ImageTrack (unsigned long index);
 
@@ -3394,6 +3395,7 @@ ImageTrack Interface {#imagetrack-interface}
 --------------------------------------------
 <pre class='idl'>
 <xmp>
+[Exposed=(Window,DedicatedWorker)]
 interface ImageTrack : EventTarget {
   readonly attribute boolean animated;
   readonly attribute unsigned long frameCount;
