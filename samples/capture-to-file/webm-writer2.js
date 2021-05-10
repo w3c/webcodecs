@@ -1116,6 +1116,7 @@ let WebMWriter = function(ArrayBufferDataStream, BlobBuffer) {
           addFrameToCluster({
             frame: new Uint8Array(frame.data),
             intime: frame.timestamp,
+            type: frame.type,
           });
           return;
         }

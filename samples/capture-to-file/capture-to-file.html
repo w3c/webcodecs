@@ -98,10 +98,10 @@
       encoder.configure(config);
       frameReader.read().then(function processFrame({done, value}) {
 
-        if(done) {
-          self.postMessage("Stream is done.");
+        if(done||stop) {
           value.close();
-          frameReader.releaseLock();
+          encoder.close();
+          frame_counter = 0;
           return;
         }
 
@@ -120,7 +120,7 @@
     }
     async function main() {
       video = document.getElementById("src");
-      let constraints = { audio: false, video:  { width: 1280, height: 720, frameRate: 30 } };
+      let constraints = { audio: false, video: {width: 1280, height: 720, frameRate: 30}};
       stream = await window.navigator.mediaDevices.getUserMedia(constraints);
       video.srcObject = stream;
     }
