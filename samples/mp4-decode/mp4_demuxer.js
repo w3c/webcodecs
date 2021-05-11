@@ -45,7 +45,7 @@ class MP4Source {
 
   getInfo() {
     if (this.info)
-      return Promise.resolve(info);
+      return Promise.resolve(this.info);
 
     return new Promise((resolver) => { this._info_resolver = resolver; });
   }
