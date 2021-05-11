@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="origin-trial" content="AlfvFCF6XVoauEvWVCLsov9cuGlQbz6aTIO6ZdLWHG5YmZpdqON+7lXo7ZUHK+IkkdkJji+7Fxnr/yTu7Iu5Og0AAABjeyJvcmlnaW4iOiJodHRwczovL3czYy5naXRodWIuaW86NDQzIiwiZmVhdHVyZSI6IldlYkNvZGVjcyIsImV4cGlyeSI6MTYyNjIyMDc5OSwiaXNTdWJkb21haW4iOnRydWV9">
+  <title>WebCodecs API demo: Encoding and Decoding</title>
+  <style>
+    button {
+      background-color: #555555;
+      border: 2px;
+      border-radius: 2px;
+      color: white;
+      padding: 15px 32px;
+      width: 1280px;
+      text-align: center;
+      display: block;
+      font-size: 16px;
+    }
+  </style>
+</head>
+
+<body>
+  <button id="record" width=1280 onclick="saveFile()">Record</button>
+  <video id ="src" autoplay muted width=1280 height=720></video>
+  <script type="text/javascript" src="webm-writer2.js"></script>
+  <script>
+    var writeable;
+    var videoWriter;
+    var stop = false;
+    let codec_string = "vp09.00.10.08";
+    var video;
+    var stream;
+
+    async function saveFile() {
+      let cnv = document.getElementById("src");
+      let btn = document.getElementById('record');
+      if (btn.innerText == "Stop") {
+        stop = true;
+        await videoWriter.complete();
+        writeable.close();
+        btn.innerText = "Record";
+        return ;
+      }
+      let width = cnv.width;
+      let height = cnv.height;
+      stop = false;
+      handle = await window.showSaveFilePicker({
+          startIn: 'videos',
+          suggestedName: "myVideo.webm",
+          types: [{
+            description: 'Video File',
+            accept: {'video/webm' :['.webm']}
+            }],
+      });
+
+      writeable = await handle.createWritable();
+      videoWriter = new WebMWriter({
+        fileWriter: writeable,
+        codec: (codec_string=='vp8'?'VP8':'VP9'),
+        width: width,
+        height: height
+      });
+      captureAndEncode((chunk) => {
+        videoWriter.addFrame(chunk);
+      });
+      document.getElementById('record').innerText = "Stop";
+    };
+
+    async function captureAndEncode(processChunk) {
+      let frame_counter = 0;
+      var track = stream.getTracks()[0];
+      var settings = track.getSettings();
+      var pending_outputs = 0;
+      var prc = new MediaStreamTrackProcessor(track);
+      var frameStream = prc.readable;
+      const frameReader= frameStream.getReader();
+
+      const init = {
+        output: (chunk) => {
+          pending_outputs--;
+          processChunk(chunk);
+        },
+        error: (e) => {
+          console.log(e.message);
+          vtr.stop();
+        }
+      };
+
+      const config = {
+        codec: codec_string,
+        width: settings.width,
+        height: settings.height,
+        bitrate: 10e6,
+      };
+
+      let encoder = new VideoEncoder(init);
+      encoder.configure(config);
+      frameReader.read().then(function processFrame({done, value}) {
+
+        if(done||stop) {
+          value.close();
+          encoder.close();
+          return;
+        }
+
+        if (!stop && pending_outputs <= 30) {
+          if (++frame_counter % 20 == 0) {
+            console.log(frame_counter);
+          }
+
+          pending_outputs++;
+          const insert_keyframe = (frame_counter % 150) == 0;
+          encoder.encode(value, { keyFrame: insert_keyframe });
+        }
+        value.close();
+        frameReader.read().then(processFrame);
+      });
+    }
+    async function main() {
+      video = document.getElementById("src");
+      let constraints = { audio: false, video: {width: 1280, height: 720, frameRate: 30}};
+      stream = await window.navigator.mediaDevices.getUserMedia(constraints);
+      video.srcObject = stream;
+    }
+
+    document.body.onload = main;
+  </script>
+
+</body>
+
+</html>
+
