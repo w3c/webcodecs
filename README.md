@@ -34,3 +34,6 @@ It's great for:
 
 See the [explainer](https://github.com/w3c/webcodecs/blob/main/explainer.md) for more info.
 
+# Code samples
+
+Please see https://w3c.github.io/webcodecs/samples/
