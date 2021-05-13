@@ -1722,7 +1722,7 @@ interface EncodedAudioChunk {
   readonly attribute unsigned long long timestamp;  // microseconds
   readonly attribute unsigned long byteLength;
 
-  undefined readInto(ArrayBufferView dst);
+  undefined copyTo(ArrayBufferView dst);
 };
 
 dictionary EncodedAudioChunkInit {
@@ -1764,7 +1764,7 @@ enum EncodedAudioChunkType {
 :: The byte length of {{EncodedAudioChunk/[[internal data]]}}.
 
 ### Methods ###{#encodedaudiochunk-methods}
-: <dfn method for=EncodedAudioChunk>readInto(dst)</dfn>
+: <dfn method for=EncodedAudioChunk>copyTo(dst)</dfn>
 :: When invoked, run these steps:
     1. If {{EncodedAudioChunk/byteLength}} is greater than
         |dst|.`byteLength`,
@@ -1782,7 +1782,7 @@ interface EncodedVideoChunk {
   readonly attribute unsigned long long? duration;  // microseconds
   readonly attribute unsigned long byteLength;
 
-  undefined readInto(ArrayBufferView dst);
+  undefined copyTo(ArrayBufferView dst);
 };
 
 dictionary EncodedVideoChunkInit {
@@ -1830,17 +1830,17 @@ enum EncodedVideoChunkType {
 :: The byte length of {{EncodedVideoChunk/[[internal data]]}}.
 
 ### Methods ###{#encodedvideochunk-methods}
-: <dfn method for=EncodedVideoChunk>readInto(dst)</dfn>
+: <dfn method for=EncodedVideoChunk>copyTo(dst)</dfn>
 :: When invoked, run these steps:
     1. If {{EncodedVideoChunk/byteLength}} is greater than
         |dst|.`byteLength`,
         throw a {{TypeError}}.
     2. Copy the {{EncodedVideoChunk/[[internal data]]}} into |dst|.
 
+
 Raw Media Interfaces (Frames){#raw-media-interfaces}
 ====================================================
 These interfaces represent unencoded (raw) media.
-
 
 AudioFrame Interface {#audioframe-interface}
 ---------------------------------------------
