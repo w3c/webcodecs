@@ -1,0 +1,68 @@
+<!doctype html>
+<!DOCTYPE html>
+<html>
+<head>
+  <title>WebCodec MP4 frame extration demo</title>
+  <meta http-equiv="origin-trial" content="AlfvFCF6XVoauEvWVCLsov9cuGlQbz6aTIO6ZdLWHG5YmZpdqON+7lXo7ZUHK+IkkdkJji+7Fxnr/yTu7Iu5Og0AAABjeyJvcmlnaW4iOiJodHRwczovL3czYy5naXRodWIuaW86NDQzIiwiZmVhdHVyZSI6IldlYkNvZGVjcyIsImV4cGlyeSI6MTYyNjIyMDc5OSwiaXNTdWJkb21haW4iOnRydWV9" />
+</head>
+<body>
+  <p>
+    This demo extracts all frames from an MP4 file and renders them to a canvas as fast as possible. It uses <a href="https://github.com/gpac/mp4box.js/">mp4box.js</a> to parse and demux the file.
+  </p>
+  <p>
+    Frames extracted: <span id="frameStats"></span>
+  </p>
+  <canvas></canvas>
+</body>
+
+<script src="mp4box.all.min.js"></script>
+
+<script type="module">
+  import {MP4Demuxer} from "./mp4_demuxer.js";
+  let demuxer = new MP4Demuxer("/webcodecs/samples/media/bbb.mp4");
+
+  var canvas = document.querySelector("canvas");
+  var ctx = canvas.getContext('2d');
+  document.body.appendChild(canvas);
+
+  var frameCount = 0;
+  var startTime;
+
+  async function onFrame(frame) {
+    let now = performance.now();
+
+    ctx.drawImage(frame, 0, 0, canvas.width, canvas.height);
+    frame.close();
+
+    let fps = "";
+    if(frameCount++) {
+      let elapsed = now - startTime;
+      fps = " (" + (1000.0*frameCount/(elapsed)).toFixed(0) + " fps)"
+    } else {
+      // This is the first frame.
+      startTime = now;
+    }
+
+    document.getElementById("frameStats").innerText = frameCount + fps;
+  }
+
+  let decoder = new VideoDecoder({
+    output: onFrame,
+    error: e => console.error(e),
+  });
+
+  demuxer.getConfig().then((config) => {
+    canvas.height = config.codedHeight;
+    canvas.width = config.codedWidth;
+
+    decoder.configure(config);
+    demuxer.start((chunk) => {
+      decoder.decode(chunk);
+    })
+  });
+
+  window.decoder = decoder;
+</script>
+
+</html>
+
