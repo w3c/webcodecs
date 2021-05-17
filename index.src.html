@@ -106,8 +106,9 @@ Definitions {#definitions}
 :: Refers generically to an instance of AudioDecoder, AudioEncoder,
     VideoDecoder, or VideoEncoder.
 
-: Key Frame
-:: An encoded frame that does not depend on any other frames for decoding.
+: <dfn lt="Key Chunk|Key Frame">Key Chunk</dfn>
+:: An encoded chunk that does not depend on any other frames for decoding. Also
+    commonly referred to as a "key frame".
 
 : <dfn>Internal Pending Output</dfn>
 :: Codec outputs such as {{VideoFrame}}s that currently reside in the internal
@@ -238,14 +239,16 @@ callback AudioDataOutputCallback = undefined(AudioData output);
 
 Internal Slots {#audiodecoder-internal-slots}
 ---------------------------------------------
-<dl>
-<dt><dfn attribute for=AudioDecoder>[[codec implementation]]</dfn></dt>
-<dd>Underlying decoder implementation provided by the User Agent.</dd>
-<dt><dfn attribute for=AudioDecoder>[[output callback]]</dfn></dt>
-<dd>Callback given at construction for decoded outputs.</dd>
-<dt><dfn attribute for=AudioDecoder>[[error callback]]</dfn></dt>
-<dd>Callback given at construction for decode errors.</dd>
-</dl>
+: <dfn attribute for=AudioDecoder>[[codec implementation]]</dfn>
+:: Underlying decoder implementation provided by the User Agent.
+: <dfn attribute for=AudioDecoder>[[output callback]]</dfn>
+:: Callback given at construction for decoded outputs.
+: <dfn attribute for=AudioDecoder>[[error callback]]</dfn>
+:: Callback given at construction for decode errors.
+: <dfn attribute for=AudioDecoder>[[key chunk required]]</dfn>
+:: A boolean indicating that the next chunk passed to {{AudioDecoder/decode()}}
+    must describe a [=key chunk=] as indicated by
+    {{EncodedAudioChunk/type}}.
 
 Constructors {#audiodecoder-constructors}
 -----------------------------------------
@@ -253,10 +256,11 @@ Constructors {#audiodecoder-constructors}
   AudioDecoder(init)
 </dfn>
 1. Let d be a new {{AudioDecoder}} object.
-2. Assign init.output to the {{AudioDecoder/[[output callback]]}} internal slot.
-3. Assign init.error to the {{AudioDecoder/[[error callback]]}} internal slot.
-4. Assign "unconfigured" to d.state.
-4. Return d.
+2. Assign init.output to {{AudioDecoder/[[output callback]]}}.
+3. Assign init.error to {{AudioDecoder/[[error callback]]}}.
+4. Assign `true` to {{AudioDecoder/[[key chunk required]]}}.
+5. Assign "unconfigured" to d.state.
+6. Return d.
 
 Attributes {#audiodecoder-attributes}
 -------------------------------------
@@ -292,7 +296,8 @@ Methods {#audiodecoder-methods}
         {{TypeError}}.
     2. If {{AudioDecoder/state}} is `“closed”`, throw an {{InvalidStateError}}.
     3. Set {{AudioDecoder/state}} to `"configured"`.
-    4. [=Queue a control message=] to configure the decoder with |config|.
+    4. Set {{AudioDecoder/[[key chunk required]]}} to `true`.
+    5. [=Queue a control message=] to configure the decoder with |config|.
 
     [=Running a control message=] to configure the decoder means running
     these steps:
@@ -312,8 +317,26 @@ Methods {#audiodecoder-methods}
     When invoked, run these steps:
     1. If {{AudioDecoder/state}} is not `"configured"`, throw an
         {{InvalidStateError}}.
-    2. Increment {{AudioDecoder/decodeQueueSize}}.
-    3. [=Queue a control message=] to decode the |chunk|.
+    2. If {{AudioDecoder/[[key chunk required]]}} is `true`:
+        1. If |chunk|.{{EncodedAudioChunk/type}} is not
+            {{EncodedAudioChunkType/key}}, throw a {{DataError}}.
+
+            <div class='note'>
+            NOTE: Authors are strongly encouraged to construct
+                {{EncodedAudioChunk}}s with the correct
+                {{EncodedAudioChunkInit/type}}. Providing the incorrect type
+                may lead to undefined behavior, including fatal errors.
+
+                Implementers may inspect the chunk's
+                {{EncodedAudioChunk/[[internal data]]}} to verify that the
+                chunk provided is truly a [=key chunk=]. If a mismatch is
+                detected, user agents should throw a {{DataError}}.
+            </div>
+
+        2. Otherwise, assign `false` to
+            {{AudioDecoder/[[key chunk required]]}}.
+    3. Increment {{AudioDecoder/decodeQueueSize}}.
+    4. [=Queue a control message=] to decode the |chunk|.
 
     [=Running a control message=] to decode the chunk means performing these
     steps:
@@ -339,9 +362,10 @@ Methods {#audiodecoder-methods}
     When invoked, run these steps:
     1. If {{AudioDecoder/state}} is not `"configured"`, return
         [=a promise rejected with=] {{InvalidStateError}} {{DOMException}}.
-    2. Let |promise| be a new Promise.
-    3. [=Queue a control message=] to flush the codec with |promise|.
-    4. Return |promise|.
+    2. Set {{AudioDecoder/[[key chunk required]]}} to `true`.
+    3. Let |promise| be a new Promise.
+    4. [=Queue a control message=] to flush the codec with |promise|.
+    5. Return |promise|.
 
     [=Running a control message=] to flush the codec means performing these steps
         with |promise|.
@@ -475,14 +499,15 @@ callback VideoFrameOutputCallback = undefined(VideoFrame output);
 
 Internal Slots {#videodecoder-internal-slots}
 ---------------------------------------------
-<dl>
-<dt><dfn attribute for=VideoDecoder>[[codec implementation]]</dfn></dt>
-<dd>Underlying decoder implementation provided by the User Agent.</dd>
-<dt><dfn attribute for=VideoDecoder>[[output callback]]</dfn></dt>
-<dd>Callback given at construction for decoded outputs.</dd>
-<dt><dfn attribute for=VideoDecoder>[[error callback]]</dfn></dt>
-<dd>Callback given at construction for decode errors.</dd>
-</dl>
+: <dfn attribute for=VideoDecoder>[[codec implementation]]</dfn>
+:: Underlying decoder implementation provided by the User Agent.
+: <dfn attribute for=VideoDecoder>[[output callback]]</dfn>
+:: Callback given at construction for decoded outputs.
+: <dfn attribute for=VideoDecoder>[[error callback]]</dfn>
+:: Callback given at construction for decode errors.
+: <dfn attribute for=VideoDecoder>[[key chunk required]]</dfn>
+:: A boolean indicating that the next chunk passed to {{VideoDecoder/decode()}}
+    must describe a [=key chunk=] as indicated by {{EncodedVideoChunk/type}}.
 
 Constructors {#videodecoder-constructors}
 -----------------------------------------
@@ -492,7 +517,8 @@ Constructors {#videodecoder-constructors}
 1. Let d be a new VideoDecoder object.
 2. Assign `init.output` to the {{VideoDecoder/[[output callback]]}} internal slot.
 3. Assign `init.error` to the {{VideoDecoder/[[error callback]]}} internal slot.
-4. Assign "unconfigured" to `d.state`.
+4. Assign `true` to {{VideoDecoder/[[key chunk required]]}}.
+5. Assign "unconfigured" to `d.state`.
 5. Return d.
 
 Attributes {#videodecoder-attributes}
@@ -529,7 +555,8 @@ Methods {#videodecoder-methods}
         {{TypeError}}.
     2. If {{VideoDecoder/state}} is `“closed”`, throw an {{InvalidStateError}}.
     3. Set {{VideoDecoder/state}} to `"configured"`.
-    4. [=Queue a control message=] to configure the decoder with |config|.
+    4. Set {{VideoDecoder/[[key chunk required]]}} to `true`.
+    5. [=Queue a control message=] to configure the decoder with |config|.
 
     [=Running a control message=] to configure the decoder means running
     these steps:
@@ -555,8 +582,26 @@ Methods {#videodecoder-methods}
     When invoked, run these steps:
     1. If {{VideoDecoder/state}} is not `"configured"`, throw an
         {{InvalidStateError}}.
-    2. Increment {{VideoDecoder/decodeQueueSize}}.
-    3. [=Queue a control message=] to decode the |chunk|.
+    2. If {{VideoDecoder/[[key chunk required]]}} is `true`:
+        1. If |chunk|.{{EncodedVideoChunk/type}} is not
+            {{EncodedVideoChunkType/key}}, throw a {{DataError}}.
+
+            <div class='note'>
+            NOTE: Authors are strongly encouraged to construct
+                {{EncodedVideoChunk}}s with the correct
+                {{EncodedVideoChunkInit/type}}. Providing the incorrect type
+                may lead to undefined behavior, including fatal errors.
+
+                Implementers may inspect the chunk's
+                {{EncodedVideoChunk/[[internal data]]}} to verify that the
+                chunk provided is truly a [=key chunk=]. If a mismatch is
+                detected, user agents should throw a {{DataError}}.
+            </div>
+
+        2. Otherwise, assign `false` to
+            {{VideoDecoder/[[key chunk required]]}}.
+    3. Increment {{VideoDecoder/decodeQueueSize}}.
+    4. [=Queue a control message=] to decode the |chunk|.
 
     [=Running a control message=] to decode the chunk means performing these steps:
     1. Attempt to use {{VideoDecoder/[[codec implementation]]}} to decode the
@@ -581,9 +626,10 @@ Methods {#videodecoder-methods}
     When invoked, run these steps:
     1. If {{VideoDecoder/state}} is not `"configured"`, return
         [=a promise rejected with=] {{InvalidStateError}} {{DOMException}}.
-    2. Let |promise| be a new Promise.
-    3. [=Queue a control message=] to flush the codec with |promise|.
-    4. Return |promise|.
+    2. Set {{VideoDecoder/[[key chunk required]]}} to `true`.
+    3. Let |promise| be a new Promise.
+    4. [=Queue a control message=] to flush the codec with |promise|.
+    5. Return |promise|.
 
     [=Running a control message=] to flush the codec means performing these steps
         with |promise|.
@@ -1735,7 +1781,7 @@ dictionary VideoEncoderEncodeOptions {
   <dd>
     A value of `true` indicates that the given frame MUST be encoded as a key
     frame. A value of `false` indicates that the user agent has flexibility to
-    decide whether the frame will be encoded as a key frame.
+    decide whether the frame will be encoded as a [=key frame=].
   </dd>
 </dl>
 
@@ -1818,7 +1864,7 @@ enum EncodedAudioChunkType {
 
 ### Attributes ###{#encodedaudiochunk-attributes}
 : <dfn attribute for=EncodedAudioChunk>type</dfn>
-:: Describes whether the chunk is a key frame.
+:: Describes whether the chunk is a [=key chunk=].
 
 : <dfn attribute for=EncodedAudioChunk>timestamp</dfn>
 :: The presentation timestamp, given in microseconds.
@@ -1881,7 +1927,7 @@ enum EncodedVideoChunkType {
 
 ### Attributes ###{#encodedvideochunk-attributes}
 : <dfn attribute for=EncodedVideoChunk>type</dfn>
-:: Describes whether the chunk is a key frame or not.
+:: Describes whether the chunk is a [=key chunk=].
 
 : <dfn attribute for=EncodedVideoChunk>timestamp</dfn>
 :: The presentation timestamp, given in microseconds.
