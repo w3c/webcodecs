@@ -1168,13 +1168,11 @@ Algorithms {#videoencoder-algorithms}
         2. Let |output_config| be a {{VideoDecoderConfig}} that describes
             |output|. Initialize |output_config| as follows:
             1. Assign `encoder_config.codec` to `output_config.codec`.
-            2. Assign `encoder_config.width` to `output_config.cropWidth`.
-            3. Assign `encoder_config.height` to `output_config.cropHeight`.
-            4. Assign `encoder_config.displayWidth` to
+            2. Assign `encoder_config.displayWidth` to
                 `output_config.displayWidth`.
-            5. Assign `encoder_config.displayHeight` to
+            3. Assign `encoder_config.displayHeight` to
                 `output_config.displayHeight`.
-            6. Assign the remaining keys of `output_config` as determined by
+            4. Assign the remaining keys of `output_config` as determined by
                 {{VideoEncoder/[[codec implementation]]}}. The user agent
                 must ensure that the configuration is completely described
                 such that |output_config| could be used to correctly decode
@@ -1426,10 +1424,6 @@ dictionary VideoDecoderConfig {
   BufferSource description;
   unsigned long codedWidth;
   unsigned long codedHeight;
-  unsigned long cropLeft;
-  unsigned long cropTop;
-  unsigned long cropWidth;
-  unsigned long cropHeight;
   unsigned long displayWidth;
   unsigned long displayHeight;
   HardwareAcceleration hardwareAcceleration = "allow";
@@ -1442,15 +1436,9 @@ run these steps:
     `false`.
 2. If {{VideoDecoderConfig/codedWidth}} = 0 or
     {{VideoDecoderConfig/codedHeight}} = 0, return `false`.
-3. If {{VideoDecoderConfig/cropWidth}} = 0 or {{VideoDecoderConfig/cropHeight}}
-    = 0, return `false`.
-4. If {{VideoDecoderConfig/cropTop}} + {{VideoDecoderConfig/cropHeight}} >=
-    {{VideoDecoderConfig/codedHeight}}, return `false`.
-5. If {{VideoDecoderConfig/cropLeft}} + {{VideoDecoderConfig/cropWidth}} >=
-    {{VideoDecoderConfig/codedWidth}}, return `false`.
-6. If {{VideoDecoderConfig/displayWidth}} = 0 or
+3. If {{VideoDecoderConfig/displayWidth}} = 0 or
     {{VideoDecoderConfig/displayHeight}} = 0, return `false`.
-7. Return `true`.
+4. Return `true`.
 
 <dl>
   <dt><dfn dict-member for=VideoDecoderConfig>codec</dfn></dt>
@@ -1477,40 +1465,14 @@ run these steps:
         adjustments.
   </dd>
 
-  <dt><dfn dict-member for=VideoDecoderConfig>cropLeft</dfn></dt>
-  <dd>
-    The number of pixels to remove from the left of the VideoFrame, prior to
-        aspect ratio adjustments. Defaults to zero if not present.
-  </dd>
-
-  <dt><dfn dict-member for=VideoDecoderConfig>cropTop</dfn></dt>
-  <dd>
-    The number of pixels to remove from the top of the VideoFrame, prior to
-        aspect ratio adjustments. Defaults to zero if not present.
-  </dd>
-
-  <dt><dfn dict-member for=VideoDecoderConfig>cropWidth</dfn></dt>
-  <dd>
-    The width in pixels to include in the crop, starting from cropLeft.
-        Defaults to codedWidth if not present.
-  </dd>
-
-  <dt><dfn dict-member for=VideoDecoderConfig>cropHeight</dfn></dt>
-  <dd>
-    The height in pixels to include in the crop, starting from cropLeft.
-        Defaults to codedHeight if not present.
-  </dd>
-
   <dt><dfn dict-member for=VideoDecoderConfig>displayWidth</dfn></dt>
   <dd>
-    Width of the VideoFrame when displayed. Defaults to cropWidth if not
-        present.
+    Width of the VideoFrame when displayed.
   </dd>
 
   <dt><dfn dict-member for=VideoDecoderConfig>displayHeight</dfn></dt>
   <dd>
-    Height of the VideoFrame when displayed. Defaults to cropHeight if not
-        present.
+    Height of the VideoFrame when displayed.
   </dd>
 
   <dt><dfn dict-member for=VideoDecoderConfig>hardwareAcceleration</dfn></dt>
