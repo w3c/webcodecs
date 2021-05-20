@@ -120,7 +120,7 @@ Definitions {#definitions}
 :: Resources including CPU memory, GPU memory, and exclusive handles to specific
     decoding/encoding hardware that may be allocated by the User Agent as part
     of codec configuration or generation of {{AudioData}} and {{VideoFrame}}
-    objects. Such resources may be quickly exhuasted and should be released
+    objects. Such resources may be quickly exhausted and should be released
     immediately when no longer in use.
 
 : <dfn>Progressive Image</dfn>
@@ -1440,6 +1440,10 @@ run these steps:
     {{VideoDecoderConfig/displayHeight}} = 0, return `false`.
 4. Return `true`.
 
+NOTE: A user agent may also reject a config whose {{VideoDecoderConfig/codedWidth}}
+  or {{VideoDecoderConfig/codedHeight}} exceeds reasonnable bounds, determined by
+  which {{VideoDecoder/[[codec implementation]]}} are available to the user agent.
+
 <dl>
   <dt><dfn dict-member for=VideoDecoderConfig>codec</dfn></dt>
   <dd>Contains a codec string describing the codec.</dd>
@@ -1465,14 +1469,19 @@ run these steps:
         adjustments.
   </dd>
 
+  NOTE: {{VideoDecoderConfig/codedWidth}} and {{VideoDecoderConfig/codedHeight}}
+    are only used as hints when selecting a {{VideoDecoder/[[codec implementation]]}}.
+
   <dt><dfn dict-member for=VideoDecoderConfig>displayWidth</dfn></dt>
   <dd>
-    Width of the VideoFrame when displayed.
+    Width of the VideoFrame when displayed. Defaults to {{VideoFrame/cropWidth}}
+    if not present.
   </dd>
 
   <dt><dfn dict-member for=VideoDecoderConfig>displayHeight</dfn></dt>
   <dd>
-    Height of the VideoFrame when displayed.
+    Height of the VideoFrame when displayed. Defaults to {{VideoFrame/cropHeight}}
+    if not present.
   </dd>
 
   <dt><dfn dict-member for=VideoDecoderConfig>hardwareAcceleration</dfn></dt>
