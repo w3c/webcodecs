@@ -688,12 +688,12 @@ Algorithms {#videodecoder-algorithms}
             be the crop region of the decoded video frame |output| in
             pixels, prior to any aspect ratio adjustments.
         5. If |displayAspectWidth| and |displayAspectWidth| are provided,
-            assign the value of the decoded video frame in pixel to either
+            assign the value of the decoded video frame size in pixel to either
             {{VideoFramePlaneInit/displayWidth}} or
             {{VideoFramePlaneInit/displayHeight}}, and scale up the other
             dimension to match the ratio of |displayAspectWidth| and
-            |displayAspectHeight|, as described in
-            [=intrinsic width|HTMLVideoElement=].
+            |displayAspectHeight|, as described by the definitions of
+            [=intrinsic width|intrinsic size=].
         6. Otherwise, let {{VideoFramePlaneInit/displayWidth}} and
             {{VideoFramePlaneInit/displayHeight}} be the display size of
             the decoded video frame in pixels.
@@ -1486,19 +1486,19 @@ run these steps:
 
   <dt><dfn dict-member for=VideoDecoderConfig>displayAspectWidth</dfn></dt>
   <dd>
-    Width of the VideoFrame's aspect ratio when displayed.
+    Horizontal component of the VideoFrame's aspect ratio when displayed.
   </dd>
 
   <dt><dfn dict-member for=VideoDecoderConfig>displayAspectHeight</dfn></dt>
   <dd>
-    Height of the VideoFrame's aspect ratio when displayed.
+    Vertical component of the VideoFrame's aspect ratio when displayed.
   </dd>
 
-NOTE: User agents are expected to scale up a {{VideoFrame|VideoFrame's}} {{VideoFrame/displayWidth}} or
- {{VideoFrame/displayHeight}} to match the ratio of
- {{VideoDecoderConfig/displayAspectWidth}} and
- {{VideoDecoderConfig/displayAspectHeight}}, as defined in the
- [=intrinsic width|HTMLVideoElement=] spec.
+Note: {{VideoFrame/displayWidth}} and {{VideoFrame/displayHeight}} can both be
+  different from {{VideoDecoderConfig/displayAspectWidth}} and
+  {{VideoDecoderConfig/displayAspectHeight}}, but they should have identical
+  ratios, after being scaled according to defintions of
+  [=intrinsic width|intrinsic size=].
 
   <dt><dfn dict-member for=VideoDecoderConfig>hardwareAcceleration</dfn></dt>
   <dd>
