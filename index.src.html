@@ -656,14 +656,15 @@ Algorithms {#videodecoder-algorithms}
         1. Let |timestamp| and |duration| be the
             {{EncodedVideoChunk/timestamp}} and {{EncodedVideoChunk/duration}}
             from the {{EncodedVideoChunk}} associated with |output|.
-        2. Let |displayAspectWidth| and |displayAspectHeight| be the
-            {{VideoDecoderConfig/displayAspectWidth}} and
-            {{VideoDecoderConfig/displayAspectHeight}} of the
-            {{VideoDecoder/[[active decoder config]]}} respectively.
-        3. Let |frame| be the result of running the [=Create a VideoFrame=]
+        2. Let |displayAspectWidth| and |displayAspectHeight| be undefined.
+        3. If {{VideoDecoderConfig/displayAspectWidth}} and
+            {{VideoDecoderConfig/displayAspectHeight}} [=map/exist=] in the
+            {{VideoDecoder/[[active decoder config]]}}, assign their values to
+            |displayAspectWidth| and |displayAspectHeight| respectively.
+        4. Let |frame| be the result of running the [=Create a VideoFrame=]
             algorithm with |output|, |timestamp|, |duration|, |displayAspectWidth|
             and |displayAspectHeight|.
-        4. Invoke {{VideoDecoder/[[output callback]]}} with |frame|.
+        5. Invoke {{VideoDecoder/[[output callback]]}} with |frame|.
   </dd>
   <dt><dfn>Reset VideoDecoder</dfn></dt>
   <dd>
@@ -1453,7 +1454,7 @@ run these steps:
   </dd>
 
   NOTE: {{VideoDecoderConfig/codedWidth}} and {{VideoDecoderConfig/codedHeight}}
-    are when selecting a {{VideoDecoder/[[codec implementation]]}}.
+    are used when selecting a {{VideoDecoder/[[codec implementation]]}}.
 
   <dt><dfn dict-member for=VideoDecoderConfig>displayAspectWidth</dfn></dt>
   <dd>
