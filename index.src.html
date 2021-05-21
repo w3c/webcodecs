@@ -665,39 +665,6 @@ Algorithms {#videodecoder-algorithms}
             and |displayAspectHeight|.
         4. Invoke {{VideoDecoder/[[output callback]]}} with |frame|.
   </dd>
-  <dt>
-    <dfn>Create a VideoFrame</dfn> (with |output|, |timestamp|, |duration|, |displayAspectWidth|, and |displayAspectHeight|)
-  </dt>
-  <dd>
-    1. Let |planes| be a sequence of {{Plane}}s containing the decoded
-        video frame data from |output|.
-    2. Let |pixelFormat| be the {{PixelFormat}} of |planes|.
-    3. Let |init| be a {{VideoFramePlaneInit}} with the following
-        keys:
-        1. Assign |timestamp| to {{VideoFrameInit/timestamp}}.
-        2. Assign |duration| to {{VideoFrameInit/duration}}.
-        3. Let {{VideoFramePlaneInit/codedWidth}} and
-            {{VideoFramePlaneInit/codedHeight}}
-            be the width and height of the decoded video frame |output| in
-            pixels, prior to any cropping or aspect ratio adjustments.
-        4. Let {{VideoFramePlaneInit/cropLeft}},
-            {{VideoFramePlaneInit/cropTop}},
-            {{VideoFramePlaneInit/cropWidth}}, and
-            {{VideoFramePlaneInit/cropHeight}}
-            be the crop region of the decoded video frame |output| in
-            pixels, prior to any aspect ratio adjustments.
-        5. Let |displayWidth| and |displayHeight| be the the display size of
-            the decoded frame in pixels.
-        6. If |displayAspectWidth| and |displayAspectHeight| are provided,
-            increase |displayWidth| or |displayHeight| until the ratio of
-            |displayWidth| to |displayHeight| matches the ratio of
-            |displayAspectWidth| to |displayAspectHeight|.
-        7. Assign the value of |displayWidth| and |displayHeight| to
-            {{VideoFramePlaneInit/displayWidth}} and
-            {{VideoFramePlaneInit/displayHeight}} respectively.
-    4. Return a new {{VideoFrame}}, constructed with |pixelFormat|,
-        |planes|, and |init|.
-  </dd>
   <dt><dfn>Reset VideoDecoder</dfn></dt>
   <dd>
     Run these steps:
@@ -2525,6 +2492,36 @@ dictionary VideoFramePlaneInit {
     6. Assign `null` to {{VideoFrame/duration}} and {{VideoFrame/timestamp}}.
 
 ### Algorithms ###{#videoframe-algorithms}
+  <dfn>Create a VideoFrame</dfn> (with |output|, |timestamp|, |duration|, |displayAspectWidth|, and |displayAspectHeight|)
+  1. Let |planes| be a sequence of {{Plane}}s containing the decoded
+      video frame data from |output|.
+  2. Let |pixelFormat| be the {{PixelFormat}} of |planes|.
+  3. Let |init| be a {{VideoFramePlaneInit}} with the following
+      keys:
+      1. Assign |timestamp| to {{VideoFrameInit/timestamp}}.
+      2. Assign |duration| to {{VideoFrameInit/duration}}.
+      3. Let {{VideoFramePlaneInit/codedWidth}} and
+          {{VideoFramePlaneInit/codedHeight}}
+          be the width and height of the decoded video frame |output| in
+          pixels, prior to any cropping or aspect ratio adjustments.
+      4. Let {{VideoFramePlaneInit/cropLeft}},
+          {{VideoFramePlaneInit/cropTop}},
+          {{VideoFramePlaneInit/cropWidth}}, and
+          {{VideoFramePlaneInit/cropHeight}}
+          be the crop region of the decoded video frame |output| in
+          pixels, prior to any aspect ratio adjustments.
+      5. Let |displayWidth| and |displayHeight| be the the display size of
+          the decoded frame in pixels.
+      6. If |displayAspectWidth| and |displayAspectHeight| are provided,
+          increase |displayWidth| or |displayHeight| until the ratio of
+          |displayWidth| to |displayHeight| matches the ratio of
+          |displayAspectWidth| to |displayAspectHeight|.
+      7. Assign the value of |displayWidth| and |displayHeight| to
+          {{VideoFramePlaneInit/displayWidth}} and
+          {{VideoFramePlaneInit/displayHeight}} respectively.
+  4. Return a new {{VideoFrame}}, constructed with |pixelFormat|,
+      |planes|, and |init|.
+
 : To check if a {{VideoFramePlaneInit}} is a
     <dfn>valid VideoFramePlaneInit</dfn>, run these steps:
 :: 1. If {{VideoFramePlaneInit/codedWidth}} = 0 or
