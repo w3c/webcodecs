@@ -1,7 +1,5 @@
 # Try it out in Chrome 86
 
-Please see [this doc for current limitations](https://docs.google.com/document/d/1H1UHn3DIw-LOfBUdNUFR6l2-zSipXuHCVmhrwF3rR6w/edit).
-
 To try it on your machine, either
 * enable `chrome://flags/#enable-experimental-web-platform-features`, or 
 * pass `--enable-blink-features=WebCodecs` flag via the command line.
@@ -34,3 +32,6 @@ It's great for:
 
 See the [explainer](https://github.com/w3c/webcodecs/blob/main/explainer.md) for more info.
 
+# Code samples
+
+Please see https://w3c.github.io/webcodecs/samples/

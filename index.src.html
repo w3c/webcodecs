@@ -1783,13 +1783,15 @@ EncodedAudioChunk Interface {#encodedaudiochunk-interface}
 interface EncodedAudioChunk {
   constructor(EncodedAudioChunkInit init);
   readonly attribute EncodedAudioChunkType type;
-  readonly attribute unsigned long long timestamp;  // microseconds
-  readonly attribute ArrayBuffer data;
+  readonly attribute long long timestamp;    // microseconds
+  readonly attribute unsigned long byteLength;
+
+  undefined copyTo(ArrayBufferView dst);
 };
 
 dictionary EncodedAudioChunkInit {
   required EncodedAudioChunkType type;
-  required unsigned long long timestamp;
+  required long long timestamp;    // microseconds
   required BufferSource data;
 };
 
@@ -1799,27 +1801,38 @@ enum EncodedAudioChunkType {
 };
 </xmp>
 
+### Internal Slots ### {#encodedaudiochunk-internal-slots}
+: <dfn attribute for=EncodedAudioChunk>[[internal data]]</dfn></dt>
+:: An array of bytes representing the encoded chunk data.
+
 ### Constructors ###{#encodedaudiochunk-constructors}
 <dfn constructor for=EncodedAudioChunk title="EncodedAudioChunk(init)">
   EncodedAudioChunk(init)
 </dfn>
 1. Let |chunk| be a new {{EncodedAudioChunk}} object, initialized as follows
-    1. Assign `init.type` to `chunk.type`.
-    2. Assign `init.timestamp` to `chunk.timestamp`.
-    3. Assign a copy of `init.data` to `chunk.data`.
+    1. Assign `init.type` to {{EncodedAudioChunk/type}}.
+    2. Assign `init.timestamp` to {{EncodedAudioChunk/timestamp}}.
+    3. Assign a copy of `init.data` to {{EncodedAudioChunk/[[internal data]]}}.
+    4. Assign `init.data.byteLength` to {{EncodedAudioChunk/byteLength}};
 5. Return |chunk|.
 
 ### Attributes ###{#encodedaudiochunk-attributes}
-<dl>
-  <dt><dfn attribute for=EncodedAudioChunk>type</dfn></dt>
-  <dd>Describes whether the chunk is a key frame.</dd>
+: <dfn attribute for=EncodedAudioChunk>type</dfn>
+:: Describes whether the chunk is a key frame.
 
-  <dt><dfn attribute for=EncodedAudioChunk>timestamp</dfn></dt>
-  <dd>The presentation timestamp, given in microseconds.</dd>
+: <dfn attribute for=EncodedAudioChunk>timestamp</dfn>
+:: The presentation timestamp, given in microseconds.
 
-  <dt><dfn attribute for=EncodedAudioChunk>data</dfn></dt>
-  <dd>A sequence of bytes containing encoded audio data.</dd>
-</dl>
+: <dfn attribute for=EncodedAudioChunk>byteLength</dfn>
+:: The byte length of {{EncodedAudioChunk/[[internal data]]}}.
+
+### Methods ###{#encodedaudiochunk-methods}
+: <dfn method for=EncodedAudioChunk>copyTo(dst)</dfn>
+:: When invoked, run these steps:
+    1. If {{EncodedAudioChunk/byteLength}} is greater than
+        |dst|.`byteLength`,
+        throw a {{TypeError}}.
+    2. Copy the {{EncodedAudioChunk/[[internal data]]}} into |dst|.
 
 EncodedVideoChunk Interface{#encodedvideochunk-interface}
 -----------------------------------------------------------
@@ -1828,15 +1841,17 @@ EncodedVideoChunk Interface{#encodedvideochunk-interface}
 interface EncodedVideoChunk {
   constructor(EncodedVideoChunkInit init);
   readonly attribute EncodedVideoChunkType type;
-  readonly attribute unsigned long long timestamp;  // microseconds
-  readonly attribute unsigned long long? duration;  // microseconds
-  readonly attribute ArrayBuffer data;
+  readonly attribute long long timestamp;    // microseconds
+  readonly attribute long long? duration;    // microseconds
+  readonly attribute unsigned long byteLength;
+
+  undefined copyTo(ArrayBufferView dst);
 };
 
 dictionary EncodedVideoChunkInit {
   required EncodedVideoChunkType type;
-  required unsigned long long timestamp;
-  unsigned long long duration;
+  required long long timestamp;    // microseconds
+  long long duration;              // microseconds
   required BufferSource data;
 };
 
@@ -1846,32 +1861,44 @@ enum EncodedVideoChunkType {
 };
 </xmp>
 
+### Internal Slots ### {#encodedvideochunk-internal-slots}
+: <dfn attribute for=EncodedVideoChunk>[[internal data]]</dfn></dt>
+:: An array of bytes representing the encoded chunk data.
+
 ### Constructors ###{#encodedvideochunk-constructors}
 <dfn constructor for=EncodedVideoChunk title="EncodedVideoChunk(init)">
   EncodedVideoChunk(init)
 </dfn>
 1. Let |chunk| be a new {{EncodedVideoChunk}} object, initialized as follows
-    1. Assign `init.type` to `chunk.type`.
-    2. Assign `init.timestamp` to `chunk.timestamp`.
+    1. Assign `init.type` to {{EncodedVideoChunk/type}}.
+    2. Assign `init.timestamp` to {{EncodedVideoChunk/timestamp}}.
     3. If duration is present in init, assign `init.duration` to
-        `chunk.duration`. Otherwise, assign null to `chunk.duration`.
-2. Assign a copy of `init.data` to `chunk.data`.
+        {{EncodedVideoChunk/duration}}. Otherwise, assign `null` to
+        {{EncodedVideoChunk/duration}}.
+    4. Assign a copy of `init.data` to {{EncodedVideoChunk/[[internal data]]}}.
+    5. Assign `init.data.byteLength` to {{EncodedVideoChunk/byteLength}};
 3. Return |chunk|.
 
 ### Attributes ###{#encodedvideochunk-attributes}
-<dl>
-  <dt><dfn attribute for=EncodedVideoChunk>type</dfn></dt>
-  <dd>Describes whether the chunk is a key frame or not.</dd>
+: <dfn attribute for=EncodedVideoChunk>type</dfn>
+:: Describes whether the chunk is a key frame or not.
 
-  <dt><dfn attribute for=EncodedVideoChunk>timestamp</dfn></dt>
-  <dd>The presentation timestamp, given in microseconds.</dd>
+: <dfn attribute for=EncodedVideoChunk>timestamp</dfn>
+:: The presentation timestamp, given in microseconds.
 
-  <dt><dfn attribute for=EncodedVideoChunk>duration</dfn></dt>
-  <dd>The presentation duration, given in microseconds.</dd>
+: <dfn attribute for=EncodedVideoChunk>duration</dfn>
+:: The presentation duration, given in microseconds.
 
-  <dt><dfn attribute for=EncodedVideoChunk>data</dfn></dt>
-  <dd>A sequence of bytes containing encoded video data.</dd>
-</dl>
+: <dfn attribute for=EncodedVideoChunk>byteLength</dfn>
+:: The byte length of {{EncodedVideoChunk/[[internal data]]}}.
+
+### Methods ###{#encodedvideochunk-methods}
+: <dfn method for=EncodedVideoChunk>copyTo(dst)</dfn>
+:: When invoked, run these steps:
+    1. If {{EncodedVideoChunk/byteLength}} is greater than
+        |dst|.`byteLength`,
+        throw a {{TypeError}}.
+    2. Copy the {{EncodedVideoChunk/[[internal data]]}} into |dst|.
 
 
 Raw Media Interfaces {#raw-media-interfaces}
@@ -1931,8 +1958,8 @@ interface AudioData {
   readonly attribute unsigned long numberOfFrames;
   readonly attribute unsigned long numberOfChannels;
   readonly attribute unsigned long byteLength;
-  readonly attribute unsigned long long duration;
-  readonly attribute unsigned long long timestamp;
+  readonly attribute long long duration;     // microseconds
+  readonly attribute long long timestamp;    // microseconds
 
   undefined copyTo([AllowShared] BufferSource destination, AudioDataCopyToOptions options);
   AudioData clone();
@@ -1944,7 +1971,7 @@ dictionary AudioDataInit {
   required float sampleRate;
   required unsigned long numberOfFrames;
   required unsigned long numberOfChannels;
-  required unsigned long long timestamp;
+  required long long timestamp;    // microseconds
   required BufferSource data;
 };
 </xmp>
@@ -2198,16 +2225,16 @@ interface VideoFrame {
   readonly attribute unsigned long cropHeight;
   readonly attribute unsigned long displayWidth;
   readonly attribute unsigned long displayHeight;
-  readonly attribute unsigned long long? duration;
-  readonly attribute unsigned long long? timestamp;
+  readonly attribute long long? duration;     // microseconds
+  readonly attribute long long? timestamp;    // microseconds
 
   VideoFrame clone();
   undefined close();
 };
 
 dictionary VideoFrameInit {
-  unsigned long long duration;
-  unsigned long long timestamp;
+  long long duration;     // microseconds
+  long long timestamp;    // microseconds
 };
 
 dictionary VideoFramePlaneInit {
@@ -2220,8 +2247,8 @@ dictionary VideoFramePlaneInit {
   unsigned long cropHeight;
   unsigned long displayWidth;
   unsigned long displayHeight;
-  unsigned long long duration;
-  unsigned long long timestamp;
+  long long duration;     // microseconds
+  long long timestamp;    // microseconds
 };
 </xmp>
 
@@ -2752,7 +2779,7 @@ interface ImageDecoder {
   readonly attribute Promise<undefined> completed;
   readonly attribute ImageTrackList tracks;
 
-  Promise<ImageDecodeResult> decode(optional ImageDecodeOptions options);
+  Promise<ImageDecodeResult> decode(optional ImageDecodeOptions options = {});
   undefined reset();
   undefined close();
 
@@ -3378,6 +3405,7 @@ ImageTrackList Interface {#imagetracklist-interface}
 ----------------------------------------------------
 <pre class='idl'>
 <xmp>
+[Exposed=(Window,DedicatedWorker)]
 interface ImageTrackList {
   getter ImageTrack (unsigned long index);
 
@@ -3427,6 +3455,7 @@ ImageTrack Interface {#imagetrack-interface}
 --------------------------------------------
 <pre class='idl'>
 <xmp>
+[Exposed=(Window,DedicatedWorker)]
 interface ImageTrack : EventTarget {
   readonly attribute boolean animated;
   readonly attribute unsigned long frameCount;
@@ -3560,9 +3589,6 @@ conditions. Specifically, it should not be possible for a site to mutate a codec
 input or output while the underlying codec may still be operating on that data.
 This concern is mitigated by ensuring that input and output interfaces are
 immutable.
-
-ISSUE: EncodedVideoChunk and EncodedAudioChunk currently expose a mutable
-data. See <a href="https://github.com/w3c/webcodecs/issues/80">#80</a>.
 
 Privacy Considerations{#privacy-considerations}
 ===============================================
