@@ -90,6 +90,9 @@ spec: css-images-3; urlPrefix: https://www.w3.org/TR/css-images-3/
     type: dfn; text: natural dimensions; url: #natural-dimensions
     type: dfn; text: natural width; url: #natural-width
     type: dfn; text: natural height; url: #natural-height
+
+spec: webrtc-svc; urlPrefix: https://w3c.github.io/webrtc-svc/
+    type: dfn; text: scalability mode identifier; url:#scalabilitymodes*
 </pre>
 
 <style>
@@ -122,6 +125,10 @@ Definitions {#definitions}
     of codec configuration or generation of {{AudioData}} and {{VideoFrame}}
     objects. Such resources may be quickly exhausted and should be released
     immediately when no longer in use.
+
+: <dfn>Temporal Layer</dfn>
+:: A grouping of {{EncodedVideoChunk}}s who's timestamp cadence produces a
+    particular framerate. See {{VideoEncoderConfig/scalabilityMode}}.
 
 : <dfn>Progressive Image</dfn>
 :: An image that supports decoding to multiple levels of detail, with lower
@@ -714,7 +721,9 @@ dictionary AudioEncoderInit {
   required WebCodecsErrorCallback error;
 };
 
-callback EncodedAudioChunkOutputCallback = undefined(EncodedAudioChunk output);
+callback EncodedAudioChunkOutputCallback =
+    undefined (EncodedAudioChunk output,
+               optional EncodedAudioChunkMetadata metadata = {});
 </xmp>
 
 Internal Slots {#audioencoder-internal-slots}
@@ -726,6 +735,13 @@ Internal Slots {#audioencoder-internal-slots}
 <dd>Callback given at construction for encoded outputs.</dd>
 <dt><dfn attribute for=AudioEncoder>[[error callback]]</dfn></dt>
 <dd>Callback given at construction for encode errors.</dd>
+<dt><dfn attribute for=AudioEncoder>[[active encoder config]]</dfn></dt>
+<dd>The {{AudioEncoderConfig}} that is actively applied.</dd>
+<dt><dfn attribute for=AudioEncoder>[[active output config]]</dfn></dt>
+<dd>
+  The {{AudioDecoderConfig}} that describes how to decode the most recently
+  emitted {{EncodedAudioChunk}}.
+</dd>
 </dl>
 
 Constructors {#audioencoder-constructors}
@@ -737,7 +753,9 @@ Constructors {#audioencoder-constructors}
 2. Assign `init.output` to the {{AudioEncoder/[[output callback]]}} internal slot.
 3. Assign `init.error` to the {{AudioEncoder/[[error callback]]}} internal slot.
 4. Assign "unconfigured" to `e.state`.
-5. Return e.
+5. Assign `null` to {{AudioEncoder/[[active encoder config]]}}.
+6. Assign `null` to {{AudioEncoder/[[active output config]]}}.
+7. Return e.
 
 Attributes {#audioencoder-attributes}
 -------------------------------------
@@ -783,7 +801,8 @@ Methods {#audioencoder-methods}
         {{AudioEncoder/[[codec implementation]]}} with an implementation
         supporting |config|.
     3. Otherwise, run the <a>Close AudioEncoder</a> algorithm with
-        {{NotSupportedError}}.
+        {{NotSupportedError}} and abort these steps.
+    4. Assign |config| to {{AudioEncoder/[[active encoder config]]}}
   </dd>
 
   <dt><dfn method for=AudioEncoder>encode(data)</dfn></dt>
@@ -902,17 +921,48 @@ Algorithms {#audioencoder-algorithms}
                 |output|.
         2. Let |chunk| be a new {{EncodedAudioChunk}} constructed with
             |chunkInit|.
-        3. Invoke {{AudioEncoder/[[output callback]]}} with |chunk|.
+        3. Let |chunkMetadata| be a new {{EncodedAudioChunkMetadata}}.
+        4. Let |encoderConfig| be the
+            {{AudioEncoder/[[active encoder config]]}}.
+        5. Let |outputConfig| be a new {{AudioDecoderConfig}} that describes
+            |output|. Intialize |outputConfig| as follows:
+            1. Assign |encoderConfig|.{{AudioEncoderConfig/codec}} to
+                |outputConfig|.{{AudioDecoderConfig/codec}}.
+            2. Assign |encoderConfig|.{{AudioEncoderConfig/sampleRate}} to
+                |outputConfig|.{{AudioDecoderConfig/sampleRate}}.
+            3. Assign to
+                |encoderConfig|.{{AudioEncoderConfig/numberOfChannels}} to
+                |outputConfig|.{{AudioDecoderConfig/numberOfChannels}}.
+            4. Assign |outputConfig|.{{AudioDecoderConfig/description}} with a
+                sequence of codec specific bytes as determined by the
+                {{AudioEncoder/[[codec implementation]]}}. The user agent must
+                ensure that the provided description could be used to
+                correctly decode output.
+
+                NOTE: The codec specific requirements for populating the
+                    {{AudioDecoderConfig/description}} are described in the
+                    [[WEBCODECS-CODEC-REGISTRY]].
+
+        6. If |outputConfig| and {{AudioEncoder/[[active output config]]}} are
+            not [=equal dictionaries=]:
+            1. Assign |outputConfig| to
+                |chunkMetadata|.{{EncodedAudioChunkMetadata/decoderConfig}}.
+            2. Assign |outputConfig| to
+                {{AudioEncoder/[[active output config]]}}.
+        7. Invoke {{AudioEncoder/[[output callback]]}} with |chunk| and
+            |chunkMetadata|.
   </dd>
   <dt><dfn>Reset AudioEncoder</dfn></dt>
   <dd>
     Run these steps:
     1. If {{AudioEncoder/state}} is `"closed"`, throw an {{InvalidStateError}}.
     2. Set {{AudioEncoder/state}} to `"unconfigured"`.
-    3. Signal {{AudioEncoder/[[codec implementation]]}} to cease producing
+    3. Set {{AudioEncoder/[[active encoder config]]}} to `null`.
+    4. Set {{AudioEncoder/[[active output config]]}} to `null`.
+    5. Signal {{AudioEncoder/[[codec implementation]]}} to cease producing
         output for the previous configuration.
-    4. [=Reset the control message queue=].
-    5. Set {{AudioEncoder/encodeQueueSize}} to zero.
+    6. [=Reset the control message queue=].
+    7. Set {{AudioEncoder/encodeQueueSize}} to zero.
   </dd>
   <dt><dfn>Close AudioEncoder</dfn> (with |error|)</dt>
   <dd>
@@ -925,6 +975,23 @@ Algorithms {#audioencoder-algorithms}
         invoke the {{AudioEncoder/[[error callback]]}} with |error|.
   </dd>
 </dl>
+
+EncodedAudioChunkMetadata {#encoded-audio-chunk-metadata}
+---------------------------------------------------------
+The following metadata dictionary is emitted by the
+{{EncodedVideoChunkOutputCallback}} alongside an associated
+{{EncodedVideoChunk}}.
+
+<xmp class='idl'>
+dictionary EncodedAudioChunkMetadata {
+  AudioDecoderConfig decoderConfig;
+};
+</xmp>
+
+: <dfn dict-member for=EncodedAudioChunkMetadata>decoderConfig</dfn>
+:: A {{AudioDecoderConfig}} that authors may use to decode the associated
+    {{EncodedAudioChunk}}.
+
 
 VideoEncoder Interface {#videoencoder-interface}
 ================================================
@@ -951,7 +1018,9 @@ dictionary VideoEncoderInit {
   required WebCodecsErrorCallback error;
 };
 
-callback EncodedVideoChunkOutputCallback = undefined(EncodedVideoChunk output, VideoDecoderConfig? output_config);
+callback EncodedVideoChunkOutputCallback =
+    undefined (EncodedVideoChunk chunk,
+               optional EncodedVideoChunkMetadata metadata = {});
 </xmp>
 
 Internal Slots {#videoencoder-internal-slots}
@@ -1028,7 +1097,7 @@ Methods {#videoencoder-methods}
         supporting |config|.
     3. Otherwise, run the <a>Close VideoEncoder</a> algorithm with
         {{NotSupportedError}} and abort these steps.
-    2. Set {{VideoEncoder/[[active encoder config]]}} to `config`.
+    4. Assign |config| to {{VideoEncoder/[[active encoder config]]}}.
   </dd>
 
   <dt><dfn method for=VideoEncoder>encode(|frame|, |options|)</dfn></dt>
@@ -1137,43 +1206,7 @@ Algorithms {#videoencoder-algorithms}
   <dd>
     Run these steps:
     1. For each |output| in |outputs|:
-        1. Let |encoder_config| be the
-            {{VideoEncoder/[[active encoder config]]}}.
-
-            ISSUE: The intent is for |encoder_config| to be the
-                {{VideoEncoder/[[active encoder config]]}} that was used to
-                encode |output|. But, as written, it may occur that |output| was
-                encoded using a previous {{VideoEncoderConfig}} that has since
-                been replaced by a later call to {{VideoEncoder/configure()}}.
-                See [#138](https://github.com/w3c/webcodecs/issues/138).
-
-        2. Let |output_config| be a {{VideoDecoderConfig}} that describes
-            |output|. Initialize |output_config| as follows:
-            1. Assign `encoder_config.codec` to `output_config.codec`.
-            2. Assign `encoder_config.displayWidth` to
-                `output_config.displayWidth`.
-            3. Assign `encoder_config.displayHeight` to
-                `output_config.displayHeight`.
-            4. Assign the remaining keys of `output_config` as determined by
-                {{VideoEncoder/[[codec implementation]]}}. The user agent
-                must ensure that the configuration is completely described
-                such that |output_config| could be used to correctly decode
-                |output|.
-
-                NOTE: This includes supplying the
-                    {{VideoDecoderConfig/description}} to describe codec
-                    specific "extradata", the use of which may be further
-                    described in codec registrations listed in the
-                    [[WEBCODECS-CODEC-REGISTRY]].
-        3. If |output_config| and {{VideoEncoder/[[active output config]]}} are
-            <a>equal dictionaries</a>, set |output_config| to null. Otherwise,
-            set {{VideoEncoder/[[active output config]]}} to |output_config|.
-
-            NOTE: The {{VideoDecoderConfig}} |output_config| will be `null`
-                if the configuration hasn't changed from previous outputs. The
-                first output will always include a non-null |output_config|.
-
-        4. Let |chunkInit| be an {{EncodedVideoChunkInit}} with the following
+        1. Let |chunkInit| be an {{EncodedVideoChunkInit}} with the following
             keys:
             1. Let {{EncodedVideoChunkInit/data}} contain the encoded video data
                 from |output|.
@@ -1185,9 +1218,44 @@ Algorithms {#videoencoder-algorithms}
             4. Let {{EncodedVideoChunkInit/duration}} be the
                 {{VideoFrame/[[duration]]}} from the {{VideoFrame}} associated
                 with |output|.
-        5. Let |chunk| be a new {{EncodedVideoChunk}} constructed with
+        2. Let |chunk| be a new {{EncodedVideoChunk}} constructed with
             |chunkInit|.
-        6. Invoke {{VideoEncoder/[[output callback]]}} with |chunk|.
+        3. Let |chunkMetadata| be a new {{EncodedVideoChunkMetadata}}.
+        4. Let |encoderConfig| be the
+            {{VideoEncoder/[[active encoder config]]}}.
+        5. Let |outputConfig| be a {{VideoDecoderConfig}} that describes
+            |output|. Initialize |outputConfig| as follows:
+            1. Assign `encoderConfig.codec` to `outputConfig.codec`.
+            2. Assign `encoderConfig.width` to `outputConfig.cropWidth`.
+            3. Assign `encoderConfig.height` to `outputConfig.cropHeight`.
+            4. Assign `encoderConfig.displayWidth` to
+                `outputConfig.displayWidth`.
+            5. Assign `encoderConfig.displayHeight` to
+                `outputConfig.displayHeight`.
+            6. Assign the remaining keys of `outputConfig` as determined by
+                {{VideoEncoder/[[codec implementation]]}}. The user agent
+                must ensure that the configuration is completely described
+                such that |outputConfig| could be used to correctly decode
+                |output|.
+
+                NOTE: The codec specific requirements for populating the
+                    {{VideoDecoderConfig/description}} are described in the
+                    [[WEBCODECS-CODEC-REGISTRY]].
+
+        6. If |outputConfig| and {{VideoEncoder/[[active output config]]}} are
+            not <a>equal dictionaries</a>:
+            1. Assign |outputConfig| to
+                |chunkMetadata|.{{EncodedVideoChunkMetadata/decoderConfig}}.
+            2. Assign |outputConfig| to
+                {{VideoEncoder/[[active output config]]}}.
+        7. If |encoderConfig|.{{VideoEncoderConfig/scalabilityMode}}
+            describes multiple [=temporal layers=]:
+            1. Let |temporal_layer_id| be the zero-based index describing the
+                temporal layer for |output|.
+            2. Assign |temporal_layer_id| to
+                |chunkMetadata|.{{EncodedVideoChunkMetadata/temporalLayerId}}.
+        8. Invoke {{VideoEncoder/[[output callback]]}} with |chunk| and
+            |chunkMetadata|.
   </dd>
   <dt><dfn>Reset VideoEncoder</dfn></dt>
   <dd>
@@ -1212,6 +1280,27 @@ Algorithms {#videoencoder-algorithms}
         invoke the {{VideoEncoder/[[error callback]]}} with |error|.
   </dd>
 </dl>
+
+EncodedVideoChunkMetadata {#encoded-video-chunk-metadata}
+---------------------------------------------------------
+The following metadata dictionary is emitted by the
+{{EncodedVideoChunkOutputCallback}} alongside an associated
+{{EncodedVideoChunk}}.
+
+<xmp class='idl'>
+dictionary EncodedVideoChunkMetadata {
+  VideoDecoderConfig decoderConfig;
+  unsigned long temporalLayerId;
+};
+</xmp>
+
+: <dfn dict-member for=EncodedVideoChunkMetadata>decoderConfig</dfn>
+:: A {{VideoDecoderConfig}} that authors may use to decode the associated
+    {{EncodedVideoChunk}}.
+
+: <dfn dict-member for=EncodedVideoChunkMetadata>temporalLayerId</dfn>
+:: A number that identifying the [=temporal layer=] for the associated
+    {{EncodedVideoChunk}}.
 
 
 Configurations{#configurations}
@@ -1528,6 +1617,7 @@ dictionary VideoEncoderConfig {
   unsigned long displayWidth;
   unsigned long displayHeight;
   HardwareAcceleration hardwareAcceleration = "allow";
+  DOMString scalabilityMode;
 };
 </xmp>
 
@@ -1600,6 +1690,11 @@ To check if a {{VideoEncoderConfig}} is a <dfn>valid VideoEncoderConfig</dfn>,
   <dd>
     Configures hardware acceleration for this codec. See
     {{HardwareAcceleration}}.
+  </dd>
+
+  <dt><dfn dict-member for=VideoEncoderConfig>scalabilityMode</dfn></dt>
+  <dd>
+    An encoding [=scalability mode identifier=] as defined by [[WebRTC-SVC]].
   </dd>
 </dl>
 
