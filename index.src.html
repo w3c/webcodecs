@@ -1957,10 +1957,10 @@ interface AudioData {
   readonly attribute float sampleRate;
   readonly attribute unsigned long numberOfFrames;
   readonly attribute unsigned long numberOfChannels;
-  readonly attribute unsigned long byteLength;
   readonly attribute long long duration;     // microseconds
   readonly attribute long long timestamp;    // microseconds
 
+  unsigned long byteLength(AudioDataCopyToOptions options);
   undefined copyTo([AllowShared] BufferSource destination, AudioDataCopyToOptions options);
   AudioData clone();
   undefined close();
@@ -2048,17 +2048,6 @@ dictionary AudioDataInit {
     The {{AudioData/numberOfChannels}} getter steps are to return
     {{AudioData/[[number of channels]]}}.
 
-: <dfn attribute for=AudioData>byteLength</dfn>
-:: The the number of bytes allocated to hold all of the samples in this
-    {{AudioData}}.
-
-    The {{AudioData/byteLength}} getter steps are to:
-    1. Let |sampleSize| be the number of bytes per sample, as defined by the
-        {{AudioData/[[sample format]]}}.
-    2. Return the product of multiplying |sampleSize| by
-        {{AudioData/[[number of channels]]}} and
-        {{AudioData/[[number of frames]]}}.
-
 : <dfn attribute for=AudioData>timestamp</dfn>
 :: The presentation timestamp, in microseconds, for this {{AudioData}}.
 
@@ -2075,37 +2064,37 @@ dictionary AudioDataInit {
     3. Return the product of |durationInSeconds| and |microsecondsPerSecond|.
 
 ### Methods ###{#audiodata-methods}
-: <dfn method for=AudioData>
-      copyTo(|destination|, |options|)
-    </dfn>
+: <dfn method for=AudioData>byteLength(|options|)</dfn>
+:: Returns the number of bytes required to hold the samples as described by
+    |options|.
+
+    When invoked, run these steps:
+    1. Let |copyFrameCount| be the result of running the
+        [=Compute Copy Frame Count=] algorithm with |options|.
+    2. Let |bytesPerSample| be the number of bytes per sample, as defined by
+        the {{AudioData/[[sample format]]}}.
+    3. Return the product of multiplying |bytesPerSample| by |copyFrameCount|.
+
+: <dfn method for=AudioData>copyTo(|destination|, |options|)</dfn>
 :: Copies the samples from the specified plane of the {{AudioData}} to the
     destination buffer.
 
     When invoked, run these steps:
     1. If the value of |frame|'s {{AudioData/[[detached]]}} internal slot is
         `true`, throw an {{InvalidStateError}} {{DOMException}}.
-    2. Let |frameCount| be the number of frames in each plane of this
-        {{AudioData}}'s' [=media resource=], as defined by the getter steps of
-        {{AudioData/numberOfFrames}}.
-    3. If |options|.{{AudioDataCopyToOptions/frameOffset}} is greater than or
-        equal to |frameCount|, throw a {{RangeError}}.
-    4. Let |copyFrameCount| be the difference of subtracting
-        |options|.{{AudioDataCopyToOptions/frameOffset}} from |frameCount|.
-    5. If |options|.{{AudioDataCopyToOptions/frameCount}} [=map/exists=]:
-        1. If |options|.{{AudioDataCopyToOptions/frameCount}} is greater than
-            |copyFrameCount|, throw a {{RangeError}}.
-        2. Otherwise, assign |options|.{{AudioDataCopyToOptions/frameCount}}
-            to |copyFrameCount|.
-    6. Let |bytesPerSample| be the number of bytes per sample, as defined by
+    2. Let |copyFrameCount| be the result of running the
+        [=Compute Copy Frame Count=] algorithm with |options|.
+    3. Let |bytesPerSample| be the number of bytes per sample, as defined by
         the {{AudioData/[[sample format]]}}.
-    7. If the product of multiplying |bytesPerSample| by |copyFrameCount| is
+    4. If the product of multiplying |bytesPerSample| by |copyFrameCount| is
         greater than `destination.byteLength`, throw a {{RangeError}}.
-    8. Let |resource| be the [=media resource=] referenced by
+    5. Let |resource| be the [=media resource=] referenced by
         {{AudioData/[[resource reference]]}}.
-    9. Let |planeFrames| be the region of |resource| corresponding to
-        |options|.{{AudioDataCopyToOptions/planeNumber}}.
-    10. Copy frames of |planeFrames| into |destination|, starting with the
-        byte positioned at |options|.{{AudioDataCopyToOptions/frameOffset}} and stopping after |copyFrameCount| frames have been copied.
+    6. Let |planeFrames| be the region of |resource| corresponding to
+        |options|.{{AudioDataCopyToOptions/planeIndex}}.
+    7. Copy frames of |planeFrames| into |destination|, starting with the
+        frame positioned at |options|.{{AudioDataCopyToOptions/frameOffset}}
+        and stopping after |copyFrameCount| frames have been copied.
 
 : <dfn method for=AudioData>clone()</dfn>
 :: Creates a new AudioData with a reference to the same [=media resource=].
@@ -2126,6 +2115,25 @@ dictionary AudioDataInit {
 
 ### Algorithms ### {#audiodata-algorithms}
 
+: <dfn>Compute Copy Frame Count</dfn> (with |options|)
+:: Run these steps:
+    1. Let |frameCount| be the number of frames in the plane identified by
+        |options|.{{AudioDataCopyToOptions/planeIndex}}.
+
+        NOTE: For interleaved formats with a single plane, |frameCount| will
+            be the total number of frames accross all channels.
+
+    2. If |options|.{{AudioDataCopyToOptions/frameOffset}} is greater than or
+        equal to |frameCount|, throw a {{RangeError}}.
+    3. Let |copyFrameCount| be the difference of subtracting
+        |options|.{{AudioDataCopyToOptions/frameOffset}} from |frameCount|.
+    4. If |options|.{{AudioDataCopyToOptions/frameCount}} [=map/exists=]:
+        1. If |options|.{{AudioDataCopyToOptions/frameCount}} is greater than
+            |copyFrameCount|, throw a {{RangeError}}.
+        2. Otherwise, assign |options|.{{AudioDataCopyToOptions/frameCount}}
+            to |copyFrameCount|.
+    5. return |copyFrameCount|.
+
 : <dfn>Clone AudioData</dfn> (with |data|)
 :: Run these steps:
     1. Let |clone| be a new {{AudioData}} initialized as follows:
@@ -2145,14 +2153,14 @@ dictionary AudioDataInit {
 
 <xmp class='idl'>
 dictionary AudioDataCopyToOptions {
-  required unsigned long planeNumber;
+  required unsigned long planeIndex;
   unsigned long frameOffset = 0;
   unsigned long frameCount;
 };
 </xmp>
 
-: <dfn dict-member for=AudioDataCopyToOptions>planeNumber</dfn>
-:: The number identifying the plane to copy from.
+: <dfn dict-member for=AudioDataCopyToOptions>planeIndex</dfn>
+:: The index identifying the plane to copy from.
 
 : <dfn dict-member for=AudioDataCopyToOptions>frameOffset</dfn>
 :: An offset into the source plane data indicating which frame to begin
