@@ -2279,6 +2279,21 @@ floating point number. The [[#audio-buffer-arrangement|audio buffer
 arrangement]] refers solely to the way the samples are laid out in memory
 ([=planar=] or [=interleaved=]).
 
+A <dfn>sample</dfn> refers to a single value that is the magnitude of a
+signal at a particular point in time in a particular channel.
+
+A <dfn>frame</dfn> or (sample-frame) refers to a set of values of all channels
+of a multi-channel signal, that happen at the exact same time.
+
+Note: Consequently if an audio signal is mono (has only one channel), a frame
+and a sample refer to the same thing.
+
+All audio [=samples=] in this specification are using linear pulse-code
+modulation (Linear PCM): quantization levels are uniform between values.
+
+Note: The Web Audio API, that is expected to be used with this specificaion,
+also uses Linear PCM.
+
 <xmp class='idl'>
 enum AudioSampleFormat {
   "U8",
@@ -2295,34 +2310,34 @@ enum AudioSampleFormat {
 </xmp>
 
 : <dfn enum-value for=AudioSampleFormat>U8</dfn>
-:: [[WEBIDL#idl-octet|8-bit unsigned integer]] samples with [=interleaved=] [[#audio-buffer-arrangement|channel arrangement]].
+:: [[WEBIDL#idl-octet|8-bit unsigned integer]] [=samples=] with [=interleaved=] [[#audio-buffer-arrangement|channel arrangement]].
 
 : <dfn enum-value for=AudioSampleFormat>S16</dfn>
-:: [[WEBIDL#idl-short|16-bit signed integer]] samples with [=interleaved=] [[#audio-buffer-arrangement|channel arrangement]].
+:: [[WEBIDL#idl-short|16-bit signed integer]] [=samples=] with [=interleaved=] [[#audio-buffer-arrangement|channel arrangement]].
 
 : <dfn enum-value for=AudioSampleFormat>S24</dfn>
-:: [[WEBIDL#idl-long|32-bit signed integer]] samples with [=interleaved=] [[#audio-buffer-arrangement|channel arrangement]], holding value in the 24-bit of lowest significance.
+:: [[WEBIDL#idl-long|32-bit signed integer]] [=samples=] with [=interleaved=] [[#audio-buffer-arrangement|channel arrangement]], holding value in the 24-bit of lowest significance.
 
 : <dfn enum-value for=AudioSampleFormat>S32</dfn>
-:: [[WEBIDL#idl-long|32-bit signed integer]] samples with [=interleaved=] [[#audio-buffer-arrangement|channel arrangement]].
+:: [[WEBIDL#idl-long|32-bit signed integer]] [=samples=] with [=interleaved=] [[#audio-buffer-arrangement|channel arrangement]].
 
 : <dfn enum-value for=AudioSampleFormat>FLT</dfn>
-:: [[WEBIDL#idl-float|32-bit float]] samples with [=interleaved=] [[#audio-buffer-arrangement|channel arrangement]].
+:: [[WEBIDL#idl-float|32-bit float]] [=samples=] with [=interleaved=] [[#audio-buffer-arrangement|channel arrangement]].
 
 : <dfn enum-value for=AudioSampleFormat>U8P</dfn>
-:: [[WEBIDL#idl-octet|8-bit unsigned integer]] samples with [=planar=] [[#audio-buffer-arrangement|channel arrangement]].
+:: [[WEBIDL#idl-octet|8-bit unsigned integer]] [=samples=] with [=planar=] [[#audio-buffer-arrangement|channel arrangement]].
 
 : <dfn enum-value for=AudioSampleFormat>S16P</dfn>
-:: [[WEBIDL#idl-short|16-bit signed integer]] samples with [=planar=] [[#audio-buffer-arrangement|channel arrangement]].
+:: [[WEBIDL#idl-short|16-bit signed integer]] [=samples=] with [=planar=] [[#audio-buffer-arrangement|channel arrangement]].
 
 : <dfn enum-value for=AudioSampleFormat>S24P</dfn>
-:: [[WEBIDL#idl-long|32-bit signed integer]] samples with [=planar=] [[#audio-buffer-arrangement|channel arrangement]], holding value in the 24-bit of lowest significance.
+:: [[WEBIDL#idl-long|32-bit signed integer]] [=samples=] with [=planar=] [[#audio-buffer-arrangement|channel arrangement]], holding value in the 24-bit of lowest significance.
 
 : <dfn enum-value for=AudioSampleFormat>S32P</dfn>
-:: [[WEBIDL#idl-long|32-bit signed integer]] samples with [=planar=] [[#audio-buffer-arrangement|channel arrangement]].
+:: [[WEBIDL#idl-long|32-bit signed integer]] [=samples=] with [=planar=] [[#audio-buffer-arrangement|channel arrangement]].
 
 : <dfn enum-value for=AudioSampleFormat>FLTP</dfn>
-:: [[WEBIDL#idl-float|32-bit float]] samples with [=planar=] [[#audio-buffer-arrangement|channel arrangement]].
+:: [[WEBIDL#idl-float|32-bit float]] [=samples=] with [=planar=] [[#audio-buffer-arrangement|channel arrangement]].
 
 
 ### Arrangement of audio buffer ### {#audio-buffer-arrangement}
