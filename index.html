@@ -6,7 +6,7 @@
   <link href="https://www.w3.org/StyleSheets/TR/2016/W3C-ED" rel="stylesheet" type="text/css">
   <meta content="Bikeshed version 800b43329, updated Tue May 25 14:13:32 2021 -0700" name="generator">
   <link href="https://www.w3.org/TR/webcodecs/" rel="canonical">
-  <meta content="0cfee37d0e8a30a83b39d6bc77ea56ba635bac7c" name="document-revision">
+  <meta content="97e81bd59945e1a899d0bd4ce47443a82a753fb1" name="document-revision">
 <style>
 main > dl > dd {
   margin-bottom: 1em;
@@ -810,9 +810,10 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
     <dd data-md>
      <p>Refers generically to an instance of AudioDecoder, AudioEncoder,
 VideoDecoder, or VideoEncoder.</p>
-    <dt data-md>Key Frame
+    <dt data-md><dfn class="dfn-paneled" data-dfn-type="dfn" data-lt="Key Chunk|Key Frame" data-noexport id="key-chunk">Key Chunk</dfn>
     <dd data-md>
-     <p>An encoded frame that does not depend on any other frames for decoding.</p>
+     <p>An encoded chunk that does not depend on any other frames for decoding. Also
+commonly referred to as a "key frame".</p>
     <dt data-md><dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="internal-pending-output">Internal Pending Output</dfn>
     <dd data-md>
      <p>Codec outputs such as <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe">VideoFrame</a></code>s that currently reside in the internal
@@ -929,12 +930,18 @@ that promise.</p>
 </pre>
    <h3 class="heading settled" data-level="3.1" id="audiodecoder-internal-slots"><span class="secno">3.1. </span><span class="content">Internal Slots</span><a class="self-link" href="#audiodecoder-internal-slots"></a></h3>
    <dl>
-    <dt><dfn class="dfn-paneled idl-code" data-dfn-for="AudioDecoder" data-dfn-type="attribute" data-export id="dom-audiodecoder-codec-implementation-slot"><code>[[codec implementation]]</code></dfn>
-    <dd>Underlying decoder implementation provided by the User Agent.
-    <dt><dfn class="dfn-paneled idl-code" data-dfn-for="AudioDecoder" data-dfn-type="attribute" data-export id="dom-audiodecoder-output-callback-slot"><code>[[output callback]]</code></dfn>
-    <dd>Callback given at construction for decoded outputs.
-    <dt><dfn class="dfn-paneled idl-code" data-dfn-for="AudioDecoder" data-dfn-type="attribute" data-export id="dom-audiodecoder-error-callback-slot"><code>[[error callback]]</code></dfn>
-    <dd>Callback given at construction for decode errors.
+    <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="AudioDecoder" data-dfn-type="attribute" data-export id="dom-audiodecoder-codec-implementation-slot"><code>[[codec implementation]]</code></dfn>
+    <dd data-md>
+     <p>Underlying decoder implementation provided by the User Agent.</p>
+    <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="AudioDecoder" data-dfn-type="attribute" data-export id="dom-audiodecoder-output-callback-slot"><code>[[output callback]]</code></dfn>
+    <dd data-md>
+     <p>Callback given at construction for decoded outputs.</p>
+    <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="AudioDecoder" data-dfn-type="attribute" data-export id="dom-audiodecoder-error-callback-slot"><code>[[error callback]]</code></dfn>
+    <dd data-md>
+     <p>Callback given at construction for decode errors.</p>
+    <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="AudioDecoder" data-dfn-type="attribute" data-export id="dom-audiodecoder-key-chunk-required-slot"><code>[[key chunk required]]</code></dfn>
+    <dd data-md>
+     <p>A boolean indicating that the next chunk passed to <code class="idl"><a data-link-type="idl" href="#dom-audiodecoder-decode" id="ref-for-dom-audiodecoder-decode①">decode()</a></code> must describe a <a data-link-type="dfn" href="#key-chunk" id="ref-for-key-chunk">key chunk</a> as indicated by <code class="idl"><a data-link-type="idl" href="#dom-encodedaudiochunk-type" id="ref-for-dom-encodedaudiochunk-type">type</a></code>.</p>
    </dl>
    <h3 class="heading settled" data-level="3.2" id="audiodecoder-constructors"><span class="secno">3.2. </span><span class="content">Constructors</span><a class="self-link" href="#audiodecoder-constructors"></a></h3>
     <dfn class="dfn-paneled idl-code" data-dfn-for="AudioDecoder" data-dfn-type="constructor" data-export data-lt="AudioDecoder(init)|constructor(init)" id="dom-audiodecoder-audiodecoder" title="AudioDecoder(init)"><code> AudioDecoder(init) </code></dfn> 
@@ -942,9 +949,11 @@ that promise.</p>
     <li data-md>
      <p>Let d be a new <code class="idl"><a data-link-type="idl" href="#audiodecoder" id="ref-for-audiodecoder">AudioDecoder</a></code> object.</p>
     <li data-md>
-     <p>Assign init.output to the <code class="idl"><a data-link-type="idl" href="#dom-audiodecoder-output-callback-slot" id="ref-for-dom-audiodecoder-output-callback-slot">[[output callback]]</a></code> internal slot.</p>
+     <p>Assign init.output to <code class="idl"><a data-link-type="idl" href="#dom-audiodecoder-output-callback-slot" id="ref-for-dom-audiodecoder-output-callback-slot">[[output callback]]</a></code>.</p>
     <li data-md>
-     <p>Assign init.error to the <code class="idl"><a data-link-type="idl" href="#dom-audiodecoder-error-callback-slot" id="ref-for-dom-audiodecoder-error-callback-slot">[[error callback]]</a></code> internal slot.</p>
+     <p>Assign init.error to <code class="idl"><a data-link-type="idl" href="#dom-audiodecoder-error-callback-slot" id="ref-for-dom-audiodecoder-error-callback-slot">[[error callback]]</a></code>.</p>
+    <li data-md>
+     <p>Assign <code>true</code> to <code class="idl"><a data-link-type="idl" href="#dom-audiodecoder-key-chunk-required-slot" id="ref-for-dom-audiodecoder-key-chunk-required-slot">[[key chunk required]]</a></code>.</p>
     <li data-md>
      <p>Assign "unconfigured" to d.state.</p>
     <li data-md>
@@ -976,6 +985,8 @@ that promise.</p>
       <li data-md>
        <p>Set <code class="idl"><a data-link-type="idl" href="#dom-audiodecoder-state" id="ref-for-dom-audiodecoder-state②">state</a></code> to <code>"configured"</code>.</p>
       <li data-md>
+       <p>Set <code class="idl"><a data-link-type="idl" href="#dom-audiodecoder-key-chunk-required-slot" id="ref-for-dom-audiodecoder-key-chunk-required-slot①">[[key chunk required]]</a></code> to <code>true</code>.</p>
+      <li data-md>
        <p><a data-link-type="dfn" href="#enqueues-a-control-message" id="ref-for-enqueues-a-control-message①">Queue a control message</a> to configure the decoder with <var>config</var>.</p>
      </ol>
      <p><a data-link-type="dfn" href="#running-a-control-message" id="ref-for-running-a-control-message①">Running a control message</a> to configure the decoder means running
@@ -997,6 +1008,17 @@ supporting <var>config</var>.</p>
      <ol>
       <li data-md>
        <p>If <code class="idl"><a data-link-type="idl" href="#dom-audiodecoder-state" id="ref-for-dom-audiodecoder-state③">state</a></code> is not <code>"configured"</code>, throw an <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#invalidstateerror" id="ref-for-invalidstateerror①">InvalidStateError</a></code>.</p>
+      <li data-md>
+       <p>If <code class="idl"><a data-link-type="idl" href="#dom-audiodecoder-key-chunk-required-slot" id="ref-for-dom-audiodecoder-key-chunk-required-slot②">[[key chunk required]]</a></code> is <code>true</code>:</p>
+       <ol>
+        <li data-md>
+         <p>If <var>chunk</var>.<code class="idl"><a data-link-type="idl" href="#dom-encodedaudiochunk-type" id="ref-for-dom-encodedaudiochunk-type①">type</a></code> is not <code class="idl"><a data-link-type="idl" href="#dom-encodedaudiochunktype-key" id="ref-for-dom-encodedaudiochunktype-key">key</a></code>, throw a <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#dataerror" id="ref-for-dataerror">DataError</a></code>.</p>
+        <li data-md>
+         <p>Implementers should inspect the <var>chunk</var>’s <code class="idl"><a data-link-type="idl" href="#dom-encodedaudiochunk-internal-data-slot" id="ref-for-dom-encodedaudiochunk-internal-data-slot">[[internal data]]</a></code> to verify that
+it is truly a <a data-link-type="dfn" href="#key-chunk" id="ref-for-key-chunk①">key chunk</a>. If a mismatch is detected, throw a <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#dataerror" id="ref-for-dataerror①">DataError</a></code>.</p>
+        <li data-md>
+         <p>Otherwise, assign <code>false</code> to <code class="idl"><a data-link-type="idl" href="#dom-audiodecoder-key-chunk-required-slot" id="ref-for-dom-audiodecoder-key-chunk-required-slot③">[[key chunk required]]</a></code>.</p>
+       </ol>
       <li data-md>
        <p>Increment <code class="idl"><a data-link-type="idl" href="#dom-audiodecoder-decodequeuesize" id="ref-for-dom-audiodecoder-decodequeuesize①">decodeQueueSize</a></code>.</p>
       <li data-md>
@@ -1025,6 +1047,8 @@ by <code class="idl"><a data-link-type="idl" href="#dom-audiodecoder-codec-imple
      <ol>
       <li data-md>
        <p>If <code class="idl"><a data-link-type="idl" href="#dom-audiodecoder-state" id="ref-for-dom-audiodecoder-state④">state</a></code> is not <code>"configured"</code>, return <a data-link-type="dfn" href="https://heycam.github.io/webidl/#a-promise-rejected-with" id="ref-for-a-promise-rejected-with">a promise rejected with</a> <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#invalidstateerror" id="ref-for-invalidstateerror②">InvalidStateError</a></code> <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-DOMException" id="ref-for-idl-DOMException">DOMException</a></code>.</p>
+      <li data-md>
+       <p>Set <code class="idl"><a data-link-type="idl" href="#dom-audiodecoder-key-chunk-required-slot" id="ref-for-dom-audiodecoder-key-chunk-required-slot④">[[key chunk required]]</a></code> to <code>true</code>.</p>
       <li data-md>
        <p>Let <var>promise</var> be a new Promise.</p>
       <li data-md>
@@ -1179,14 +1203,21 @@ invoke the <code class="idl"><a data-link-type="idl" href="#dom-audiodecoder-err
 </pre>
    <h3 class="heading settled" data-level="4.1" id="videodecoder-internal-slots"><span class="secno">4.1. </span><span class="content">Internal Slots</span><a class="self-link" href="#videodecoder-internal-slots"></a></h3>
    <dl>
-    <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoDecoder" data-dfn-type="attribute" data-export id="dom-videodecoder-codec-implementation-slot"><code>[[codec implementation]]</code></dfn>
-    <dd>Underlying decoder implementation provided by the User Agent.
-    <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoDecoder" data-dfn-type="attribute" data-export id="dom-videodecoder-active-decoder-config-slot"><code>[[active decoder config]]</code></dfn>
-    <dd>The <code class="idl"><a data-link-type="idl" href="#dictdef-videodecoderconfig" id="ref-for-dictdef-videodecoderconfig②">VideoDecoderConfig</a></code> that is actively applied.
-    <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoDecoder" data-dfn-type="attribute" data-export id="dom-videodecoder-output-callback-slot"><code>[[output callback]]</code></dfn>
-    <dd>Callback given at construction for decoded outputs.
-    <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoDecoder" data-dfn-type="attribute" data-export id="dom-videodecoder-error-callback-slot"><code>[[error callback]]</code></dfn>
-    <dd>Callback given at construction for decode errors.
+    <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="VideoDecoder" data-dfn-type="attribute" data-export id="dom-videodecoder-codec-implementation-slot"><code>[[codec implementation]]</code></dfn>
+    <dd data-md>
+     <p>Underlying decoder implementation provided by the User Agent.</p>
+    <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="VideoDecoder" data-dfn-type="attribute" data-export id="dom-videodecoder-output-callback-slot"><code>[[output callback]]</code></dfn>
+    <dd data-md>
+     <p>Callback given at construction for decoded outputs.</p>
+    <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="VideoDecoder" data-dfn-type="attribute" data-export id="dom-videodecoder-error-callback-slot"><code>[[error callback]]</code></dfn>
+    <dd data-md>
+     <p>Callback given at construction for decode errors.</p>
+    <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="VideoDecoder" data-dfn-type="attribute" data-export id="dom-videodecoder-active-decoder-config-slot"><code>[[active decoder config]]</code></dfn>
+    <dd data-md>
+     <p>The <code class="idl"><a data-link-type="idl" href="#dictdef-videodecoderconfig" id="ref-for-dictdef-videodecoderconfig②">VideoDecoderConfig</a></code> that is actively applied.</p>
+    <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="VideoDecoder" data-dfn-type="attribute" data-export id="dom-videodecoder-key-chunk-required-slot"><code>[[key chunk required]]</code></dfn>
+    <dd data-md>
+     <p>A boolean indicating that the next chunk passed to <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-decode" id="ref-for-dom-videodecoder-decode①">decode()</a></code> must describe a <a data-link-type="dfn" href="#key-chunk" id="ref-for-key-chunk②">key chunk</a> as indicated by <code class="idl"><a data-link-type="idl" href="#dom-encodedvideochunk-type" id="ref-for-dom-encodedvideochunk-type">type</a></code>.</p>
    </dl>
    <h3 class="heading settled" data-level="4.2" id="videodecoder-constructors"><span class="secno">4.2. </span><span class="content">Constructors</span><a class="self-link" href="#videodecoder-constructors"></a></h3>
     <dfn class="dfn-paneled idl-code" data-dfn-for="VideoDecoder" data-dfn-type="constructor" data-export data-lt="VideoDecoder(init)|constructor(init)" id="dom-videodecoder-videodecoder" title="VideoDecoder(init)"><code> VideoDecoder(init) </code></dfn> 
@@ -1197,6 +1228,8 @@ invoke the <code class="idl"><a data-link-type="idl" href="#dom-audiodecoder-err
      <p>Assign <code>init.output</code> to the <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-output-callback-slot" id="ref-for-dom-videodecoder-output-callback-slot">[[output callback]]</a></code> internal slot.</p>
     <li data-md>
      <p>Assign <code>init.error</code> to the <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-error-callback-slot" id="ref-for-dom-videodecoder-error-callback-slot">[[error callback]]</a></code> internal slot.</p>
+    <li data-md>
+     <p>Assign <code>true</code> to <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-key-chunk-required-slot" id="ref-for-dom-videodecoder-key-chunk-required-slot">[[key chunk required]]</a></code>.</p>
     <li data-md>
      <p>Assign "unconfigured" to <code>d.state</code>.</p>
     <li data-md>
@@ -1228,6 +1261,8 @@ invoke the <code class="idl"><a data-link-type="idl" href="#dom-audiodecoder-err
       <li data-md>
        <p>Set <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-state" id="ref-for-dom-videodecoder-state②">state</a></code> to <code>"configured"</code>.</p>
       <li data-md>
+       <p>Set <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-key-chunk-required-slot" id="ref-for-dom-videodecoder-key-chunk-required-slot①">[[key chunk required]]</a></code> to <code>true</code>.</p>
+      <li data-md>
        <p><a data-link-type="dfn" href="#enqueues-a-control-message" id="ref-for-enqueues-a-control-message⑥">Queue a control message</a> to configure the decoder with <var>config</var>.</p>
      </ol>
      <p><a data-link-type="dfn" href="#running-a-control-message" id="ref-for-running-a-control-message④">Running a control message</a> to configure the decoder means running
@@ -1256,6 +1291,17 @@ supporting <var>config</var>.</p>
       <li data-md>
        <p>If <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-state" id="ref-for-dom-videodecoder-state③">state</a></code> is not <code>"configured"</code>, throw an <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#invalidstateerror" id="ref-for-invalidstateerror⑤">InvalidStateError</a></code>.</p>
       <li data-md>
+       <p>If <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-key-chunk-required-slot" id="ref-for-dom-videodecoder-key-chunk-required-slot②">[[key chunk required]]</a></code> is <code>true</code>:</p>
+       <ol>
+        <li data-md>
+         <p>If <var>chunk</var>.<code class="idl"><a data-link-type="idl" href="#dom-encodedvideochunk-type" id="ref-for-dom-encodedvideochunk-type①">type</a></code> is not <code class="idl"><a data-link-type="idl" href="#dom-encodedvideochunktype-key" id="ref-for-dom-encodedvideochunktype-key">key</a></code>, throw a <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#dataerror" id="ref-for-dataerror②">DataError</a></code>.</p>
+        <li data-md>
+         <p>Implementers should inspect the <var>chunk</var>’s <code class="idl"><a data-link-type="idl" href="#dom-encodedvideochunk-internal-data-slot" id="ref-for-dom-encodedvideochunk-internal-data-slot">[[internal data]]</a></code> to verify that
+it is truly a <a data-link-type="dfn" href="#key-chunk" id="ref-for-key-chunk③">key chunk</a>. If a mismatch is detected, throw a <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#dataerror" id="ref-for-dataerror③">DataError</a></code>.</p>
+        <li data-md>
+         <p>Otherwise, assign <code>false</code> to <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-key-chunk-required-slot" id="ref-for-dom-videodecoder-key-chunk-required-slot③">[[key chunk required]]</a></code>.</p>
+       </ol>
+      <li data-md>
        <p>Increment <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-decodequeuesize" id="ref-for-dom-videodecoder-decodequeuesize①">decodeQueueSize</a></code>.</p>
       <li data-md>
        <p><a data-link-type="dfn" href="#enqueues-a-control-message" id="ref-for-enqueues-a-control-message⑧">Queue a control message</a> to decode the <var>chunk</var>.</p>
@@ -1282,6 +1328,8 @@ by <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-codec-imple
      <ol>
       <li data-md>
        <p>If <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-state" id="ref-for-dom-videodecoder-state④">state</a></code> is not <code>"configured"</code>, return <a data-link-type="dfn" href="https://heycam.github.io/webidl/#a-promise-rejected-with" id="ref-for-a-promise-rejected-with②">a promise rejected with</a> <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#invalidstateerror" id="ref-for-invalidstateerror⑥">InvalidStateError</a></code> <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-DOMException" id="ref-for-idl-DOMException①">DOMException</a></code>.</p>
+      <li data-md>
+       <p>Set <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-key-chunk-required-slot" id="ref-for-dom-videodecoder-key-chunk-required-slot④">[[key chunk required]]</a></code> to <code>true</code>.</p>
       <li data-md>
        <p>Let <var>promise</var> be a new Promise.</p>
       <li data-md>
@@ -2379,7 +2427,7 @@ keys and values. For nested dictionaries, apply this definition recursively.
     <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoEncoderEncodeOptions" data-dfn-type="dict-member" data-export id="dom-videoencoderencodeoptions-keyframe"><code>keyFrame</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#idl-boolean" id="ref-for-idl-boolean①⓪">boolean</a>, defaulting to <code>false</code></span>
     <dd> A value of <code>true</code> indicates that the given frame MUST be encoded as a key
     frame. A value of <code>false</code> indicates that the user agent has flexibility to
-    decide whether the frame will be encoded as a key frame. 
+    decide whether the frame will be encoded as a <a data-link-type="dfn" href="#key-chunk" id="ref-for-key-chunk④">key frame</a>. 
    </dl>
    <h3 class="heading settled" data-level="7.12" id="codec-state"><span class="secno">7.12. </span><span class="content">CodecState</span><a class="self-link" href="#codec-state"></a></h3>
 <pre class="idl highlight def"><c- b>enum</c-> <dfn class="dfn-paneled idl-code" data-dfn-type="enum" data-export id="enumdef-codecstate"><code><c- g>CodecState</c-></code></dfn> {
@@ -2407,7 +2455,7 @@ keys and values. For nested dictionaries, apply this definition recursively.
 <pre class="idl highlight def">[<a class="idl-code" data-link-type="extended-attribute" href="https://heycam.github.io/webidl/#Exposed" id="ref-for-Exposed④"><c- g>Exposed</c-></a>=(<c- n>Window</c->,<c- n>DedicatedWorker</c->)]
 <c- b>interface</c-> <dfn class="dfn-paneled idl-code" data-dfn-type="interface" data-export id="encodedaudiochunk"><code><c- g>EncodedAudioChunk</c-></code></dfn> {
   <a class="idl-code" data-link-type="constructor" href="#dom-encodedaudiochunk-encodedaudiochunk" id="ref-for-dom-encodedaudiochunk-encodedaudiochunk"><c- g>constructor</c-></a>(<a data-link-type="idl-name" href="#dictdef-encodedaudiochunkinit" id="ref-for-dictdef-encodedaudiochunkinit①"><c- n>EncodedAudioChunkInit</c-></a> <dfn class="idl-code" data-dfn-for="EncodedAudioChunk/EncodedAudioChunk(init), EncodedAudioChunk/constructor(init)" data-dfn-type="argument" data-export id="dom-encodedaudiochunk-encodedaudiochunk-init-init"><code><c- g>init</c-></code><a class="self-link" href="#dom-encodedaudiochunk-encodedaudiochunk-init-init"></a></dfn>);
-  <c- b>readonly</c-> <c- b>attribute</c-> <a data-link-type="idl-name" href="#enumdef-encodedaudiochunktype" id="ref-for-enumdef-encodedaudiochunktype①"><c- n>EncodedAudioChunkType</c-></a> <a class="idl-code" data-link-type="attribute" data-readonly data-type="EncodedAudioChunkType" href="#dom-encodedaudiochunk-type" id="ref-for-dom-encodedaudiochunk-type"><c- g>type</c-></a>;
+  <c- b>readonly</c-> <c- b>attribute</c-> <a data-link-type="idl-name" href="#enumdef-encodedaudiochunktype" id="ref-for-enumdef-encodedaudiochunktype①"><c- n>EncodedAudioChunkType</c-></a> <a class="idl-code" data-link-type="attribute" data-readonly data-type="EncodedAudioChunkType" href="#dom-encodedaudiochunk-type" id="ref-for-dom-encodedaudiochunk-type②"><c- g>type</c-></a>;
   <c- b>readonly</c-> <c- b>attribute</c-> <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-long-long" id="ref-for-idl-long-long"><c- b>long</c-> <c- b>long</c-></a> <a class="idl-code" data-link-type="attribute" data-readonly data-type="long long" href="#dom-encodedaudiochunk-timestamp" id="ref-for-dom-encodedaudiochunk-timestamp①"><c- g>timestamp</c-></a>;    // microseconds
   <c- b>readonly</c-> <c- b>attribute</c-> <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-unsigned-long" id="ref-for-idl-unsigned-long②⑥"><c- b>unsigned</c-> <c- b>long</c-></a> <a class="idl-code" data-link-type="attribute" data-readonly data-type="unsigned long" href="#dom-encodedaudiochunk-bytelength" id="ref-for-dom-encodedaudiochunk-bytelength"><c- g>byteLength</c-></a>;
 
@@ -2421,7 +2469,7 @@ keys and values. For nested dictionaries, apply this definition recursively.
 };
 
 <c- b>enum</c-> <dfn class="dfn-paneled idl-code" data-dfn-type="enum" data-export id="enumdef-encodedaudiochunktype"><code><c- g>EncodedAudioChunkType</c-></code></dfn> {
-    <dfn class="idl-code" data-dfn-for="EncodedAudioChunkType" data-dfn-type="enum-value" data-export id="dom-encodedaudiochunktype-key"><code><c- s>"key"</c-></code><a class="self-link" href="#dom-encodedaudiochunktype-key"></a></dfn>,
+    <dfn class="dfn-paneled idl-code" data-dfn-for="EncodedAudioChunkType" data-dfn-type="enum-value" data-export id="dom-encodedaudiochunktype-key"><code><c- s>"key"</c-></code></dfn>,
     <dfn class="idl-code" data-dfn-for="EncodedAudioChunkType" data-dfn-type="enum-value" data-export id="dom-encodedaudiochunktype-delta"><code><c- s>"delta"</c-></code><a class="self-link" href="#dom-encodedaudiochunktype-delta"></a></dfn>,
 };
 </pre>
@@ -2439,11 +2487,11 @@ keys and values. For nested dictionaries, apply this definition recursively.
      <p>Let <var>chunk</var> be a new <code class="idl"><a data-link-type="idl" href="#encodedaudiochunk" id="ref-for-encodedaudiochunk⑥">EncodedAudioChunk</a></code> object, initialized as follows</p>
      <ol>
       <li data-md>
-       <p>Assign <code>init.type</code> to <code class="idl"><a data-link-type="idl" href="#dom-encodedaudiochunk-type" id="ref-for-dom-encodedaudiochunk-type①">type</a></code>.</p>
+       <p>Assign <code>init.type</code> to <code class="idl"><a data-link-type="idl" href="#dom-encodedaudiochunk-type" id="ref-for-dom-encodedaudiochunk-type③">type</a></code>.</p>
       <li data-md>
        <p>Assign <code>init.timestamp</code> to <code class="idl"><a data-link-type="idl" href="#dom-encodedaudiochunk-timestamp" id="ref-for-dom-encodedaudiochunk-timestamp②">timestamp</a></code>.</p>
       <li data-md>
-       <p>Assign a copy of <code>init.data</code> to <code class="idl"><a data-link-type="idl" href="#dom-encodedaudiochunk-internal-data-slot" id="ref-for-dom-encodedaudiochunk-internal-data-slot">[[internal data]]</a></code>.</p>
+       <p>Assign a copy of <code>init.data</code> to <code class="idl"><a data-link-type="idl" href="#dom-encodedaudiochunk-internal-data-slot" id="ref-for-dom-encodedaudiochunk-internal-data-slot①">[[internal data]]</a></code>.</p>
       <li data-md>
        <p>Assign <code>init.data.byteLength</code> to <code class="idl"><a data-link-type="idl" href="#dom-encodedaudiochunk-bytelength" id="ref-for-dom-encodedaudiochunk-bytelength①">byteLength</a></code>;</p>
      </ol>
@@ -2454,13 +2502,13 @@ keys and values. For nested dictionaries, apply this definition recursively.
    <dl>
     <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="EncodedAudioChunk" data-dfn-type="attribute" data-export id="dom-encodedaudiochunk-type"><code>type</code></dfn>, <span> of type <a data-link-type="idl-name" href="#enumdef-encodedaudiochunktype" id="ref-for-enumdef-encodedaudiochunktype③">EncodedAudioChunkType</a>, readonly</span>
     <dd data-md>
-     <p>Describes whether the chunk is a key frame.</p>
+     <p>Describes whether the chunk is a <a data-link-type="dfn" href="#key-chunk" id="ref-for-key-chunk⑤">key chunk</a>.</p>
     <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="EncodedAudioChunk" data-dfn-type="attribute" data-export id="dom-encodedaudiochunk-timestamp"><code>timestamp</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#idl-long-long" id="ref-for-idl-long-long②">long long</a>, readonly</span>
     <dd data-md>
      <p>The presentation timestamp, given in microseconds.</p>
     <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="EncodedAudioChunk" data-dfn-type="attribute" data-export id="dom-encodedaudiochunk-bytelength"><code>byteLength</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#idl-unsigned-long" id="ref-for-idl-unsigned-long②⑦">unsigned long</a>, readonly</span>
     <dd data-md>
-     <p>The byte length of <code class="idl"><a data-link-type="idl" href="#dom-encodedaudiochunk-internal-data-slot" id="ref-for-dom-encodedaudiochunk-internal-data-slot①">[[internal data]]</a></code>.</p>
+     <p>The byte length of <code class="idl"><a data-link-type="idl" href="#dom-encodedaudiochunk-internal-data-slot" id="ref-for-dom-encodedaudiochunk-internal-data-slot②">[[internal data]]</a></code>.</p>
    </dl>
    <h4 class="heading settled" data-level="8.1.4" id="encodedaudiochunk-methods"><span class="secno">8.1.4. </span><span class="content">Methods</span><a class="self-link" href="#encodedaudiochunk-methods"></a></h4>
    <dl>
@@ -2472,14 +2520,14 @@ keys and values. For nested dictionaries, apply this definition recursively.
        <p>If <code class="idl"><a data-link-type="idl" href="#dom-encodedaudiochunk-bytelength" id="ref-for-dom-encodedaudiochunk-bytelength②">byteLength</a></code> is greater than <var>dst</var>.<code>byteLength</code>,
 throw a <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#exceptiondef-typeerror" id="ref-for-exceptiondef-typeerror①⓪">TypeError</a></code>.</p>
       <li data-md>
-       <p>Copy the <code class="idl"><a data-link-type="idl" href="#dom-encodedaudiochunk-internal-data-slot" id="ref-for-dom-encodedaudiochunk-internal-data-slot②">[[internal data]]</a></code> into <var>dst</var>.</p>
+       <p>Copy the <code class="idl"><a data-link-type="idl" href="#dom-encodedaudiochunk-internal-data-slot" id="ref-for-dom-encodedaudiochunk-internal-data-slot③">[[internal data]]</a></code> into <var>dst</var>.</p>
      </ol>
    </dl>
    <h3 class="heading settled" data-level="8.2" id="encodedvideochunk-interface"><span class="secno">8.2. </span><span class="content">EncodedVideoChunk Interface</span><a class="self-link" href="#encodedvideochunk-interface"></a></h3>
 <pre class="idl highlight def">[<a class="idl-code" data-link-type="extended-attribute" href="https://heycam.github.io/webidl/#Exposed" id="ref-for-Exposed⑤"><c- g>Exposed</c-></a>=(<c- n>Window</c->,<c- n>DedicatedWorker</c->)]
 <c- b>interface</c-> <dfn class="dfn-paneled idl-code" data-dfn-type="interface" data-export id="encodedvideochunk"><code><c- g>EncodedVideoChunk</c-></code></dfn> {
   <a class="idl-code" data-link-type="constructor" href="#dom-encodedvideochunk-encodedvideochunk" id="ref-for-dom-encodedvideochunk-encodedvideochunk"><c- g>constructor</c-></a>(<a data-link-type="idl-name" href="#dictdef-encodedvideochunkinit" id="ref-for-dictdef-encodedvideochunkinit①"><c- n>EncodedVideoChunkInit</c-></a> <dfn class="idl-code" data-dfn-for="EncodedVideoChunk/EncodedVideoChunk(init), EncodedVideoChunk/constructor(init)" data-dfn-type="argument" data-export id="dom-encodedvideochunk-encodedvideochunk-init-init"><code><c- g>init</c-></code><a class="self-link" href="#dom-encodedvideochunk-encodedvideochunk-init-init"></a></dfn>);
-  <c- b>readonly</c-> <c- b>attribute</c-> <a data-link-type="idl-name" href="#enumdef-encodedvideochunktype" id="ref-for-enumdef-encodedvideochunktype①"><c- n>EncodedVideoChunkType</c-></a> <a class="idl-code" data-link-type="attribute" data-readonly data-type="EncodedVideoChunkType" href="#dom-encodedvideochunk-type" id="ref-for-dom-encodedvideochunk-type"><c- g>type</c-></a>;
+  <c- b>readonly</c-> <c- b>attribute</c-> <a data-link-type="idl-name" href="#enumdef-encodedvideochunktype" id="ref-for-enumdef-encodedvideochunktype①"><c- n>EncodedVideoChunkType</c-></a> <a class="idl-code" data-link-type="attribute" data-readonly data-type="EncodedVideoChunkType" href="#dom-encodedvideochunk-type" id="ref-for-dom-encodedvideochunk-type②"><c- g>type</c-></a>;
   <c- b>readonly</c-> <c- b>attribute</c-> <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-long-long" id="ref-for-idl-long-long③"><c- b>long</c-> <c- b>long</c-></a> <a class="idl-code" data-link-type="attribute" data-readonly data-type="long long" href="#dom-encodedvideochunk-timestamp" id="ref-for-dom-encodedvideochunk-timestamp①"><c- g>timestamp</c-></a>;    // microseconds
   <c- b>readonly</c-> <c- b>attribute</c-> <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-long-long" id="ref-for-idl-long-long④"><c- b>long</c-> <c- b>long</c-></a>? <a class="idl-code" data-link-type="attribute" data-readonly data-type="long long?" href="#dom-encodedvideochunk-duration" id="ref-for-dom-encodedvideochunk-duration①"><c- g>duration</c-></a>;    // microseconds
   <c- b>readonly</c-> <c- b>attribute</c-> <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-unsigned-long" id="ref-for-idl-unsigned-long②⑧"><c- b>unsigned</c-> <c- b>long</c-></a> <a class="idl-code" data-link-type="attribute" data-readonly data-type="unsigned long" href="#dom-encodedvideochunk-bytelength" id="ref-for-dom-encodedvideochunk-bytelength"><c- g>byteLength</c-></a>;
@@ -2495,7 +2543,7 @@ throw a <code class="idl"><a data-link-type="idl" href="https://heycam.github.io
 };
 
 <c- b>enum</c-> <dfn class="dfn-paneled idl-code" data-dfn-type="enum" data-export id="enumdef-encodedvideochunktype"><code><c- g>EncodedVideoChunkType</c-></code></dfn> {
-    <dfn class="idl-code" data-dfn-for="EncodedVideoChunkType" data-dfn-type="enum-value" data-export id="dom-encodedvideochunktype-key"><code><c- s>"key"</c-></code><a class="self-link" href="#dom-encodedvideochunktype-key"></a></dfn>,
+    <dfn class="dfn-paneled idl-code" data-dfn-for="EncodedVideoChunkType" data-dfn-type="enum-value" data-export id="dom-encodedvideochunktype-key"><code><c- s>"key"</c-></code></dfn>,
     <dfn class="idl-code" data-dfn-for="EncodedVideoChunkType" data-dfn-type="enum-value" data-export id="dom-encodedvideochunktype-delta"><code><c- s>"delta"</c-></code><a class="self-link" href="#dom-encodedvideochunktype-delta"></a></dfn>,
 };
 </pre>
@@ -2513,13 +2561,13 @@ throw a <code class="idl"><a data-link-type="idl" href="https://heycam.github.io
      <p>Let <var>chunk</var> be a new <code class="idl"><a data-link-type="idl" href="#encodedvideochunk" id="ref-for-encodedvideochunk①④">EncodedVideoChunk</a></code> object, initialized as follows</p>
      <ol>
       <li data-md>
-       <p>Assign <code>init.type</code> to <code class="idl"><a data-link-type="idl" href="#dom-encodedvideochunk-type" id="ref-for-dom-encodedvideochunk-type①">type</a></code>.</p>
+       <p>Assign <code>init.type</code> to <code class="idl"><a data-link-type="idl" href="#dom-encodedvideochunk-type" id="ref-for-dom-encodedvideochunk-type③">type</a></code>.</p>
       <li data-md>
        <p>Assign <code>init.timestamp</code> to <code class="idl"><a data-link-type="idl" href="#dom-encodedvideochunk-timestamp" id="ref-for-dom-encodedvideochunk-timestamp②">timestamp</a></code>.</p>
       <li data-md>
        <p>If duration is present in init, assign <code>init.duration</code> to <code class="idl"><a data-link-type="idl" href="#dom-encodedvideochunk-duration" id="ref-for-dom-encodedvideochunk-duration②">duration</a></code>. Otherwise, assign <code>null</code> to <code class="idl"><a data-link-type="idl" href="#dom-encodedvideochunk-duration" id="ref-for-dom-encodedvideochunk-duration③">duration</a></code>.</p>
       <li data-md>
-       <p>Assign a copy of <code>init.data</code> to <code class="idl"><a data-link-type="idl" href="#dom-encodedvideochunk-internal-data-slot" id="ref-for-dom-encodedvideochunk-internal-data-slot">[[internal data]]</a></code>.</p>
+       <p>Assign a copy of <code>init.data</code> to <code class="idl"><a data-link-type="idl" href="#dom-encodedvideochunk-internal-data-slot" id="ref-for-dom-encodedvideochunk-internal-data-slot①">[[internal data]]</a></code>.</p>
       <li data-md>
        <p>Assign <code>init.data.byteLength</code> to <code class="idl"><a data-link-type="idl" href="#dom-encodedvideochunk-bytelength" id="ref-for-dom-encodedvideochunk-bytelength①">byteLength</a></code>;</p>
      </ol>
@@ -2530,7 +2578,7 @@ throw a <code class="idl"><a data-link-type="idl" href="https://heycam.github.io
    <dl>
     <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="EncodedVideoChunk" data-dfn-type="attribute" data-export id="dom-encodedvideochunk-type"><code>type</code></dfn>, <span> of type <a data-link-type="idl-name" href="#enumdef-encodedvideochunktype" id="ref-for-enumdef-encodedvideochunktype③">EncodedVideoChunkType</a>, readonly</span>
     <dd data-md>
-     <p>Describes whether the chunk is a key frame or not.</p>
+     <p>Describes whether the chunk is a <a data-link-type="dfn" href="#key-chunk" id="ref-for-key-chunk⑥">key chunk</a>.</p>
     <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="EncodedVideoChunk" data-dfn-type="attribute" data-export id="dom-encodedvideochunk-timestamp"><code>timestamp</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#idl-long-long" id="ref-for-idl-long-long⑦">long long</a>, readonly</span>
     <dd data-md>
      <p>The presentation timestamp, given in microseconds.</p>
@@ -2539,7 +2587,7 @@ throw a <code class="idl"><a data-link-type="idl" href="https://heycam.github.io
      <p>The presentation duration, given in microseconds.</p>
     <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="EncodedVideoChunk" data-dfn-type="attribute" data-export id="dom-encodedvideochunk-bytelength"><code>byteLength</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#idl-unsigned-long" id="ref-for-idl-unsigned-long②⑨">unsigned long</a>, readonly</span>
     <dd data-md>
-     <p>The byte length of <code class="idl"><a data-link-type="idl" href="#dom-encodedvideochunk-internal-data-slot" id="ref-for-dom-encodedvideochunk-internal-data-slot①">[[internal data]]</a></code>.</p>
+     <p>The byte length of <code class="idl"><a data-link-type="idl" href="#dom-encodedvideochunk-internal-data-slot" id="ref-for-dom-encodedvideochunk-internal-data-slot②">[[internal data]]</a></code>.</p>
    </dl>
    <h4 class="heading settled" data-level="8.2.4" id="encodedvideochunk-methods"><span class="secno">8.2.4. </span><span class="content">Methods</span><a class="self-link" href="#encodedvideochunk-methods"></a></h4>
    <dl>
@@ -2551,7 +2599,7 @@ throw a <code class="idl"><a data-link-type="idl" href="https://heycam.github.io
        <p>If <code class="idl"><a data-link-type="idl" href="#dom-encodedvideochunk-bytelength" id="ref-for-dom-encodedvideochunk-bytelength②">byteLength</a></code> is greater than <var>dst</var>.<code>byteLength</code>,
 throw a <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#exceptiondef-typeerror" id="ref-for-exceptiondef-typeerror①①">TypeError</a></code>.</p>
       <li data-md>
-       <p>Copy the <code class="idl"><a data-link-type="idl" href="#dom-encodedvideochunk-internal-data-slot" id="ref-for-dom-encodedvideochunk-internal-data-slot②">[[internal data]]</a></code> into <var>dst</var>.</p>
+       <p>Copy the <code class="idl"><a data-link-type="idl" href="#dom-encodedvideochunk-internal-data-slot" id="ref-for-dom-encodedvideochunk-internal-data-slot③">[[internal data]]</a></code> into <var>dst</var>.</p>
      </ol>
    </dl>
    <h2 class="heading settled" data-level="9" id="raw-media-interfaces"><span class="secno">9. </span><span class="content">Raw Media Interfaces</span><a class="self-link" href="#raw-media-interfaces"></a></h2>
@@ -3679,7 +3727,7 @@ user agent.</p>
           <li data-md>
            <p>If <code class="idl"><a data-link-type="idl" href="#dom-imagedecoder-closed-slot" id="ref-for-dom-imagedecoder-closed-slot②">[[closed]]</a></code> is <code>true</code>, abort these steps.</p>
           <li data-md>
-           <p>If <var>chunk</var> is not a Uint8Array object, queue a task on the <a data-link-type="dfn" href="#control-thread" id="ref-for-control-thread②⑧">control thread</a> event loop to run the <a data-link-type="dfn" href="#imagedecoder-close-imagedecoder" id="ref-for-imagedecoder-close-imagedecoder②">Close ImageDecoder</a> algorithm with a <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#dataerror" id="ref-for-dataerror">DataError</a></code> <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-DOMException" id="ref-for-idl-DOMException①⑦">DOMException</a></code> and abort these steps.</p>
+           <p>If <var>chunk</var> is not a Uint8Array object, queue a task on the <a data-link-type="dfn" href="#control-thread" id="ref-for-control-thread②⑧">control thread</a> event loop to run the <a data-link-type="dfn" href="#imagedecoder-close-imagedecoder" id="ref-for-imagedecoder-close-imagedecoder②">Close ImageDecoder</a> algorithm with a <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#dataerror" id="ref-for-dataerror④">DataError</a></code> <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-DOMException" id="ref-for-idl-DOMException①⑦">DOMException</a></code> and abort these steps.</p>
           <li data-md>
            <p>Let <var>bytes</var> be the byte sequence represented by the Uint8Array
 object.</p>
@@ -4809,6 +4857,14 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
      <li><a href="#dom-encodedaudiochunktype-key">enum-value for EncodedAudioChunkType</a><span>, in §8.1</span>
      <li><a href="#dom-encodedvideochunktype-key">enum-value for EncodedVideoChunkType</a><span>, in §8.2</span>
     </ul>
+   <li><a href="#key-chunk">Key Chunk</a><span>, in §1</span>
+   <li>
+    [[key chunk required]]
+    <ul>
+     <li><a href="#dom-audiodecoder-key-chunk-required-slot">attribute for AudioDecoder</a><span>, in §3.1</span>
+     <li><a href="#dom-videodecoder-key-chunk-required-slot">attribute for VideoDecoder</a><span>, in §4.1</span>
+    </ul>
+   <li><a href="#key-chunk">Key Frame</a><span>, in §1</span>
    <li><a href="#dom-videoencoderencodeoptions-keyframe">keyFrame</a><span>, in §7.11</span>
    <li>
     length
@@ -5463,7 +5519,9 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
   <aside class="dfn-panel" data-for="term-for-dataerror">
    <a href="https://heycam.github.io/webidl/#dataerror">https://heycam.github.io/webidl/#dataerror</a><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-dataerror">10.2.5. Algorithms</a>
+    <li><a href="#ref-for-dataerror">3.4. Methods</a> <a href="#ref-for-dataerror①">(2)</a>
+    <li><a href="#ref-for-dataerror②">4.4. Methods</a> <a href="#ref-for-dataerror③">(2)</a>
+    <li><a href="#ref-for-dataerror④">10.2.5. Algorithms</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-encodingerror">
@@ -6357,6 +6415,18 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
     <li><a href="#ref-for-codec⑥">7.1. Check Configuration Support (with config)</a>
    </ul>
   </aside>
+  <aside class="dfn-panel" data-for="key-chunk">
+   <b><a href="#key-chunk">#key-chunk</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-key-chunk">3.1. Internal Slots</a>
+    <li><a href="#ref-for-key-chunk①">3.4. Methods</a>
+    <li><a href="#ref-for-key-chunk②">4.1. Internal Slots</a>
+    <li><a href="#ref-for-key-chunk③">4.4. Methods</a>
+    <li><a href="#ref-for-key-chunk④">7.11. VideoEncoderEncodeOptions</a>
+    <li><a href="#ref-for-key-chunk⑤">8.1.3. Attributes</a>
+    <li><a href="#ref-for-key-chunk⑥">8.2.3. Attributes</a>
+   </ul>
+  </aside>
   <aside class="dfn-panel" data-for="internal-pending-output">
    <b><a href="#internal-pending-output">#internal-pending-output</a></b><b>Referenced in:</b>
    <ul>
@@ -6546,6 +6616,13 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
     <li><a href="#ref-for-dom-audiodecoder-error-callback-slot①">3.5. Algorithms</a>
    </ul>
   </aside>
+  <aside class="dfn-panel" data-for="dom-audiodecoder-key-chunk-required-slot">
+   <b><a href="#dom-audiodecoder-key-chunk-required-slot">#dom-audiodecoder-key-chunk-required-slot</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-dom-audiodecoder-key-chunk-required-slot">3.2. Constructors</a>
+    <li><a href="#ref-for-dom-audiodecoder-key-chunk-required-slot①">3.4. Methods</a> <a href="#ref-for-dom-audiodecoder-key-chunk-required-slot②">(2)</a> <a href="#ref-for-dom-audiodecoder-key-chunk-required-slot③">(3)</a> <a href="#ref-for-dom-audiodecoder-key-chunk-required-slot④">(4)</a>
+   </ul>
+  </aside>
   <aside class="dfn-panel" data-for="dom-audiodecoder-audiodecoder">
    <b><a href="#dom-audiodecoder-audiodecoder">#dom-audiodecoder-audiodecoder</a></b><b>Referenced in:</b>
    <ul>
@@ -6578,6 +6655,7 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
    <b><a href="#dom-audiodecoder-decode">#dom-audiodecoder-decode</a></b><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-dom-audiodecoder-decode">3. AudioDecoder Interface</a>
+    <li><a href="#ref-for-dom-audiodecoder-decode①">3.1. Internal Slots</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dom-audiodecoder-flush">
@@ -6651,13 +6729,6 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
     <li><a href="#ref-for-dom-videodecoder-codec-implementation-slot⑦">7.6. VideoDecoderConfig</a>
    </ul>
   </aside>
-  <aside class="dfn-panel" data-for="dom-videodecoder-active-decoder-config-slot">
-   <b><a href="#dom-videodecoder-active-decoder-config-slot">#dom-videodecoder-active-decoder-config-slot</a></b><b>Referenced in:</b>
-   <ul>
-    <li><a href="#ref-for-dom-videodecoder-active-decoder-config-slot">4.4. Methods</a>
-    <li><a href="#ref-for-dom-videodecoder-active-decoder-config-slot①">4.5. Algorithms</a>
-   </ul>
-  </aside>
   <aside class="dfn-panel" data-for="dom-videodecoder-output-callback-slot">
    <b><a href="#dom-videodecoder-output-callback-slot">#dom-videodecoder-output-callback-slot</a></b><b>Referenced in:</b>
    <ul>
@@ -6670,6 +6741,20 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
    <ul>
     <li><a href="#ref-for-dom-videodecoder-error-callback-slot">4.2. Constructors</a>
     <li><a href="#ref-for-dom-videodecoder-error-callback-slot①">4.5. Algorithms</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="dom-videodecoder-active-decoder-config-slot">
+   <b><a href="#dom-videodecoder-active-decoder-config-slot">#dom-videodecoder-active-decoder-config-slot</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-dom-videodecoder-active-decoder-config-slot">4.4. Methods</a>
+    <li><a href="#ref-for-dom-videodecoder-active-decoder-config-slot①">4.5. Algorithms</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="dom-videodecoder-key-chunk-required-slot">
+   <b><a href="#dom-videodecoder-key-chunk-required-slot">#dom-videodecoder-key-chunk-required-slot</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-dom-videodecoder-key-chunk-required-slot">4.2. Constructors</a>
+    <li><a href="#ref-for-dom-videodecoder-key-chunk-required-slot①">4.4. Methods</a> <a href="#ref-for-dom-videodecoder-key-chunk-required-slot②">(2)</a> <a href="#ref-for-dom-videodecoder-key-chunk-required-slot③">(3)</a> <a href="#ref-for-dom-videodecoder-key-chunk-required-slot④">(4)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dom-videodecoder-videodecoder">
@@ -6704,6 +6789,7 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
    <b><a href="#dom-videodecoder-decode">#dom-videodecoder-decode</a></b><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-dom-videodecoder-decode">4. VideoDecoder Interface</a>
+    <li><a href="#ref-for-dom-videodecoder-decode①">4.1. Internal Slots</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dom-videodecoder-flush">
@@ -7504,12 +7590,19 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
     <li><a href="#ref-for-enumdef-encodedaudiochunktype③">8.1.3. Attributes</a>
    </ul>
   </aside>
+  <aside class="dfn-panel" data-for="dom-encodedaudiochunktype-key">
+   <b><a href="#dom-encodedaudiochunktype-key">#dom-encodedaudiochunktype-key</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-dom-encodedaudiochunktype-key">3.4. Methods</a>
+   </ul>
+  </aside>
   <aside class="dfn-panel" data-for="dom-encodedaudiochunk-internal-data-slot">
    <b><a href="#dom-encodedaudiochunk-internal-data-slot">#dom-encodedaudiochunk-internal-data-slot</a></b><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-dom-encodedaudiochunk-internal-data-slot">8.1.2. Constructors</a>
-    <li><a href="#ref-for-dom-encodedaudiochunk-internal-data-slot①">8.1.3. Attributes</a>
-    <li><a href="#ref-for-dom-encodedaudiochunk-internal-data-slot②">8.1.4. Methods</a>
+    <li><a href="#ref-for-dom-encodedaudiochunk-internal-data-slot">3.4. Methods</a>
+    <li><a href="#ref-for-dom-encodedaudiochunk-internal-data-slot①">8.1.2. Constructors</a>
+    <li><a href="#ref-for-dom-encodedaudiochunk-internal-data-slot②">8.1.3. Attributes</a>
+    <li><a href="#ref-for-dom-encodedaudiochunk-internal-data-slot③">8.1.4. Methods</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dom-encodedaudiochunk-encodedaudiochunk">
@@ -7521,8 +7614,10 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
   <aside class="dfn-panel" data-for="dom-encodedaudiochunk-type">
    <b><a href="#dom-encodedaudiochunk-type">#dom-encodedaudiochunk-type</a></b><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-dom-encodedaudiochunk-type">8.1. EncodedAudioChunk Interface</a>
-    <li><a href="#ref-for-dom-encodedaudiochunk-type①">8.1.2. Constructors</a>
+    <li><a href="#ref-for-dom-encodedaudiochunk-type">3.1. Internal Slots</a>
+    <li><a href="#ref-for-dom-encodedaudiochunk-type①">3.4. Methods</a>
+    <li><a href="#ref-for-dom-encodedaudiochunk-type②">8.1. EncodedAudioChunk Interface</a>
+    <li><a href="#ref-for-dom-encodedaudiochunk-type③">8.1.2. Constructors</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dom-encodedaudiochunk-timestamp">
@@ -7603,12 +7698,19 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
     <li><a href="#ref-for-enumdef-encodedvideochunktype③">8.2.3. Attributes</a>
    </ul>
   </aside>
+  <aside class="dfn-panel" data-for="dom-encodedvideochunktype-key">
+   <b><a href="#dom-encodedvideochunktype-key">#dom-encodedvideochunktype-key</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-dom-encodedvideochunktype-key">4.4. Methods</a>
+   </ul>
+  </aside>
   <aside class="dfn-panel" data-for="dom-encodedvideochunk-internal-data-slot">
    <b><a href="#dom-encodedvideochunk-internal-data-slot">#dom-encodedvideochunk-internal-data-slot</a></b><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-dom-encodedvideochunk-internal-data-slot">8.2.2. Constructors</a>
-    <li><a href="#ref-for-dom-encodedvideochunk-internal-data-slot①">8.2.3. Attributes</a>
-    <li><a href="#ref-for-dom-encodedvideochunk-internal-data-slot②">8.2.4. Methods</a>
+    <li><a href="#ref-for-dom-encodedvideochunk-internal-data-slot">4.4. Methods</a>
+    <li><a href="#ref-for-dom-encodedvideochunk-internal-data-slot①">8.2.2. Constructors</a>
+    <li><a href="#ref-for-dom-encodedvideochunk-internal-data-slot②">8.2.3. Attributes</a>
+    <li><a href="#ref-for-dom-encodedvideochunk-internal-data-slot③">8.2.4. Methods</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dom-encodedvideochunk-encodedvideochunk">
@@ -7620,8 +7722,10 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
   <aside class="dfn-panel" data-for="dom-encodedvideochunk-type">
    <b><a href="#dom-encodedvideochunk-type">#dom-encodedvideochunk-type</a></b><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-dom-encodedvideochunk-type">8.2. EncodedVideoChunk Interface</a>
-    <li><a href="#ref-for-dom-encodedvideochunk-type①">8.2.2. Constructors</a>
+    <li><a href="#ref-for-dom-encodedvideochunk-type">4.1. Internal Slots</a>
+    <li><a href="#ref-for-dom-encodedvideochunk-type①">4.4. Methods</a>
+    <li><a href="#ref-for-dom-encodedvideochunk-type②">8.2. EncodedVideoChunk Interface</a>
+    <li><a href="#ref-for-dom-encodedvideochunk-type③">8.2.2. Constructors</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dom-encodedvideochunk-timestamp">
