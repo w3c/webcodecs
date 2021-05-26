@@ -2275,9 +2275,9 @@ different channels as either [=interleaved=] or [=planar=]. The <dfn>audio
 sample type</dfn> refers solely to the numeric type and interval used to store
 the data, this is {{U8}}, {{S16}}, {{S24}}, {{S32}}, or {{FLT}} for respectively
 unsigned 8-bits, signed 16-bits, signed 32-bits, signed 32-bits, and 32-bits
-floating point number. The [#audio-buffer-arrangement|audio buffer arrageement]
-refers solely to the way the samples are laid out in memory ([=planar=] or
-[=interleaved=]).
+floating point number. The [[#audio-buffer-arrangement|audio buffer
+arrangement]] refers solely to the way the samples are laid out in memory
+([=planar=] or [=interleaved=]).
 
 <xmp class='idl'>
 enum AudioSampleFormat {
@@ -2295,35 +2295,34 @@ enum AudioSampleFormat {
 </xmp>
 
 : <dfn enum-value for=AudioSampleFormat>U8</dfn>
-:: [[WEBIDL#idl-octet|8-bit unsigned integer]] samples with [=interleaved=] channel arrangement.
+:: [[WEBIDL#idl-octet|8-bit unsigned integer]] samples with [=interleaved=] [[#audio-buffer-arrangement|channel arrangement]].
 
 : <dfn enum-value for=AudioSampleFormat>S16</dfn>
-:: [[WEBIDL#idl-short|16-bit signed integer]] samples with [=interleaved=] channel arrangement.
+:: [[WEBIDL#idl-short|16-bit signed integer]] samples with [=interleaved=] [[#audio-buffer-arrangement|channel arrangement]].
 
 : <dfn enum-value for=AudioSampleFormat>S24</dfn>
-:: [[WEBIDL#idl-long|32-bit signed integer]] samples with [=interleaved=] channel arrangement, holding value in the 24-bits of lowest significance.
+:: [[WEBIDL#idl-long|32-bit signed integer]] samples with [=interleaved=] [[#audio-buffer-arrangement|channel arrangement]], holding value in the 24-bit of lowest significance.
 
-: <dfn enum-value for=AudioSampleFormat>S32</dfn>rrange
-:: [[WEBIDL#idl-long|32-bit signed integer]] samples with [=interleaved=] channel arrangement.
+: <dfn enum-value for=AudioSampleFormat>S32</dfn>
+:: [[WEBIDL#idl-long|32-bit signed integer]] samples with [=interleaved=] [[#audio-buffer-arrangement|channel arrangement]].
 
 : <dfn enum-value for=AudioSampleFormat>FLT</dfn>
-:: [[WEBIDL#idl-float|32-bit float]] samples with [=interleaved=] channel arrangement.
+:: [[WEBIDL#idl-float|32-bit float]] samples with [=interleaved=] [[#audio-buffer-arrangement|channel arrangement]].
 
 : <dfn enum-value for=AudioSampleFormat>U8P</dfn>
-:: [[WEBIDL#idl-octet|8-bit unsigned integer]] samples with [=planar=] channel arrangement.
+:: [[WEBIDL#idl-octet|8-bit unsigned integer]] samples with [=planar=] [[#audio-buffer-arrangement|channel arrangement]].
 
 : <dfn enum-value for=AudioSampleFormat>S16P</dfn>
-:: [[WEBIDL#idl-short|16-bit signed integer]] samples with [=planar=] channel arrangement.
+:: [[WEBIDL#idl-short|16-bit signed integer]] samples with [=planar=] [[#audio-buffer-arrangement|channel arrangement]].
 
 : <dfn enum-value for=AudioSampleFormat>S24P</dfn>
-:: [[WEBIDL#idl-long|32-bit signed integer]] samples with [=planar=] channel
-    arrangement, holding value in the 24-bits of lowest significance.
+:: [[WEBIDL#idl-long|32-bit signed integer]] samples with [=planar=] [[#audio-buffer-arrangement|channel arrangement]], holding value in the 24-bit of lowest significance.
 
 : <dfn enum-value for=AudioSampleFormat>S32P</dfn>
-:: [[WEBIDL#idl-long|32-bit signed integer]] samples with [=planar=] channel arrangement.
+:: [[WEBIDL#idl-long|32-bit signed integer]] samples with [=planar=] [[#audio-buffer-arrangement|channel arrangement]].
 
 : <dfn enum-value for=AudioSampleFormat>FLTP</dfn>
-:: [[WEBIDL#idl-float|32-bit float]] samples with [=planar=] channel arrangement.
+:: [[WEBIDL#idl-float|32-bit float]] samples with [=planar=] [[#audio-buffer-arrangement|channel arrangement]].
 
 
 ### Arrangement of audio buffer ### {#audio-buffer-arrangement}
@@ -2347,9 +2346,9 @@ Note: The [[WEBAUDIO|Web Audio API]] currently uses {{FLTP}} exclusively.
 ### Magnitude of the audio samples ### {#audio-samples-magnitude}
 
 The <dfn>minimum value</dfn> and <dfn>maximum value</dfn> of an audio sample,
-for a particular audio sample type, are the value below which
+for a particular audio sample type, are the values below which
 (respectively above which) audio clipping might occur. They are otherwise regular
-types, that can hold values outside this interval, during intermeditate
+types, that can hold values outside this interval during intermeditate
 processing.
 
 The <dfn>bias value</dfn> for an audio sample type is the value that often
@@ -2359,8 +2358,8 @@ An audio buffer comprised only of values equal to the [=bias value=] is silent.
 <table id="sample-types">
 <thead>
 <tr class="header">
-<th>[=Audio sample type|Type=]</th>
-<th>Type</th>
+<th>[=Audio sample type|Sample type=]</th>
+<th>IDL type</th>
 <th>[=Minimum value=]</th>
 <th>[=Bias value=]</th>
 <th>[=Maximum value=]</th>
@@ -2405,17 +2404,18 @@ An audio buffer comprised only of values equal to the [=bias value=] is silent.
 </tbody>
 </table>
 
-Note: There is no data types that can hold 24 bits of information conveniently,
-but audio content using 24-bits samples is common, so 32-bits integers are
-commonly used to hold 24-bits content.
+Note: There is no data type that can hold 24 bits of information conveniently,
+but audio content using 24-bit samples is common, so 32-bits integers are
+commonly used to hold 24-bit content.
 
 ### Audio channel ordering ### {#audio-channel-ordering}
 
-When decoding, the ordering of the audio channels in an {{AudioData}} MUST be
-the same as what is present in the {{EncodedAudioChunk}}.
+When decoding, the ordering of the audio channels in the resulting {{AudioData}}
+MUST be the same as what is present in the {{EncodedAudioChunk}}.
 
-When encoding, the ordering of the audio channels in an {{AudioData}} MUST NOT
-be altered in the resulting {{EncodedAudioChunk}}.
+When encoding, the ordering of the audio channels in the resulting
+{{EncodedAudioChunk}} MUST be the same as what is preset in the given
+{{AudioData}};
 
 In other terms, no channel reordering is performed when encoding and decoding.
 
