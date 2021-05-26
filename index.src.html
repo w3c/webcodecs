@@ -124,7 +124,7 @@ Definitions {#definitions}
 :: Resources including CPU memory, GPU memory, and exclusive handles to specific
     decoding/encoding hardware that may be allocated by the User Agent as part
     of codec configuration or generation of {{AudioData}} and {{VideoFrame}}
-    objects. Such resources may be quickly exhuasted and should be released
+    objects. Such resources may be quickly exhausted and should be released
     immediately when no longer in use.
 
 : <dfn>Temporal Layer</dfn>
@@ -503,6 +503,8 @@ Internal Slots {#videodecoder-internal-slots}
 :: Callback given at construction for decoded outputs.
 : <dfn attribute for=VideoDecoder>[[error callback]]</dfn>
 :: Callback given at construction for decode errors.
+: <dfn attribute for=VideoDecoder>[[active decoder config]]</dfn>
+:: The {{VideoDecoderConfig}} that is actively applied.
 : <dfn attribute for=VideoDecoder>[[key chunk required]]</dfn>
 :: A boolean indicating that the next chunk passed to {{VideoDecoder/decode()}}
     must describe a [=key chunk=] as indicated by {{EncodedVideoChunk/type}}.
@@ -564,7 +566,8 @@ Methods {#videodecoder-methods}
         {{VideoDecoder/[[codec implementation]]}} with an implementation
         supporting |config|.
     3. Otherwise, run the <a>Close VideoDecoder</a> algorithm with
-        {{NotSupportedError}}.
+        {{NotSupportedError}} and abort these steps.
+    4. Set {{VideoDecoder/[[active decoder config]]}} to `config`.
   </dd>
 
   <dt><dfn method for=VideoDecoder>decode(chunk)</dfn></dt>
@@ -688,36 +691,15 @@ Algorithms {#videodecoder-algorithms}
         1. Let |timestamp| and |duration| be the
             {{EncodedVideoChunk/timestamp}} and {{EncodedVideoChunk/duration}}
             from the {{EncodedVideoChunk}} associated with |output|.
-        2. Let |frame| be the result of running the [=Create a VideoFrame=]
-            algorithm with |output|, |timestamp|, and |duration|.
-        3. Invoke {{VideoDecoder/[[output callback]]}} with |frame|.
-  </dd>
-  <dt>
-    <dfn>Create a VideoFrame</dfn> (with |output|, |timestamp|, and |duration|)
-  </dt>
-  <dd>
-    1. Let |planes| be a sequence of {{Plane}}s containing the decoded
-        video frame data from |output|.
-    2. Let |pixelFormat| be the {{PixelFormat}} of |planes|.
-    3. Let |init| be a {{VideoFramePlaneInit}} with the following
-        keys:
-        1. Assign |timestamp| to {{VideoFrameInit/timestamp}}.
-        2. Assign |duration| to {{VideoFrameInit/duration}}.
-        3. Let {{VideoFramePlaneInit/codedWidth}} and
-            {{VideoFramePlaneInit/codedHeight}}
-            be the width and height of the decoded video frame |output| in
-            pixels, prior to any cropping or aspect ratio adjustments.
-        4. Let {{VideoFramePlaneInit/cropLeft}},
-            {{VideoFramePlaneInit/cropTop}},
-            {{VideoFramePlaneInit/cropWidth}}, and
-            {{VideoFramePlaneInit/cropHeight}}
-            be the crop region of the decoded video frame |output| in
-            pixels, prior to any aspect ratio adjustments.
-        5. Let {{VideoFramePlaneInit/displayWidth}} and
-            {{VideoFramePlaneInit/displayHeight}} be the display size of
-            the decoded video frame in pixels.
-    4. Return a new {{VideoFrame}}, constructed with |pixelFormat|,
-        |planes|, and |init|.
+        2. Let |displayAspectWidth| and |displayAspectHeight| be undefined.
+        3. If {{VideoDecoderConfig/displayAspectWidth}} and
+            {{VideoDecoderConfig/displayAspectHeight}} [=map/exist=] in the
+            {{VideoDecoder/[[active decoder config]]}}, assign their values to
+            |displayAspectWidth| and |displayAspectHeight| respectively.
+        4. Let |frame| be the result of running the [=Create a VideoFrame=]
+            algorithm with |output|, |timestamp|, |duration|, |displayAspectWidth|
+            and |displayAspectHeight|.
+        5. Invoke {{VideoDecoder/[[output callback]]}} with |frame|.
   </dd>
   <dt><dfn>Reset VideoDecoder</dfn></dt>
   <dd>
@@ -1501,8 +1483,8 @@ AudioDecoderConfig{#audio-decoder-config}
 <xmp class='idl'>
 dictionary AudioDecoderConfig {
   required DOMString codec;
-  required unsigned long sampleRate;
-  required unsigned long numberOfChannels;
+  [EnforceRange] required unsigned long sampleRate;
+  [EnforceRange] required unsigned long numberOfChannels;
   BufferSource description;
 };
 </xmp>
@@ -1539,14 +1521,10 @@ VideoDecoderConfig{#video-decoder-config}
 dictionary VideoDecoderConfig {
   required DOMString codec;
   BufferSource description;
-  unsigned long codedWidth;
-  unsigned long codedHeight;
-  unsigned long cropLeft;
-  unsigned long cropTop;
-  unsigned long cropWidth;
-  unsigned long cropHeight;
-  unsigned long displayWidth;
-  unsigned long displayHeight;
+  [EnforceRange] unsigned long codedWidth;
+  [EnforceRange] unsigned long codedHeight;
+  [EnforceRange] unsigned long displayAspectWidth;
+  [EnforceRange] unsigned long displayAspectHeight;
   HardwareAcceleration hardwareAcceleration = "allow";
 };
 </xmp>
@@ -1555,17 +1533,17 @@ To check if a {{VideoDecoderConfig}} is a <dfn>valid VideoDecoderConfig</dfn>,
 run these steps:
 1. If {{VideoDecoderConfig/codec}} is not a <a>valid codec string</a>, return
     `false`.
-2. If {{VideoDecoderConfig/codedWidth}} = 0 or
+2. If one of {{VideoDecoderConfig/codedWidth}} or
+    {{VideoDecoderConfig/codedHeight}} is provided but the other isn't,
+    return `false`.
+3. If {{VideoDecoderConfig/codedWidth}} = 0 or
     {{VideoDecoderConfig/codedHeight}} = 0, return `false`.
-3. If {{VideoDecoderConfig/cropWidth}} = 0 or {{VideoDecoderConfig/cropHeight}}
-    = 0, return `false`.
-4. If {{VideoDecoderConfig/cropTop}} + {{VideoDecoderConfig/cropHeight}} >=
-    {{VideoDecoderConfig/codedHeight}}, return `false`.
-5. If {{VideoDecoderConfig/cropLeft}} + {{VideoDecoderConfig/cropWidth}} >=
-    {{VideoDecoderConfig/codedWidth}}, return `false`.
-6. If {{VideoDecoderConfig/displayWidth}} = 0 or
-    {{VideoDecoderConfig/displayHeight}} = 0, return `false`.
-7. Return `true`.
+4. If one of {{VideoDecoderConfig/displayAspectWidth}} or
+    {{VideoDecoderConfig/displayAspectHeight}} is provided but the other isn't,
+    return `false`.
+5. If {{VideoDecoderConfig/displayAspectWidth}} = 0 or
+    {{VideoDecoderConfig/displayAspectHeight}} = 0, return `false`.
+6. Return `true`.
 
 <dl>
   <dt><dfn dict-member for=VideoDecoderConfig>codec</dfn></dt>
@@ -1592,41 +1570,24 @@ run these steps:
         adjustments.
   </dd>
 
-  <dt><dfn dict-member for=VideoDecoderConfig>cropLeft</dfn></dt>
+  NOTE: {{VideoDecoderConfig/codedWidth}} and {{VideoDecoderConfig/codedHeight}}
+    are used when selecting a {{VideoDecoder/[[codec implementation]]}}.
+
+  <dt><dfn dict-member for=VideoDecoderConfig>displayAspectWidth</dfn></dt>
   <dd>
-    The number of pixels to remove from the left of the VideoFrame, prior to
-        aspect ratio adjustments. Defaults to zero if not present.
+    Horizontal dimension of the VideoFrame's aspect ratio when displayed.
   </dd>
 
-  <dt><dfn dict-member for=VideoDecoderConfig>cropTop</dfn></dt>
+  <dt><dfn dict-member for=VideoDecoderConfig>displayAspectHeight</dfn></dt>
   <dd>
-    The number of pixels to remove from the top of the VideoFrame, prior to
-        aspect ratio adjustments. Defaults to zero if not present.
+    Vertical dimension of the VideoFrame's aspect ratio when displayed.
   </dd>
 
-  <dt><dfn dict-member for=VideoDecoderConfig>cropWidth</dfn></dt>
-  <dd>
-    The width in pixels to include in the crop, starting from cropLeft.
-        Defaults to codedWidth if not present.
-  </dd>
-
-  <dt><dfn dict-member for=VideoDecoderConfig>cropHeight</dfn></dt>
-  <dd>
-    The height in pixels to include in the crop, starting from cropLeft.
-        Defaults to codedHeight if not present.
-  </dd>
-
-  <dt><dfn dict-member for=VideoDecoderConfig>displayWidth</dfn></dt>
-  <dd>
-    Width of the VideoFrame when displayed. Defaults to cropWidth if not
-        present.
-  </dd>
-
-  <dt><dfn dict-member for=VideoDecoderConfig>displayHeight</dfn></dt>
-  <dd>
-    Height of the VideoFrame when displayed. Defaults to cropHeight if not
-        present.
-  </dd>
+Note: {{VideoFrame/displayWidth}} and {{VideoFrame/displayHeight}} can both be
+  different from {{VideoDecoderConfig/displayAspectWidth}} and
+  {{VideoDecoderConfig/displayAspectHeight}}, but they should have identical
+  ratios, after scaling is applied when
+  [=create a videoframe|creating the video frame=].
 
   <dt><dfn dict-member for=VideoDecoderConfig>hardwareAcceleration</dfn></dt>
   <dd>
@@ -1641,9 +1602,9 @@ AudioEncoderConfig{#audio-encoder-config}
 <xmp class='idl'>
 dictionary AudioEncoderConfig {
   required DOMString codec;
-  unsigned long sampleRate;
-  unsigned long numberOfChannels;
-  unsigned long long bitrate;
+  [EnforceRange] unsigned long sampleRate;
+  [EnforceRange] unsigned long numberOfChannels;
+  [EnforceRange] unsigned long long bitrate;
 };
 </xmp>
 
@@ -1678,11 +1639,11 @@ VideoEncoderConfig{#video-encoder-config}
 <xmp class='idl'>
 dictionary VideoEncoderConfig {
   required DOMString codec;
-  unsigned long long bitrate;
-  required unsigned long width;
-  required unsigned long height;
-  unsigned long displayWidth;
-  unsigned long displayHeight;
+  [EnforceRange] unsigned long long bitrate;
+  [EnforceRange] required unsigned long width;
+  [EnforceRange] required unsigned long height;
+  [EnforceRange] unsigned long displayWidth;
+  [EnforceRange] unsigned long displayHeight;
   HardwareAcceleration hardwareAcceleration = "allow";
   DOMString scalabilityMode;
 };
@@ -1912,7 +1873,7 @@ interface EncodedAudioChunk {
 
 dictionary EncodedAudioChunkInit {
   required EncodedAudioChunkType type;
-  required long long timestamp;    // microseconds
+  [EnforceRange] required long long timestamp;    // microseconds
   required BufferSource data;
 };
 
@@ -1971,8 +1932,8 @@ interface EncodedVideoChunk {
 
 dictionary EncodedVideoChunkInit {
   required EncodedVideoChunkType type;
-  required long long timestamp;    // microseconds
-  long long duration;              // microseconds
+  [EnforceRange] required long long timestamp;    // microseconds
+  [EnforceRange] long long duration;              // microseconds
   required BufferSource data;
 };
 
@@ -2078,21 +2039,21 @@ interface AudioData {
   readonly attribute float sampleRate;
   readonly attribute unsigned long numberOfFrames;
   readonly attribute unsigned long numberOfChannels;
-  readonly attribute unsigned long allocationSize;
   readonly attribute long long duration;     // microseconds
   readonly attribute long long timestamp;    // microseconds
 
-  undefined copyTo([AllowShared] BufferSource destination, unsigned long planeNumber);
+  unsigned long allocationSize(AudioDataCopyToOptions options);
+  undefined copyTo([AllowShared] BufferSource destination, AudioDataCopyToOptions options);
   AudioData clone();
   undefined close();
 };
 
 dictionary AudioDataInit {
   required AudioSampleFormat sampleFormat;
-  required float sampleRate;
-  required unsigned long numberOfFrames;
-  required unsigned long numberOfChannels;
-  required long long timestamp;    // microseconds
+  [EnforceRange] required float sampleRate;
+  [EnforceRange] required unsigned long numberOfFrames;
+  [EnforceRange] required unsigned long numberOfChannels;
+  [EnforceRange] required long long timestamp;    // microseconds
   required BufferSource data;
 };
 </xmp>
@@ -2169,17 +2130,6 @@ dictionary AudioDataInit {
     The {{AudioData/numberOfChannels}} getter steps are to return
     {{AudioData/[[number of channels]]}}.
 
-: <dfn attribute for=AudioData>allocationSize</dfn>
-:: The the number of bytes allocated to hold all of the samples in this
-    {{AudioData}}.
-
-    The {{AudioData/allocationSize}} getter steps are to:
-    1. Let |sampleSize| be the number of bytes per sample, as defined by the
-        {{AudioData/[[sample format]]}}.
-    2. Return the product of multiplying |sampleSize| by
-        {{AudioData/[[number of channels]]}} and
-        {{AudioData/[[number of frames]]}}.
-
 : <dfn attribute for=AudioData>timestamp</dfn>
 :: The presentation timestamp, in microseconds, for this {{AudioData}}.
 
@@ -2196,25 +2146,38 @@ dictionary AudioDataInit {
     3. Return the product of |durationInSeconds| and |microsecondsPerSecond|.
 
 ### Methods ###{#audiodata-methods}
-: <dfn method for=AudioData>
-      copyTo(|destination|, |planeNumber|)
-    </dfn>
+: <dfn method for=AudioData>allocationSize(|options|)</dfn>
+:: Returns the number of bytes required to hold the samples as described by
+    |options|.
+
+    When invoked, run these steps:
+    1. Let |copyElementCount| be the result of running the
+        [=Compute Copy Element Count=] algorithm with |options|.
+    2. Let |bytesPerSample| be the number of bytes per sample, as defined by
+        the {{AudioData/[[sample format]]}}.
+    3. Return the product of multiplying |bytesPerSample| by
+        |copyElementCount|.
+
+: <dfn method for=AudioData>copyTo(|destination|, |options|)</dfn>
 :: Copies the samples from the specified plane of the {{AudioData}} to the
     destination buffer.
 
     When invoked, run these steps:
     1. If the value of |frame|'s {{AudioData/[[detached]]}} internal slot is
         `true`, throw an {{InvalidStateError}} {{DOMException}}.
-    2. Let |allocationSize| be the number of bytes allocated to hold this
-        {{AudioData}}'s [=media resource=], as described by the getter steps of
-        {{AudioData/allocationSize}}.
-    3. If |allocationSize| is greater than `destination.byteLength`, throw a
-        {{TypeError}}.
-    4. Let |resource| be the [=media resource=] referenced by
+    2. Let |copyElementCount| be the result of running the
+        [=Compute Copy Element Count=] algorithm with |options|.
+    3. Let |bytesPerSample| be the number of bytes per sample, as defined by
+        the {{AudioData/[[sample format]]}}.
+    4. If the product of multiplying |bytesPerSample| by |copyElementCount| is
+        greater than `destination.byteLength`, throw a {{RangeError}}.
+    5. Let |resource| be the [=media resource=] referenced by
         {{AudioData/[[resource reference]]}}.
-    5. Let |planeBytes| be the region of |resource| corresponding to
-        |planeNumber|.
-    6. Copy the |planeBytes| into |destination|.
+    6. Let |planeFrames| be the region of |resource| corresponding to
+        |options|.{{AudioDataCopyToOptions/planeIndex}}.
+    7. Copy elements of |planeFrames| into |destination|, starting with the
+        frame positioned at |options|.{{AudioDataCopyToOptions/frameOffset}}
+        and stopping after |copyElementCount| elements have been copied.
 
 : <dfn method for=AudioData>clone()</dfn>
 :: Creates a new AudioData with a reference to the same [=media resource=].
@@ -2235,6 +2198,25 @@ dictionary AudioDataInit {
 
 ### Algorithms ### {#audiodata-algorithms}
 
+: <dfn>Compute Copy Element Count</dfn> (with |options|)
+:: Run these steps:
+    1. Let |frameCount| be the number of frames in the plane identified by
+        |options|.{{AudioDataCopyToOptions/planeIndex}}.
+    2. If |options|.{{AudioDataCopyToOptions/frameOffset}} is greater than or
+        equal to |frameCount|, throw a {{RangeError}}.
+    3. Let |copyFrameCount| be the difference of subtracting
+        |options|.{{AudioDataCopyToOptions/frameOffset}} from |frameCount|.
+    4. If |options|.{{AudioDataCopyToOptions/frameCount}} [=map/exists=]:
+        1. If |options|.{{AudioDataCopyToOptions/frameCount}} is greater than
+            |copyFrameCount|, throw a {{RangeError}}.
+        2. Otherwise, assign |options|.{{AudioDataCopyToOptions/frameCount}}
+            to |copyFrameCount|.
+    5. Let |elementCount| be |copyFrameCount|.
+    6. If {{AudioData/[[sample format]]}} describes an interleaved
+        {{AudioSampleFormat}}, mutliply |elementCount| by
+        {{AudioData/[[number of channels]]}}
+    7. return |elementCount|.
+
 : <dfn>Clone AudioData</dfn> (with |data|)
 :: Run these steps:
     1. Let |clone| be a new {{AudioData}} initialized as follows:
@@ -2249,6 +2231,27 @@ dictionary AudioDataInit {
             {{AudioData/[[timestamp]]}} slots to the corresponding slots in
             |clone|.
     2. Return |clone|.
+
+### AudioDataCopyToOptions ### {#audiodata-copy-to-options}
+
+<xmp class='idl'>
+dictionary AudioDataCopyToOptions {
+  required unsigned long planeIndex;
+  unsigned long frameOffset = 0;
+  unsigned long frameCount;
+};
+</xmp>
+
+: <dfn dict-member for=AudioDataCopyToOptions>planeIndex</dfn>
+:: The index identifying the plane to copy from.
+
+: <dfn dict-member for=AudioDataCopyToOptions>frameOffset</dfn>
+:: An offset into the source plane data indicating which frame to begin
+    copying from. Defaults to `0`.
+
+: <dfn dict-member for=AudioDataCopyToOptions>frameCount</dfn>
+:: The number of frames to copy. If not provided, the copy will include all
+    frames in the plane beginning with {{AudioDataCopyToOptions/frameOffset}}.
 
 Audio Sample Format{#audio-sample-format}
 -----------------------------------------
@@ -2327,16 +2330,16 @@ dictionary VideoFrameInit {
 
 dictionary VideoFramePlaneInit {
   required PixelFormat format;
-  required unsigned long codedWidth;
-  required unsigned long codedHeight;
-  unsigned long cropLeft;
-  unsigned long cropTop;
-  unsigned long cropWidth;
-  unsigned long cropHeight;
-  unsigned long displayWidth;
-  unsigned long displayHeight;
-  long long duration;     // microseconds
-  long long timestamp;    // microseconds
+  [EnforceRange] required unsigned long codedWidth;
+  [EnforceRange] required unsigned long codedHeight;
+  [EnforceRange] unsigned long cropLeft;
+  [EnforceRange] unsigned long cropTop;
+  [EnforceRange] unsigned long cropWidth;
+  [EnforceRange] unsigned long cropHeight;
+  [EnforceRange] unsigned long displayWidth;
+  [EnforceRange] unsigned long displayHeight;
+  [EnforceRange] long long duration;     // microseconds
+  [EnforceRange] long long timestamp;    // microseconds
 };
 </xmp>
 
@@ -2655,6 +2658,36 @@ dictionary VideoFramePlaneInit {
     6. Assign `null` to {{VideoFrame/duration}} and {{VideoFrame/timestamp}}.
 
 ### Algorithms ###{#videoframe-algorithms}
+  <dfn>Create a VideoFrame</dfn> (with |output|, |timestamp|, |duration|, |displayAspectWidth|, and |displayAspectHeight|)
+  1. Let |planes| be a sequence of {{Plane}}s containing the decoded
+      video frame data from |output|.
+  2. Let |pixelFormat| be the {{PixelFormat}} of |planes|.
+  3. Let |init| be a {{VideoFramePlaneInit}} with the following
+      keys:
+      1. Assign |timestamp| to {{VideoFrameInit/timestamp}}.
+      2. Assign |duration| to {{VideoFrameInit/duration}}.
+      3. Let {{VideoFramePlaneInit/codedWidth}} and
+          {{VideoFramePlaneInit/codedHeight}}
+          be the width and height of the decoded video frame |output| in
+          pixels, prior to any cropping or aspect ratio adjustments.
+      4. Let {{VideoFramePlaneInit/cropLeft}},
+          {{VideoFramePlaneInit/cropTop}},
+          {{VideoFramePlaneInit/cropWidth}}, and
+          {{VideoFramePlaneInit/cropHeight}}
+          be the crop region of the decoded video frame |output| in
+          pixels, prior to any aspect ratio adjustments.
+      5. Let |displayWidth| and |displayHeight| be the the display size of
+          the decoded frame in pixels.
+      6. If |displayAspectWidth| and |displayAspectHeight| are provided,
+          increase |displayWidth| or |displayHeight| until the ratio of
+          |displayWidth| to |displayHeight| matches the ratio of
+          |displayAspectWidth| to |displayAspectHeight|.
+      7. Assign the value of |displayWidth| and |displayHeight| to
+          {{VideoFramePlaneInit/displayWidth}} and
+          {{VideoFramePlaneInit/displayHeight}} respectively.
+  4. Return a new {{VideoFrame}}, constructed with |pixelFormat|,
+      |planes|, and |init|.
+
 : To check if a {{VideoFramePlaneInit}} is a
     <dfn>valid VideoFramePlaneInit</dfn>, run these steps:
 :: 1. If {{VideoFramePlaneInit/codedWidth}} = 0 or
@@ -2773,8 +2806,8 @@ interface Plane {
 
 dictionary PlaneInit {
   required BufferSource src;
-  required unsigned long stride;
-  required unsigned long rows;
+  [EnforceRange] required unsigned long stride;
+  [EnforceRange] required unsigned long rows;
 };
 </xmp>
 
@@ -3369,8 +3402,8 @@ dictionary ImageDecoderInit {
   required ImageBufferSource data;
   PremultiplyAlpha premultiplyAlpha = "default";
   ColorSpaceConversion colorSpaceConversion = "default";
-  unsigned long desiredWidth;
-  unsigned long desiredHeight;
+  [EnforceRange] unsigned long desiredWidth;
+  [EnforceRange] unsigned long desiredHeight;
   boolean preferAnimation;
 };
 </xmp>
@@ -3433,7 +3466,7 @@ ImageDecodeOptions Interface {#imagedecodeoptions-interface}
 <pre class='idl'>
 <xmp>
 dictionary ImageDecodeOptions {
-  unsigned long frameIndex = 0;
+  [EnforceRange] unsigned long frameIndex = 0;
   boolean completeFramesOnly = true;
 };
 </xmp>
@@ -3498,8 +3531,8 @@ interface ImageTrackList {
   getter ImageTrack (unsigned long index);
 
   readonly attribute Promise<undefined> ready;
-  readonly attribute unsigned long length;
-  readonly attribute long selectedIndex;
+  [EnforceRange] readonly attribute unsigned long length;
+  [EnforceRange] readonly attribute long selectedIndex;
   readonly attribute ImageTrack? selectedTrack;
 };
 </xmp>
@@ -3546,8 +3579,8 @@ ImageTrack Interface {#imagetrack-interface}
 [Exposed=(Window,DedicatedWorker)]
 interface ImageTrack : EventTarget {
   readonly attribute boolean animated;
-  readonly attribute unsigned long frameCount;
-  readonly attribute unrestricted float repetitionCount;
+  [EnforceRange] readonly attribute unsigned long frameCount;
+  [EnforceRange] readonly attribute unrestricted float repetitionCount;
   attribute EventHandler onchange;
   attribute boolean selected;
 };
