@@ -1473,8 +1473,8 @@ AudioDecoderConfig{#audio-decoder-config}
 <xmp class='idl'>
 dictionary AudioDecoderConfig {
   required DOMString codec;
-  required unsigned long sampleRate;
-  required unsigned long numberOfChannels;
+  [EnforceRange] required unsigned long sampleRate;
+  [EnforceRange] required unsigned long numberOfChannels;
   BufferSource description;
 };
 </xmp>
@@ -1511,14 +1511,14 @@ VideoDecoderConfig{#video-decoder-config}
 dictionary VideoDecoderConfig {
   required DOMString codec;
   BufferSource description;
-  unsigned long codedWidth;
-  unsigned long codedHeight;
-  unsigned long cropLeft;
-  unsigned long cropTop;
-  unsigned long cropWidth;
-  unsigned long cropHeight;
-  unsigned long displayWidth;
-  unsigned long displayHeight;
+  [EnforceRange] unsigned long codedWidth;
+  [EnforceRange] unsigned long codedHeight;
+  [EnforceRange] unsigned long cropLeft;
+  [EnforceRange] unsigned long cropTop;
+  [EnforceRange] unsigned long cropWidth;
+  [EnforceRange] unsigned long cropHeight;
+  [EnforceRange] unsigned long displayWidth;
+  [EnforceRange] unsigned long displayHeight;
   HardwareAcceleration hardwareAcceleration = "allow";
 };
 </xmp>
@@ -1613,9 +1613,9 @@ AudioEncoderConfig{#audio-encoder-config}
 <xmp class='idl'>
 dictionary AudioEncoderConfig {
   required DOMString codec;
-  unsigned long sampleRate;
-  unsigned long numberOfChannels;
-  unsigned long long bitrate;
+  [EnforceRange] unsigned long sampleRate;
+  [EnforceRange] unsigned long numberOfChannels;
+  [EnforceRange] unsigned long long bitrate;
 };
 </xmp>
 
@@ -1650,11 +1650,11 @@ VideoEncoderConfig{#video-encoder-config}
 <xmp class='idl'>
 dictionary VideoEncoderConfig {
   required DOMString codec;
-  unsigned long long bitrate;
-  required unsigned long width;
-  required unsigned long height;
-  unsigned long displayWidth;
-  unsigned long displayHeight;
+  [EnforceRange] unsigned long long bitrate;
+  [EnforceRange] required unsigned long width;
+  [EnforceRange] required unsigned long height;
+  [EnforceRange] unsigned long displayWidth;
+  [EnforceRange] unsigned long displayHeight;
   HardwareAcceleration hardwareAcceleration = "allow";
   DOMString scalabilityMode;
 };
@@ -1884,7 +1884,7 @@ interface EncodedAudioChunk {
 
 dictionary EncodedAudioChunkInit {
   required EncodedAudioChunkType type;
-  required long long timestamp;    // microseconds
+  [EnforceRange] required long long timestamp;    // microseconds
   required BufferSource data;
 };
 
@@ -1943,8 +1943,8 @@ interface EncodedVideoChunk {
 
 dictionary EncodedVideoChunkInit {
   required EncodedVideoChunkType type;
-  required long long timestamp;    // microseconds
-  long long duration;              // microseconds
+  [EnforceRange] required long long timestamp;    // microseconds
+  [EnforceRange] long long duration;              // microseconds
   required BufferSource data;
 };
 
@@ -2061,10 +2061,10 @@ interface AudioData {
 
 dictionary AudioDataInit {
   required AudioSampleFormat sampleFormat;
-  required float sampleRate;
-  required unsigned long numberOfFrames;
-  required unsigned long numberOfChannels;
-  required long long timestamp;    // microseconds
+  [EnforceRange] required float sampleRate;
+  [EnforceRange] required unsigned long numberOfFrames;
+  [EnforceRange] required unsigned long numberOfChannels;
+  [EnforceRange] required long long timestamp;    // microseconds
   required BufferSource data;
 };
 </xmp>
@@ -2341,16 +2341,16 @@ dictionary VideoFrameInit {
 
 dictionary VideoFramePlaneInit {
   required PixelFormat format;
-  required unsigned long codedWidth;
-  required unsigned long codedHeight;
-  unsigned long cropLeft;
-  unsigned long cropTop;
-  unsigned long cropWidth;
-  unsigned long cropHeight;
-  unsigned long displayWidth;
-  unsigned long displayHeight;
-  long long duration;     // microseconds
-  long long timestamp;    // microseconds
+  [EnforceRange] required unsigned long codedWidth;
+  [EnforceRange] required unsigned long codedHeight;
+  [EnforceRange] unsigned long cropLeft;
+  [EnforceRange] unsigned long cropTop;
+  [EnforceRange] unsigned long cropWidth;
+  [EnforceRange] unsigned long cropHeight;
+  [EnforceRange] unsigned long displayWidth;
+  [EnforceRange] unsigned long displayHeight;
+  [EnforceRange] long long duration;     // microseconds
+  [EnforceRange] long long timestamp;    // microseconds
 };
 </xmp>
 
@@ -2787,8 +2787,8 @@ interface Plane {
 
 dictionary PlaneInit {
   required BufferSource src;
-  required unsigned long stride;
-  required unsigned long rows;
+  [EnforceRange] required unsigned long stride;
+  [EnforceRange] required unsigned long rows;
 };
 </xmp>
 
@@ -3383,8 +3383,8 @@ dictionary ImageDecoderInit {
   required ImageBufferSource data;
   PremultiplyAlpha premultiplyAlpha = "default";
   ColorSpaceConversion colorSpaceConversion = "default";
-  unsigned long desiredWidth;
-  unsigned long desiredHeight;
+  [EnforceRange] unsigned long desiredWidth;
+  [EnforceRange] unsigned long desiredHeight;
   boolean preferAnimation;
 };
 </xmp>
@@ -3447,7 +3447,7 @@ ImageDecodeOptions Interface {#imagedecodeoptions-interface}
 <pre class='idl'>
 <xmp>
 dictionary ImageDecodeOptions {
-  unsigned long frameIndex = 0;
+  [EnforceRange] unsigned long frameIndex = 0;
   boolean completeFramesOnly = true;
 };
 </xmp>
@@ -3512,8 +3512,8 @@ interface ImageTrackList {
   getter ImageTrack (unsigned long index);
 
   readonly attribute Promise<undefined> ready;
-  readonly attribute unsigned long length;
-  readonly attribute long selectedIndex;
+  [EnforceRange] readonly attribute unsigned long length;
+  [EnforceRange] readonly attribute long selectedIndex;
   readonly attribute ImageTrack? selectedTrack;
 };
 </xmp>
@@ -3560,8 +3560,8 @@ ImageTrack Interface {#imagetrack-interface}
 [Exposed=(Window,DedicatedWorker)]
 interface ImageTrack : EventTarget {
   readonly attribute boolean animated;
-  readonly attribute unsigned long frameCount;
-  readonly attribute unrestricted float repetitionCount;
+  [EnforceRange] readonly attribute unsigned long frameCount;
+  [EnforceRange] readonly attribute unrestricted float repetitionCount;
   attribute EventHandler onchange;
   attribute boolean selected;
 };
