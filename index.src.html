@@ -123,7 +123,7 @@ Definitions {#definitions}
 :: Resources including CPU memory, GPU memory, and exclusive handles to specific
     decoding/encoding hardware that may be allocated by the User Agent as part
     of codec configuration or generation of {{AudioData}} and {{VideoFrame}}
-    objects. Such resources may be quickly exhuasted and should be released
+    objects. Such resources may be quickly exhausted and should be released
     immediately when no longer in use.
 
 : <dfn>Temporal Layer</dfn>
@@ -485,6 +485,8 @@ Internal Slots {#videodecoder-internal-slots}
 <dl>
 <dt><dfn attribute for=VideoDecoder>[[codec implementation]]</dfn></dt>
 <dd>Underlying decoder implementation provided by the User Agent.</dd>
+<dt><dfn attribute for=VideoDecoder>[[active decoder config]]</dfn></dt>
+<dd>The {{VideoDecoderConfig}} that is actively applied.</dd>
 <dt><dfn attribute for=VideoDecoder>[[output callback]]</dfn></dt>
 <dd>Callback given at construction for decoded outputs.</dd>
 <dt><dfn attribute for=VideoDecoder>[[error callback]]</dfn></dt>
@@ -546,7 +548,8 @@ Methods {#videodecoder-methods}
         {{VideoDecoder/[[codec implementation]]}} with an implementation
         supporting |config|.
     3. Otherwise, run the <a>Close VideoDecoder</a> algorithm with
-        {{NotSupportedError}}.
+        {{NotSupportedError}} and abort these steps.
+    4. Set {{VideoDecoder/[[active decoder config]]}} to `config`.
   </dd>
 
   <dt><dfn method for=VideoDecoder>decode(chunk)</dfn></dt>
@@ -660,36 +663,15 @@ Algorithms {#videodecoder-algorithms}
         1. Let |timestamp| and |duration| be the
             {{EncodedVideoChunk/timestamp}} and {{EncodedVideoChunk/duration}}
             from the {{EncodedVideoChunk}} associated with |output|.
-        2. Let |frame| be the result of running the [=Create a VideoFrame=]
-            algorithm with |output|, |timestamp|, and |duration|.
-        3. Invoke {{VideoDecoder/[[output callback]]}} with |frame|.
-  </dd>
-  <dt>
-    <dfn>Create a VideoFrame</dfn> (with |output|, |timestamp|, and |duration|)
-  </dt>
-  <dd>
-    1. Let |planes| be a sequence of {{Plane}}s containing the decoded
-        video frame data from |output|.
-    2. Let |pixelFormat| be the {{PixelFormat}} of |planes|.
-    3. Let |init| be a {{VideoFramePlaneInit}} with the following
-        keys:
-        1. Assign |timestamp| to {{VideoFrameInit/timestamp}}.
-        2. Assign |duration| to {{VideoFrameInit/duration}}.
-        3. Let {{VideoFramePlaneInit/codedWidth}} and
-            {{VideoFramePlaneInit/codedHeight}}
-            be the width and height of the decoded video frame |output| in
-            pixels, prior to any cropping or aspect ratio adjustments.
-        4. Let {{VideoFramePlaneInit/cropLeft}},
-            {{VideoFramePlaneInit/cropTop}},
-            {{VideoFramePlaneInit/cropWidth}}, and
-            {{VideoFramePlaneInit/cropHeight}}
-            be the crop region of the decoded video frame |output| in
-            pixels, prior to any aspect ratio adjustments.
-        5. Let {{VideoFramePlaneInit/displayWidth}} and
-            {{VideoFramePlaneInit/displayHeight}} be the display size of
-            the decoded video frame in pixels.
-    4. Return a new {{VideoFrame}}, constructed with |pixelFormat|,
-        |planes|, and |init|.
+        2. Let |displayAspectWidth| and |displayAspectHeight| be undefined.
+        3. If {{VideoDecoderConfig/displayAspectWidth}} and
+            {{VideoDecoderConfig/displayAspectHeight}} [=map/exist=] in the
+            {{VideoDecoder/[[active decoder config]]}}, assign their values to
+            |displayAspectWidth| and |displayAspectHeight| respectively.
+        4. Let |frame| be the result of running the [=Create a VideoFrame=]
+            algorithm with |output|, |timestamp|, |duration|, |displayAspectWidth|
+            and |displayAspectHeight|.
+        5. Invoke {{VideoDecoder/[[output callback]]}} with |frame|.
   </dd>
   <dt><dfn>Reset VideoDecoder</dfn></dt>
   <dd>
@@ -1513,12 +1495,8 @@ dictionary VideoDecoderConfig {
   BufferSource description;
   [EnforceRange] unsigned long codedWidth;
   [EnforceRange] unsigned long codedHeight;
-  [EnforceRange] unsigned long cropLeft;
-  [EnforceRange] unsigned long cropTop;
-  [EnforceRange] unsigned long cropWidth;
-  [EnforceRange] unsigned long cropHeight;
-  [EnforceRange] unsigned long displayWidth;
-  [EnforceRange] unsigned long displayHeight;
+  [EnforceRange] unsigned long displayAspectWidth;
+  [EnforceRange] unsigned long displayAspectHeight;
   HardwareAcceleration hardwareAcceleration = "allow";
 };
 </xmp>
@@ -1527,17 +1505,17 @@ To check if a {{VideoDecoderConfig}} is a <dfn>valid VideoDecoderConfig</dfn>,
 run these steps:
 1. If {{VideoDecoderConfig/codec}} is not a <a>valid codec string</a>, return
     `false`.
-2. If {{VideoDecoderConfig/codedWidth}} = 0 or
+2. If one of {{VideoDecoderConfig/codedWidth}} or
+    {{VideoDecoderConfig/codedHeight}} is provided but the other isn't,
+    return `false`.
+3. If {{VideoDecoderConfig/codedWidth}} = 0 or
     {{VideoDecoderConfig/codedHeight}} = 0, return `false`.
-3. If {{VideoDecoderConfig/cropWidth}} = 0 or {{VideoDecoderConfig/cropHeight}}
-    = 0, return `false`.
-4. If {{VideoDecoderConfig/cropTop}} + {{VideoDecoderConfig/cropHeight}} >=
-    {{VideoDecoderConfig/codedHeight}}, return `false`.
-5. If {{VideoDecoderConfig/cropLeft}} + {{VideoDecoderConfig/cropWidth}} >=
-    {{VideoDecoderConfig/codedWidth}}, return `false`.
-6. If {{VideoDecoderConfig/displayWidth}} = 0 or
-    {{VideoDecoderConfig/displayHeight}} = 0, return `false`.
-7. Return `true`.
+4. If one of {{VideoDecoderConfig/displayAspectWidth}} or
+    {{VideoDecoderConfig/displayAspectHeight}} is provided but the other isn't,
+    return `false`.
+5. If {{VideoDecoderConfig/displayAspectWidth}} = 0 or
+    {{VideoDecoderConfig/displayAspectHeight}} = 0, return `false`.
+6. Return `true`.
 
 <dl>
   <dt><dfn dict-member for=VideoDecoderConfig>codec</dfn></dt>
@@ -1564,41 +1542,24 @@ run these steps:
         adjustments.
   </dd>
 
-  <dt><dfn dict-member for=VideoDecoderConfig>cropLeft</dfn></dt>
+  NOTE: {{VideoDecoderConfig/codedWidth}} and {{VideoDecoderConfig/codedHeight}}
+    are used when selecting a {{VideoDecoder/[[codec implementation]]}}.
+
+  <dt><dfn dict-member for=VideoDecoderConfig>displayAspectWidth</dfn></dt>
   <dd>
-    The number of pixels to remove from the left of the VideoFrame, prior to
-        aspect ratio adjustments. Defaults to zero if not present.
+    Horizontal dimension of the VideoFrame's aspect ratio when displayed.
   </dd>
 
-  <dt><dfn dict-member for=VideoDecoderConfig>cropTop</dfn></dt>
+  <dt><dfn dict-member for=VideoDecoderConfig>displayAspectHeight</dfn></dt>
   <dd>
-    The number of pixels to remove from the top of the VideoFrame, prior to
-        aspect ratio adjustments. Defaults to zero if not present.
+    Vertical dimension of the VideoFrame's aspect ratio when displayed.
   </dd>
 
-  <dt><dfn dict-member for=VideoDecoderConfig>cropWidth</dfn></dt>
-  <dd>
-    The width in pixels to include in the crop, starting from cropLeft.
-        Defaults to codedWidth if not present.
-  </dd>
-
-  <dt><dfn dict-member for=VideoDecoderConfig>cropHeight</dfn></dt>
-  <dd>
-    The height in pixels to include in the crop, starting from cropLeft.
-        Defaults to codedHeight if not present.
-  </dd>
-
-  <dt><dfn dict-member for=VideoDecoderConfig>displayWidth</dfn></dt>
-  <dd>
-    Width of the VideoFrame when displayed. Defaults to cropWidth if not
-        present.
-  </dd>
-
-  <dt><dfn dict-member for=VideoDecoderConfig>displayHeight</dfn></dt>
-  <dd>
-    Height of the VideoFrame when displayed. Defaults to cropHeight if not
-        present.
-  </dd>
+Note: {{VideoFrame/displayWidth}} and {{VideoFrame/displayHeight}} can both be
+  different from {{VideoDecoderConfig/displayAspectWidth}} and
+  {{VideoDecoderConfig/displayAspectHeight}}, but they should have identical
+  ratios, after scaling is applied when
+  [=create a videoframe|creating the video frame=].
 
   <dt><dfn dict-member for=VideoDecoderConfig>hardwareAcceleration</dfn></dt>
   <dd>
@@ -2669,6 +2630,36 @@ dictionary VideoFramePlaneInit {
     6. Assign `null` to {{VideoFrame/duration}} and {{VideoFrame/timestamp}}.
 
 ### Algorithms ###{#videoframe-algorithms}
+  <dfn>Create a VideoFrame</dfn> (with |output|, |timestamp|, |duration|, |displayAspectWidth|, and |displayAspectHeight|)
+  1. Let |planes| be a sequence of {{Plane}}s containing the decoded
+      video frame data from |output|.
+  2. Let |pixelFormat| be the {{PixelFormat}} of |planes|.
+  3. Let |init| be a {{VideoFramePlaneInit}} with the following
+      keys:
+      1. Assign |timestamp| to {{VideoFrameInit/timestamp}}.
+      2. Assign |duration| to {{VideoFrameInit/duration}}.
+      3. Let {{VideoFramePlaneInit/codedWidth}} and
+          {{VideoFramePlaneInit/codedHeight}}
+          be the width and height of the decoded video frame |output| in
+          pixels, prior to any cropping or aspect ratio adjustments.
+      4. Let {{VideoFramePlaneInit/cropLeft}},
+          {{VideoFramePlaneInit/cropTop}},
+          {{VideoFramePlaneInit/cropWidth}}, and
+          {{VideoFramePlaneInit/cropHeight}}
+          be the crop region of the decoded video frame |output| in
+          pixels, prior to any aspect ratio adjustments.
+      5. Let |displayWidth| and |displayHeight| be the the display size of
+          the decoded frame in pixels.
+      6. If |displayAspectWidth| and |displayAspectHeight| are provided,
+          increase |displayWidth| or |displayHeight| until the ratio of
+          |displayWidth| to |displayHeight| matches the ratio of
+          |displayAspectWidth| to |displayAspectHeight|.
+      7. Assign the value of |displayWidth| and |displayHeight| to
+          {{VideoFramePlaneInit/displayWidth}} and
+          {{VideoFramePlaneInit/displayHeight}} respectively.
+  4. Return a new {{VideoFrame}}, constructed with |pixelFormat|,
+      |planes|, and |init|.
+
 : To check if a {{VideoFramePlaneInit}} is a
     <dfn>valid VideoFramePlaneInit</dfn>, run these steps:
 :: 1. If {{VideoFramePlaneInit/codedWidth}} = 0 or
