@@ -583,20 +583,11 @@ Methods {#videodecoder-methods}
     2. If {{VideoDecoder/[[key chunk required]]}} is `true`:
         1. If |chunk|.{{EncodedVideoChunk/type}} is not
             {{EncodedVideoChunkType/key}}, throw a {{DataError}}.
-
-            <div class='note'>
-            NOTE: Authors are strongly encouraged to construct
-                {{EncodedVideoChunk}}s with the correct
-                {{EncodedVideoChunkInit/type}}. Providing the incorrect type
-                may lead to undefined behavior, including fatal errors.
-
-                Implementers may inspect the chunk's
-                {{EncodedVideoChunk/[[internal data]]}} to verify that the
-                chunk provided is truly a [=key chunk=]. If a mismatch is
-                detected, user agents should throw a {{DataError}}.
-            </div>
-
-        2. Otherwise, assign `false` to
+        2. Implementers should inspect the |chunk|'s
+            {{EncodedVideoChunk/[[internal data]]}} to verify that
+            it is truly a [=key chunk=]. If a mismatch is detected, throw a
+            {{DataError}}.
+        3. Otherwise, assign `false` to
             {{VideoDecoder/[[key chunk required]]}}.
     3. Increment {{VideoDecoder/decodeQueueSize}}.
     4. [=Queue a control message=] to decode the |chunk|.
