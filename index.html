@@ -6,11 +6,25 @@
   <link href="https://www.w3.org/StyleSheets/TR/2016/W3C-ED" rel="stylesheet" type="text/css">
   <meta content="Bikeshed version 800b43329, updated Tue May 25 14:13:32 2021 -0700" name="generator">
   <link href="https://www.w3.org/TR/webcodecs/" rel="canonical">
-  <meta content="97e81bd59945e1a899d0bd4ce47443a82a753fb1" name="document-revision">
+  <meta content="e36bf7a1f0400c7bdbb373d50650695668f38d48" name="document-revision">
 <style>
 main > dl > dd {
   margin-bottom: 1em;
 }
+
+table {
+  width: 100%;
+}
+
+table#sample-types td, table#sample-types th {
+  text-align: center;
+}
+
+table#sample-types .even {
+    background-color: lightgrey;
+}
+
+
 </style>
 <style>/* style-autolinks */
 
@@ -572,7 +586,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
   <div class="head">
    <p data-fill-with="logo"><a class="logo" href="https://www.w3.org/"> <img alt="W3C" height="48" src="https://www.w3.org/StyleSheets/TR/2016/logos/W3C" width="72"> </a> </p>
    <h1 class="p-name no-ref" id="title">WebCodecs</h1>
-   <h2 class="no-num no-toc no-ref heading settled" id="profile-and-date"><span class="content">Editor’s Draft, <time class="dt-updated" datetime="2021-05-26">26 May 2021</time></span></h2>
+   <h2 class="no-num no-toc no-ref heading settled" id="profile-and-date"><span class="content">Editor’s Draft, <time class="dt-updated" datetime="2021-05-27">27 May 2021</time></span></h2>
    <div data-fill-with="spec-metadata">
     <dl>
      <dt>This version:
@@ -736,7 +750,13 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
         <li><a href="#audiodata-algorithms"><span class="secno">9.2.5</span> <span class="content">Algorithms</span></a>
         <li><a href="#audiodata-copy-to-options"><span class="secno">9.2.6</span> <span class="content">AudioDataCopyToOptions</span></a>
        </ol>
-      <li><a href="#audio-sample-format"><span class="secno">9.3</span> <span class="content">Audio Sample Format</span></a>
+      <li>
+       <a href="#audio-sample-formats"><span class="secno">9.3</span> <span class="content">Audio Sample Format</span></a>
+       <ol class="toc">
+        <li><a href="#audio-buffer-arrangement"><span class="secno">9.3.1</span> <span class="content">Arrangement of audio buffer</span></a>
+        <li><a href="#audio-samples-magnitude"><span class="secno">9.3.2</span> <span class="content">Magnitude of the audio samples</span></a>
+        <li><a href="#audio-channel-ordering"><span class="secno">9.3.3</span> <span class="content">Audio channel ordering</span></a>
+       </ol>
       <li>
        <a href="#videoframe-interface"><span class="secno">9.4</span> <span class="content">VideoFrame Interface</span></a>
        <ol class="toc">
@@ -2668,7 +2688,7 @@ this <code class="idl"><a data-link-type="idl" href="#audiodata" id="ref-for-aud
      <p>The sample-rate, in Hz, for this <code class="idl"><a data-link-type="idl" href="#audiodata" id="ref-for-audiodata①②">AudioData</a></code>.</p>
     <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="AudioData" data-dfn-type="attribute" data-export id="dom-audiodata-number-of-frames-slot"><code>[[number of frames]]</code></dfn>
     <dd data-md>
-     <p>The number of frames (samples per channel) for this <code class="idl"><a data-link-type="idl" href="#audiodata" id="ref-for-audiodata①③">AudioData</a></code>.</p>
+     <p>The number of <a data-link-type="dfn" href="#frame" id="ref-for-frame">frames</a> for this <code class="idl"><a data-link-type="idl" href="#audiodata" id="ref-for-audiodata①③">AudioData</a></code>.</p>
     <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="AudioData" data-dfn-type="attribute" data-export id="dom-audiodata-number-of-channels-slot"><code>[[number of channels]]</code></dfn>
     <dd data-md>
      <p>The number of audio channels for this <code class="idl"><a data-link-type="idl" href="#audiodata" id="ref-for-audiodata①④">AudioData</a></code>.</p>
@@ -2716,7 +2736,7 @@ this <code class="idl"><a data-link-type="idl" href="#audiodata" id="ref-for-aud
      <p>The <code class="idl"><a data-link-type="idl" href="#dom-audiodata-samplerate" id="ref-for-dom-audiodata-samplerate①">sampleRate</a></code> getter steps are to return <code class="idl"><a data-link-type="idl" href="#dom-audiodata-sample-rate-slot" id="ref-for-dom-audiodata-sample-rate-slot②">[[sample rate]]</a></code>.</p>
     <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="AudioData" data-dfn-type="attribute" data-export id="dom-audiodata-numberofframes"><code>numberOfFrames</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#idl-unsigned-long" id="ref-for-idl-unsigned-long③⑤">unsigned long</a>, readonly</span>
     <dd data-md>
-     <p>The number of frames (samples per channel) for this <code class="idl"><a data-link-type="idl" href="#audiodata" id="ref-for-audiodata①⑨">AudioData</a></code>.</p>
+     <p>The number of <a data-link-type="dfn" href="#frame" id="ref-for-frame①">frames</a> for this <code class="idl"><a data-link-type="idl" href="#audiodata" id="ref-for-audiodata①⑨">AudioData</a></code>.</p>
      <p>The <code class="idl"><a data-link-type="idl" href="#dom-audiodata-numberofframes" id="ref-for-dom-audiodata-numberofframes①">numberOfFrames</a></code> getter steps are to return <code class="idl"><a data-link-type="idl" href="#dom-audiodata-number-of-frames-slot" id="ref-for-dom-audiodata-number-of-frames-slot②">[[number of frames]]</a></code>.</p>
     <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="AudioData" data-dfn-type="attribute" data-export id="dom-audiodata-numberofchannels"><code>numberOfChannels</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#idl-unsigned-long" id="ref-for-idl-unsigned-long③⑥">unsigned long</a>, readonly</span>
     <dd data-md>
@@ -2775,8 +2795,7 @@ greater than <code>destination.byteLength</code>, throw a <code class="idl"><a d
       <li data-md>
        <p>Let <var>planeFrames</var> be the region of <var>resource</var> corresponding to <var>options</var>.<code class="idl"><a data-link-type="idl" href="#dom-audiodatacopytooptions-planeindex" id="ref-for-dom-audiodatacopytooptions-planeindex">planeIndex</a></code>.</p>
       <li data-md>
-       <p>Copy elements of <var>planeFrames</var> into <var>destination</var>, starting with the
-frame positioned at <var>options</var>.<code class="idl"><a data-link-type="idl" href="#dom-audiodatacopytooptions-frameoffset" id="ref-for-dom-audiodatacopytooptions-frameoffset">frameOffset</a></code> and stopping after <var>copyElementCount</var> elements have been copied.</p>
+       <p>Copy elements of <var>planeFrames</var> into <var>destination</var>, starting with the <a data-link-type="dfn" href="#frame" id="ref-for-frame②">frame</a> positioned at <var>options</var>.<code class="idl"><a data-link-type="idl" href="#dom-audiodatacopytooptions-frameoffset" id="ref-for-dom-audiodatacopytooptions-frameoffset">frameOffset</a></code> and stopping after <var>copyElementCount</var> samples have been copied.</p>
      </ol>
     <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="AudioData" data-dfn-type="method" data-export id="dom-audiodata-clone"><code>clone()</code></dfn>
     <dd data-md>
@@ -2861,23 +2880,41 @@ equal to <var>frameCount</var>, throw a <code class="idl"><a data-link-type="idl
      <p>The index identifying the plane to copy from.</p>
     <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="AudioDataCopyToOptions" data-dfn-type="dict-member" data-export id="dom-audiodatacopytooptions-frameoffset"><code>frameOffset</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#idl-unsigned-long" id="ref-for-idl-unsigned-long④①">unsigned long</a>, defaulting to <code>0</code></span>
     <dd data-md>
-     <p>An offset into the source plane data indicating which frame to begin
+     <p>An offset into the source plane data indicating which <a data-link-type="dfn" href="#frame" id="ref-for-frame③">frame</a> to begin
 copying from. Defaults to <code>0</code>.</p>
     <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="AudioDataCopyToOptions" data-dfn-type="dict-member" data-export id="dom-audiodatacopytooptions-framecount"><code>frameCount</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#idl-unsigned-long" id="ref-for-idl-unsigned-long④②">unsigned long</a></span>
     <dd data-md>
-     <p>The number of frames to copy. If not provided, the copy will include all
-frames in the plane beginning with <code class="idl"><a data-link-type="idl" href="#dom-audiodatacopytooptions-frameoffset" id="ref-for-dom-audiodatacopytooptions-frameoffset④">frameOffset</a></code>.</p>
+     <p>The number of <a data-link-type="dfn" href="#frame" id="ref-for-frame④">frames</a> to copy. If not provided, the copy will include all <a data-link-type="dfn" href="#frame" id="ref-for-frame⑤">frames</a> in the plane beginning with <code class="idl"><a data-link-type="idl" href="#dom-audiodatacopytooptions-frameoffset" id="ref-for-dom-audiodatacopytooptions-frameoffset④">frameOffset</a></code>.</p>
    </dl>
-   <h3 class="heading settled" data-level="9.3" id="audio-sample-format"><span class="secno">9.3. </span><span class="content">Audio Sample Format</span><a class="self-link" href="#audio-sample-format"></a></h3>
-    Audo sample formats describe the numeric type used to represent a single
-sample (e.g. 32-bit floating point) and the arrangement of samples from
-different channels as either interleaved or planar. 
+   <h3 class="heading settled" data-level="9.3" id="audio-sample-formats"><span class="secno">9.3. </span><span class="content">Audio Sample Format</span><a class="self-link" href="#audio-sample-formats"></a></h3>
+   <p>An audio sample format describes the numeric type used to represent a
+single sample (e.g. 32-bit floating point) and the arrangement of samples from
+different channels as either <a data-link-type="dfn" href="#interleaved" id="ref-for-interleaved">interleaved</a> or <a data-link-type="dfn" href="#planar" id="ref-for-planar">planar</a>. The <dfn class="dfn-paneled" data-dfn-type="dfn" data-lt="audio sample type" data-noexport id="audio-sample-type">audio
+sample type</dfn> refers solely to the numeric type and interval used to store
+the data, this is <code class="idl"><a data-link-type="idl" href="#dom-audiosampleformat-u8" id="ref-for-dom-audiosampleformat-u8">U8</a></code>, <code class="idl"><a data-link-type="idl" href="#dom-audiosampleformat-s16" id="ref-for-dom-audiosampleformat-s16">S16</a></code>, <code class="idl"><a data-link-type="idl" href="#dom-audiosampleformat-s24" id="ref-for-dom-audiosampleformat-s24">S24</a></code>, <code class="idl"><a data-link-type="idl" href="#dom-audiosampleformat-s32" id="ref-for-dom-audiosampleformat-s32">S32</a></code>, or <code class="idl"><a data-link-type="idl" href="#dom-audiosampleformat-flt" id="ref-for-dom-audiosampleformat-flt">FLT</a></code> for respectively
+unsigned 8-bits, signed 16-bits, signed 32-bits, signed 32-bits, and 32-bits
+floating point number. The <a href="#audio-buffer-arrangement">audio buffer
+arrangement</a> refers solely to the way the samples are laid out in memory
+(<a data-link-type="dfn" href="#planar" id="ref-for-planar①">planar</a> or <a data-link-type="dfn" href="#interleaved" id="ref-for-interleaved①">interleaved</a>).</p>
+   <p>A <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="sample">sample</dfn> refers to a single value that is the magnitude of a
+signal at a particular point in time in a particular channel.</p>
+   <p>A <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="frame">frame</dfn> or (sample-frame) refers to a set of values of all channels
+of a multi-channel signal, that happen at the exact same time.</p>
+   <p class="note" role="note"><span>Note:</span> Consequently if an audio signal is mono (has only one channel), a frame
+and a sample refer to the same thing.</p>
+   <p>All audio <a data-link-type="dfn" href="#sample" id="ref-for-sample">samples</a> in this specification are using linear pulse-code
+modulation (Linear PCM): quantization levels are uniform between values.</p>
+   <p class="note" role="note"><span>Note:</span> The Web Audio API, that is expected to be used with this specificaion,
+also uses Linear PCM.</p>
 <pre class="idl highlight def"><c- b>enum</c-> <dfn class="dfn-paneled idl-code" data-dfn-type="enum" data-export id="enumdef-audiosampleformat"><code><c- g>AudioSampleFormat</c-></code></dfn> {
-  <a class="idl-code" data-link-type="enum-value" href="#dom-audiosampleformat-u8" id="ref-for-dom-audiosampleformat-u8"><c- s>"U8"</c-></a>,
-  <a class="idl-code" data-link-type="enum-value" href="#dom-audiosampleformat-s16" id="ref-for-dom-audiosampleformat-s16"><c- s>"S16"</c-></a>,
-  <a class="idl-code" data-link-type="enum-value" href="#dom-audiosampleformat-s32" id="ref-for-dom-audiosampleformat-s32"><c- s>"S32"</c-></a>,
-  <a class="idl-code" data-link-type="enum-value" href="#dom-audiosampleformat-flt" id="ref-for-dom-audiosampleformat-flt"><c- s>"FLT"</c-></a>,
+  <a class="idl-code" data-link-type="enum-value" href="#dom-audiosampleformat-u8" id="ref-for-dom-audiosampleformat-u8①"><c- s>"U8"</c-></a>,
+  <a class="idl-code" data-link-type="enum-value" href="#dom-audiosampleformat-s16" id="ref-for-dom-audiosampleformat-s16①"><c- s>"S16"</c-></a>,
+  <a class="idl-code" data-link-type="enum-value" href="#dom-audiosampleformat-s24" id="ref-for-dom-audiosampleformat-s24①"><c- s>"S24"</c-></a>,
+  <a class="idl-code" data-link-type="enum-value" href="#dom-audiosampleformat-s32" id="ref-for-dom-audiosampleformat-s32①"><c- s>"S32"</c-></a>,
+  <a class="idl-code" data-link-type="enum-value" href="#dom-audiosampleformat-flt" id="ref-for-dom-audiosampleformat-flt①"><c- s>"FLT"</c-></a>,
+  <a class="idl-code" data-link-type="enum-value" href="#dom-audiosampleformat-u8p" id="ref-for-dom-audiosampleformat-u8p"><c- s>"U8P"</c-></a>,
   <a class="idl-code" data-link-type="enum-value" href="#dom-audiosampleformat-s16p" id="ref-for-dom-audiosampleformat-s16p"><c- s>"S16P"</c-></a>,
+  <a class="idl-code" data-link-type="enum-value" href="#dom-audiosampleformat-s24p" id="ref-for-dom-audiosampleformat-s24p"><c- s>"S24P"</c-></a>,
   <a class="idl-code" data-link-type="enum-value" href="#dom-audiosampleformat-s32p" id="ref-for-dom-audiosampleformat-s32p"><c- s>"S32P"</c-></a>,
   <a class="idl-code" data-link-type="enum-value" href="#dom-audiosampleformat-fltp" id="ref-for-dom-audiosampleformat-fltp"><c- s>"FLTP"</c-></a>,
 };
@@ -2885,26 +2922,100 @@ different channels as either interleaved or planar.
    <dl>
     <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="AudioSampleFormat" data-dfn-type="enum-value" data-export data-lt="&quot;U8&quot;|U8" id="dom-audiosampleformat-u8"><code>U8</code></dfn>
     <dd data-md>
-     <p>8-bit unsigned integer samples with interleaved channel arrangement.</p>
+     <p><a href="https://heycam.github.io/webidl/#idl-octet">8-bit unsigned integer</a> <a data-link-type="dfn" href="#sample" id="ref-for-sample①">samples</a> with <a data-link-type="dfn" href="#interleaved" id="ref-for-interleaved②">interleaved</a> <a href="#audio-buffer-arrangement">channel arrangement</a>.</p>
     <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="AudioSampleFormat" data-dfn-type="enum-value" data-export data-lt="&quot;S16&quot;|S16" id="dom-audiosampleformat-s16"><code>S16</code></dfn>
     <dd data-md>
-     <p>16-bit signed integer samples with interleaved channel arrangement.</p>
+     <p><a href="https://heycam.github.io/webidl/#idl-short">16-bit signed integer</a> <a data-link-type="dfn" href="#sample" id="ref-for-sample②">samples</a> with <a data-link-type="dfn" href="#interleaved" id="ref-for-interleaved③">interleaved</a> <a href="#audio-buffer-arrangement">channel arrangement</a>.</p>
+    <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="AudioSampleFormat" data-dfn-type="enum-value" data-export data-lt="&quot;S24&quot;|S24" id="dom-audiosampleformat-s24"><code>S24</code></dfn>
+    <dd data-md>
+     <p><a href="https://heycam.github.io/webidl/#idl-long">32-bit signed integer</a> <a data-link-type="dfn" href="#sample" id="ref-for-sample③">samples</a> with <a data-link-type="dfn" href="#interleaved" id="ref-for-interleaved④">interleaved</a> <a href="#audio-buffer-arrangement">channel arrangement</a>, holding value in the 24-bit of lowest significance.</p>
     <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="AudioSampleFormat" data-dfn-type="enum-value" data-export data-lt="&quot;S32&quot;|S32" id="dom-audiosampleformat-s32"><code>S32</code></dfn>
     <dd data-md>
-     <p>32-bit signed integer samples with interleaved channel arrangement.</p>
+     <p><a href="https://heycam.github.io/webidl/#idl-long">32-bit signed integer</a> <a data-link-type="dfn" href="#sample" id="ref-for-sample④">samples</a> with <a data-link-type="dfn" href="#interleaved" id="ref-for-interleaved⑤">interleaved</a> <a href="#audio-buffer-arrangement">channel arrangement</a>.</p>
     <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="AudioSampleFormat" data-dfn-type="enum-value" data-export data-lt="&quot;FLT&quot;|FLT" id="dom-audiosampleformat-flt"><code>FLT</code></dfn>
     <dd data-md>
-     <p>32-bit float samples with interleaved channel arrangement.</p>
+     <p><a href="https://heycam.github.io/webidl/#idl-float">32-bit float</a> <a data-link-type="dfn" href="#sample" id="ref-for-sample⑤">samples</a> with <a data-link-type="dfn" href="#interleaved" id="ref-for-interleaved⑥">interleaved</a> <a href="#audio-buffer-arrangement">channel arrangement</a>.</p>
+    <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="AudioSampleFormat" data-dfn-type="enum-value" data-export data-lt="&quot;U8P&quot;|U8P" id="dom-audiosampleformat-u8p"><code>U8P</code></dfn>
+    <dd data-md>
+     <p><a href="https://heycam.github.io/webidl/#idl-octet">8-bit unsigned integer</a> <a data-link-type="dfn" href="#sample" id="ref-for-sample⑥">samples</a> with <a data-link-type="dfn" href="#planar" id="ref-for-planar②">planar</a> <a href="#audio-buffer-arrangement">channel arrangement</a>.</p>
     <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="AudioSampleFormat" data-dfn-type="enum-value" data-export data-lt="&quot;S16P&quot;|S16P" id="dom-audiosampleformat-s16p"><code>S16P</code></dfn>
     <dd data-md>
-     <p>16-bit signed integer samples with planar channel arrangement.</p>
+     <p><a href="https://heycam.github.io/webidl/#idl-short">16-bit signed integer</a> <a data-link-type="dfn" href="#sample" id="ref-for-sample⑦">samples</a> with <a data-link-type="dfn" href="#planar" id="ref-for-planar③">planar</a> <a href="#audio-buffer-arrangement">channel arrangement</a>.</p>
+    <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="AudioSampleFormat" data-dfn-type="enum-value" data-export data-lt="&quot;S24P&quot;|S24P" id="dom-audiosampleformat-s24p"><code>S24P</code></dfn>
+    <dd data-md>
+     <p><a href="https://heycam.github.io/webidl/#idl-long">32-bit signed integer</a> <a data-link-type="dfn" href="#sample" id="ref-for-sample⑧">samples</a> with <a data-link-type="dfn" href="#planar" id="ref-for-planar④">planar</a> <a href="#audio-buffer-arrangement">channel arrangement</a>, holding value in the 24-bit of lowest significance.</p>
     <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="AudioSampleFormat" data-dfn-type="enum-value" data-export data-lt="&quot;S32P&quot;|S32P" id="dom-audiosampleformat-s32p"><code>S32P</code></dfn>
     <dd data-md>
-     <p>32-bit signed integer samples with planar channel arrangement.</p>
+     <p><a href="https://heycam.github.io/webidl/#idl-long">32-bit signed integer</a> <a data-link-type="dfn" href="#sample" id="ref-for-sample⑨">samples</a> with <a data-link-type="dfn" href="#planar" id="ref-for-planar⑤">planar</a> <a href="#audio-buffer-arrangement">channel arrangement</a>.</p>
     <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="AudioSampleFormat" data-dfn-type="enum-value" data-export data-lt="&quot;FLTP&quot;|FLTP" id="dom-audiosampleformat-fltp"><code>FLTP</code></dfn>
     <dd data-md>
-     <p>32-bit float samples with planar channel arrangement.</p>
+     <p><a href="https://heycam.github.io/webidl/#idl-float">32-bit float</a> <a data-link-type="dfn" href="#sample" id="ref-for-sample①⓪">samples</a> with <a data-link-type="dfn" href="#planar" id="ref-for-planar⑥">planar</a> <a href="#audio-buffer-arrangement">channel arrangement</a>.</p>
    </dl>
+   <h4 class="heading settled" data-level="9.3.1" id="audio-buffer-arrangement"><span class="secno">9.3.1. </span><span class="content">Arrangement of audio buffer</span><a class="self-link" href="#audio-buffer-arrangement"></a></h4>
+   <p>When an <code class="idl"><a data-link-type="idl" href="#audiodata" id="ref-for-audiodata②⑤">AudioData</a></code> has an <code class="idl"><a data-link-type="idl" href="#enumdef-audiosampleformat" id="ref-for-enumdef-audiosampleformat⑥">AudioSampleFormat</a></code> that is <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="interleaved">interleaved</dfn>, the audio samples from different channels are laid out
+consecutively in the same buffer, in the order described in the section <a href="#audio-channel-ordering">§ 9.3.3 Audio channel ordering</a>. The <code class="idl"><a data-link-type="idl" href="#audiodata" id="ref-for-audiodata②⑥">AudioData</a></code> has a single plane, that contains a
+number of elements therefore equal to <code class="idl"><a data-link-type="idl" href="#dom-audiodata-numberofframes" id="ref-for-dom-audiodata-numberofframes②">numberOfFrames</a></code> * <code class="idl"><a data-link-type="idl" href="#dom-audiodata-numberofchannels" id="ref-for-dom-audiodata-numberofchannels③">numberOfChannels</a></code>.</p>
+   <p>When an <code class="idl"><a data-link-type="idl" href="#audiodata" id="ref-for-audiodata②⑦">AudioData</a></code> has an <code class="idl"><a data-link-type="idl" href="#enumdef-audiosampleformat" id="ref-for-enumdef-audiosampleformat⑦">AudioSampleFormat</a></code> that is <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="planar">planar</dfn>, the audio samples from different channels are laid out
+in different buffers, themselves arranged in an order described in the section <a href="#audio-channel-ordering">§ 9.3.3 Audio channel ordering</a>. The <code class="idl"><a data-link-type="idl" href="#audiodata" id="ref-for-audiodata②⑧">AudioData</a></code> has a number of planes equal to the <code class="idl"><a data-link-type="idl" href="#audiodata" id="ref-for-audiodata②⑨">AudioData</a></code>'s <code class="idl"><a data-link-type="idl" href="#dom-audiodata-numberofchannels" id="ref-for-dom-audiodata-numberofchannels④">numberOfChannels</a></code>. Each plane contains <code class="idl"><a data-link-type="idl" href="#dom-audiodata-numberofframes" id="ref-for-dom-audiodata-numberofframes③">numberOfFrames</a></code> elements.</p>
+   <p class="note" role="note"><span>Note:</span> The <a data-link-type="biblio" href="#biblio-webaudio">Web Audio API</a> currently uses <code class="idl"><a data-link-type="idl" href="#dom-audiosampleformat-fltp" id="ref-for-dom-audiosampleformat-fltp①">FLTP</a></code> exclusively.</p>
+   <h4 class="heading settled" data-level="9.3.2" id="audio-samples-magnitude"><span class="secno">9.3.2. </span><span class="content">Magnitude of the audio samples</span><a class="self-link" href="#audio-samples-magnitude"></a></h4>
+   <p>The <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="minimum-value">minimum value</dfn> and <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="maximum-value">maximum value</dfn> of an audio sample,
+for a particular audio sample type, are the values below which
+(respectively above which) audio clipping might occur. They are otherwise regular
+types, that can hold values outside this interval during intermeditate
+processing.</p>
+   <p>The <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="bias-value">bias value</dfn> for an audio sample type is the value that often
+corresponds to the middle of the range (but often the range is not symmetrical).
+An audio buffer comprised only of values equal to the <a data-link-type="dfn" href="#bias-value" id="ref-for-bias-value">bias value</a> is silent.</p>
+   <table id="sample-types">
+    <thead>
+     <tr class="header">
+      <th><a data-link-type="dfn" href="#audio-sample-type" id="ref-for-audio-sample-type">Sample type</a>
+      <th>IDL type
+      <th><a data-link-type="dfn" href="#minimum-value" id="ref-for-minimum-value">Minimum value</a>
+      <th><a data-link-type="dfn" href="#bias-value" id="ref-for-bias-value①">Bias value</a>
+      <th><a data-link-type="dfn" href="#maximum-value" id="ref-for-maximum-value">Maximum value</a>
+    <tbody>
+     <tr class="odd">
+      <td><code class="idl"><a data-link-type="idl" href="#dom-audiosampleformat-u8" id="ref-for-dom-audiosampleformat-u8②">U8</a></code>
+      <td><a href="https://heycam.github.io/webidl/#idl-octet">octet</a>
+      <td>0
+      <td>128
+      <td>+255
+     <tr class="even">
+      <td><code class="idl"><a data-link-type="idl" href="#dom-audiosampleformat-s16" id="ref-for-dom-audiosampleformat-s16②">S16</a></code>
+      <td><a href="https://heycam.github.io/webidl/#idl-short">short</a>
+      <td>-32768
+      <td>0
+      <td>+32767
+     <tr class="odd">
+      <td><code class="idl"><a data-link-type="idl" href="#dom-audiosampleformat-s24" id="ref-for-dom-audiosampleformat-s24②">S24</a></code>
+      <td><a href="https://heycam.github.io/webidl/#idl-long">long</a>
+      <td>-8388608
+      <td>0
+      <td>+8388607
+     <tr class="even">
+      <td><code class="idl"><a data-link-type="idl" href="#dom-audiosampleformat-s32" id="ref-for-dom-audiosampleformat-s32②">S32</a></code>
+      <td><a href="https://heycam.github.io/webidl/#idl-long">long</a>
+      <td>-2147483648
+      <td>0
+      <td>+2147483647
+     <tr class="odd">
+      <td><code class="idl"><a data-link-type="idl" href="#dom-audiosampleformat-flt" id="ref-for-dom-audiosampleformat-flt②">FLT</a></code>
+      <td><a href="https://heycam.github.io/webidl/#idl-float">float</a>
+      <td>-1.0
+      <td>0.0
+      <td>+1.0
+   </table>
+   <p class="note" role="note"><span>Note:</span> There is no data type that can hold 24 bits of information conveniently,
+but audio content using 24-bit samples is common, so 32-bits integers are
+commonly used to hold 24-bit content.</p>
+   <h4 class="heading settled" data-level="9.3.3" id="audio-channel-ordering"><span class="secno">9.3.3. </span><span class="content">Audio channel ordering</span><a class="self-link" href="#audio-channel-ordering"></a></h4>
+   <p>When decoding, the ordering of the audio channels in the resulting <code class="idl"><a data-link-type="idl" href="#audiodata" id="ref-for-audiodata③⓪">AudioData</a></code> MUST be the same as what is present in the <code class="idl"><a data-link-type="idl" href="#encodedaudiochunk" id="ref-for-encodedaudiochunk⑦">EncodedAudioChunk</a></code>.</p>
+   <p>When encoding, the ordering of the audio channels in the resulting <code class="idl"><a data-link-type="idl" href="#encodedaudiochunk" id="ref-for-encodedaudiochunk⑧">EncodedAudioChunk</a></code> MUST be the same as what is preset in the given <code class="idl"><a data-link-type="idl" href="#audiodata" id="ref-for-audiodata③①">AudioData</a></code>;</p>
+   <p>In other terms, no channel reordering is performed when encoding and decoding.</p>
+   <p class="note" role="note"><span>Note:</span> The container either implies or specifies the channel mapping: the
+channel attributed to a particular channel index.</p>
    <h3 class="heading settled" data-level="9.4" id="videoframe-interface"><span class="secno">9.4. </span><span class="content">VideoFrame Interface</span><a class="self-link" href="#videoframe-interface"></a></h3>
    <p class="note" role="note"><span>NOTE:</span> <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe①③">VideoFrame</a></code> is a <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/canvas.html#canvasimagesource" id="ref-for-canvasimagesource">CanvasImageSource</a></code>. A <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe①④">VideoFrame</a></code> may be
     passed to any method accepting a <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/canvas.html#canvasimagesource" id="ref-for-canvasimagesource①">CanvasImageSource</a></code>, including <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/canvas.html#canvasdrawimage" id="ref-for-canvasdrawimage">CanvasDrawImage</a></code>'s <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/canvas.html#dom-context-2d-drawimage" id="ref-for-dom-context-2d-drawimage">drawImage()</a></code>.</p>
@@ -4482,6 +4593,8 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
    <li><a href="#dictdef-audioencoderinit">AudioEncoderInit</a><span>, in §5</span>
    <li><a href="#dictdef-audioencodersupport">AudioEncoderSupport</a><span>, in §7.3.3</span>
    <li><a href="#enumdef-audiosampleformat">AudioSampleFormat</a><span>, in §9.3</span>
+   <li><a href="#audio-sample-type">audio sample type</a><span>, in §9.3</span>
+   <li><a href="#bias-value">bias value</a><span>, in §9.3.2</span>
    <li>
     bitrate
     <ul>
@@ -4794,6 +4907,7 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
      <li><a href="#dom-videoframe-format">attribute for VideoFrame</a><span>, in §9.4.3</span>
      <li><a href="#dom-videoframeplaneinit-format">dict-member for VideoFramePlaneInit</a><span>, in §9.4</span>
     </ul>
+   <li><a href="#frame">frame</a><span>, in §9.3</span>
    <li><a href="#dom-imagetrack-frame-count-slot">[[frame count]]</a><span>, in §10.7.1</span>
    <li><a href="#track-update-struct-frame-count">frame count</a><span>, in §10.2.5</span>
    <li>
@@ -4834,6 +4948,7 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
    <li><a href="#videoframe-initialize-frame-from-other-frame">Initialize Frame From Other Frame</a><span>, in §9.4.5</span>
    <li><a href="#videoframe-initialize-frame-with-resource-and-size">Initialize Frame With Resource and Size</a><span>, in §9.4.5</span>
    <li><a href="#injected-state">injected state</a><span>, in §2.2</span>
+   <li><a href="#interleaved">interleaved</a><span>, in §9.3.1</span>
    <li>
     [[internal data]]
     <ul>
@@ -4872,7 +4987,9 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
      <li><a href="#dom-imagetracklist-length">attribute for ImageTrackList</a><span>, in §10.6.2</span>
      <li><a href="#dom-plane-length">attribute for Plane</a><span>, in §9.5.2</span>
     </ul>
+   <li><a href="#maximum-value">maximum value</a><span>, in §9.3.2</span>
    <li><a href="#media-resource">media resource</a><span>, in §9.1.2</span>
+   <li><a href="#minimum-value">minimum value</a><span>, in §9.3.2</span>
    <li><a href="#dom-audiodata-number-of-channels-slot">[[number of channels]]</a><span>, in §9.2.1</span>
    <li>
     numberOfChannels
@@ -4913,6 +5030,7 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
    <li><a href="#dom-plane-parent-frame-slot">[[parent frame]]</a><span>, in §9.5.1</span>
    <li><a href="#dom-imagedecoder-pending-decode-promises-slot">[[pending decode promises]]</a><span>, in §10.2.1</span>
    <li><a href="#enumdef-pixelformat">PixelFormat</a><span>, in §9.6</span>
+   <li><a href="#planar">planar</a><span>, in §9.3.1</span>
    <li><a href="#plane">Plane</a><span>, in §9.5</span>
    <li><a href="#dom-audiodatacopytooptions-planeindex">planeIndex</a><span>, in §9.2.6</span>
    <li><a href="#dictdef-planeinit">PlaneInit</a><span>, in §9.5</span>
@@ -4967,10 +5085,15 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
    <li><a href="#dom-audiosampleformat-s16">S16</a><span>, in §9.3</span>
    <li><a href="#dom-audiosampleformat-s16p">"S16P"</a><span>, in §9.3</span>
    <li><a href="#dom-audiosampleformat-s16p">S16P</a><span>, in §9.3</span>
+   <li><a href="#dom-audiosampleformat-s24">"S24"</a><span>, in §9.3</span>
+   <li><a href="#dom-audiosampleformat-s24">S24</a><span>, in §9.3</span>
+   <li><a href="#dom-audiosampleformat-s24p">"S24P"</a><span>, in §9.3</span>
+   <li><a href="#dom-audiosampleformat-s24p">S24P</a><span>, in §9.3</span>
    <li><a href="#dom-audiosampleformat-s32">"S32"</a><span>, in §9.3</span>
    <li><a href="#dom-audiosampleformat-s32">S32</a><span>, in §9.3</span>
    <li><a href="#dom-audiosampleformat-s32p">"S32P"</a><span>, in §9.3</span>
    <li><a href="#dom-audiosampleformat-s32p">S32P</a><span>, in §9.3</span>
+   <li><a href="#sample">sample</a><span>, in §9.3</span>
    <li><a href="#dom-audiodata-sample-format-slot">[[sample format]]</a><span>, in §9.2.1</span>
    <li>
     sampleFormat
@@ -5054,6 +5177,8 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
     </ul>
    <li><a href="#dom-audiosampleformat-u8">"U8"</a><span>, in §9.3</span>
    <li><a href="#dom-audiosampleformat-u8">U8</a><span>, in §9.3</span>
+   <li><a href="#dom-audiosampleformat-u8p">"U8P"</a><span>, in §9.3</span>
+   <li><a href="#dom-audiosampleformat-u8p">U8P</a><span>, in §9.3</span>
    <li><a href="#dom-codecstate-unconfigured">"unconfigured"</a><span>, in §7.12</span>
    <li><a href="#dom-codecstate-unconfigured">unconfigured</a><span>, in §7.12</span>
    <li><a href="#imagedecoder-update-tracks">Update Tracks</a><span>, in §10.2.5</span>
@@ -6267,9 +6392,12 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
 <c- b>enum</c-> <a href="#enumdef-audiosampleformat"><code><c- g>AudioSampleFormat</c-></code></a> {
   <a class="idl-code" data-link-type="enum-value" href="#dom-audiosampleformat-u8"><c- s>"U8"</c-></a>,
   <a class="idl-code" data-link-type="enum-value" href="#dom-audiosampleformat-s16"><c- s>"S16"</c-></a>,
+  <a class="idl-code" data-link-type="enum-value" href="#dom-audiosampleformat-s24"><c- s>"S24"</c-></a>,
   <a class="idl-code" data-link-type="enum-value" href="#dom-audiosampleformat-s32"><c- s>"S32"</c-></a>,
   <a class="idl-code" data-link-type="enum-value" href="#dom-audiosampleformat-flt"><c- s>"FLT"</c-></a>,
+  <a class="idl-code" data-link-type="enum-value" href="#dom-audiosampleformat-u8p"><c- s>"U8P"</c-></a>,
   <a class="idl-code" data-link-type="enum-value" href="#dom-audiosampleformat-s16p"><c- s>"S16P"</c-></a>,
+  <a class="idl-code" data-link-type="enum-value" href="#dom-audiosampleformat-s24p"><c- s>"S24P"</c-></a>,
   <a class="idl-code" data-link-type="enum-value" href="#dom-audiosampleformat-s32p"><c- s>"S32P"</c-></a>,
   <a class="idl-code" data-link-type="enum-value" href="#dom-audiosampleformat-fltp"><c- s>"FLTP"</c-></a>,
 };
@@ -7555,6 +7683,7 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
     <li><a href="#ref-for-encodedaudiochunk④">5.5. Algorithms</a>
     <li><a href="#ref-for-encodedaudiochunk⑤">5.6. EncodedAudioChunkMetadata</a>
     <li><a href="#ref-for-encodedaudiochunk⑥">8.1.2. Constructors</a>
+    <li><a href="#ref-for-encodedaudiochunk⑦">9.3.3. Audio channel ordering</a> <a href="#ref-for-encodedaudiochunk⑧">(2)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dictdef-encodedaudiochunkinit">
@@ -7790,6 +7919,8 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
     <li><a href="#ref-for-audiodata①⑦">9.2.3. Attributes</a> <a href="#ref-for-audiodata①⑧">(2)</a> <a href="#ref-for-audiodata①⑨">(3)</a> <a href="#ref-for-audiodata②⓪">(4)</a> <a href="#ref-for-audiodata②①">(5)</a> <a href="#ref-for-audiodata②②">(6)</a>
     <li><a href="#ref-for-audiodata②③">9.2.4. Methods</a>
     <li><a href="#ref-for-audiodata②④">9.2.5. Algorithms</a>
+    <li><a href="#ref-for-audiodata②⑤">9.3.1. Arrangement of audio buffer</a> <a href="#ref-for-audiodata②⑥">(2)</a> <a href="#ref-for-audiodata②⑦">(3)</a> <a href="#ref-for-audiodata②⑧">(4)</a> <a href="#ref-for-audiodata②⑨">(5)</a>
+    <li><a href="#ref-for-audiodata③⓪">9.3.3. Audio channel ordering</a> <a href="#ref-for-audiodata③①">(2)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dictdef-audiodatainit">
@@ -7925,6 +8056,7 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
    <ul>
     <li><a href="#ref-for-dom-audiodata-numberofframes">9.2. AudioData Interface</a>
     <li><a href="#ref-for-dom-audiodata-numberofframes①">9.2.3. Attributes</a>
+    <li><a href="#ref-for-dom-audiodata-numberofframes②">9.3.1. Arrangement of audio buffer</a> <a href="#ref-for-dom-audiodata-numberofframes③">(2)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dom-audiodata-numberofchannels">
@@ -7932,6 +8064,7 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
    <ul>
     <li><a href="#ref-for-dom-audiodata-numberofchannels">9.2. AudioData Interface</a>
     <li><a href="#ref-for-dom-audiodata-numberofchannels①">9.2.3. Attributes</a> <a href="#ref-for-dom-audiodata-numberofchannels②">(2)</a>
+    <li><a href="#ref-for-dom-audiodata-numberofchannels③">9.3.1. Arrangement of audio buffer</a> <a href="#ref-for-dom-audiodata-numberofchannels④">(2)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dom-audiodata-timestamp">
@@ -8017,6 +8150,27 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
     <li><a href="#ref-for-dom-audiodatacopytooptions-framecount③">9.2.6. AudioDataCopyToOptions</a>
    </ul>
   </aside>
+  <aside class="dfn-panel" data-for="audio-sample-type">
+   <b><a href="#audio-sample-type">#audio-sample-type</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-audio-sample-type">9.3.2. Magnitude of the audio samples</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="sample">
+   <b><a href="#sample">#sample</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-sample">9.3. Audio Sample Format</a> <a href="#ref-for-sample①">(2)</a> <a href="#ref-for-sample②">(3)</a> <a href="#ref-for-sample③">(4)</a> <a href="#ref-for-sample④">(5)</a> <a href="#ref-for-sample⑤">(6)</a> <a href="#ref-for-sample⑥">(7)</a> <a href="#ref-for-sample⑦">(8)</a> <a href="#ref-for-sample⑧">(9)</a> <a href="#ref-for-sample⑨">(10)</a> <a href="#ref-for-sample①⓪">(11)</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="frame">
+   <b><a href="#frame">#frame</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-frame">9.2.1. Internal Slots</a>
+    <li><a href="#ref-for-frame①">9.2.3. Attributes</a>
+    <li><a href="#ref-for-frame②">9.2.4. Methods</a>
+    <li><a href="#ref-for-frame③">9.2.6. AudioDataCopyToOptions</a> <a href="#ref-for-frame④">(2)</a> <a href="#ref-for-frame⑤">(3)</a>
+   </ul>
+  </aside>
   <aside class="dfn-panel" data-for="enumdef-audiosampleformat">
    <b><a href="#enumdef-audiosampleformat">#enumdef-audiosampleformat</a></b><b>Referenced in:</b>
    <ul>
@@ -8024,36 +8178,60 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
     <li><a href="#ref-for-enumdef-audiosampleformat②">9.2.1. Internal Slots</a>
     <li><a href="#ref-for-enumdef-audiosampleformat③">9.2.3. Attributes</a> <a href="#ref-for-enumdef-audiosampleformat④">(2)</a>
     <li><a href="#ref-for-enumdef-audiosampleformat⑤">9.2.5. Algorithms</a>
+    <li><a href="#ref-for-enumdef-audiosampleformat⑥">9.3.1. Arrangement of audio buffer</a> <a href="#ref-for-enumdef-audiosampleformat⑦">(2)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dom-audiosampleformat-u8">
    <b><a href="#dom-audiosampleformat-u8">#dom-audiosampleformat-u8</a></b><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-dom-audiosampleformat-u8">9.3. Audio Sample Format</a>
+    <li><a href="#ref-for-dom-audiosampleformat-u8">9.3. Audio Sample Format</a> <a href="#ref-for-dom-audiosampleformat-u8①">(2)</a>
+    <li><a href="#ref-for-dom-audiosampleformat-u8②">9.3.2. Magnitude of the audio samples</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dom-audiosampleformat-s16">
    <b><a href="#dom-audiosampleformat-s16">#dom-audiosampleformat-s16</a></b><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-dom-audiosampleformat-s16">9.3. Audio Sample Format</a>
+    <li><a href="#ref-for-dom-audiosampleformat-s16">9.3. Audio Sample Format</a> <a href="#ref-for-dom-audiosampleformat-s16①">(2)</a>
+    <li><a href="#ref-for-dom-audiosampleformat-s16②">9.3.2. Magnitude of the audio samples</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="dom-audiosampleformat-s24">
+   <b><a href="#dom-audiosampleformat-s24">#dom-audiosampleformat-s24</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-dom-audiosampleformat-s24">9.3. Audio Sample Format</a> <a href="#ref-for-dom-audiosampleformat-s24①">(2)</a>
+    <li><a href="#ref-for-dom-audiosampleformat-s24②">9.3.2. Magnitude of the audio samples</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dom-audiosampleformat-s32">
    <b><a href="#dom-audiosampleformat-s32">#dom-audiosampleformat-s32</a></b><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-dom-audiosampleformat-s32">9.3. Audio Sample Format</a>
+    <li><a href="#ref-for-dom-audiosampleformat-s32">9.3. Audio Sample Format</a> <a href="#ref-for-dom-audiosampleformat-s32①">(2)</a>
+    <li><a href="#ref-for-dom-audiosampleformat-s32②">9.3.2. Magnitude of the audio samples</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dom-audiosampleformat-flt">
    <b><a href="#dom-audiosampleformat-flt">#dom-audiosampleformat-flt</a></b><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-dom-audiosampleformat-flt">9.3. Audio Sample Format</a>
+    <li><a href="#ref-for-dom-audiosampleformat-flt">9.3. Audio Sample Format</a> <a href="#ref-for-dom-audiosampleformat-flt①">(2)</a>
+    <li><a href="#ref-for-dom-audiosampleformat-flt②">9.3.2. Magnitude of the audio samples</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="dom-audiosampleformat-u8p">
+   <b><a href="#dom-audiosampleformat-u8p">#dom-audiosampleformat-u8p</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-dom-audiosampleformat-u8p">9.3. Audio Sample Format</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dom-audiosampleformat-s16p">
    <b><a href="#dom-audiosampleformat-s16p">#dom-audiosampleformat-s16p</a></b><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-dom-audiosampleformat-s16p">9.3. Audio Sample Format</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="dom-audiosampleformat-s24p">
+   <b><a href="#dom-audiosampleformat-s24p">#dom-audiosampleformat-s24p</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-dom-audiosampleformat-s24p">9.3. Audio Sample Format</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dom-audiosampleformat-s32p">
@@ -8066,6 +8244,37 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
    <b><a href="#dom-audiosampleformat-fltp">#dom-audiosampleformat-fltp</a></b><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-dom-audiosampleformat-fltp">9.3. Audio Sample Format</a>
+    <li><a href="#ref-for-dom-audiosampleformat-fltp①">9.3.1. Arrangement of audio buffer</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="interleaved">
+   <b><a href="#interleaved">#interleaved</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-interleaved">9.3. Audio Sample Format</a> <a href="#ref-for-interleaved①">(2)</a> <a href="#ref-for-interleaved②">(3)</a> <a href="#ref-for-interleaved③">(4)</a> <a href="#ref-for-interleaved④">(5)</a> <a href="#ref-for-interleaved⑤">(6)</a> <a href="#ref-for-interleaved⑥">(7)</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="planar">
+   <b><a href="#planar">#planar</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-planar">9.3. Audio Sample Format</a> <a href="#ref-for-planar①">(2)</a> <a href="#ref-for-planar②">(3)</a> <a href="#ref-for-planar③">(4)</a> <a href="#ref-for-planar④">(5)</a> <a href="#ref-for-planar⑤">(6)</a> <a href="#ref-for-planar⑥">(7)</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="minimum-value">
+   <b><a href="#minimum-value">#minimum-value</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-minimum-value">9.3.2. Magnitude of the audio samples</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="maximum-value">
+   <b><a href="#maximum-value">#maximum-value</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-maximum-value">9.3.2. Magnitude of the audio samples</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="bias-value">
+   <b><a href="#bias-value">#bias-value</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-bias-value">9.3.2. Magnitude of the audio samples</a> <a href="#ref-for-bias-value①">(2)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="videoframe">
