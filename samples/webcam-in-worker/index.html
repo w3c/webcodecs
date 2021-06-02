@@ -1,0 +1,60 @@
+<!doctype html>
+<head>
+<title>WebCodecs webcam stream in Worker</title>
+<meta http-equiv="origin-trial" content="AlfvFCF6XVoauEvWVCLsov9cuGlQbz6aTIO6ZdLWHG5YmZpdqON+7lXo7ZUHK+IkkdkJji+7Fxnr/yTu7Iu5Og0AAABjeyJvcmlnaW4iOiJodHRwczovL3czYy5naXRodWIuaW86NDQzIiwiZmVhdHVyZSI6IldlYkNvZGVjcyIsImV4cGlyeSI6MTYyNjIyMDc5OSwiaXNTdWJkb21haW4iOnRydWV9"/>
+</head>
+<video height="50%" id="vPreview" autoplay muted></video>
+<br/></br>
+<textarea id="vLog" style="width: 640px; height: 140px"></textarea>
+<br/></br>
+<button onclick="stop();">Stop</button>
+
+<script>
+var log = document.querySelector('textarea');
+var streamWorker;
+
+function stop() {
+  streamWorker.postMessage({ type: "stop" });
+}
+
+document.addEventListener('DOMContentLoaded', function(event) {
+  if (typeof MediaStreamTrackProcessor === 'undefined' ||
+      typeof MediaStreamTrackGenerator === 'undefined') {
+    log.value =
+        'Your browser does not support the experimental MediaStreamTrack API. ' +
+        'Please launch with the --enable-blink-features=WebCodecs,MediaStreamInsertableStreams flag';
+    return;
+  }
+
+  var constraints = { audio: false, video: { width: 1280, height: 720 } };
+
+  // Get a MediaStream from the webcam.
+  navigator.mediaDevices.getUserMedia(constraints).then(function(mediaStream) {
+
+    // Connect the webcam stream to the video element.
+    document.querySelector('video').srcObject = mediaStream;
+
+    // Create a new worker.
+    streamWorker = new Worker("./stream_worker.js");
+
+    // Print messages from the worker in the text area.
+    streamWorker.addEventListener('message', function(e) {
+      log.value += "Worker msg: '" + e.data + "'; ";
+    }, false);
+
+    // Create a MediaStreamTrackProcessor, which exposes frames from the track
+    // as a ReadableStream of VideoFrames.
+    var track = mediaStream.getVideoTracks()[0];
+    var processor = new MediaStreamTrackProcessor(track);
+
+
+    var frameStream = processor.readable;
+
+    // Transfer the readable stream to the worker.
+    // NOTE: transferring frameStream and reading it in the worker is more
+    // efficient than reading frameStream here and transferring VideoFrames individually.
+    streamWorker.postMessage({ type: "stream", stream: frameStream}, [frameStream]);
+
+  }).catch(function(err) { log.value += err.name + ": " + err.message; });
+}, false);
+</script>

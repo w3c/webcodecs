@@ -1,0 +1,97 @@
+<!doctype html>
+<head>
+<title>WebCodecs Animated GIF Renderer</title>
+<meta http-equiv="origin-trial" content="AlfvFCF6XVoauEvWVCLsov9cuGlQbz6aTIO6ZdLWHG5YmZpdqON+7lXo7ZUHK+IkkdkJji+7Fxnr/yTu7Iu5Og0AAABjeyJvcmlnaW4iOiJodHRwczovL3czYy5naXRodWIuaW86NDQzIiwiZmVhdHVyZSI6IldlYkNvZGVjcyIsImV4cGlyeSI6MTYyNjIyMDc5OSwiaXNTdWJkb21haW4iOnRydWV9"/>
+</head>
+<canvas width="320" height="270"></canvas>
+<br/><br/>
+<textarea style="width: 640px; height: 270px"></textarea>
+<script>
+let imageDecoder = null;
+let imageIndex = 0;
+
+function log(str) {
+  document.querySelector('textarea').value += str + '\n';
+}
+
+function renderImage(result) {
+  const canvas = document.querySelector('canvas');
+  const canvasContext = canvas.getContext('2d');
+
+  canvasContext.drawImage(result.image, 0, 0);
+
+  const track = imageDecoder.tracks.selectedTrack;
+
+  // We check complete here since `frameCount` won't be stable until all data
+  // has been received. This may cause us to receive a RangeError during the
+  // decode() call below which needs to be handled.
+  if (imageDecoder.complete) {
+    if (track.frameCount == 1)
+      return;
+
+    if (imageIndex + 1 >= track.frameCount)
+      imageIndex = 0;
+  }
+
+  // Decode the next frame ahead of display so it's ready in time.
+  imageDecoder.decode({frameIndex: ++imageIndex})
+      .then(
+          nextResult => setTimeout(
+              _ => {
+                renderImage(nextResult);
+              },
+              result.image.duration / 1000.0))
+      .catch(e => {
+        // We can end up requesting an imageIndex past the end since we're using
+        // a ReadableStrem from fetch(), when this happens just wrap around.
+        if (e instanceof RangeError) {
+          imageIndex = 0;
+          imageDecoder.decode({frameIndex: imageIndex}).then(renderImage);
+        } else {
+          throw e;
+        }
+      });
+}
+
+function logMetadata() {
+  log('imageDecoder.type = ' + imageDecoder.type);
+  log('imageDecoder.tracks.length = ' + imageDecoder.tracks.length);
+  log('');
+
+  function logTracks() {
+    for (let i = 0; i < imageDecoder.tracks.length; ++i) {
+      const track = imageDecoder.tracks[i];
+      log(`track[${i}].frameCount = ` + track.frameCount);
+      log(`track[${i}].repetitionCount = ` + track.repetitionCount);
+      log(`track[${i}].animated = ` + track.animated);
+      log(`track[${i}].selected = ` + track.selected);
+    }
+  }
+
+  if (!imageDecoder.complete) {
+    log('Partial metadata while still loading:');
+    log('imageDecoder.complete = ' + imageDecoder.complete);
+    logTracks();
+    log('');
+  }
+
+  imageDecoder.completed.then(_ => {
+    log('Final metadata after all data received:');
+    log('imageDecoder.complete = ' + imageDecoder.complete);
+    logTracks();
+  });
+}
+
+function decodeImage(imageByteStream) {
+  if (typeof ImageDecoder === 'undefined') {
+    log('Your browser does not support the WebCodecs ImageDecoder API.');
+    return;
+  }
+
+  imageDecoder = new ImageDecoder({data: imageByteStream, type: 'image/gif'});
+  imageDecoder.tracks.ready.then(logMetadata);
+  imageDecoder.decode({frameIndex: imageIndex}).then(renderImage);
+}
+
+fetch('giphy.gif').then(response => decodeImage(response.body));
+</script>
