@@ -1882,7 +1882,7 @@ interface EncodedAudioChunk {
   readonly attribute long long timestamp;    // microseconds
   readonly attribute unsigned long byteLength;
 
-  undefined copyTo(ArrayBufferView dst);
+  undefined copyTo([AllowShared] BufferSource destination);
 };
 
 dictionary EncodedAudioChunkInit {
@@ -1923,12 +1923,11 @@ enum EncodedAudioChunkType {
 :: The byte length of {{EncodedAudioChunk/[[internal data]]}}.
 
 ### Methods ###{#encodedaudiochunk-methods}
-: <dfn method for=EncodedAudioChunk>copyTo(dst)</dfn>
+: <dfn method for=EncodedAudioChunk>copyTo(destination)</dfn>
 :: When invoked, run these steps:
     1. If {{EncodedAudioChunk/byteLength}} is greater than
-        |dst|.`byteLength`,
-        throw a {{TypeError}}.
-    2. Copy the {{EncodedAudioChunk/[[internal data]]}} into |dst|.
+        |destination|.`byteLength`, throw a {{TypeError}}.
+    2. Copy the {{EncodedAudioChunk/[[internal data]]}} into |destination|.
 
 EncodedVideoChunk Interface{#encodedvideochunk-interface}
 -----------------------------------------------------------
@@ -1941,7 +1940,7 @@ interface EncodedVideoChunk {
   readonly attribute long long? duration;    // microseconds
   readonly attribute unsigned long byteLength;
 
-  undefined copyTo(ArrayBufferView dst);
+  undefined copyTo([AllowShared] BufferSource destination);
 };
 
 dictionary EncodedVideoChunkInit {
@@ -1989,12 +1988,11 @@ enum EncodedVideoChunkType {
 :: The byte length of {{EncodedVideoChunk/[[internal data]]}}.
 
 ### Methods ###{#encodedvideochunk-methods}
-: <dfn method for=EncodedVideoChunk>copyTo(dst)</dfn>
+: <dfn method for=EncodedVideoChunk>copyTo(destination)</dfn>
 :: When invoked, run these steps:
     1. If {{EncodedVideoChunk/byteLength}} is greater than
-        |dst|.`byteLength`,
-        throw a {{TypeError}}.
-    2. Copy the {{EncodedVideoChunk/[[internal data]]}} into |dst|.
+        |destination|.`byteLength`, throw a {{TypeError}}.
+    2. Copy the {{EncodedVideoChunk/[[internal data]]}} into |destination|.
 
 
 Raw Media Interfaces {#raw-media-interfaces}
