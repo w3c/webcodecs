@@ -2649,13 +2649,12 @@ dictionary VideoFramePlaneInit {
     2. Assign {{VideoFramePlaneInit/format}} to {{VideoFrame/[[format]]}}.
     3. Assign a new [=list=] to {{VideoFrame/[[planes]]}}.
     4. For each |planeInit| in |planes|:
-        1. Copy |planeInit|.{{PlaneInit/src}} to |resource|.
+        1. Copy |planeInit|.{{PlaneInit/data}} to |resource|.
 
-            NOTE: The user agent may use {{VideoFramePlaneInit/cropLeft}}
-                and {{VideoFramePlaneInit/cropTop}} to copy only the crop
-                region. It may also reposition the crop region within
-                |resource|. The final position will be reflected by
-                {{VideoFrame/cropLeft}} and {{VideoFrame/cropTop}}.
+            NOTE: The user agent may use {{VideoFramePlaneInit/visibleRegion}}
+                to copy only the visible region. It may also reposition the
+                visible region within |resource|. The final position will be
+                reflected by {{VideoFrame/visibleRegion}}.
 
         2. Let |plane| be a new {{Plane}} initialized as follows:
             1. Assign |frame| to {{Plane/[[parent frame]]}}.
@@ -2686,13 +2685,20 @@ dictionary VideoFramePlaneInit {
     9. Assign |resourceCodedWidth|, |resourceCodedHeight|, |resourceCropLeft|,
         and |resourceCropTop| to {{VideoFrame/[[coded width]]}},
         {{VideoFrame/[[coded height]]}}, {{VideoFrame/[[crop left]]}}, and
-        {{VideoFrame/[[crop top]]}} respectively.
-    10. If |init|.{{VideoFramePlaneInit/cropWidth}} [=map/exists=], assign
-        it to {{VideoFrame/[[crop width]]}}. Otherwise, assign
-        {{VideoFrame/[[coded width]]}} to {{VideoFrame/[[crop width]]}}.
-    11. If |init|.{{VideoFramePlaneInit/cropHeight}} [=map/exists=], assign it
-        to {{VideoFrame/[[crop height]]}}. Otehrwise, assign
-        {{VideoFrame/[[coded height]]}} to {{VideoFrame/[[crop height]]}}.
+        {{VideoFrame/[[crop top]]}} respectively
+
+    10. If |init|.{{VideoFramePlaneInit/visibleRegion}} [=map/exists=]:
+        1. Assign
+            {{VideoFramePlaneInit/visibleRegion}}.{{VideoFrameRegion/width}} to
+            {{VideoFrame/[[crop width]]}}.
+        2. Assign
+            {{VideoFramePlaneInit/visibleRegion}}.{{VideoFrameRegion/height}} to
+            {{VideoFrame/[[crop height]]}}.
+    11. Otherwise:
+        1. Assign {{VideoFrame/[[coded width]]}} to
+            {{VideoFrame/[[crop width]]}}.
+        2. Assign {{VideoFrame/[[coded height]]}} to
+            {{VideoFrame/[[crop height]]}}.
     12. If |init|.{{VideoFramePlaneInit/displayWidth}} [=map/exists=], assign
         it to {{VideoFrame/[[display width]]}}. Otherwise, assign
         {{VideoFrame/[[crop width]]}} to {{VideoFrame/[[display width]]}}.
@@ -2782,11 +2788,13 @@ dictionary VideoFramePlaneInit {
     2. Assign `true` to {{VideoFrame/[[detached]]}}.
     3. Assign `""` to {{VideoFrame/format}}.
     4. Assign `null` to {{VideoFrame/planes}}.
-    5. Assign `0` to {{VideoFrame/codedWidth}}, {{VideoFrame/codedHeight}},
-        {{VideoFrame/cropLeft}}, {{VideoFrame/cropTop}},
-        {{VideoFrame/cropWidth}}, {{VideoFrame/cropHeight}},
-        {{VideoFrame/displayWidth}}, and {{VideoFrame/displayHeight}}.
-    6. Assign `null` to {{VideoFrame/duration}} and {{VideoFrame/timestamp}}.
+    5. Assign `0` to {{VideoFrame/[[coded width]]}},
+        {{VideoFrame/[[coded height]]}}, {{VideoFrame/[[crop left]]}},
+        {{VideoFrame/[[crop top]]}}, {{VideoFrame/[[crop width]]}},
+        {{VideoFrame/[[crop height]]}}, {{VideoFrame/[[display width]]}},
+        and {{VideoFrame/[[display height]]}}.
+    6. Assign `null` to {{VideoFrame/[[duration]]}} and
+        {{VideoFrame/[[timestamp]]}}.
 
 ### Algorithms ###{#videoframe-algorithms}
   <dfn>Create a VideoFrame</dfn> (with |output|, |timestamp|, |duration|, |displayAspectWidth|, and |displayAspectHeight|)
@@ -2801,11 +2809,8 @@ dictionary VideoFramePlaneInit {
           {{VideoFramePlaneInit/codedHeight}}
           be the width and height of the decoded video frame |output| in
           pixels, prior to any cropping or aspect ratio adjustments.
-      4. Let {{VideoFramePlaneInit/cropLeft}},
-          {{VideoFramePlaneInit/cropTop}},
-          {{VideoFramePlaneInit/cropWidth}}, and
-          {{VideoFramePlaneInit/cropHeight}}
-          be the crop region of the decoded video frame |output| in
+      4. Let {{VideoFramePlaneInit/visibleRegion}},
+          be the visible region of the decoded video frame |output| in
           pixels, prior to any aspect ratio adjustments.
       5. Let |displayWidth| and |displayHeight| be the the display size of
           the decoded frame in pixels.
@@ -2823,13 +2828,14 @@ dictionary VideoFramePlaneInit {
     <dfn>valid VideoFramePlaneInit</dfn>, run these steps:
 :: 1. If {{VideoFramePlaneInit/codedWidth}} = 0 or
         {{VideoFramePlaneInit/codedHeight}} = 0,return `false`.
-    2. If {{VideoFramePlaneInit/cropWidth}} = 0 or
-        {{VideoFramePlaneInit/cropHeight}} = 0, return `false`.
-    3. If {{VideoFramePlaneInit/cropTop}} +
-        {{VideoFramePlaneInit/cropHeight}} >=
+    2. If {{VideoFramePlaneInit/visibleRegion}}.{{VideoFrameRegion/width}} = 0
+        or {{VideoFramePlaneInit/visibleRegion}}.{{VideoFrameRegion/height}} =
+        0, return `false`.
+    3. If {{VideoFramePlaneInit/visibleRegion}}.{{VideoFrameRegion/top}} +
+        {{VideoFramePlaneInit/visibleRegion}}.{{VideoFrameRegion/height}} >=
         {{VideoFramePlaneInit/codedHeight}}, return `false`.
-    4. If {{VideoFramePlaneInit/cropLeft}} +
-        {{VideoFramePlaneInit/cropWidth}} >=
+    4. If {{VideoFramePlaneInit/visibleRegion}}.{{VideoFrameRegion/left}} +
+        {{VideoFramePlaneInit/visibleRegion}}.{{VideoFrameRegion/width}} >=
         {{VideoFramePlaneInit/codedWidth}}, return `false`.
     5. If {{VideoFramePlaneInit/displayWidth}} = 0 or
         {{VideoFramePlaneInit/displayHeight}} = 0, return `false`.
@@ -2843,10 +2849,8 @@ dictionary VideoFramePlaneInit {
         {{VideoFrame/[[resource reference]]}}.
     3. Assign the following attributes from |otherFrame| to |frame|:
         {{VideoFrame/format}}, {{VideoFrame/codedWidth}},
-        {{VideoFrame/codedHeight}}, {{VideoFrame/cropLeft}},
-        {{VideoFrame/cropTop}}, {{VideoFrame/cropWidth}},
-        {{VideoFrame/cropHeight}}, {{VideoFrame/displayWidth}},
-        {{VideoFrame/displayHeight}}.
+        {{VideoFrame/codedHeight}}, {{VideoFrame/visibleRegion}},
+        {{VideoFrame/displayWidth}}, {{VideoFrame/displayHeight}}.
     4. Let |planes| be a new [=list=].
     5. For each |otherPlane| in |otherFrame|.{{VideoFrame/planes}}:
         1. Let |plane| be a new {{Plane}}.
@@ -2883,13 +2887,11 @@ dictionary VideoFramePlaneInit {
         1. Assign `""` to {{VideoFrame/format}}.
         2. Assign `null` to {{VideoFrame/planes}}.
     4. Assign |width| to the following attributes of |frame|:
-        {{VideoFrame/codedWidth}}, {{VideoFrame/cropWidth}},
-        {{VideoFrame/displayWidth}}.
+        {{VideoFrame/codedWidth}}, {{VideoFrame/displayWidth}}.
     5. Assign |height| to the following attributes of |frame|:
-        {{VideoFrame/codedHeight}}, {{VideoFrame/cropHeight}},
-        {{VideoFrame/displayHeight}}.
-    6. Assign `0` to frame's {{VideoFrame/cropTop}} and
-        {{VideoFrame/cropLeft}}.
+        {{VideoFrame/codedHeight}}, {{VideoFrame/displayHeight}}.
+    6. Assign «[ "left:" → `0`, "top" → `0`, "width" → |width|, "height" →
+        |height| ]» to |frame|.{{VideoFrame/visibleRegion}}.
     7. Assign `init`.{{VideoFrameInit/duration}} to
         |frame|.{{VideoFrame/duration}}.
     8. Assign `init`.{{VideoFrameInit/timestamp}} to
