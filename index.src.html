@@ -1268,8 +1268,10 @@ Algorithms {#videoencoder-algorithms}
         5. Let |outputConfig| be a {{VideoDecoderConfig}} that describes
             |output|. Initialize |outputConfig| as follows:
             1. Assign `encoderConfig.codec` to `outputConfig.codec`.
-            2. Assign `encoderConfig.width` to `outputConfig.cropWidth`.
-            3. Assign `encoderConfig.height` to `outputConfig.cropHeight`.
+            2. Assign `encoderConfig.width` to
+                `outputConfig.visibleRect.width`.
+            3. Assign `encoderConfig.height` to
+                `outputConfig.visibleRect.height`.
             4. Assign `encoderConfig.displayWidth` to
                 `outputConfig.displayWidth`.
             5. Assign `encoderConfig.displayHeight` to
@@ -1574,14 +1576,14 @@ run these steps:
 
   <dt><dfn dict-member for=VideoDecoderConfig>codedWidth</dfn></dt>
   <dd>
-    Width of the VideoFrame in pixels, prior to any cropping or aspect ratio
-        adjustments.
+    Width of the VideoFrame in pixels, potentionally including non-visible
+    padding, and prior to considering potential ratio adjustments.
   </dd>
 
   <dt><dfn dict-member for=VideoDecoderConfig>codedHeight</dfn></dt>
   <dd>
-    Height of the VideoFrame in pixels, prior to any cropping or aspect ratio
-        adjustments.
+    Height of the VideoFrame in pixels, potentionally including non-visible
+    padding, and prior to considering potential ratio adjustments.
   </dd>
 
   NOTE: {{VideoDecoderConfig/codedWidth}} and {{VideoDecoderConfig/codedHeight}}
@@ -1689,7 +1691,7 @@ To check if a {{VideoEncoderConfig}} is a <dfn>valid VideoEncoderConfig</dfn>,
     display aspect ratio adjustments.
 
     The encoder must scale any {{VideoFrame}} whose
-    {{VideoFrame/[[crop width]]}} differs from this value.
+    {{VideoFrame/[[visible width]]}} differs from this value.
   </dd>
 
   <dt><dfn dict-member for=VideoEncoderConfig>height</dfn></dt>
@@ -1698,7 +1700,7 @@ To check if a {{VideoEncoderConfig}} is a <dfn>valid VideoEncoderConfig</dfn>,
     display aspect ratio adjustments.
 
     The encoder must scale any {{VideoFrame}} whose
-    {{VideoFrame/[[crop height]]}} differs from this value.
+    {{VideoFrame/[[visible height]]}} differs from this value.
   </dd>
 </dl>
 
@@ -2458,26 +2460,26 @@ interface VideoFrame {
   readonly attribute unsigned long codedHeight;
 
   // Convenience accessor, origin is always (0, 0).
-  readonly attribute VideoFrameRegion codedRegion;
+  readonly attribute VideoFrameRect codedRect;
 
-  // Region of this frame's pixel data that is not padding.
-  readonly attribute VideoFrameRegion visibleRegion;
+  // Rectangle of this frame's pixel data that is not padding.
+  readonly attribute VideoFrameRect visibleRect;
 
   readonly attribute unsigned long displayWidth;
   readonly attribute unsigned long displayHeight;
   readonly attribute long long? duration;     // microseconds
   readonly attribute long long? timestamp;    // microseconds
 
-  // Returns the minimum size (in bytes) of a buffer that readInto() could
-  // read this frame into with the given options.
+  // Returns the minimum size (in bytes) of a buffer that copyTo() could
+  // copy this frame into with the given options.
   unsigned long allocationSize(
-      optional VideoFrameReadIntoOptions options = {});
+      optional VideoFrameCopyToOptions options = {});
 
-  // Read the planes of this frame into |destination| according to |options|.
+  // Copy the planes of this frame into |destination| according to |options|.
   // The format of the data is the same as this frame's |format|.
-  Promise<sequence<PlaneLayout>> readInto(
+  Promise<sequence<PlaneLayout>> copyTo(
       BufferSource destination,
-      optional VideoFrameReadIntoOptions options = {});
+      optional VideoFrameCopyToOptions options = {});
 
   VideoFrame clone();
   undefined close();
@@ -2492,7 +2494,7 @@ dictionary VideoFramePlaneInit {
   required PixelFormat format;
   [EnforceRange] required unsigned long codedWidth;
   [EnforceRange] required unsigned long codedHeight;
-  VideoFrameRegion visibleRegion;
+  VideoFrameRect visibleRect;
   [EnforceRange] unsigned long displayWidth;
   [EnforceRange] unsigned long displayHeight;
   [EnforceRange] long long duration;     // microseconds
@@ -2519,26 +2521,26 @@ dictionary VideoFramePlaneInit {
     determined by {{VideoFrame/[[format]]}}.
 
 : <dfn attribute for=VideoFrame>[[coded width]]</dfn>
-:: Width of the {{VideoFrame}} in pixels, prior to any cropping or aspect
-    ratio adjustments.
+:: Width of the {{VideoFrame}} in pixels, potentionally including non-visible
+    padding, and prior to considering potential ratio adjustments.
 
 : <dfn attribute for=VideoFrame>[[coded height]]</dfn>
-:: Height of the {{VideoFrame}} in pixels, prior to any cropping or aspect
-    ratio adjustments.
+:: Height of the {{VideoFrame}} in pixels, potentionally including non-visible
+    padding, and prior to considering potential ratio adjustments.
 
-: <dfn attribute for=VideoFrame>[[crop left]]</dfn>
-:: The number of pixels to remove from the left of the {{VideoFrame}},
-    prior to aspect ratio adjustments.
+: <dfn attribute for=VideoFrame>[[visible left]]</dfn>
+:: The number of pixels defining the left offset of the visible rectangle.
 
-: <dfn attribute for=VideoFrame>[[crop top]]</dfn>
-:: The number of pixels to remove from the top of the {{VideoFrame}},
-    prior to aspect ratio adjustments.
+: <dfn attribute for=VideoFrame>[[visible top]]</dfn>
+:: The number of pixels defining the top offset of the visible rectangle.
 
-: <dfn attribute for=VideoFrame>[[crop width]]</dfn>
-:: The width of pixels to include in the crop, starting from cropLeft.
+: <dfn attribute for=VideoFrame>[[visible width]]</dfn>
+:: The width of pixels to include in visible rectangle, starting from
+    {{VideoFrame/[[visible left]]}}.
 
-: <dfn attribute for=VideoFrame>[[crop height]]</dfn>
-:: The height of pixels to include in the crop, starting from cropLeft.
+: <dfn attribute for=VideoFrame>[[visible height]]</dfn>
+:: The height of pixels to include in visible rectangle, starting from
+    {{VideoFrame/[[visible top]]}}.
 
 : <dfn attribute for=VideoFrame>[[display width]]</dfn>
 :: Width of the {{VideoFrame}} when displayed after applying aspect ratio
@@ -2627,7 +2629,7 @@ dictionary VideoFramePlaneInit {
     (e.g. wrong number of planes), throw a {{TypeError}}.
 
     ISSUE: The spec should list additional format specific validation steps (
-        e.g. number and order of planes, acceptable sizing, etc...).  See
+        e.g. number and order of planes, acceptable sizing, etc...). See
         [#165](https://github.com/w3c/webcodecs/issues/165).
 
 3. Let |resource| be a new [=media resource=] allocated in accordance with
@@ -2651,10 +2653,10 @@ dictionary VideoFramePlaneInit {
     4. For each |planeInit| in |planes|:
         1. Copy |planeInit|.{{PlaneInit/data}} to |resource|.
 
-            NOTE: The user agent may use {{VideoFramePlaneInit/visibleRegion}}
-                to copy only the visible region. It may also reposition the
-                visible region within |resource|. The final position will be
-                reflected by {{VideoFrame/visibleRegion}}.
+            NOTE: The user agent may use {{VideoFramePlaneInit/visibleRect}}
+                to copy only the visible rectangle. It may also reposition the
+                visible rectangle within |resource|. The final position will be
+                reflected by {{VideoFrame/visibleRect}}.
 
         2. Let |plane| be a new {{Plane}} initialized as follows:
             1. Assign |frame| to {{Plane/[[parent frame]]}}.
@@ -2673,38 +2675,38 @@ dictionary VideoFramePlaneInit {
 
     5. Let |resourceCodedWidth| be the coded width of |resource|.
     6. Let |resourceCodedHeight| be the coded height of |resource|.
-    7. Let |resourceCropLeft| be the left offset of the crop origin of
+    7. Let |resourceVisibleLeft| be the left offset for the visible rectangle of
         |resource|.
-    8. Let |resourceCropTop| be the top offset of the crop origin of
+    8. Let |resourceVisibleTop| be the top offset for the visible rectangle of
         |resource|.
 
         ISSUE: The spec should provide definitions (and possibly diagrams) for
-            coded size, crop size, and display size. See
+            coded size, visible rectangle, and display size. See
             [#166](https://github.com/w3c/webcodecs/issues/166).
 
-    9. Assign |resourceCodedWidth|, |resourceCodedHeight|, |resourceCropLeft|,
-        and |resourceCropTop| to {{VideoFrame/[[coded width]]}},
-        {{VideoFrame/[[coded height]]}}, {{VideoFrame/[[crop left]]}}, and
-        {{VideoFrame/[[crop top]]}} respectively
+    9. Assign |resourceCodedWidth|, |resourceCodedHeight|, |resourceVisibleLeft|,
+        and |resourceVisibleTop| to {{VideoFrame/[[coded width]]}},
+        {{VideoFrame/[[coded height]]}}, {{VideoFrame/[[visible left]]}}, and
+        {{VideoFrame/[[visible top]]}} respectively
 
-    10. If |init|.{{VideoFramePlaneInit/visibleRegion}} [=map/exists=]:
+    10. If |init|.{{VideoFramePlaneInit/visibleRect}} [=map/exists=]:
         1. Assign
-            {{VideoFramePlaneInit/visibleRegion}}.{{VideoFrameRegion/width}} to
-            {{VideoFrame/[[crop width]]}}.
+            {{VideoFramePlaneInit/visibleRect}}.{{VideoFrameRect/width}} to
+            {{VideoFrame/[[visible width]]}}.
         2. Assign
-            {{VideoFramePlaneInit/visibleRegion}}.{{VideoFrameRegion/height}} to
-            {{VideoFrame/[[crop height]]}}.
+            {{VideoFramePlaneInit/visibleRect}}.{{VideoFrameRect/height}} to
+            {{VideoFrame/[[visible height]]}}.
     11. Otherwise:
         1. Assign {{VideoFrame/[[coded width]]}} to
-            {{VideoFrame/[[crop width]]}}.
+            {{VideoFrame/[[visible width]]}}.
         2. Assign {{VideoFrame/[[coded height]]}} to
-            {{VideoFrame/[[crop height]]}}.
+            {{VideoFrame/[[visible height]]}}.
     12. If |init|.{{VideoFramePlaneInit/displayWidth}} [=map/exists=], assign
         it to {{VideoFrame/[[display width]]}}. Otherwise, assign
-        {{VideoFrame/[[crop width]]}} to {{VideoFrame/[[display width]]}}.
+        {{VideoFrame/[[visible width]]}} to {{VideoFrame/[[display width]]}}.
     13. If |init|.{{VideoFramePlaneInit/displayHeight}} [=map/exists=], assign
         it to {{VideoFrame/[[display height]]}}. Otherwise, assign
-        {{VideoFrame/[[crop height]]}} to {{VideoFrame/[[display height]]}}.
+        {{VideoFrame/[[visible height]]}} to {{VideoFrame/[[display height]]}}.
     14. Assign |init|'s {{VideoFramePlaneInit/timestamp}} and
         {{VideoFramePlaneInit/duration}} to {{VideoFrame/[[timestamp]]}} and
         {{VideoFrame/[[duration]]}} respectively.
@@ -2726,15 +2728,15 @@ dictionary VideoFramePlaneInit {
     {{VideoFrame/[[planes]]}}.
 
 : <dfn attribute for=VideoFrame>codedWidth</dfn>
-:: Width of the {{VideoFrame}} in pixels, prior to any cropping or aspect ratio
-    adjustments.
+:: Width of the {{VideoFrame}} in pixels, potentionally including non-visible
+    padding, and prior to considering potential ratio adjustments.
 
     The {{VideoFrame/codedWidth}} getter steps are to return
     {{VideoFrame/[[coded width]]}}.
 
 : <dfn attribute for=VideoFrame>codedHeight</dfn>
-:: Height of the VideoFrame in pixels, prior to any cropping or aspect ratio
-    adjustments.
+:: Height of the VideoFrame in pixels, potentionally including non-visible
+    padding, and prior to considering potential ratio adjustments.
 
     The {{VideoFrame/codedHeight}} getter steps are to return
     {{VideoFrame/[[coded height]]}}.
@@ -2789,9 +2791,9 @@ dictionary VideoFramePlaneInit {
     3. Assign `""` to {{VideoFrame/format}}.
     4. Assign `null` to {{VideoFrame/planes}}.
     5. Assign `0` to {{VideoFrame/[[coded width]]}},
-        {{VideoFrame/[[coded height]]}}, {{VideoFrame/[[crop left]]}},
-        {{VideoFrame/[[crop top]]}}, {{VideoFrame/[[crop width]]}},
-        {{VideoFrame/[[crop height]]}}, {{VideoFrame/[[display width]]}},
+        {{VideoFrame/[[coded height]]}}, {{VideoFrame/[[visible left]]}},
+        {{VideoFrame/[[visible top]]}}, {{VideoFrame/[[visible width]]}},
+        {{VideoFrame/[[visible height]]}}, {{VideoFrame/[[display width]]}},
         and {{VideoFrame/[[display height]]}}.
     6. Assign `null` to {{VideoFrame/[[duration]]}} and
         {{VideoFrame/[[timestamp]]}}.
@@ -2808,9 +2810,10 @@ dictionary VideoFramePlaneInit {
       3. Let {{VideoFramePlaneInit/codedWidth}} and
           {{VideoFramePlaneInit/codedHeight}}
           be the width and height of the decoded video frame |output| in
-          pixels, prior to any cropping or aspect ratio adjustments.
-      4. Let {{VideoFramePlaneInit/visibleRegion}},
-          be the visible region of the decoded video frame |output| in
+          pixels, potentionally including non-visible padding, and prior to
+          considering potential ratio adjustments.
+      4. Let {{VideoFramePlaneInit/visibleRect}},
+          be the visible rectangle of the decoded video frame |output| in
           pixels, prior to any aspect ratio adjustments.
       5. Let |displayWidth| and |displayHeight| be the the display size of
           the decoded frame in pixels.
@@ -2828,14 +2831,14 @@ dictionary VideoFramePlaneInit {
     <dfn>valid VideoFramePlaneInit</dfn>, run these steps:
 :: 1. If {{VideoFramePlaneInit/codedWidth}} = 0 or
         {{VideoFramePlaneInit/codedHeight}} = 0,return `false`.
-    2. If {{VideoFramePlaneInit/visibleRegion}}.{{VideoFrameRegion/width}} = 0
-        or {{VideoFramePlaneInit/visibleRegion}}.{{VideoFrameRegion/height}} =
+    2. If {{VideoFramePlaneInit/visibleRect}}.{{VideoFrameRect/width}} = 0
+        or {{VideoFramePlaneInit/visibleRect}}.{{VideoFrameRect/height}} =
         0, return `false`.
-    3. If {{VideoFramePlaneInit/visibleRegion}}.{{VideoFrameRegion/top}} +
-        {{VideoFramePlaneInit/visibleRegion}}.{{VideoFrameRegion/height}} >=
+    3. If {{VideoFramePlaneInit/visibleRect}}.{{VideoFrameRect/top}} +
+        {{VideoFramePlaneInit/visibleRect}}.{{VideoFrameRect/height}} >=
         {{VideoFramePlaneInit/codedHeight}}, return `false`.
-    4. If {{VideoFramePlaneInit/visibleRegion}}.{{VideoFrameRegion/left}} +
-        {{VideoFramePlaneInit/visibleRegion}}.{{VideoFrameRegion/width}} >=
+    4. If {{VideoFramePlaneInit/visibleRect}}.{{VideoFrameRect/left}} +
+        {{VideoFramePlaneInit/visibleRect}}.{{VideoFrameRect/width}} >=
         {{VideoFramePlaneInit/codedWidth}}, return `false`.
     5. If {{VideoFramePlaneInit/displayWidth}} = 0 or
         {{VideoFramePlaneInit/displayHeight}} = 0, return `false`.
@@ -2849,7 +2852,7 @@ dictionary VideoFramePlaneInit {
         {{VideoFrame/[[resource reference]]}}.
     3. Assign the following attributes from |otherFrame| to |frame|:
         {{VideoFrame/format}}, {{VideoFrame/codedWidth}},
-        {{VideoFrame/codedHeight}}, {{VideoFrame/visibleRegion}},
+        {{VideoFrame/codedHeight}}, {{VideoFrame/visibleRect}},
         {{VideoFrame/displayWidth}}, {{VideoFrame/displayHeight}}.
     4. Let |planes| be a new [=list=].
     5. For each |otherPlane| in |otherFrame|.{{VideoFrame/planes}}:
@@ -2891,7 +2894,7 @@ dictionary VideoFramePlaneInit {
     5. Assign |height| to the following attributes of |frame|:
         {{VideoFrame/codedHeight}}, {{VideoFrame/displayHeight}}.
     6. Assign «[ "left:" → `0`, "top" → `0`, "width" → |width|, "height" →
-        |height| ]» to |frame|.{{VideoFrame/visibleRegion}}.
+        |height| ]» to |frame|.{{VideoFrame/visibleRect}}.
     7. Assign `init`.{{VideoFrameInit/duration}} to
         |frame|.{{VideoFrame/duration}}.
     8. Assign `init`.{{VideoFrameInit/timestamp}} to
@@ -2914,16 +2917,16 @@ dictionary VideoFramePlaneInit {
             {{VideoFrame/codedWidth}}, {{VideoFrame/codedHeight}}, etc.) to those of the same name in |clone|.
     2. Return |clone|.
 
-VideoFrame ReadInto() Options {#videoframe-readinto-options}
+VideoFrame CopyTo() Options {#videoframe-copyto-options}
 ------------------------------------------------------------
-Options to specify which {{VideoFrameRegion}} to read and the location and
+Options to specify which {{VideoFrameRect}} to copy and the location and
 padding of planes in the destination buffer.
 
 <xmp class='idl'>
-dictionary VideoFrameReadIntoOptions {
-  // The region to read. If unspecified, the visible region will be used. The
-  // coded region can be easily specified by passing frame.codedRegion.
-  VideoFrameRegion region;
+dictionary VideoFrameCopyToOptions {
+  // The rectangle to copy. If unspecified, the visibleRect will be used.
+  // The codedRect can be easily specified by passing frame.codedRect.
+  VideoFrameRect rect;
 
   // The layout of each plane in the buffer. This allows the offset and stride
   // of each plane to be specified. If unspecified, the planes will be tightly
@@ -2932,13 +2935,12 @@ dictionary VideoFrameReadIntoOptions {
 };
 </xmp>
 
-VideoFrame Region {#videoframe-region}
+VideoFrame Rectangle (Rect) {#videoframe-rect}
 --------------------------------------
-A dictionary specifying the position and dimensions of a region within a
-{{VideoFrame}}.
+A dictionary specifying the position and dimensions of a rectangle of pixels within a {{VideoFrame}}.
 
 <xmp class='idl'>
-dictionary VideoFrameRegion {
+dictionary VideoFrameRect {
   required [EnforceRange] unsigned long left;
   required [EnforceRange] unsigned long top;
   required [EnforceRange] unsigned long width;
@@ -2966,7 +2968,7 @@ interface Plane {
   readonly attribute unsigned long rows;
   readonly attribute unsigned long length;
 
-  undefined readInto(ArrayBufferView dst);
+  undefined copyTo(ArrayBufferView dst);
 };
 
 dictionary PlaneInit {
@@ -2993,7 +2995,7 @@ dictionary PlaneInit {
 </dl>
 
 ### Methods ###{#plane-methods}
-<dfn method for=Plane>readInto(|dst|)</dfn>
+<dfn method for=Plane>copyTo(|dst|)</dfn>
 
 Copies the plane data into dst.
 
