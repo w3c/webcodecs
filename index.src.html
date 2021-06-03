@@ -2451,11 +2451,10 @@ NOTE: {{VideoFrame}} is a {{CanvasImageSource}}. A {{VideoFrame}} may be
 [Exposed=(Window,DedicatedWorker)]
 interface VideoFrame {
   constructor(CanvasImageSource image, optional VideoFrameInit init = {});
-  constructor(sequence<(Plane or PlaneInit)> planes,
+  constructor(sequence<PlaneInit> planes,
               VideoFramePlaneInit init);
 
   readonly attribute PixelFormat format;
-  readonly attribute FrozenArray<Plane>? planes;
   readonly attribute unsigned long codedWidth;
   readonly attribute unsigned long codedHeight;
 
@@ -2500,6 +2499,12 @@ dictionary VideoFramePlaneInit {
   [EnforceRange] long long duration;     // microseconds
   [EnforceRange] long long timestamp;    // microseconds
 };
+
+dictionary PlaneInit {
+  required BufferSource data;
+  [EnforceRange] required unsigned long rows;
+  [EnforceRange] required unsigned long offset;
+};
 </xmp>
 
 ### Internal Slots ###{#videoframe-internal-slots}
@@ -2514,11 +2519,6 @@ dictionary VideoFramePlaneInit {
 
 : <dfn attribute for=VideoFrame>\[[format]]</dfn>
 :: A {{PixelFormat}} describing the pixel format of the {{VideoFrame}}.
-
-: <dfn attribute for=VideoFrame>\[[planes]]</dfn>
-:: A list of {{Plane}}s describing the memory layout of the pixel data in
-    {{VideoFrame}}. The number of {{Plane}}s and their semantics are
-    determined by {{VideoFrame/[[format]]}}.
 
 : <dfn attribute for=VideoFrame>[[coded width]]</dfn>
 :: Width of the {{VideoFrame}} in pixels, potentionally including non-visible
@@ -2641,16 +2641,14 @@ dictionary VideoFramePlaneInit {
 
     NOTE: The user agent may choose to allocate resource with a larger coded
       size and plane strides to improve memory alignment. Increases will be
-      reflected by {{VideoFrame/codedWidth}}, {{VideoFrame/codedHeight}}, and
-      {{Plane/stride}}.
+      reflected by {{VideoFrame/codedWidth}} and {{VideoFrame/codedHeight}}.
 
 4. Let |resourceReference| be a reference to |resource|.
 5. Let |frame| be a new {{VideoFrame}} object initialized as follows:
     1. Assign |resourceReference| to
             {{VideoFrame/[[resource reference]]}}.
     2. Assign {{VideoFramePlaneInit/format}} to {{VideoFrame/[[format]]}}.
-    3. Assign a new [=list=] to {{VideoFrame/[[planes]]}}.
-    4. For each |planeInit| in |planes|:
+    3. For each |planeInit| in |planes|:
         1. Copy |planeInit|.{{PlaneInit/data}} to |resource|.
 
             NOTE: The user agent may use {{VideoFramePlaneInit/visibleRect}}
@@ -2658,36 +2656,22 @@ dictionary VideoFramePlaneInit {
                 visible rectangle within |resource|. The final position will be
                 reflected by {{VideoFrame/visibleRect}}.
 
-        2. Let |plane| be a new {{Plane}} initialized as follows:
-            1. Assign |frame| to {{Plane/[[parent frame]]}}.
-            2. Let |resourceStride| be the stride of the plane coresponding to
-                |planeInit| in |resource|.
-
-                ISSUE: The spec should provide a definition (and possibly
-                    diagrams) for stride. See
-                    [#166](https://github.com/w3c/webcodecs/issues/166).
-
-            3. Assign |resourceStride| to {{Plane/stride}}.
-            4. Assign |planeInit|.{{PlaneInit/rows}} to {{Plane/rows}}.
-            5. Assign the product of ({{Plane/stride}} * {{Plane/rows}}) to
-                {{Plane/length}}.
-        3. Append |plane| to {{VideoFrame/[[planes]]}}.
-
-    5. Let |resourceCodedWidth| be the coded width of |resource|.
-    6. Let |resourceCodedHeight| be the coded height of |resource|.
-    7. Let |resourceVisibleLeft| be the left offset for the visible rectangle of
+    4. Let |resourceCodedWidth| be the coded width of |resource|.
+    5. Let |resourceCodedHeight| be the coded height of |resource|.
+    6. Let |resourceVisibleLeft| be the left offset for the visible rectangle of
         |resource|.
-    8. Let |resourceVisibleTop| be the top offset for the visible rectangle of
+    7. Let |resourceVisibleTop| be the top offset for the visible rectangle of
         |resource|.
 
         ISSUE: The spec should provide definitions (and possibly diagrams) for
             coded size, visible rectangle, and display size. See
             [#166](https://github.com/w3c/webcodecs/issues/166).
 
-    9. Assign |resourceCodedWidth|, |resourceCodedHeight|, |resourceVisibleLeft|,
-        and |resourceVisibleTop| to {{VideoFrame/[[coded width]]}},
-        {{VideoFrame/[[coded height]]}}, {{VideoFrame/[[visible left]]}}, and
-        {{VideoFrame/[[visible top]]}} respectively
+    8. Assign |resourceCodedWidth|, |resourceCodedHeight|,
+        |resourceVisibleLeft|, and |resourceVisibleTop| to
+        {{VideoFrame/[[coded width]]}}, {{VideoFrame/[[coded height]]}},
+        {{VideoFrame/[[visible left]]}}, and {{VideoFrame/[[visible top]]}}
+        respectively.
 
     10. If |init|.{{VideoFramePlaneInit/visibleRect}} [=map/exists=]:
         1. Assign
@@ -2719,13 +2703,6 @@ dictionary VideoFramePlaneInit {
 
     The {{VideoFrame/format}} getter steps are to return
     {{VideoFrame/[[format]]}}.
-
-: <dfn attribute for=VideoFrame>planes</dfn>
-:: Holds pixel data data, laid out as described by format and Plane
-    attributes.
-
-    The {{VideoFrame/planes}} getter steps are to return
-    {{VideoFrame/[[planes]]}}.
 
 : <dfn attribute for=VideoFrame>codedWidth</dfn>
 :: Width of the {{VideoFrame}} in pixels, potentionally including non-visible
@@ -2789,43 +2766,43 @@ dictionary VideoFramePlaneInit {
     1. Assign `null` to {{VideoFrame/[[resource reference]]}}.
     2. Assign `true` to {{VideoFrame/[[detached]]}}.
     3. Assign `""` to {{VideoFrame/format}}.
-    4. Assign `null` to {{VideoFrame/planes}}.
-    5. Assign `0` to {{VideoFrame/[[coded width]]}},
+    4. Assign `0` to {{VideoFrame/[[coded width]]}},
         {{VideoFrame/[[coded height]]}}, {{VideoFrame/[[visible left]]}},
         {{VideoFrame/[[visible top]]}}, {{VideoFrame/[[visible width]]}},
         {{VideoFrame/[[visible height]]}}, {{VideoFrame/[[display width]]}},
         and {{VideoFrame/[[display height]]}}.
-    6. Assign `null` to {{VideoFrame/[[duration]]}} and
+    5. Assign `null` to {{VideoFrame/[[duration]]}} and
         {{VideoFrame/[[timestamp]]}}.
 
 ### Algorithms ###{#videoframe-algorithms}
   <dfn>Create a VideoFrame</dfn> (with |output|, |timestamp|, |duration|, |displayAspectWidth|, and |displayAspectHeight|)
-  1. Let |planes| be a sequence of {{Plane}}s containing the decoded
-      video frame data from |output|.
-  2. Let |pixelFormat| be the {{PixelFormat}} of |planes|.
-  3. Let |init| be a {{VideoFramePlaneInit}} with the following
-      keys:
-      1. Assign |timestamp| to {{VideoFrameInit/timestamp}}.
-      2. Assign |duration| to {{VideoFrameInit/duration}}.
-      3. Let {{VideoFramePlaneInit/codedWidth}} and
-          {{VideoFramePlaneInit/codedHeight}}
-          be the width and height of the decoded video frame |output| in
-          pixels, potentionally including non-visible padding, and prior to
-          considering potential ratio adjustments.
-      4. Let {{VideoFramePlaneInit/visibleRect}},
-          be the visible rectangle of the decoded video frame |output| in
-          pixels, prior to any aspect ratio adjustments.
-      5. Let |displayWidth| and |displayHeight| be the the display size of
-          the decoded frame in pixels.
-      6. If |displayAspectWidth| and |displayAspectHeight| are provided,
+  1. Let |frame| be a new {{VideoFrame}}, constructed as follows:
+      1. Assign `false` to {{VideoFrame/[[detached]]}}.
+      2. Let |resource| be the [=media resource=] described by |output|.
+      3. Let |resourceReference| be a reference to |resource|.
+      4. Assign |resourceReference| to {{VideoFrame/[[resource reference]]}}.
+      5. If |output| uses a recognized {{PixelFormat}}, assign that format to
+          {{VideoFrame/[[format]]}}. Otherwise, assign `""` to
+          {{VideoFrame/[[format]]}}.
+      6. Let |codedWidth| and |codedHeight| be the coded width and height of the
+          |output| in pixels.
+      8. Let |visibleLeft|, |visibleTop|, |visibleWidth|, and |visibleHeight| be
+          the left, top, width and height for the visible rectangle of |output|.
+      7. Let |displayWidth| and |displayHeight| be the the display size of
+          |output| in pixels.
+      8. If |displayAspectWidth| and |displayAspectHeight| are provided,
           increase |displayWidth| or |displayHeight| until the ratio of
           |displayWidth| to |displayHeight| matches the ratio of
           |displayAspectWidth| to |displayAspectHeight|.
-      7. Assign the value of |displayWidth| and |displayHeight| to
-          {{VideoFramePlaneInit/displayWidth}} and
-          {{VideoFramePlaneInit/displayHeight}} respectively.
-  4. Return a new {{VideoFrame}}, constructed with |pixelFormat|,
-      |planes|, and |init|.
+      9. Assign |codedWidth|, |codedHeight|, |visibleLeft|, |visibleTop|,
+          |visibleWidth|, |visibleHeight|, |displayWidth|, and
+          |displayHeight| to {{VideoFrame/[[coded width]]}},
+          {{VideoFrame/[[coded height]]}}, {{VideoFrame/[[visible left]]}},
+          {{VideoFrame/[[visible top]]}}, {{VideoFrame/[[visible width]]}},
+          and {{VideoFrame/[[visible height]]}} respectively..
+      10. Assign |duration| and |timestamp| to {{VideoFrame/[[duration]]}} and
+          {{VideoFrame/[[timestamp]]}} respectively.
+  2. Return |frame|.
 
 : To check if a {{VideoFramePlaneInit}} is a
     <dfn>valid VideoFramePlaneInit</dfn>, run these steps:
@@ -2854,20 +2831,11 @@ dictionary VideoFramePlaneInit {
         {{VideoFrame/format}}, {{VideoFrame/codedWidth}},
         {{VideoFrame/codedHeight}}, {{VideoFrame/visibleRect}},
         {{VideoFrame/displayWidth}}, {{VideoFrame/displayHeight}}.
-    4. Let |planes| be a new [=list=].
-    5. For each |otherPlane| in |otherFrame|.{{VideoFrame/planes}}:
-        1. Let |plane| be a new {{Plane}}.
-        2. Assign a reference for |frame| to |plane|'s
-            {{Plane/[[parent frame]]}}.
-        3. Assign the following attributes from |otherPlane| to |plane|:
-            {{Plane/stride}}, {{Plane/rows}}, {{Plane/length}}.
-        4. Append |plane| to |planes|.
-    6. Assign |planes| to |frame|.{{VideoFrame/planes}}.
-    7. If {{VideoFrameInit/duration}} [=map/exists=] in |init|, assign it to
+    4. If {{VideoFrameInit/duration}} [=map/exists=] in |init|, assign it to
         |frame|.{{VideoFrame/duration}}. Otherwise, assign
         |otherFrame|.{{VideoFrame/duration}} to
         |frame|.{{VideoFrame/duration}}.
-    8. If {{VideoFrameInit/timestamp}} [=map/exists=] in |init|, assign it to
+    5. If {{VideoFrameInit/timestamp}} [=map/exists=] in |init|, assign it to
         |frame|.{{VideoFrame/timestamp}}. Otherwise, assign
         |otherFrame|.{{VideoFrame/timestamp}} to
         |frame|.{{VideoFrame/timestamp}}.
@@ -2876,19 +2844,9 @@ dictionary VideoFramePlaneInit {
     |init|,  |frame|, |resource|, |width| and |height|)
 :: 1. Assign a new reference for |resource| to |frame|'s
         {{VideoFrame/[[resource reference]]}}.
-    2. If |resource| uses a recognized {{PixelFormat}}:
-        1. Assign the {{PixelFormat}} of |resource| to {{VideoFrame/format}}.
-        2. Let |planes| be a list of {{Plane}}s describing the
-            [=media resource=] in accordance with the {{VideoFrame/format}}.
-
-            ISSUE: The spec should define explicit rules for each
-                {{PixelFormat}} and reference them in the step above. See
-                [#165](https://github.com/w3c/webcodecs/issues/165).
-
-        3. Assign |planes| to {{VideoFrame/planes}}.
-    3. Otherwise (|resource| does not use a recognized {{PixelFormat}}):
-        1. Assign `""` to {{VideoFrame/format}}.
-        2. Assign `null` to {{VideoFrame/planes}}.
+    2. If |resource| uses a recognized {{PixelFormat}}, assign the
+        {{PixelFormat}} of |resource| to {{VideoFrame/[[format]]}}.
+    3. Otherwise, assign `""` to {{VideoFrame/[[format]]}}.
     4. Assign |width| to the following attributes of |frame|:
         {{VideoFrame/codedWidth}}, {{VideoFrame/displayWidth}}.
     5. Assign |height| to the following attributes of |frame|:
@@ -2905,16 +2863,9 @@ dictionary VideoFramePlaneInit {
         1. Assign |frame|.{{VideoFrame/[[resource reference]]}} to
             {{VideoFrame/[[resource reference]]}}.
         2. Assign |frame|.{{VideoFrame/format}} to {{VideoFrame/format}}.
-        3. Assign a new [=list=] to {{VideoFrame/planes}}.
-        4. For each |plane| in {{VideoFrame/planes}}:
-            1. Let |clonePlane| be a new {{Plane}} initialized as follows:
-                1. Assign |clone| to |clonePlane|.{{Plane/[[parent frame]]}}.
-                2. Assign |plane|.{{Plane/stride}} to {{Plane/stride}}.
-                3. Assign |plane|.{{Plane/rows}} to {{Plane/rows}}.
-                4. Assign |plane|.{{Plane/length}} to {{Plane/length}}.
-            2. Append |clonePlane| to {{VideoFrame/planes}}.
-        5. Assign all remaining attributes of |frame| (
-            {{VideoFrame/codedWidth}}, {{VideoFrame/codedHeight}}, etc.) to those of the same name in |clone|.
+        3. Assign all remaining attributes of |frame| (
+            {{VideoFrame/codedWidth}}, {{VideoFrame/codedHeight}}, etc.) to
+            those of the same name in |clone|.
     2. Return |clone|.
 
 VideoFrame CopyTo() Options {#videoframe-copyto-options}
@@ -2947,69 +2898,6 @@ dictionary VideoFrameRect {
   required [EnforceRange] unsigned long height;
 };
 </xmp>
-
-Plane Interface {#plane-interface}
-----------------------------------
-A {{Plane}} is solely constructed by its {{VideoFrame}}. During construction,
-    the User Agent may use knowledge of the frame’s {{PixelFormat}} to add
-    padding to the {{Plane}} to improve memory alignment.
-
-A {{Plane}} cannot be used after the {{VideoFrame}} is destroyed. A new
-    {{VideoFrame}} can be assembled from existing {{Plane}}s, and the new
-    {{VideoFrame}} will remain valid when the original is destroyed. This makes
-    it possible to efficiently add an alpha plane to an existing
-    {{VideoFrame}}.
-
-
-<xmp class='idl'>
-[Exposed=(Window,DedicatedWorker)]
-interface Plane {
-  readonly attribute unsigned long stride;
-  readonly attribute unsigned long rows;
-  readonly attribute unsigned long length;
-
-  undefined copyTo(ArrayBufferView dst);
-};
-
-dictionary PlaneInit {
-  required BufferSource data;
-  [EnforceRange] required unsigned long stride;
-  [EnforceRange] required unsigned long rows;
-};
-</xmp>
-
-### Internal Slots ###{#plane-internal-slots}
-<dl>
-  <dt><dfn attribute for=Plane>[[parent frame]]</dfn></dt>
-  <dd>Refers to the {{VideoFrame}} that constructed and owns this plane.</dd>
-</dl>
-
-### Attributes ###{#plane-attributes}
-<dl>
-  <dt><dfn attribute for=Plane>stride</dfn></dt>
-  <dd>The width of each row including any padding.</dd>
-  <dt><dfn attribute for=Plane>rows</dfn></dt>
-  <dd>The number of rows.</dd>
-  <dt><dfn attribute for=Plane>length</dfn></dt>
-  <dd>The total byte length of the plane (stride * rows).</dd>
-</dl>
-
-### Methods ###{#plane-methods}
-<dfn method for=Plane>copyTo(|dst|)</dfn>
-
-Copies the plane data into dst.
-
-When invoked, run these steps:
-1. If {{Plane/[[parent frame]]}} has been destroyed, throw an
-    {{InvalidStateError}}.
-2. If {{Plane/length}} is greater than |`dst.byteLength`|, throw a
-    {{TypeError}}.
-3. Let |resource| be the [=media resource=] refrenced by
-    {{Plane/[[parent frame]]}}'s {{VideoFrame/[[resource reference]]}}.
-4. Let |plane bytes| be the region of bytes in [=media resource=] coresponding
-    to this plane.
-5. Copy the |plane bytes| into |dst|.
-
 
 Plane Layout{#plane-layout}
 ---------------------------
