@@ -453,7 +453,7 @@ Algorithms {#audiodecoder-algorithms}
             5. Let |timestamp| be the {{EncodedAudioChunk/timestamp}} of the
                 {{EncodedAudioChunk}} associated with |output|.
             6. Assign |timestamp| to {{AudioData/[[timestamp]]}}.
-            7. Assign values to {{AudioData/[[sample format]]}},
+            7. Assign values to {{AudioData/[[format]]}},
                 {{AudioData/[[sample rate]]}},
                 {{AudioData/[[number of frames]]}}, and
                 {{AudioData/[[number of channels]]}} as determined by |output|.
@@ -1884,7 +1884,7 @@ interface EncodedAudioChunk {
   readonly attribute long long timestamp;    // microseconds
   readonly attribute unsigned long byteLength;
 
-  undefined copyTo(ArrayBufferView dst);
+  undefined copyTo([AllowShared] BufferSource destination);
 };
 
 dictionary EncodedAudioChunkInit {
@@ -1925,12 +1925,11 @@ enum EncodedAudioChunkType {
 :: The byte length of {{EncodedAudioChunk/[[internal data]]}}.
 
 ### Methods ###{#encodedaudiochunk-methods}
-: <dfn method for=EncodedAudioChunk>copyTo(dst)</dfn>
+: <dfn method for=EncodedAudioChunk>copyTo(destination)</dfn>
 :: When invoked, run these steps:
     1. If {{EncodedAudioChunk/byteLength}} is greater than
-        |dst|.`byteLength`,
-        throw a {{TypeError}}.
-    2. Copy the {{EncodedAudioChunk/[[internal data]]}} into |dst|.
+        |destination|.`byteLength`, throw a {{TypeError}}.
+    2. Copy the {{EncodedAudioChunk/[[internal data]]}} into |destination|.
 
 EncodedVideoChunk Interface{#encodedvideochunk-interface}
 -----------------------------------------------------------
@@ -1939,17 +1938,17 @@ EncodedVideoChunk Interface{#encodedvideochunk-interface}
 interface EncodedVideoChunk {
   constructor(EncodedVideoChunkInit init);
   readonly attribute EncodedVideoChunkType type;
-  readonly attribute long long timestamp;    // microseconds
-  readonly attribute long long? duration;    // microseconds
+  readonly attribute long long timestamp;             // microseconds
+  readonly attribute unsigned long long? duration;    // microseconds
   readonly attribute unsigned long byteLength;
 
-  undefined copyTo(ArrayBufferView dst);
+  undefined copyTo([AllowShared] BufferSource destination);
 };
 
 dictionary EncodedVideoChunkInit {
   required EncodedVideoChunkType type;
-  [EnforceRange] required long long timestamp;    // microseconds
-  [EnforceRange] long long duration;              // microseconds
+  [EnforceRange] required long long timestamp;        // microseconds
+  [EnforceRange] unsigned long long duration;         // microseconds
   required BufferSource data;
 };
 
@@ -1991,12 +1990,11 @@ enum EncodedVideoChunkType {
 :: The byte length of {{EncodedVideoChunk/[[internal data]]}}.
 
 ### Methods ###{#encodedvideochunk-methods}
-: <dfn method for=EncodedVideoChunk>copyTo(dst)</dfn>
+: <dfn method for=EncodedVideoChunk>copyTo(destination)</dfn>
 :: When invoked, run these steps:
     1. If {{EncodedVideoChunk/byteLength}} is greater than
-        |dst|.`byteLength`,
-        throw a {{TypeError}}.
-    2. Copy the {{EncodedVideoChunk/[[internal data]]}} into |dst|.
+        |destination|.`byteLength`, throw a {{TypeError}}.
+    2. Copy the {{EncodedVideoChunk/[[internal data]]}} into |destination|.
 
 
 Raw Media Interfaces {#raw-media-interfaces}
@@ -2051,12 +2049,12 @@ AudioData Interface {#audiodata-interface}
 interface AudioData {
   constructor(AudioDataInit init);
 
-  readonly attribute AudioSampleFormat sampleFormat;
+  readonly attribute AudioSampleFormat format;
   readonly attribute float sampleRate;
   readonly attribute unsigned long numberOfFrames;
   readonly attribute unsigned long numberOfChannels;
-  readonly attribute long long duration;     // microseconds
-  readonly attribute long long timestamp;    // microseconds
+  readonly attribute unsigned long long duration;  // microseconds
+  readonly attribute long long timestamp;          // microseconds
 
   unsigned long allocationSize(AudioDataCopyToOptions options);
   undefined copyTo([AllowShared] BufferSource destination, AudioDataCopyToOptions options);
@@ -2065,11 +2063,11 @@ interface AudioData {
 };
 
 dictionary AudioDataInit {
-  required AudioSampleFormat sampleFormat;
+  required AudioSampleFormat format;
   [EnforceRange] required float sampleRate;
   [EnforceRange] required unsigned long numberOfFrames;
   [EnforceRange] required unsigned long numberOfChannels;
-  [EnforceRange] required long long timestamp;    // microseconds
+  [EnforceRange] required long long timestamp;  // microseconds
   required BufferSource data;
 };
 </xmp>
@@ -2083,7 +2081,7 @@ dictionary AudioDataInit {
 :: A reference to a [=media resource=] that stores the audio sample data for
     this {{AudioData}}.
 
-: <dfn attribute for=AudioData>[[sample format]]</dfn>
+: <dfn attribute for=AudioData>\[[format]]</dfn>
 :: The {{AudioSampleFormat}} used by this {{AudioData}}.
 
 : <dfn attribute for=AudioData>[[sample rate]]</dfn>
@@ -2104,8 +2102,8 @@ dictionary AudioDataInit {
 </dfn>
 1. Let |frame| be a new {{AudioData}} object, initialized as follows:
     1. Assign `false` to {{AudioData/[[detached]]}}.
-    2. Assign |init|.{{AudioDataInit/sampleFormat}} to
-        {{AudioData/[[sample format]]}}.
+    2. Assign |init|.{{AudioDataInit/format}} to
+        {{AudioData/[[format]]}}.
     3. Assign |init|.{{AudioDataInit/sampleRate}} to
         {{AudioData/[[sample rate]]}}.
     4. Assign |init|.{{AudioDataInit/numberOfFrames}} to
@@ -2122,11 +2120,11 @@ dictionary AudioDataInit {
 
 ### Attributes ###{#audiodata-attributes}
 
-: <dfn attribute for=AudioData>sampleFormat</dfn>
+: <dfn attribute for=AudioData>format</dfn>
 :: The {{AudioSampleFormat}} used by this {{AudioData}}.
 
-    The {{AudioData/sampleFormat}} getter steps are to return
-    {{AudioData/[[sample format]]}}.
+    The {{AudioData/format}} getter steps are to return
+    {{AudioData/[[format]]}}.
 
 : <dfn attribute for=AudioData>sampleRate</dfn>
 :: The sample-rate, in Hz, for this {{AudioData}}.
@@ -2170,7 +2168,7 @@ dictionary AudioDataInit {
     1. Let |copyElementCount| be the result of running the
         [=Compute Copy Element Count=] algorithm with |options|.
     2. Let |bytesPerSample| be the number of bytes per sample, as defined by
-        the {{AudioData/[[sample format]]}}.
+        the {{AudioData/[[format]]}}.
     3. Return the product of multiplying |bytesPerSample| by
         |copyElementCount|.
 
@@ -2184,7 +2182,7 @@ dictionary AudioDataInit {
     2. Let |copyElementCount| be the result of running the
         [=Compute Copy Element Count=] algorithm with |options|.
     3. Let |bytesPerSample| be the number of bytes per sample, as defined by
-        the {{AudioData/[[sample format]]}}.
+        the {{AudioData/[[format]]}}.
     4. If the product of multiplying |bytesPerSample| by |copyElementCount| is
         greater than `destination.byteLength`, throw a {{RangeError}}.
     5. Let |resource| be the [=media resource=] referenced by
@@ -2228,7 +2226,7 @@ dictionary AudioDataInit {
         2. Otherwise, assign |options|.{{AudioDataCopyToOptions/frameCount}}
             to |copyFrameCount|.
     5. Let |elementCount| be |copyFrameCount|.
-    6. If {{AudioData/[[sample format]]}} describes an interleaved
+    6. If {{AudioData/[[format]]}} describes an interleaved
         {{AudioSampleFormat}}, mutliply |elementCount| by
         {{AudioData/[[number of channels]]}}
     7. return |elementCount|.
@@ -2241,7 +2239,7 @@ dictionary AudioDataInit {
         2. Let |reference| be a new reference to |resource|.
         3. Assign |reference| to {{AudioData/[[resource reference]]}}.
         4. Assign the values of |data|'s {{AudioData/[[detached]]}},
-            {{AudioData/[[sample format]]}}, {{AudioData/[[sample rate]]}},
+            {{AudioData/[[format]]}}, {{AudioData/[[sample rate]]}},
             {{AudioData/[[number of frames]]}},
             {{AudioData/[[number of channels]]}}, and
             {{AudioData/[[timestamp]]}} slots to the corresponding slots in
@@ -2466,8 +2464,8 @@ interface VideoFrame {
 
   readonly attribute unsigned long displayWidth;
   readonly attribute unsigned long displayHeight;
-  readonly attribute long long? duration;     // microseconds
-  readonly attribute long long? timestamp;    // microseconds
+  readonly attribute unsigned long long? duration;  // microseconds
+  readonly attribute long long? timestamp;          // microseconds
 
   // Returns the minimum size (in bytes) of a buffer that copyTo() could
   // copy this frame into with the given options.
@@ -2485,8 +2483,8 @@ interface VideoFrame {
 };
 
 dictionary VideoFrameInit {
-  long long duration;     // microseconds
-  long long timestamp;    // microseconds
+  unsigned long long duration;  // microseconds
+  long long timestamp;          // microseconds
 };
 
 dictionary VideoFramePlaneInit {
@@ -2496,8 +2494,8 @@ dictionary VideoFramePlaneInit {
   VideoFrameRect visibleRect;
   [EnforceRange] unsigned long displayWidth;
   [EnforceRange] unsigned long displayHeight;
-  [EnforceRange] long long duration;     // microseconds
-  [EnforceRange] long long timestamp;    // microseconds
+  [EnforceRange] unsigned long long duration;  // microseconds
+  [EnforceRange] long long timestamp;          // microseconds
 };
 
 dictionary PlaneInit {
