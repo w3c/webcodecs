@@ -2455,29 +2455,17 @@ interface VideoFrame {
   readonly attribute PixelFormat format;
   readonly attribute unsigned long codedWidth;
   readonly attribute unsigned long codedHeight;
-
-  // Convenience accessor, origin is always (0, 0).
   readonly attribute VideoFrameRect codedRect;
-
-  // Rectangle of this frame's pixel data that is not padding.
   readonly attribute VideoFrameRect visibleRect;
-
   readonly attribute unsigned long displayWidth;
   readonly attribute unsigned long displayHeight;
   readonly attribute unsigned long long? duration;  // microseconds
   readonly attribute long long? timestamp;          // microseconds
-
-  // Returns the minimum size (in bytes) of a buffer that copyTo() could
-  // copy this frame into with the given options.
   unsigned long allocationSize(
       optional VideoFrameCopyToOptions options = {});
-
-  // Copy the planes of this frame into |destination| according to |options|.
-  // The format of the data is the same as this frame's |format|.
   Promise<sequence<PlaneLayout>> copyTo(
-      BufferSource destination,
+      [AllowShared] BufferSource destination,
       optional VideoFrameCopyToOptions options = {});
-
   VideoFrame clone();
   undefined close();
 };
@@ -2710,11 +2698,38 @@ dictionary PlaneInit {
     {{VideoFrame/[[coded width]]}}.
 
 : <dfn attribute for=VideoFrame>codedHeight</dfn>
-:: Height of the VideoFrame in pixels, potentionally including non-visible
+:: Height of the {{VideoFrame}} in pixels, potentionally including non-visible
     padding, and prior to considering potential ratio adjustments.
 
     The {{VideoFrame/codedHeight}} getter steps are to return
     {{VideoFrame/[[coded height]]}}.
+
+: <dfn attribute for=VideoFrame>codedRect</dfn>
+:: A {{VideoFrameRect}} with width and height matching {{VideoFrame/codedWidth}}
+    and {{VideoFrame/codedHeight}} and origin always at (0,0). Offered for
+    convenience for use with {{VideoFrame/allocationSize()}} and
+    {{VideoFrame/copyTo()}}.
+
+    The {{VideoFrame/codedRect}} getter steps are:
+    1. Let |rect| be a new {{VideoFrameRect}}, initialized as follows:
+        1. Assign `0` to {{VideoFrameRect/left}} and {{VideoFrameRect/top}}.
+        2. Assign {{VideoFrame/[[coded width]]}} and
+            {{VideoFrame/[[coded height]]}} to {{VideoFrameRect/width}} and
+            {{VideoFrameRect/height}} respectively.
+    2. Return |rect|.
+
+: <dfn attribute for=VideoFrame>visibleRect</dfn>
+:: A {{VideoFrameRect}} describing the visible rectangle of pixels for this
+    {{VideoFrame}}.
+
+    The {{VideoFrame/visibleRect}} getter steps are:
+    1. Let |rect| be a new {{VideoFrameRect}}, initialized as follows:
+        1. Assign {{VideoFrame/[[visible left]]}},
+            {{VideoFrame/[[visible top]]}}, {{VideoFrame/[[visible width]]}},
+            and {{VideoFrame/[[visible height]]}} to {{VideoFrameRect/left}},
+            {{VideoFrameRect/top}}, {{VideoFrameRect/width}}, and
+            {{VideoFrameRect/height}} respectively.
+    2. Return |rect|.
 
 : <dfn attribute for=VideoFrame>displayWidth</dfn>
 :: Width of the VideoFrame when displayed after applying aspect ratio
@@ -2745,6 +2760,27 @@ dictionary PlaneInit {
     {{VideoFrame/[[duration]]}}.
 
 ### Methods ###{#videoframe-methods}
+: <dfn method for=VideoFrame>allocationSize(|options|)</dfn>
+:: Returns the minimum byte length for a valid destination {{BufferSource}}
+    to be used with {{VideoFrame/copyTo()}} with the given options.
+
+    When invoked, run these steps:
+    1. If {{VideoFrame/[[detached]]}} is `true`, return `0`.
+    2. If {{VideoFrame/[[format]]}} is `""`, throw a {{NotSupportedError}}
+        {{DOMException}}.
+    3. TODO
+
+: <dfn method for=VideoFrame>copyTo(|destination|, |options|)</dfn>
+:: Asynchronously copies the planes of this frame into |destination| according
+    to |options|. The format of the data is the same as this {{VideoFrame}}'s
+    {{VideoFrame/format}}.
+
+    When invoked, run these steps:
+    1. If {{VideoFrame/[[detached]]}} is `true`, return `0`.
+    2. If {{VideoFrame/[[format]]}} is `""`, throw a {{NotSupportedError}}
+        {{DOMException}}.
+    3. TODO
+
 : <dfn method for=VideoFrame>clone()</dfn>
 :: Creates a new {{VideoFrame}} with a reference to the same
     [=media resource=].
@@ -2754,7 +2790,6 @@ dictionary PlaneInit {
         `true`, throw an {{InvalidStateError}} {{DOMException}}.
     2. Return the result of running the [=Clone VideoFrame=] algorithm with
         [=this=].
-
 
 : <dfn method for=VideoFrame>close()</dfn>
 :: Clears all state and releases the reference to the [=media resource=].
@@ -2868,47 +2903,82 @@ dictionary PlaneInit {
 
 VideoFrame CopyTo() Options {#videoframe-copyto-options}
 ------------------------------------------------------------
-Options to specify which {{VideoFrameRect}} to copy and the location and
-padding of planes in the destination buffer.
+Options to specify which {{VideoFrameRect}} to copy and the offset and
+stride of planes in the destination buffer.
 
 <xmp class='idl'>
 dictionary VideoFrameCopyToOptions {
-  // The rectangle to copy. If unspecified, the visibleRect will be used.
-  // The codedRect can be easily specified by passing frame.codedRect.
   VideoFrameRect rect;
-
-  // The layout of each plane in the buffer. This allows the offset and stride
-  // of each plane to be specified. If unspecified, the planes will be tightly
-  // packed. It is invalid to specify planes that overlap.
   sequence<PlaneLayout> layout;
 };
 </xmp>
 
+: <dfn dict-member for=VideoFrameCopyToOptions>rect</dfn>
+:: The {{VideoFrameRect}} describing the rectangle of pixels to copy from the
+    {{VideoFrame}}. If unspecified, the {{VideoFrame/visibleRect}} will be used.
+
+    NOTE: The coded rectangle can be easily specified by passing
+        {{VideoFrame}}'s {{VideoFrame/codedRect}}.
+
+: <dfn dict-member for=VideoFrameCopyToOptions>layout</dfn>
+:: The {{PlaneLayout}} for each plane in {{VideoFrame}}, affording the option
+    to specify an offset and stride for each plane in the destination
+    {{BufferSource}}. If unspecified, the planes will be tightly packed. It is
+    invalid to specify planes that overlap.
+
 VideoFrame Rectangle (Rect) {#videoframe-rect}
---------------------------------------
-A dictionary specifying the position and dimensions of a rectangle of pixels within a {{VideoFrame}}.
+----------------------------------------------
+A {{VideoFrameRect}} is a dictionary specifying the position and dimensions of
+a rectangle of pixels within a {{VideoFrame}}. {{VideoFrameRect}} is used with
+{{VideoFrame/copyTo()}} and {{VideoFrame/allocationSize()}} to describe the
+dimensions of the source rectangle. {{VideoFrame}} defines
+{{VideoFrame/codedRect}} and {{VideoFrame/visibleRect}} for convenient copying
+ of the coded size and visible region respectively.
 
 <xmp class='idl'>
 dictionary VideoFrameRect {
-  required [EnforceRange] unsigned long left;
-  required [EnforceRange] unsigned long top;
-  required [EnforceRange] unsigned long width;
-  required [EnforceRange] unsigned long height;
+  [EnforceRange] required unsigned long left;
+  [EnforceRange] required unsigned long top;
+  [EnforceRange] required unsigned long width;
+  [EnforceRange] required unsigned long height;
 };
 </xmp>
+
+: <dfn dict-member for=VideoFrameRect>left</dfn>
+:: The left offset in pixels for this {{VideoFrameRect}}.
+
+: <dfn dict-member for=VideoFrameRect>top</dfn>
+:: The top offset in pixels for this {{VideoFrameRect}}.
+
+: <dfn dict-member for=VideoFrameRect>width</dfn>
+:: The width in pixels for this {{VideoFrameRect}}.
+
+: <dfn dict-member for=VideoFrameRect>height</dfn>
+:: The height in pixels for this {{VideoFrameRect}}.
 
 Plane Layout{#plane-layout}
 ---------------------------
-Plane layouts describe the position (offset) and padded width (stride) of a
-plane within a buffer.
+A {{PlaneLayout}} is a dictionary specifying the offset and stride of a
+{{VideoFrame}} plane once copied to a {{BufferSource}}. A sequence of
+{{PlaneLayout}}s may be provided to {{VideoFrame}}'s {{VideoFrame/copyTo()}} to
+specify how the plane is laid out in the destination {{BufferSource}}}.
+Alternatively, callers can inspect {{VideoFrame/copyTo()}}'s returned sequence
+of {{PlaneLayout}}s to learn the the offset and stride for planes as decided by
+the user agent.
 
 <xmp class='idl'>
 dictionary PlaneLayout {
-  [EnforceRange] unsigned long offset;
-  [EnforceRange] unsigned long stride;
+  [EnforceRange] required unsigned long offset;
+  [EnforceRange] required unsigned long stride;
 };
 </xmp>
 
+: <dfn dict-member for=PlaneLayout>offset</dfn>
+:: The offset in bytes where the given plane begins within a {{BufferSource}}.
+
+: <dfn dict-member for=PlaneLayout>stride</dfn>
+:: The number of bytes, including padding, used by each row of the plane within
+    a {{BufferSource}}.
 
 Pixel Format{#pixel-format}
 ---------------------------
