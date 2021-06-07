@@ -1995,39 +1995,48 @@ enum EncodedVideoChunkType {
 ### Internal Slots ### {#encodedvideochunk-internal-slots}
 : <dfn attribute for=EncodedVideoChunk>[[internal data]]</dfn></dt>
 :: An array of bytes representing the encoded chunk data.
+: <dfn attribute for=EncodedVideoChunk>\[[type]]</dfn>
+:: The {{EncodedAudioChunkType}} of this {{EncodedVideoChunk}};
+: <dfn attribute for=EncodedVideoChunk>\[[timestamp]]</dfn>
+:: The presentation timestamp, given in microseconds.
+: <dfn attribute for=EncodedVideoChunk>\[[duration]]</dfn>
+:: The presentation duration, given in microseconds.
+: <dfn attribute for=EncodedVideoChunk>[[byte length]]</dfn>
+:: The byte length of {{EncodedVideoChunk/[[internal data]]}}.
 
 ### Constructors ###{#encodedvideochunk-constructors}
 <dfn constructor for=EncodedVideoChunk title="EncodedVideoChunk(init)">
   EncodedVideoChunk(init)
 </dfn>
 1. Let |chunk| be a new {{EncodedVideoChunk}} object, initialized as follows
-    1. Assign `init.type` to {{EncodedVideoChunk/type}}.
-    2. Assign `init.timestamp` to {{EncodedVideoChunk/timestamp}}.
+    1. Assign `init.type` to {{EncodedVideoChunk/[[type]]}}.
+    2. Assign `init.timestamp` to {{EncodedVideoChunk/[[timestamp]]}}.
     3. If duration is present in init, assign `init.duration` to
-        {{EncodedVideoChunk/duration}}. Otherwise, assign `null` to
-        {{EncodedVideoChunk/duration}}.
+        {{EncodedVideoChunk/[[duration]]}}. Otherwise, assign `null` to
+        {{EncodedVideoChunk/[[duration]]}}.
     4. Assign a copy of `init.data` to {{EncodedVideoChunk/[[internal data]]}}.
-    5. Assign `init.data.byteLength` to {{EncodedVideoChunk/byteLength}};
+    5. Assign `init.data.byteLength` to {{EncodedVideoChunk/[[byte length]]}};
 3. Return |chunk|.
 
 ### Attributes ###{#encodedvideochunk-attributes}
 : <dfn attribute for=EncodedVideoChunk>type</dfn>
-:: Describes whether the chunk is a [=key chunk=].
+:: Returns the value of {{EncodedVideoChunk/[[type]]}}.
 
 : <dfn attribute for=EncodedVideoChunk>timestamp</dfn>
-:: The presentation timestamp, given in microseconds.
+:: Returns the value of {{EncodedVideoChunk/[[timestamp]]}}.
 
 : <dfn attribute for=EncodedVideoChunk>duration</dfn>
-:: The presentation duration, given in microseconds.
+:: Returns the value of {{EncodedVideoChunk/[[duration]]}}.
 
 : <dfn attribute for=EncodedVideoChunk>byteLength</dfn>
-:: The byte length of {{EncodedVideoChunk/[[internal data]]}}.
+:: Returns the value of {{EncodedVideoChunk/[[byte length]]}}.
 
 ### Methods ###{#encodedvideochunk-methods}
 : <dfn method for=EncodedVideoChunk>copyTo(destination)</dfn>
 :: When invoked, run these steps:
-    1. If {{EncodedVideoChunk/byteLength}} is greater than
-        |destination|.`byteLength`, throw a {{TypeError}}.
+    1. If {{EncodedVideoChunk/[[byte length]]}} is greater than
+        the {{EncodedVideoChunk/[[byte length]]}} of |destination|, throw a
+        {{TypeError}}.
     2. Copy the {{EncodedVideoChunk/[[internal data]]}} into |destination|.
 
 
