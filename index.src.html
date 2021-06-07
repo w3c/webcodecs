@@ -3177,7 +3177,7 @@ interface ImageDecoder {
     12. If |init|'s {{ImageDecoderInit/data}} member is of type
         {{ReadableStream}}:
         1. Assign a new [=list=] to {{ImageDecoder/[[encoded data]]}}.
-        2. Assign `false` to {{ImageDecoder/complete}}
+        2. Assign `false` to {{ImageDecoder/[[complete]]}}
         3. [=Queue a control message=] to [=configure the image decoder=] with
             |init|.
         4. Let |reader| be the result of [=getting a reader=] for
@@ -3187,7 +3187,7 @@ interface ImageDecoder {
     13. Otherwise:
         1. Assert that `init.data` is of type {{BufferSource}}.
         2. Assign a copy of `init.data` to  {{ImageDecoder/[[encoded data]]}}.
-        3. Assign `true` to {{ImageDecoder/complete}}.
+        3. Assign `true` to {{ImageDecoder/[[complete]]}}.
         4. Reslove {{ImageDecoder/[[completed promise]]}}.
         5. Queue a control message to [=configure the image decoder=] with
             |init|.
@@ -3309,7 +3309,7 @@ interface ImageDecoder {
             7. Run the [=Fetch Stream Data Loop=] algorithm with |reader|.
 
         : [=read request/close steps=]
-        :: 1. Assign `true` to {{ImageDecoder/complete}}
+        :: 1. Assign `true` to {{ImageDecoder/[[complete]]}}
             2. Resolve {{ImageDecoder/[[completed promise]]}}.
 
         : [=read request/error steps=]
