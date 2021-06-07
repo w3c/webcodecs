@@ -270,6 +270,8 @@ Internal Slots {#audiodecoder-internal-slots}
 :: A boolean indicating that the next chunk passed to {{AudioDecoder/decode()}}
     must describe a [=key chunk=] as indicated by
     {{EncodedAudioChunk/type}}.
+: <dfn attribute for=AudioDecoder>\[[state]]</dfn>
+:: The current {{CodecState}} of this {{AudioDecoder}}.
 
 Constructors {#audiodecoder-constructors}
 -----------------------------------------
@@ -280,7 +282,7 @@ Constructors {#audiodecoder-constructors}
 2. Assign init.output to {{AudioDecoder/[[output callback]]}}.
 3. Assign init.error to {{AudioDecoder/[[error callback]]}}.
 4. Assign `true` to {{AudioDecoder/[[key chunk required]]}}.
-5. Assign "unconfigured" to d.state.
+5. Assign `"unconfigured"` to {{AudioDecoder/[[state]]}}
 6. Return d.
 
 Attributes {#audiodecoder-attributes}
@@ -289,7 +291,7 @@ Attributes {#audiodecoder-attributes}
   <dt>
     <dfn attribute for=AudioDecoder>state</dfn>
   </dt>
-  <dd>Describes the current state of the codec.</dd>
+  <dd>Returns the value of {{AudioDecoder/[[state]]}}.</dd>
   <dt>
     <dfn attribute for=AudioDecoder>decodeQueueSize</dfn>
   </dt>
@@ -315,8 +317,8 @@ Methods {#audiodecoder-methods}
     When invoked, run these steps:
     1. If |config| is not a [=valid AudioDecoderConfig=], throw a
         {{TypeError}}.
-    2. If {{AudioDecoder/state}} is `“closed”`, throw an {{InvalidStateError}}.
-    3. Set {{AudioDecoder/state}} to `"configured"`.
+    2. If {{AudioDecoder/[[state]]}} is `“closed”`, throw an {{InvalidStateError}}.
+    3. Set {{AudioDecoder/[[state]]}} to `"configured"`.
     4. Set {{AudioDecoder/[[key chunk required]]}} to `true`.
     5. [=Queue a control message=] to configure the decoder with |config|.
 
@@ -336,7 +338,7 @@ Methods {#audiodecoder-methods}
     [=Enqueues a control message=] to decode the given |chunk|.
 
     When invoked, run these steps:
-    1. If {{AudioDecoder/state}} is not `"configured"`, throw an
+    1. If {{AudioDecoder/[[state]]}} is not `"configured"`, throw an
         {{InvalidStateError}}.
     2. If {{AudioDecoder/[[key chunk required]]}} is `true`:
         1. If |chunk|.{{EncodedAudioChunk/type}} is not
@@ -372,7 +374,7 @@ Methods {#audiodecoder-methods}
     and emits all outputs.
 
     When invoked, run these steps:
-    1. If {{AudioDecoder/state}} is not `"configured"`, return
+    1. If {{AudioDecoder/[[state]]}} is not `"configured"`, return
         [=a promise rejected with=] {{InvalidStateError}} {{DOMException}}.
     2. Set {{AudioDecoder/[[key chunk required]]}} to `true`.
     3. Let |promise| be a new Promise.
@@ -462,8 +464,8 @@ Algorithms {#audiodecoder-algorithms}
   <dt><dfn>Reset AudioDecoder</dfn></dt>
   <dd>
     Run these steps:
-    1. If {{AudioDecoder/state}} is `"closed"`, throw an {{InvalidStateError}}.
-    2. Set {{AudioDecoder/state}} to `"unconfigured"`.
+    1. If {{AudioDecoder/[[state]]}} is `"closed"`, throw an {{InvalidStateError}}.
+    2. Set {{AudioDecoder/[[state]]}} to `"unconfigured"`.
     3. Signal {{AudioDecoder/[[codec implementation]]}} to cease producing
         output for the previous configuration.
     4. [=Reset the control message queue=].
@@ -473,7 +475,7 @@ Algorithms {#audiodecoder-algorithms}
   <dd>
     Run these steps:
     1. Run the [=Reset AudioDecoder=] algorithm.
-    2. Set {{AudioDecoder/state}} to `"closed"`.
+    2. Set {{AudioDecoder/[[state]]}} to `"closed"`.
     3. Clear {{AudioDecoder/[[codec implementation]]}} and release associated
         [=system resources=].
     4. If |error| is set, queue a task on the [=control thread=] event loop to
@@ -520,8 +522,9 @@ Internal Slots {#videodecoder-internal-slots}
 : <dfn attribute for=VideoDecoder>[[active decoder config]]</dfn>
 :: The {{VideoDecoderConfig}} that is actively applied.
 : <dfn attribute for=VideoDecoder>[[key chunk required]]</dfn>
-:: A boolean indicating that the next chunk passed to {{VideoDecoder/decode()}}
-    must describe a [=key chunk=] as indicated by {{EncodedVideoChunk/type}}.
+:: A boolean indicating that the next chunk passed to {{VideoDecoder/decode()}} must describe a [=key chunk=] as indicated by {{EncodedVideoChunk/type}}.
+: <dfn attribute for=VideoDecoder>\[[state]]</dfn>
+:: The current {{CodecState}} of this {{VideoDecoder}}.
 
 Constructors {#videodecoder-constructors}
 -----------------------------------------
@@ -532,7 +535,7 @@ Constructors {#videodecoder-constructors}
 2. Assign `init.output` to the {{VideoDecoder/[[output callback]]}} internal slot.
 3. Assign `init.error` to the {{VideoDecoder/[[error callback]]}} internal slot.
 4. Assign `true` to {{VideoDecoder/[[key chunk required]]}}.
-5. Assign "unconfigured" to `d.state`.
+5. Assign `"unconfigured"` to {{VideoDecoder/[[state]]}}.
 5. Return d.
 
 Attributes {#videodecoder-attributes}
@@ -541,7 +544,9 @@ Attributes {#videodecoder-attributes}
   <dt>
     <dfn attribute for=VideoDecoder>state</dfn>
   </dt>
-  <dd>Describes the current state of the codec.</dd>
+  <dd>
+    Returns the value of {{VideoDecoder/[[state]]}}.
+  </dd>
   <dt>
     <dfn attribute for=VideoDecoder>decodeQueueSize</dfn>
   </dt>
@@ -567,8 +572,8 @@ Methods {#videodecoder-methods}
     When invoked, run these steps:
     1. If |config| is not a [=valid VideoDecoderConfig=], throw a
         {{TypeError}}.
-    2. If {{VideoDecoder/state}} is `“closed”`, throw an {{InvalidStateError}}.
-    3. Set {{VideoDecoder/state}} to `"configured"`.
+    2. If {{VideoDecoder/[[state]]}} is `“closed”`, throw an {{InvalidStateError}}.
+    3. Set {{VideoDecoder/[[state]]}} to `"configured"`.
     4. Set {{VideoDecoder/[[key chunk required]]}} to `true`.
     5. [=Queue a control message=] to configure the decoder with |config|.
 
@@ -595,7 +600,7 @@ Methods {#videodecoder-methods}
         decoding to stall.
 
     When invoked, run these steps:
-    1. If {{VideoDecoder/state}} is not `"configured"`, throw an
+    1. If {{VideoDecoder/[[state]]}} is not `"configured"`, throw an
         {{InvalidStateError}}.
     2. If {{VideoDecoder/[[key chunk required]]}} is `true`:
         1. If |chunk|.{{EncodedVideoChunk/type}} is not
@@ -630,7 +635,7 @@ Methods {#videodecoder-methods}
     and emits all outputs.
 
     When invoked, run these steps:
-    1. If {{VideoDecoder/state}} is not `"configured"`, return
+    1. If {{VideoDecoder/[[state]]}} is not `"configured"`, return
         [=a promise rejected with=] {{InvalidStateError}} {{DOMException}}.
     2. Set {{VideoDecoder/[[key chunk required]]}} to `true`.
     3. Let |promise| be a new Promise.
@@ -784,6 +789,10 @@ Internal Slots {#audioencoder-internal-slots}
   The {{AudioDecoderConfig}} that describes how to decode the most recently
   emitted {{EncodedAudioChunk}}.
 </dd>
+<dt><dfn attribute for=AudioEncoder>\[[state]]</dfn></dt>
+<dd>
+  The current {{CodecState}} of this {{AudioEncoder}}.
+</dd>
 </dl>
 
 Constructors {#audioencoder-constructors}
@@ -794,7 +803,7 @@ Constructors {#audioencoder-constructors}
 1. Let e be a new AudioEncoder object.
 2. Assign `init.output` to the {{AudioEncoder/[[output callback]]}} internal slot.
 3. Assign `init.error` to the {{AudioEncoder/[[error callback]]}} internal slot.
-4. Assign "unconfigured" to `e.state`.
+4. Assign `"unconfigured"` to {{AudioEncoder/[[state]]}}.
 5. Assign `null` to {{AudioEncoder/[[active encoder config]]}}.
 6. Assign `null` to {{AudioEncoder/[[active output config]]}}.
 7. Return e.
@@ -805,7 +814,7 @@ Attributes {#audioencoder-attributes}
   <dt>
     <dfn attribute for=AudioEncoder>state</dfn>
   </dt>
-  <dd>Describes the current state of the codec.</dd>
+  <dd>Returns the value of {{AudioEncoder/[[state]]}}.</dd>
   <dt>
     <dfn attribute for=AudioEncoder>encodeQueueSize</dfn>
   </dt>
@@ -831,8 +840,8 @@ Methods {#audioencoder-methods}
     When invoked, run these steps:
     1. If |config| is not a [=valid AudioEncoderConfig=], throw a
         {{TypeError}}.
-    2. If {{AudioEncoder/state}} is `"closed"`, throw an {{InvalidStateError}}.
-    3. Set {{AudioEncoder/state}} to `"configured"`.
+    2. If {{AudioEncoder/[[state]]}} is `"closed"`, throw an {{InvalidStateError}}.
+    3. Set {{AudioEncoder/[[state]]}} to `"configured"`.
     4. [=Queue a control message=] to configure the encoder using |config|.
 
     [=Running a control message=] to configure the encoder means performing these
@@ -854,7 +863,7 @@ Methods {#audioencoder-methods}
     When invoked, run these steps:
     1. If the value of |data|'s {{AudioData/[[detached]]}} internal slot is
         `true`, throw a {{TypeError}}.
-    2. If {{AudioEncoder/state}} is not `"configured"`, throw an
+    2. If {{AudioEncoder/[[state]]}} is not `"configured"`, throw an
         {{InvalidStateError}}.
     3. Let |dataClone| hold the result of running the [=Clone AudioData=]
         algorithm with |data|.
@@ -881,7 +890,7 @@ Methods {#audioencoder-methods}
     and emits all outputs.
 
     When invoked, run these steps:
-    1. If {{AudioEncoder/state}} is not `"configured"`, return
+    1. If {{AudioEncoder/[[state]]}} is not `"configured"`, return
         [=a promise rejected with=] {{InvalidStateError}} {{DOMException}}.
     2. Let |promise| be a new Promise.
     3. [=Queue a control message=] to flush the codec with |promise|.
@@ -997,8 +1006,8 @@ Algorithms {#audioencoder-algorithms}
   <dt><dfn>Reset AudioEncoder</dfn></dt>
   <dd>
     Run these steps:
-    1. If {{AudioEncoder/state}} is `"closed"`, throw an {{InvalidStateError}}.
-    2. Set {{AudioEncoder/state}} to `"unconfigured"`.
+    1. If {{AudioEncoder/[[state]]}} is `"closed"`, throw an {{InvalidStateError}}.
+    2. Set {{AudioEncoder/[[state]]}} to `"unconfigured"`.
     3. Set {{AudioEncoder/[[active encoder config]]}} to `null`.
     4. Set {{AudioEncoder/[[active output config]]}} to `null`.
     5. Signal {{AudioEncoder/[[codec implementation]]}} to cease producing
@@ -1010,7 +1019,7 @@ Algorithms {#audioencoder-algorithms}
   <dd>
     Run these steps:
     1. Run the [=Reset AudioEncoder=] algorithm.
-    2. Set {{AudioEncoder/state}} to `"closed"`.
+    2. Set {{AudioEncoder/[[state]]}} to `"closed"`.
     3. Clear {{AudioEncoder/[[codec implementation]]}} and release associated
         [=system resources=].
     4. If |error| is set, queue a task on the [=control thread=] event loop
@@ -1081,6 +1090,10 @@ Internal Slots {#videoencoder-internal-slots}
   The {{VideoDecoderConfig}} that describes how to decode the most recently
   emitted {{EncodedVideoChunk}}.
 </dd>
+<dt><dfn attribute for=VideoEncoder>\[[state]]</dfn></dt>
+<dd>
+  The current {{CodecState}} of this {{VideoEncoder}}.
+</dd>
 </dl>
 
 Constructors {#videoencoder-constructors}
@@ -1091,7 +1104,7 @@ Constructors {#videoencoder-constructors}
 1. Let e be a new VideoEncoder object.
 2. Assign `init.output` to the {{VideoEncoder/[[output callback]]}} internal slot.
 3. Assign `init.error` to the {{VideoEncoder/[[error callback]]}} internal slot.
-4. Assign "unconfigured" to `e.state`.
+4. Assign "unconfigured" to {{VideoEncoder/[[state]]}}.
 5. Return e.
 
 Attributes {#videoencoder-attributes}
@@ -1100,7 +1113,7 @@ Attributes {#videoencoder-attributes}
   <dt>
     <dfn attribute for=VideoEncoder>state</dfn>
   </dt>
-  <dd>Describes the current state of the codec.</dd>
+  <dd>Returns the value of {{VideoEncoder/[[state]]}}.</dd>
   <dt>
     <dfn attribute for=VideoEncoder>encodeQueueSize</dfn>
   </dt>
@@ -1126,8 +1139,8 @@ Methods {#videoencoder-methods}
     When invoked, run these steps:
     1. If |config| is not a [=valid VideoEncoderConfig=], throw a
         {{TypeError}}.
-    2. If {{VideoEncoder/state}} is `"closed"`, throw an {{InvalidStateError}}.
-    3. Set {{VideoEncoder/state}} to `"configured"`.
+    2. If {{VideoEncoder/[[state]]}} is `"closed"`, throw an {{InvalidStateError}}.
+    3. Set {{VideoEncoder/[[state]]}} to `"configured"`.
     4. [=Queue a control message=] to configure the encoder using |config|.
 
     [=Running a control message=] to configure the encoder means performing these
@@ -1149,7 +1162,7 @@ Methods {#videoencoder-methods}
     When invoked, run these steps:
     1. If the value of |frame|'s {{VideoFrame/[[detached]]}} internal slot is
         `true`, throw a {{TypeError}}.
-    2. If {{VideoEncoder/state}} is not `"configured"`, throw an
+    2. If {{VideoEncoder/[[state]]}} is not `"configured"`, throw an
         {{InvalidStateError}}.
     3. Let |frameClone| hold the result of running the [=Clone VideoFrame=]
         algorithm with |frame|.
@@ -1177,7 +1190,7 @@ Methods {#videoencoder-methods}
     and emits all outputs.
 
     When invoked, run these steps:
-    1. If {{VideoEncoder/state}} is not `"configured"`, return
+    1. If {{VideoEncoder/[[state]]}} is not `"configured"`, return
         [=a promise rejected with=] {{InvalidStateError}} {{DOMException}}.
     2. Let |promise| be a new Promise.
     3. [=Queue a control message=] to flush the codec with |promise|.
@@ -1302,8 +1315,8 @@ Algorithms {#videoencoder-algorithms}
   <dt><dfn>Reset VideoEncoder</dfn></dt>
   <dd>
     Run these steps:
-    1. If {{VideoEncoder/state}} is `"closed"`, throw an {{InvalidStateError}}.
-    2. Set {{VideoEncoder/state}} to `"unconfigured"`.
+    1. If {{VideoEncoder/[[state]]}} is `"closed"`, throw an {{InvalidStateError}}.
+    2. Set {{VideoEncoder/[[state]]}} to `"unconfigured"`.
     3. Set {{VideoEncoder/[[active encoder config]]}} to `null`.
     4. Set {{VideoEncoder/[[active output config]]}} to `null`.
     5. Signal {{VideoEncoder/[[codec implementation]]}} to cease producing
@@ -1315,7 +1328,7 @@ Algorithms {#videoencoder-algorithms}
   <dd>
     Run these steps:
     1. Run the [=Reset VideoEncoder=] algorithm.
-    2. Set {{VideoEncoder/state}} to `"closed"`.
+    2. Set {{VideoEncoder/[[state]]}} to `"closed"`.
     3. Clear {{VideoEncoder/[[codec implementation]]}} and release associated
         [=system resources=].
     4. If |error| is set, queue a task on the [=control thread=] event loop
