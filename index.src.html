@@ -269,7 +269,7 @@ Internal Slots {#audiodecoder-internal-slots}
 : <dfn attribute for=AudioDecoder>[[key chunk required]]</dfn>
 :: A boolean indicating that the next chunk passed to {{AudioDecoder/decode()}}
     must describe a [=key chunk=] as indicated by
-    {{EncodedAudioChunk/type}}.
+    {{EncodedAudioChunk/[[type]]}}.
 : <dfn attribute for=AudioDecoder>\[[state]]</dfn>
 :: The current {{CodecState}} of this {{AudioDecoder}}.
 : <dfn attribute for=AudioDecoder>\[[decodeQueueSize]]</dfn>
@@ -343,7 +343,7 @@ Methods {#audiodecoder-methods}
     1. If {{AudioDecoder/[[state]]}} is not `"configured"`, throw an
         {{InvalidStateError}}.
     2. If {{AudioDecoder/[[key chunk required]]}} is `true`:
-        1. If |chunk|.{{EncodedAudioChunk/type}} is not
+        1. If |chunk|.{{EncodedAudioChunk/[[type]]}} is not
             {{EncodedAudioChunkType/key}}, throw a {{DataError}}.
         2. Implementers should inspect the |chunk|'s
             {{EncodedAudioChunk/[[internal data]]}} to verify that
@@ -454,7 +454,7 @@ Algorithms {#audiodecoder-algorithms}
             3. Let |resourceReference| be a reference to |resource|.
             4. Assign |resourceReference| to
                 {{AudioData/[[resource reference]]}}.
-            5. Let |timestamp| be the {{EncodedAudioChunk/timestamp}} of the
+            5. Let |timestamp| be the {{EncodedAudioChunk/[[timestamp]]}} of the
                 {{EncodedAudioChunk}} associated with |output|.
             6. Assign |timestamp| to {{AudioData/[[timestamp]]}}.
             7. Assign values to {{AudioData/[[format]]}},
@@ -1904,6 +1904,7 @@ interface EncodedAudioChunk {
   constructor(EncodedAudioChunkInit init);
   readonly attribute EncodedAudioChunkType type;
   readonly attribute long long timestamp;    // microseconds
+  readonly attribute unsigned long duration; // microseconds
   readonly attribute unsigned long byteLength;
 
   undefined copyTo([AllowShared] BufferSource destination);
@@ -1924,33 +1925,44 @@ enum EncodedAudioChunkType {
 ### Internal Slots ### {#encodedaudiochunk-internal-slots}
 : <dfn attribute for=EncodedAudioChunk>[[internal data]]</dfn></dt>
 :: An array of bytes representing the encoded chunk data.
+: <dfn attribute for=EncodedAudioChunk>\[[type]]</dfn>
+:: Describes whether the chunk is a [=key chunk=].
+: <dfn attribute for=EncodedAudioChunk>\[[timestamp]]</dfn>
+:: The presentation timestamp, given in microseconds.
+: <dfn attribute for=EncodedAudioChunk>\[[duration]]</dfn>
+:: The presentation duration, given in microseconds.
+: <dfn attribute for=EncodedAudioChunk>[[byte length]]</dfn>
+:: The byte length of {{EncodedAudioChunk/[[internal data]]}}.
 
 ### Constructors ###{#encodedaudiochunk-constructors}
 <dfn constructor for=EncodedAudioChunk title="EncodedAudioChunk(init)">
   EncodedAudioChunk(init)
 </dfn>
 1. Let |chunk| be a new {{EncodedAudioChunk}} object, initialized as follows
-    1. Assign `init.type` to {{EncodedAudioChunk/type}}.
-    2. Assign `init.timestamp` to {{EncodedAudioChunk/timestamp}}.
+    1. Assign `init.type` to {{EncodedAudioChunk/[[type]]}}.
+    2. Assign `init.timestamp` to {{EncodedAudioChunk/[[timestamp]]}}.
     3. Assign a copy of `init.data` to {{EncodedAudioChunk/[[internal data]]}}.
-    4. Assign `init.data.byteLength` to {{EncodedAudioChunk/byteLength}};
+    4. Assign `init.data.byteLength` to {{EncodedAudioChunk/[[byte length]]}};
 5. Return |chunk|.
 
 ### Attributes ###{#encodedaudiochunk-attributes}
 : <dfn attribute for=EncodedAudioChunk>type</dfn>
-:: Describes whether the chunk is a [=key chunk=].
+:: Returns the value of {{EncodedAudioChunk/[[type]]}}.
 
 : <dfn attribute for=EncodedAudioChunk>timestamp</dfn>
-:: The presentation timestamp, given in microseconds.
+:: Returns the value of {{EncodedAudioChunk/[[timestamp]]}}.
+
+: <dfn attribute for=EncodedAudioChunk>duration</dfn>
+:: Returns the value of {{EncodedAudioChunk/[[duration]]}}.
 
 : <dfn attribute for=EncodedAudioChunk>byteLength</dfn>
-:: The byte length of {{EncodedAudioChunk/[[internal data]]}}.
+:: Returns the value of {{EncodedAudioChunk/[[byte length]]}}.
 
 ### Methods ###{#encodedaudiochunk-methods}
 : <dfn method for=EncodedAudioChunk>copyTo(destination)</dfn>
 :: When invoked, run these steps:
-    1. If {{EncodedAudioChunk/byteLength}} is greater than
-        |destination|.`byteLength`, throw a {{TypeError}}.
+    1. If the {{EncodedAudioChunk/[[byte length]]}} of this {{EncodedAudioChunk}} is
+        greater than in |destination|, throw a {{TypeError}}.
     2. Copy the {{EncodedAudioChunk/[[internal data]]}} into |destination|.
 
 EncodedVideoChunk Interface{#encodedvideochunk-interface}
