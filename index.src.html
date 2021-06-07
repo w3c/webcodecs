@@ -130,7 +130,7 @@ Definitions {#definitions}
 : <dfn>Internal Pending Output</dfn>
 :: Codec outputs such as {{VideoFrame}}s that currently reside in the internal
     pipeline of the underlying codec implementation. The underlying codec
-    implementation may emit new outputs only when a new inputs are provided. The
+    implementation may emit new outputs only when new inputs are provided. The
     underlying codec implementation must emit all outputs in response to a
     flush.
 
@@ -156,7 +156,7 @@ Definitions {#definitions}
 
 : <dfn>Primary Image Track</dfn>
 :: An image track that is marked by the given image file as being the default
-    track. The mechanism for indiciating a primary track is format defined.
+    track. The mechanism for indicating a primary track is format defined.
 
 
 <dfn>Codec Processing Model</dfn> {#codec-processing-model-section}
@@ -175,13 +175,13 @@ a separate thread for parallel execution.
 
 This section describes threading behaviors as they are visible from the
 perspective of web authors. Implementers may choose to use more or less threads
-as long the exernally visible behaviors of blocking and sequencing are
+as long as the exernally visible behaviors of blocking and sequencing are
 maintained as follows.
 
 Control Thread and Codec Thread {#control-thread-and-codec-thread}
 ------------------------------------------------------------------
 
-All steps in this specificaiton will run on either a [=control thread=] or
+All steps in this specification will run on either a [=control thread=] or
 a [=codec thread=].
 
 The <dfn>control thread</dfn> is the thread from which authors will construct
@@ -208,7 +208,7 @@ Each [=codec=] instance has a single <dfn>control message queue</dfn> that is
 a [=queue=] of <dfn>control messages</dfn>.
 
 <dfn lt="Enqueues a control message|Queue a control message">Queuing a control
-message</dfn> means [=enqueing=] the message to a [=codec=]’s [=control
+message</dfn> means [=enqueuing=] the message to a [=codec=]’s [=control
 message queue=]. Invoking codec methods will often queue a control message
 to schedule work.
 
@@ -226,7 +226,7 @@ that enqueued the message. The steps of a control message may depend on
 
 The <dfn>codec processing loop</dfn> must run these steps:
 1. While true:
-    1. If the [=control message queue=] is emtpy, [=continue=].
+    1. If the [=control message queue=] is empty, [=continue=].
     2. Dequeue |front message| from the [=control message queue=].
     3. Run [=control message steps=] described by |front message|.
 
@@ -327,7 +327,7 @@ Methods {#audiodecoder-methods}
     [=Running a control message=] to configure the decoder means running
     these steps:
     1. Let |supported| be the result of running the <a>Check Configuration
-        Support</a> algorith with |config|.
+        Support</a> algorithm with |config|.
     2. If |supported| is `true`, assign
         {{AudioDecoder/[[codec implementation]]}} with an implementation
         supporting |config|.
@@ -362,7 +362,7 @@ Methods {#audiodecoder-methods}
         event loop to run the [=Close AudioDecoder=] algorithm with
         {{EncodingError}}.
     3. Queue a task on the [=control thread=] event loop to decrement
-        {{AudioDecoder/[[decodeQueueSize]]}}
+        {{AudioDecoder/[[decodeQueueSize]]}}.
     4. Let |decoded outputs| be a [=list=] of decoded video data outputs emitted
         by {{AudioDecoder/[[codec implementation]]}}.
     5. If |decoded outputs| is not empty, queue a task on the [=control thread=]
@@ -419,8 +419,8 @@ Methods {#audiodecoder-methods}
 
     NOTE: The returned {{AudioDecoderSupport}} {{AudioDecoderSupport/config}}
         will contain only the dictionary members that user agent recognized.
-        Unrecognized dictionary memebers will be ignored. Authors may detect
-        unrecognized dictionary members by comparinging
+        Unrecognized dictionary members will be ignored. Authors may detect
+        unrecognized dictionary members by comparing
         {{AudioDecoderSupport/config}} to their provided |config|.
 
     When invoked, run these steps:
@@ -448,7 +448,7 @@ Algorithms {#audiodecoder-algorithms}
   <dd>
     Run these steps:
     1. For each |output| in |outputs|:
-        1. Let |data| be an {{AudioData}}, intialized as follows:
+        1. Let |data| be an {{AudioData}}, initialized as follows:
             1. Assign `false` to {{AudioData/[[detached]]}}.
             2. Let |resource| be the [=media resource=] described by |output|.
             3. Let |resourceReference| be a reference to |resource|.
@@ -583,7 +583,7 @@ Methods {#videodecoder-methods}
     [=Running a control message=] to configure the decoder means running
     these steps:
     1. Let |supported| be the result of running the <a>Check Configuration
-        Support</a> algorith with |config|.
+        Support</a> algorithm with |config|.
     2. If |supported| is `true`, assign
         {{VideoDecoder/[[codec implementation]]}} with an implementation
         supporting |config|.
@@ -596,7 +596,7 @@ Methods {#videodecoder-methods}
   <dd>
     [=Enqueues a control message=] to decode the given |chunk|.
 
-    NOTE: Authors should call {{VideoFrame/close()}} on ouput
+    NOTE: Authors should call {{VideoFrame/close()}} on output
         {{VideoFrame}}s immediately when frames are no longer needed. The
         underlying [=media resource=]s are owned by the {{VideoDecoder}} and
         failing to release them (or waiting for garbage collection) may cause
@@ -681,8 +681,8 @@ Methods {#videodecoder-methods}
 
     NOTE: The returned {{VideoDecoderSupport}} {{VideoDecoderSupport/config}}
         will contain only the dictionary members that user agent recognized.
-        Unrecognized dictionary memebers will be ignored. Authors may detect
-        unrecognized dictionary members by comparinging
+        Unrecognized dictionary members will be ignored. Authors may detect
+        unrecognized dictionary members by comparing
         {{VideoDecoderSupport/config}} to their provided |config|.
 
     When invoked, run these steps:
@@ -854,7 +854,7 @@ Methods {#audioencoder-methods}
     [=Running a control message=] to configure the encoder means performing these
     steps:
     1. Let |supported| be the result of running the <a>Check Configuration
-        Support</a> algorith with |config|.
+        Support</a> algorithm with |config|.
     2. If |supported| is `true`, assign
         {{AudioEncoder/[[codec implementation]]}} with an implementation
         supporting |config|.
@@ -939,8 +939,8 @@ Methods {#audioencoder-methods}
 
     NOTE: The returned {{AudioEncoderSupport}} {{AudioEncoderSupport/config}}
         will contain only the dictionary members that user agent recognized.
-        Unrecognized dictionary memebers will be ignored. Authors may detect
-        unrecognized dictionary members by comparinging
+        Unrecognized dictionary members will be ignored. Authors may detect
+        unrecognized dictionary members by comparing
         {{AudioEncoderSupport/config}} to their provided |config|.
 
     When invoked, run these steps:
@@ -983,7 +983,7 @@ Algorithms {#audioencoder-algorithms}
         4. Let |encoderConfig| be the
             {{AudioEncoder/[[active encoder config]]}}.
         5. Let |outputConfig| be a new {{AudioDecoderConfig}} that describes
-            |output|. Intialize |outputConfig| as follows:
+            |output|. Initialize |outputConfig| as follows:
             1. Assign |encoderConfig|.{{AudioEncoderConfig/codec}} to
                 |outputConfig|.{{AudioDecoderConfig/codec}}.
             2. Assign |encoderConfig|.{{AudioEncoderConfig/sampleRate}} to
@@ -1157,7 +1157,7 @@ Methods {#videoencoder-methods}
     [=Running a control message=] to configure the encoder means performing these
     steps:
     1. Let |supported| be the result of running the <a>Check Configuration
-        Support</a> algorith with |config|.
+        Support</a> algorithm with |config|.
     2. If |supported| is `true`, assign
         {{VideoEncoder/[[codec implementation]]}} with an implementation
         supporting |config|.
@@ -1243,8 +1243,8 @@ Methods {#videoencoder-methods}
 
     NOTE: The returned {{VideoEncoderSupport}} {{VideoEncoderSupport/config}}
         will contain only the dictionary members that user agent recognized.
-        Unrecognized dictionary memebers will be ignored. Authors may detect
-        unrecognized dictionary members by comparinging
+        Unrecognized dictionary members will be ignored. Authors may detect
+        unrecognized dictionary members by comparing
         {{VideoEncoderSupport/config}} to their provided |config|.
 
     When invoked, run these steps:
@@ -1784,8 +1784,8 @@ specialized hardware.
   strategy will be to prioritize hardware acceleration at higher resolutions
   with a fallback to software codecs if hardware acceleration fails.
 
-  Authors should carefully weigh the tradeoffs setting a hardware acceleration
-  preference. The precise trade-offs will be device-specific, but authors should
+  Authors should carefully weigh the tradeoffs when setting a hardware acceleration
+  preference. The precise tradeoffs will be device-specific, but authors should
   generally expect the following:
 
   * Setting a value of {{HardwareAcceleration/require}} may significantly
@@ -2074,7 +2074,7 @@ object.
 
 {{VideoFrame}}.{{VideoFrame/close()}} and {{AudioData}}.{{AudioData/close()}}
 will clear their [[resource reference]] slot, releasing the reference their
-[=media resource=]
+[=media resource=].
 
 A [=media resource=] must remain alive at least as long as it continues to be
 referenced by a `[[resource reference]]`.
@@ -2082,7 +2082,7 @@ referenced by a `[[resource reference]]`.
 NOTE: When a [=media resource=] is no longer referenced by a
     `[[resource reference]]`, the resource may be destroyed. User agents are
     encouraged to destroy such resources quickly to reduce memory pressure and
-    facilitate resouce reuse.
+    facilitate resource reuse.
 
 AudioData Interface {#audiodata-interface}
 ---------------------------------------------
@@ -2277,7 +2277,7 @@ dictionary AudioDataInit {
 : <dfn>Clone AudioData</dfn> (with |data|)
 :: Run these steps:
     1. Let |clone| be a new {{AudioData}} initialized as follows:
-        1. Let |resource| be the [=media resource=] refrenced by |data|'s
+        1. Let |resource| be the [=media resource=] referenced by |data|'s
             {{AudioData/[[resource reference]]}}.
         2. Let |reference| be a new reference to |resource|.
         3. Assign |reference| to {{AudioData/[[resource reference]]}}.
@@ -2334,7 +2334,7 @@ and a sample refer to the same thing.
 All audio [=samples=] in this specification are using linear pulse-code
 modulation (Linear PCM): quantization levels are uniform between values.
 
-Note: The Web Audio API, that is expected to be used with this specificaion,
+Note: The Web Audio API, that is expected to be used with this specification,
 also uses Linear PCM.
 
 <xmp class='idl'>
@@ -2406,7 +2406,7 @@ Note: The [[WEBAUDIO|Web Audio API]] currently uses {{FLTP}} exclusively.
 The <dfn>minimum value</dfn> and <dfn>maximum value</dfn> of an audio sample,
 for a particular audio sample type, are the values below which
 (respectively above which) audio clipping might occur. They are otherwise regular
-types, that can hold values outside this interval during intermeditate
+types, that can hold values outside this interval during intermediate
 processing.
 
 The <dfn>bias value</dfn> for an audio sample type is the value that often
@@ -2636,8 +2636,8 @@ dictionary VideoFramePlaneInit {
         2. Let |resource| be a new [=media resource=] containing a copy of
             |image|'s [=bitmap data=].
 
-            NOTE: Implementers are should avoid a deep copy by using reference
-                coutning where feasible.
+            NOTE: Implementers should avoid a deep copy by using reference
+                counting where feasible.
 
         3. Let |width| be `image.width` and |height| be `image.height`.
         4. Run the [=VideoFrame/Initialize Frame With Resource and Size=]
@@ -2691,7 +2691,7 @@ dictionary VideoFramePlaneInit {
 
         2. Let |plane| be a new {{Plane}} initialized as follows:
             1. Assign |frame| to {{Plane/[[parent frame]]}}.
-            2. Let |resourceStride| be the stride of the plane coresponding to
+            2. Let |resourceStride| be the stride of the plane corresponding to
                 |planeInit| in |resource|.
 
                 ISSUE: The spec should provide a definition (and possibly
@@ -2824,7 +2824,7 @@ dictionary VideoFramePlaneInit {
 :: Creates a new {{VideoFrame}} with a reference to the same
     [=media resource=].
 
-    When invoked, run the these steps:
+    When invoked, run these steps:
     1. If the value of |frame|’s {{VideoFrame/[[detached]]}} internal slot is
         `true`, throw an {{InvalidStateError}} {{DOMException}}.
     2. Return the result of running the [=Clone VideoFrame=] algorithm with
@@ -2865,7 +2865,7 @@ dictionary VideoFramePlaneInit {
           {{VideoFramePlaneInit/cropHeight}}
           be the crop region of the decoded video frame |output| in
           pixels, prior to any aspect ratio adjustments.
-      5. Let |displayWidth| and |displayHeight| be the the display size of
+      5. Let |displayWidth| and |displayHeight| be the display size of
           the decoded frame in pixels.
       6. If |displayAspectWidth| and |displayAspectHeight| are provided,
           increase |displayWidth| or |displayHeight| until the ratio of
@@ -2966,8 +2966,8 @@ dictionary VideoFramePlaneInit {
                 3. Assign |plane|.{{Plane/rows}} to {{Plane/rows}}.
                 4. Assign |plane|.{{Plane/length}} to {{Plane/length}}.
             2. Append |clonePlane| to {{VideoFrame/planes}}.
-        5. Assign all remaining attributes of |frame| (
-            {{VideoFrame/codedWidth}}, {{VideoFrame/codedHeight}}, etc.) to those of the same name in |clone|.
+        5. Assign all remaining attributes of |frame|
+            ({{VideoFrame/codedWidth}}, {{VideoFrame/codedHeight}}, etc.) to those of the same name in |clone|.
     2. Return |clone|.
 
 Plane Interface {#plane-interface}
@@ -3026,9 +3026,9 @@ When invoked, run these steps:
     {{InvalidStateError}}.
 2. If {{Plane/length}} is greater than |`dst.byteLength`|, throw a
     {{TypeError}}.
-3. Let |resource| be the [=media resource=] refrenced by
+3. Let |resource| be the [=media resource=] referenced by
     {{Plane/[[parent frame]]}}'s {{VideoFrame/[[resource reference]]}}.
-4. Let |plane bytes| be the region of bytes in [=media resource=] coresponding
+4. Let |plane bytes| be the region of bytes in [=media resource=] corresponding
     to this plane.
 5. Copy the |plane bytes| into |dst|.
 
@@ -3248,7 +3248,7 @@ interface ImageDecoder {
     3. If |options| is `undefined`, assign a new {{ImageDecodeOptions}} to
         |options|.
     4. Let |promise| be a new {{Promise}}.
-    5. [=Queue a control message=] to decode the the image with |options|, and
+    5. [=Queue a control message=] to decode the image with |options|, and
         |promise|.
     6. Append |promise| to {{ImageDecoder/[[pending decode promises]]}}.
     7. Return |promise|.
@@ -3740,7 +3740,7 @@ interface ImageTrackList {
 
 : <dfn attribute for=ImageTrackList>\[[selected index]]</dfn>
 :: The index of the selected track in {{ImageTrackList/[[track list]]}}. A
-    value of `-1` indeicates that no track is selected.
+    value of `-1` indicates that no track is selected.
 
 ### Attributes ### {#imagetracklist-attributes}
 : <dfn attribute for=ImageTrackList>ready</dfn>
@@ -3926,7 +3926,7 @@ expose some additional information in the form of low level codec features.
 A codec feature profile alone is unlikely to be uniquely identifying. Underlying
 codecs are often implemented entirely in software (be it part of the user agent
 binary or part of the operating system), such that all users who run that
-software will have a common set capabilities. Additionally, underlying codecs
+software will have a common of set capabilities. Additionally, underlying codecs
 are often implemented with hardware acceleration, but such hardware is mass
 produced and devices of a particular class and manufacture date (e.g. flagship
 phones manufactured in 2020) will often have common capabilities. There will be
