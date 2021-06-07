@@ -272,6 +272,9 @@ Internal Slots {#audiodecoder-internal-slots}
     {{EncodedAudioChunk/type}}.
 : <dfn attribute for=AudioDecoder>\[[state]]</dfn>
 :: The current {{CodecState}} of this {{AudioDecoder}}.
+: <dfn attribute for=AudioDecoder>\[[decodeQueueSize]]</dfn>
+:: The number of pending decode requests. This number will decrease as the
+    underlying codec is ready to accept new input.
 
 Constructors {#audiodecoder-constructors}
 -----------------------------------------
@@ -296,8 +299,7 @@ Attributes {#audiodecoder-attributes}
     <dfn attribute for=AudioDecoder>decodeQueueSize</dfn>
   </dt>
   <dd>
-    The number of pending decode requests. This number will decrease as the
-    underlying codec is ready to accept new input.
+    Returns the value of {{AudioDecoder/[[decodeQueueSize]]}}.
   </dd>
 </dl>
 
@@ -349,7 +351,7 @@ Methods {#audiodecoder-methods}
             {{DataError}}.
         3. Otherwise, assign `false` to
             {{AudioDecoder/[[key chunk required]]}}.
-    3. Increment {{AudioDecoder/decodeQueueSize}}.
+    3. Increment {{AudioDecoder/[[decodeQueueSize]]}}.
     4. [=Queue a control message=] to decode the |chunk|.
 
     [=Running a control message=] to decode the chunk means performing these
@@ -360,7 +362,7 @@ Methods {#audiodecoder-methods}
         event loop to run the [=Close AudioDecoder=] algorithm with
         {{EncodingError}}.
     3. Queue a task on the [=control thread=] event loop to decrement
-        {{AudioDecoder/decodeQueueSize}}
+        {{AudioDecoder/[[decodeQueueSize]]}}
     4. Let |decoded outputs| be a [=list=] of decoded video data outputs emitted
         by {{AudioDecoder/[[codec implementation]]}}.
     5. If |decoded outputs| is not empty, queue a task on the [=control thread=]
@@ -469,7 +471,7 @@ Algorithms {#audiodecoder-algorithms}
     3. Signal {{AudioDecoder/[[codec implementation]]}} to cease producing
         output for the previous configuration.
     4. [=Reset the control message queue=].
-    5. Set {{AudioDecoder/decodeQueueSize}} to zero.
+    5. Set {{AudioDecoder/[[decodeQueueSize]]}} to zero.
   </dd>
   <dt><dfn>Close AudioDecoder</dfn> (with error)</dt>
   <dd>
@@ -525,6 +527,8 @@ Internal Slots {#videodecoder-internal-slots}
 :: A boolean indicating that the next chunk passed to {{VideoDecoder/decode()}} must describe a [=key chunk=] as indicated by {{EncodedVideoChunk/type}}.
 : <dfn attribute for=VideoDecoder>\[[state]]</dfn>
 :: The current {{CodecState}} of this {{VideoDecoder}}.
+: <dfn attribute for=VideoDecoder>\[[decodeQueueSize]]</dfn>
+:: The number of pending decode requests. This number will decrease as the underlying codec is ready to accept new input.
 
 Constructors {#videodecoder-constructors}
 -----------------------------------------
@@ -551,8 +555,7 @@ Attributes {#videodecoder-attributes}
     <dfn attribute for=VideoDecoder>decodeQueueSize</dfn>
   </dt>
   <dd>
-    The number of pending decode requests. This number will decrease as the
-    underlying codec is ready to accept new input.
+    Returns the value of {{VideoDecoder/[[decodeQueueSize]]}}.
   </dd>
 </dl>
 
@@ -611,7 +614,7 @@ Methods {#videodecoder-methods}
             {{DataError}}.
         3. Otherwise, assign `false` to
             {{VideoDecoder/[[key chunk required]]}}.
-    3. Increment {{VideoDecoder/decodeQueueSize}}.
+    3. Increment {{VideoDecoder/[[decodeQueueSize]]}}.
     4. [=Queue a control message=] to decode the |chunk|.
 
     [=Running a control message=] to decode the chunk means performing these steps:
@@ -621,7 +624,7 @@ Methods {#videodecoder-methods}
         event loop to run the [=Close VideoDecoder=] algorithm with
         {{EncodingError}}.
     3. Queue a task on the [=control thread=] event loop to decrement
-        {{VideoDecoder/decodeQueueSize}}
+        {{VideoDecoder/[[decodeQueueSize]]}}
     4. Let |decoded outputs| be a [=list=] of decoded video data outputs emitted
         by {{VideoDecoder/[[codec implementation]]}}.
     5. If |decoded outputs| is not empty, queue a task on the [=control thread=]
@@ -728,7 +731,7 @@ Algorithms {#videodecoder-algorithms}
     3. Signal {{VideoDecoder/[[codec implementation]]}} to cease producing
         output for the previous configuration.
     4. [=Reset the control message queue=].
-    5. Set {{VideoDecoder/decodeQueueSize}} to zero.
+    5. Set {{VideoDecoder/[[decodeQueueSize]]}} to zero.
   </dd>
   <dt><dfn>Close VideoDecoder</dfn> (with |error|)</dt>
   <dd>
@@ -793,6 +796,11 @@ Internal Slots {#audioencoder-internal-slots}
 <dd>
   The current {{CodecState}} of this {{AudioEncoder}}.
 </dd>
+<dt><dfn attribute for=AudioEncoder>\[[encodeQueueSize]]</dfn></dt>
+<dd>
+  The number of pending encode requests. This number will decrease as the
+  underlying codec is ready to accept new input.
+</dd>
 </dl>
 
 Constructors {#audioencoder-constructors}
@@ -819,8 +827,7 @@ Attributes {#audioencoder-attributes}
     <dfn attribute for=AudioEncoder>encodeQueueSize</dfn>
   </dt>
   <dd>
-    The number of pending encode requests. This number will decrease as the
-    underlying codec is ready to accept new input.
+    Returns the value of {{AudioEncoder/[[encodeQueueSize]]}}.
   </dd>
 </dl>
 
@@ -867,7 +874,7 @@ Methods {#audioencoder-methods}
         {{InvalidStateError}}.
     3. Let |dataClone| hold the result of running the [=Clone AudioData=]
         algorithm with |data|.
-    4. Increment {{AudioEncoder/encodeQueueSize}}.
+    4. Increment {{AudioEncoder/[[encodeQueueSize]]}}.
     5. [=Queue a control message=] to encode |dataClone|.
 
     [=Running a control message=] to encode the data means performing these steps.
@@ -877,7 +884,7 @@ Methods {#audioencoder-methods}
         event loop to run the [=Close AudioEncoder=] algorithm with
         {{EncodingError}}.
     3. Queue a task on the [=control thread=] event loop to decrement
-        {{AudioEncoder/encodeQueueSize}}.
+        {{AudioEncoder/[[encodeQueueSize]]}}.
     4. Let |encoded outputs| be a [=list=] of encoded audio data outputs
         emitted by {{AudioEncoder/[[codec implementation]]}}.
     5. If |encoded outputs| is not empty, queue a task on the
@@ -1013,7 +1020,7 @@ Algorithms {#audioencoder-algorithms}
     5. Signal {{AudioEncoder/[[codec implementation]]}} to cease producing
         output for the previous configuration.
     6. [=Reset the control message queue=].
-    7. Set {{AudioEncoder/encodeQueueSize}} to zero.
+    7. Set {{AudioEncoder/[[encodeQueueSize]]}} to zero.
   </dd>
   <dt><dfn>Close AudioEncoder</dfn> (with |error|)</dt>
   <dd>
@@ -1094,6 +1101,11 @@ Internal Slots {#videoencoder-internal-slots}
 <dd>
   The current {{CodecState}} of this {{VideoEncoder}}.
 </dd>
+<dt><dfn attribute for=VideoEncoder>\[[encodeQueueSize]]</dfn></dt>
+<dd>
+  The number of pending encode requests. This number will decrease as the
+  underlying codec is ready to accept new input.
+</dd>
 </dl>
 
 Constructors {#videoencoder-constructors}
@@ -1118,8 +1130,7 @@ Attributes {#videoencoder-attributes}
     <dfn attribute for=VideoEncoder>encodeQueueSize</dfn>
   </dt>
   <dd>
-    The number of pending encode requests. This number will decrease as the
-    underlying codec is ready to accept new input.
+    Returns the value of {{VideoEncoder/[[encodeQueueSize]]}}.
   </dd>
 </dl>
 
@@ -1166,7 +1177,7 @@ Methods {#videoencoder-methods}
         {{InvalidStateError}}.
     3. Let |frameClone| hold the result of running the [=Clone VideoFrame=]
         algorithm with |frame|.
-    4. Increment {{VideoEncoder/encodeQueueSize}}.
+    4. Increment {{VideoEncoder/[[encodeQueueSize]]}}.
     5. [=Queue a control message=] to encode |frameClone|.
 
     [=Running a control message=] to encode the frame means performing these steps.
@@ -1176,7 +1187,7 @@ Methods {#videoencoder-methods}
         event loop to run the [=Close VideoEncoder=] algorithm with
         {{EncodingError}}.
     3. Queue a task on the [=control thread=] event loop to decrement
-        {{VideoEncoder/encodeQueueSize}}.
+        {{VideoEncoder/[[encodeQueueSize]]}}.
     4. Let |encoded outputs| be a [=list=] of encoded video data outputs
         emitted by {{VideoEncoder/[[codec implementation]]}}.
     5. If |encoded outputs| is not empty, queue a task on the [=control thread=]
@@ -1322,7 +1333,7 @@ Algorithms {#videoencoder-algorithms}
     5. Signal {{VideoEncoder/[[codec implementation]]}} to cease producing
         output for the previous configuration.
     6. [=Reset the control message queue=].
-    7. Set {{VideoEncoder/encodeQueueSize}} to zero.
+    7. Set {{VideoEncoder/[[encodeQueueSize]]}} to zero.
   </dd>
   <dt><dfn>Close VideoEncoder</dfn> (with |error|)</dt>
   <dd>
