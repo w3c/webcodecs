@@ -2798,7 +2798,8 @@ enum AlphaOption {
     {{VideoFrame/[[duration]]}}.
 
 : <dfn attribute for=VideoFrame>hasAlpha</dfn>
-:: Whether or not the {{VideoFrame}} has an alpha channel.
+:: Whether or not the {{VideoFrame}} has an alpha channel. If this is `false`,
+    the frame is considered to be opaque, and must be rendered as such.
     For planar {{PixelFormat}}s, the last {{Plane}} (highest index) in
     {{VideoFrame/planes}} is an alpha plane. For interleaved {{PixelFormat}}s,
     the alpha channel is interleaved within each block of related samples,
@@ -2906,11 +2907,11 @@ ISSUE: {{VideoFrame}}s with an interleaved {{PixelFormat}} should omit copying
     7. If |otherFrame|.{{VideoFrame/hasAlpha}} is `true` and
         |init|.{{VideoFrameInit/alpha}} is `"discard"`, run the
         [=Discard alpha=] algorithm with |frame|.
-    7. If {{VideoFrameInit/duration}} [=map/exists=] in |init|, assign it to
+    8. If {{VideoFrameInit/duration}} [=map/exists=] in |init|, assign it to
         |frame|.{{VideoFrame/duration}}. Otherwise, assign
         |otherFrame|.{{VideoFrame/duration}} to
         |frame|.{{VideoFrame/duration}}.
-    8. If {{VideoFrameInit/timestamp}} [=map/exists=] in |init|, assign it to
+    9. If {{VideoFrameInit/timestamp}} [=map/exists=] in |init|, assign it to
         |frame|.{{VideoFrame/timestamp}}. Otherwise, assign
         |otherFrame|.{{VideoFrame/timestamp}} to
         |frame|.{{VideoFrame/timestamp}}.
@@ -2968,10 +2969,15 @@ ISSUE: {{VideoFrame}}s with an interleaved {{PixelFormat}} should omit copying
 :: 1. Let |format| be |frame|.{{VideoFrame/[[format]]}}.
     2. If |format| describes a planar format, remove the last plane
         from |frame|.{{VideoFrame/[[planes]]}}.
-    3. If |format| has {{PixelFormat}} counterpart without alpha, assign it to
-        to |frame|.{{VideoFrame/[[format]]}}.
+    3. If |format| without an alpha channel has a {{PixelFormat}} equivalent:
+        1. Let |newFormat| be the {{PixelFormat}} counterpart to |format|
+            without alpha.
+        2. Assign |newFormat| to |frame|.{{VideoFrame/[[format]]}}.
     4. Assign `false` to {{VideoFrame/hasAlpha}}.
 
+NOTE: User Agents are not required to overwrite alpha data immediately when
+    discarding alpha from interleaved formats. However, alpha data must be
+    overwritten when copying out data from a {{VideoFrame}}.
 
 Plane Interface {#plane-interface}
 ----------------------------------
