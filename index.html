@@ -6,7 +6,7 @@
   <link href="https://www.w3.org/StyleSheets/TR/2016/W3C-ED" rel="stylesheet" type="text/css">
   <meta content="Bikeshed version 800b43329, updated Tue May 25 14:13:32 2021 -0700" name="generator">
   <link href="https://www.w3.org/TR/webcodecs/" rel="canonical">
-  <meta content="16b948cdc1d501b5b1f72a8d8c41af7440db9a41" name="document-revision">
+  <meta content="b3e3cc3412e9a7739f8891da3e139b077f13a593" name="document-revision">
 <style>
 main > dl > dd {
   margin-bottom: 1em;
@@ -838,7 +838,7 @@ commonly referred to as a "key frame".</p>
     <dd data-md>
      <p>Codec outputs such as <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe">VideoFrame</a></code>s that currently reside in the internal
 pipeline of the underlying codec implementation. The underlying codec
-implementation may emit new outputs only when a new inputs are provided. The
+implementation may emit new outputs only when new inputs are provided. The
 underlying codec implementation must emit all outputs in response to a
 flush.</p>
     <dt data-md><dfn class="dfn-paneled" data-dfn-type="dfn" data-lt="system resources" data-noexport id="system-resources">Codec System Resources</dfn>
@@ -863,7 +863,7 @@ The mechanism for computing a frame’s generation is implementer defined.</p>
     <dt data-md><dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="primary-image-track">Primary Image Track</dfn>
     <dd data-md>
      <p>An image track that is marked by the given image file as being the default
-track. The mechanism for indiciating a primary track is format defined.</p>
+track. The mechanism for indicating a primary track is format defined.</p>
    </dl>
    <h2 class="heading settled" data-level="2" id="codec-processing-model-section"><span class="secno">2. </span><span class="content"><dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="codec-processing-model">Codec Processing Model</dfn></span><a class="self-link" href="#codec-processing-model-section"></a></h2>
    <h3 class="heading settled" data-level="2.1" id="processing-model-background"><span class="secno">2.1. </span><span class="content">Background</span><a class="self-link" href="#processing-model-background"></a></h3>
@@ -874,10 +874,10 @@ example, web authors may call <code>decode()</code> without waiting for a previo
 a separate thread for parallel execution.</p>
    <p>This section describes threading behaviors as they are visible from the
 perspective of web authors. Implementers may choose to use more or less threads
-as long the exernally visible behaviors of blocking and sequencing are
+as long as the exernally visible behaviors of blocking and sequencing are
 maintained as follows.</p>
    <h3 class="heading settled" data-level="2.2" id="control-thread-and-codec-thread"><span class="secno">2.2. </span><span class="content">Control Thread and Codec Thread</span><a class="self-link" href="#control-thread-and-codec-thread"></a></h3>
-   <p>All steps in this specificaiton will run on either a <a data-link-type="dfn" href="#control-thread" id="ref-for-control-thread">control thread</a> or
+   <p>All steps in this specification will run on either a <a data-link-type="dfn" href="#control-thread" id="ref-for-control-thread">control thread</a> or
 a <a data-link-type="dfn" href="#codec-thread" id="ref-for-codec-thread">codec thread</a>.</p>
    <p>The <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="control-thread">control thread</dfn> is the thread from which authors will construct
 a <a data-link-type="dfn" href="#codec" id="ref-for-codec">codec</a> and invoke its methods. Invoking a codec’s methods will typically
@@ -892,7 +892,7 @@ regular event loop tasks.</p>
    <p>Each <a data-link-type="dfn" href="#codec" id="ref-for-codec④">codec</a> instance has a single <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="control-message-queue">control message queue</dfn> that is
 a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#queues" id="ref-for-queues">queue</a> of <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="control-messages">control messages</dfn>.</p>
    <p><dfn class="dfn-paneled" data-dfn-type="dfn" data-lt="Enqueues a control message|Queue a control message" data-noexport id="enqueues-a-control-message">Queuing a control
-message</dfn> means <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#queue-enqueue" id="ref-for-queue-enqueue">enqueing</a> the message to a <a data-link-type="dfn" href="#codec" id="ref-for-codec⑤">codec</a>’s <a data-link-type="dfn" href="#control-message-queue" id="ref-for-control-message-queue">control
+message</dfn> means <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#queue-enqueue" id="ref-for-queue-enqueue">enqueuing</a> the message to a <a data-link-type="dfn" href="#codec" id="ref-for-codec⑤">codec</a>’s <a data-link-type="dfn" href="#control-message-queue" id="ref-for-control-message-queue">control
 message queue</a>. Invoking codec methods will often queue a control message
 to schedule work.</p>
    <p><dfn class="dfn-paneled" data-dfn-type="dfn" data-lt="running a control message|control message steps" data-noexport id="running-a-control-message">Running a control
@@ -917,7 +917,7 @@ that promise.</p>
      <p>While true:</p>
      <ol>
       <li data-md>
-       <p>If the <a data-link-type="dfn" href="#control-message-queue" id="ref-for-control-message-queue②">control message queue</a> is emtpy, <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#iteration-continue" id="ref-for-iteration-continue">continue</a>.</p>
+       <p>If the <a data-link-type="dfn" href="#control-message-queue" id="ref-for-control-message-queue②">control message queue</a> is empty, <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#iteration-continue" id="ref-for-iteration-continue">continue</a>.</p>
       <li data-md>
        <p>Dequeue <var>front message</var> from the <a data-link-type="dfn" href="#control-message-queue" id="ref-for-control-message-queue③">control message queue</a>.</p>
       <li data-md>
@@ -1020,7 +1020,7 @@ underlying codec is ready to accept new input.</p>
      <ol>
       <li data-md>
        <p>Let <var>supported</var> be the result of running the <a data-link-type="dfn" href="#check-configuration-support" id="ref-for-check-configuration-support">Check Configuration
-Support</a> algorith with <var>config</var>.</p>
+Support</a> algorithm with <var>config</var>.</p>
       <li data-md>
        <p>If <var>supported</var> is <code>true</code>, assign <code class="idl"><a data-link-type="idl" href="#dom-audiodecoder-codec-implementation-slot" id="ref-for-dom-audiodecoder-codec-implementation-slot">[[codec implementation]]</a></code> with an implementation
 supporting <var>config</var>.</p>
@@ -1059,7 +1059,7 @@ chunk.</p>
       <li data-md>
        <p>If decoding results in an error, queue a task on the <a data-link-type="dfn" href="#control-thread" id="ref-for-control-thread③">control thread</a> event loop to run the <a data-link-type="dfn" href="#close-audiodecoder" id="ref-for-close-audiodecoder①">Close AudioDecoder</a> algorithm with <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#encodingerror" id="ref-for-encodingerror">EncodingError</a></code>.</p>
       <li data-md>
-       <p>Queue a task on the <a data-link-type="dfn" href="#control-thread" id="ref-for-control-thread④">control thread</a> event loop to decrement <code class="idl"><a data-link-type="idl" href="#dom-audiodecoder-decodequeuesize-slot" id="ref-for-dom-audiodecoder-decodequeuesize-slot②">[[decodeQueueSize]]</a></code></p>
+       <p>Queue a task on the <a data-link-type="dfn" href="#control-thread" id="ref-for-control-thread④">control thread</a> event loop to decrement <code class="idl"><a data-link-type="idl" href="#dom-audiodecoder-decodequeuesize-slot" id="ref-for-dom-audiodecoder-decodequeuesize-slot②">[[decodeQueueSize]]</a></code>.</p>
       <li data-md>
        <p>Let <var>decoded outputs</var> be a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#lists" id="ref-for-lists">list</a> of decoded video data outputs emitted
 by <code class="idl"><a data-link-type="idl" href="#dom-audiodecoder-codec-implementation-slot" id="ref-for-dom-audiodecoder-codec-implementation-slot②">[[codec implementation]]</a></code>.</p>
@@ -1111,8 +1111,8 @@ by <code class="idl"><a data-link-type="idl" href="#dom-audiodecoder-codec-imple
       Returns a promise indicating whether the provided <var>config</var> is supported by
     the user agent. 
      <p class="note" role="note"><span>NOTE:</span> The returned <code class="idl"><a data-link-type="idl" href="#dictdef-audiodecodersupport" id="ref-for-dictdef-audiodecodersupport①">AudioDecoderSupport</a></code> <code class="idl"><a data-link-type="idl" href="#dom-audiodecodersupport-config" id="ref-for-dom-audiodecodersupport-config">config</a></code> will contain only the dictionary members that user agent recognized.
-        Unrecognized dictionary memebers will be ignored. Authors may detect
-        unrecognized dictionary members by comparinging <code class="idl"><a data-link-type="idl" href="#dom-audiodecodersupport-config" id="ref-for-dom-audiodecodersupport-config①">config</a></code> to their provided <var>config</var>.</p>
+        Unrecognized dictionary members will be ignored. Authors may detect
+        unrecognized dictionary members by comparing <code class="idl"><a data-link-type="idl" href="#dom-audiodecodersupport-config" id="ref-for-dom-audiodecodersupport-config①">config</a></code> to their provided <var>config</var>.</p>
      <p>When invoked, run these steps:</p>
      <ol>
       <li data-md>
@@ -1151,7 +1151,7 @@ the <a data-link-type="dfn" href="#check-configuration-support" id="ref-for-chec
        <p>For each <var>output</var> in <var>outputs</var>:</p>
        <ol>
         <li data-md>
-         <p>Let <var>data</var> be an <code class="idl"><a data-link-type="idl" href="#audiodata" id="ref-for-audiodata②">AudioData</a></code>, intialized as follows:</p>
+         <p>Let <var>data</var> be an <code class="idl"><a data-link-type="idl" href="#audiodata" id="ref-for-audiodata②">AudioData</a></code>, initialized as follows:</p>
          <ol>
           <li data-md>
            <p>Assign <code>false</code> to <code class="idl"><a data-link-type="idl" href="#dom-audiodata-detached-slot" id="ref-for-dom-audiodata-detached-slot">[[detached]]</a></code>.</p>
@@ -1301,7 +1301,7 @@ invoke the <code class="idl"><a data-link-type="idl" href="#dom-audiodecoder-err
      <ol>
       <li data-md>
        <p>Let <var>supported</var> be the result of running the <a data-link-type="dfn" href="#check-configuration-support" id="ref-for-check-configuration-support②">Check Configuration
-Support</a> algorith with <var>config</var>.</p>
+Support</a> algorithm with <var>config</var>.</p>
       <li data-md>
        <p>If <var>supported</var> is <code>true</code>, assign <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-codec-implementation-slot" id="ref-for-dom-videodecoder-codec-implementation-slot">[[codec implementation]]</a></code> with an implementation
 supporting <var>config</var>.</p>
@@ -1313,7 +1313,7 @@ supporting <var>config</var>.</p>
     <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoDecoder" data-dfn-type="method" data-export id="dom-videodecoder-decode"><code>decode(chunk)</code></dfn>
     <dd>
       <a data-link-type="dfn" href="#enqueues-a-control-message" id="ref-for-enqueues-a-control-message⑦">Enqueues a control message</a> to decode the given <var>chunk</var>. 
-     <p class="note" role="note"><span>NOTE:</span> Authors should call <code class="idl"><a data-link-type="idl" href="#dom-videoframe-close" id="ref-for-dom-videoframe-close">close()</a></code> on ouput <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe③">VideoFrame</a></code>s immediately when frames are no longer needed. The
+     <p class="note" role="note"><span>NOTE:</span> Authors should call <code class="idl"><a data-link-type="idl" href="#dom-videoframe-close" id="ref-for-dom-videoframe-close">close()</a></code> on output <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe③">VideoFrame</a></code>s immediately when frames are no longer needed. The
         underlying <a data-link-type="dfn" href="#media-resource" id="ref-for-media-resource①">media resource</a>s are owned by the <code class="idl"><a data-link-type="idl" href="#videodecoder" id="ref-for-videodecoder①">VideoDecoder</a></code> and
         failing to release them (or waiting for garbage collection) may cause
         decoding to stall.</p>
@@ -1397,8 +1397,8 @@ by <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-codec-imple
       Returns a promise indicating whether the provided <var>config</var> is supported by
     the user agent. 
      <p class="note" role="note"><span>NOTE:</span> The returned <code class="idl"><a data-link-type="idl" href="#dictdef-videodecodersupport" id="ref-for-dictdef-videodecodersupport①">VideoDecoderSupport</a></code> <code class="idl"><a data-link-type="idl" href="#dom-videodecodersupport-config" id="ref-for-dom-videodecodersupport-config">config</a></code> will contain only the dictionary members that user agent recognized.
-        Unrecognized dictionary memebers will be ignored. Authors may detect
-        unrecognized dictionary members by comparinging <code class="idl"><a data-link-type="idl" href="#dom-videodecodersupport-config" id="ref-for-dom-videodecodersupport-config①">config</a></code> to their provided <var>config</var>.</p>
+        Unrecognized dictionary members will be ignored. Authors may detect
+        unrecognized dictionary members by comparing <code class="idl"><a data-link-type="idl" href="#dom-videodecodersupport-config" id="ref-for-dom-videodecodersupport-config①">config</a></code> to their provided <var>config</var>.</p>
      <p>When invoked, run these steps:</p>
      <ol>
       <li data-md>
@@ -1574,7 +1574,7 @@ invoke the <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-err
      <ol>
       <li data-md>
        <p>Let <var>supported</var> be the result of running the <a data-link-type="dfn" href="#check-configuration-support" id="ref-for-check-configuration-support④">Check Configuration
-Support</a> algorith with <var>config</var>.</p>
+Support</a> algorithm with <var>config</var>.</p>
       <li data-md>
        <p>If <var>supported</var> is <code>true</code>, assign <code class="idl"><a data-link-type="idl" href="#dom-audioencoder-codec-implementation-slot" id="ref-for-dom-audioencoder-codec-implementation-slot">[[codec implementation]]</a></code> with an implementation
 supporting <var>config</var>.</p>
@@ -1657,8 +1657,8 @@ emitted by <code class="idl"><a data-link-type="idl" href="#dom-audioencoder-cod
       Returns a promise indicating whether the provided <var>config</var> is supported by
     the user agent. 
      <p class="note" role="note"><span>NOTE:</span> The returned <code class="idl"><a data-link-type="idl" href="#dictdef-audioencodersupport" id="ref-for-dictdef-audioencodersupport①">AudioEncoderSupport</a></code> <code class="idl"><a data-link-type="idl" href="#dom-audioencodersupport-config" id="ref-for-dom-audioencodersupport-config">config</a></code> will contain only the dictionary members that user agent recognized.
-        Unrecognized dictionary memebers will be ignored. Authors may detect
-        unrecognized dictionary members by comparinging <code class="idl"><a data-link-type="idl" href="#dom-audioencodersupport-config" id="ref-for-dom-audioencodersupport-config①">config</a></code> to their provided <var>config</var>.</p>
+        Unrecognized dictionary members will be ignored. Authors may detect
+        unrecognized dictionary members by comparing <code class="idl"><a data-link-type="idl" href="#dom-audioencodersupport-config" id="ref-for-dom-audioencodersupport-config①">config</a></code> to their provided <var>config</var>.</p>
      <p>When invoked, run these steps:</p>
      <ol>
       <li data-md>
@@ -1715,7 +1715,7 @@ from <var>output</var>.</p>
         <li data-md>
          <p>Let <var>encoderConfig</var> be the <code class="idl"><a data-link-type="idl" href="#dom-audioencoder-active-encoder-config-slot" id="ref-for-dom-audioencoder-active-encoder-config-slot②">[[active encoder config]]</a></code>.</p>
         <li data-md>
-         <p>Let <var>outputConfig</var> be a new <code class="idl"><a data-link-type="idl" href="#dictdef-audiodecoderconfig" id="ref-for-dictdef-audiodecoderconfig③">AudioDecoderConfig</a></code> that describes <var>output</var>. Intialize <var>outputConfig</var> as follows:</p>
+         <p>Let <var>outputConfig</var> be a new <code class="idl"><a data-link-type="idl" href="#dictdef-audiodecoderconfig" id="ref-for-dictdef-audiodecoderconfig③">AudioDecoderConfig</a></code> that describes <var>output</var>. Initialize <var>outputConfig</var> as follows:</p>
          <ol>
           <li data-md>
            <p>Assign <var>encoderConfig</var>.<code class="idl"><a data-link-type="idl" href="#dom-audioencoderconfig-codec" id="ref-for-dom-audioencoderconfig-codec">codec</a></code> to <var>outputConfig</var>.<code class="idl"><a data-link-type="idl" href="#dom-audiodecoderconfig-codec" id="ref-for-dom-audiodecoderconfig-codec">codec</a></code>.</p>
@@ -1880,7 +1880,7 @@ invoke the <code class="idl"><a data-link-type="idl" href="#dom-audioencoder-err
      <ol>
       <li data-md>
        <p>Let <var>supported</var> be the result of running the <a data-link-type="dfn" href="#check-configuration-support" id="ref-for-check-configuration-support⑥">Check Configuration
-Support</a> algorith with <var>config</var>.</p>
+Support</a> algorithm with <var>config</var>.</p>
       <li data-md>
        <p>If <var>supported</var> is <code>true</code>, assign <code class="idl"><a data-link-type="idl" href="#dom-videoencoder-codec-implementation-slot" id="ref-for-dom-videoencoder-codec-implementation-slot">[[codec implementation]]</a></code> with an implementation
 supporting <var>config</var>.</p>
@@ -1962,8 +1962,8 @@ emitted by <code class="idl"><a data-link-type="idl" href="#dom-videoencoder-cod
       Returns a promise indicating whether the provided <var>config</var> is supported by
     the user agent. 
      <p class="note" role="note"><span>NOTE:</span> The returned <code class="idl"><a data-link-type="idl" href="#dictdef-videoencodersupport" id="ref-for-dictdef-videoencodersupport">VideoEncoderSupport</a></code> <code class="idl"><a data-link-type="idl" href="#dom-videoencodersupport-config" id="ref-for-dom-videoencodersupport-config">config</a></code> will contain only the dictionary members that user agent recognized.
-        Unrecognized dictionary memebers will be ignored. Authors may detect
-        unrecognized dictionary members by comparinging <code class="idl"><a data-link-type="idl" href="#dom-videoencodersupport-config" id="ref-for-dom-videoencodersupport-config①">config</a></code> to their provided <var>config</var>.</p>
+        Unrecognized dictionary members will be ignored. Authors may detect
+        unrecognized dictionary members by comparing <code class="idl"><a data-link-type="idl" href="#dom-videoencodersupport-config" id="ref-for-dom-videoencodersupport-config①">config</a></code> to their provided <var>config</var>.</p>
      <p>When invoked, run these steps:</p>
      <ol>
       <li data-md>
@@ -2407,8 +2407,8 @@ specialized hardware.</p>
   optimize based on its knowledge of the system and configuration. A common
   strategy will be to prioritize hardware acceleration at higher resolutions
   with a fallback to software codecs if hardware acceleration fails. 
-    <p>Authors should carefully weigh the tradeoffs setting a hardware acceleration
-  preference. The precise trade-offs will be device-specific, but authors should
+    <p>Authors should carefully weigh the tradeoffs when setting a hardware acceleration
+  preference. The precise tradeoffs will be device-specific, but authors should
   generally expect the following:</p>
     <ul>
      <li data-md>
@@ -2685,12 +2685,12 @@ sample data described by a <code class="idl"><a data-link-type="idl" href="#vide
    <p>The <code class="idl"><a data-link-type="idl" href="#audiodata" id="ref-for-audiodata⑤">AudioData</a></code> <code class="idl"><a data-link-type="idl" href="#dom-audiodata-resource-reference-slot" id="ref-for-dom-audiodata-resource-reference-slot①">[[resource reference]]</a></code> and <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe①⓪">VideoFrame</a></code> <code class="idl"><a data-link-type="idl" href="#dom-videoframe-resource-reference-slot" id="ref-for-dom-videoframe-resource-reference-slot">[[resource reference]]</a></code> internal slots hold a reference to a <a data-link-type="dfn" href="#media-resource" id="ref-for-media-resource③">media resource</a>.</p>
    <p><code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe①①">VideoFrame</a></code>.<code class="idl"><a data-link-type="idl" href="#dom-videoframe-clone" id="ref-for-dom-videoframe-clone">clone()</a></code> and <code class="idl"><a data-link-type="idl" href="#audiodata" id="ref-for-audiodata⑥">AudioData</a></code>.<code class="idl"><a data-link-type="idl" href="#dom-audiodata-clone" id="ref-for-dom-audiodata-clone">clone()</a></code> return new objects whose <code>[[resource reference]]</code> points to the same <a data-link-type="dfn" href="#media-resource" id="ref-for-media-resource④">media resource</a> as the original
 object.</p>
-   <p><code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe①②">VideoFrame</a></code>.<code class="idl"><a data-link-type="idl" href="#dom-videoframe-close" id="ref-for-dom-videoframe-close①">close()</a></code> and <code class="idl"><a data-link-type="idl" href="#audiodata" id="ref-for-audiodata⑦">AudioData</a></code>.<code class="idl"><a data-link-type="idl" href="#dom-audiodata-close" id="ref-for-dom-audiodata-close">close()</a></code> will clear their [[resource reference]] slot, releasing the reference their <a data-link-type="dfn" href="#media-resource" id="ref-for-media-resource⑤">media resource</a></p>
+   <p><code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe①②">VideoFrame</a></code>.<code class="idl"><a data-link-type="idl" href="#dom-videoframe-close" id="ref-for-dom-videoframe-close①">close()</a></code> and <code class="idl"><a data-link-type="idl" href="#audiodata" id="ref-for-audiodata⑦">AudioData</a></code>.<code class="idl"><a data-link-type="idl" href="#dom-audiodata-close" id="ref-for-dom-audiodata-close">close()</a></code> will clear their [[resource reference]] slot, releasing the reference their <a data-link-type="dfn" href="#media-resource" id="ref-for-media-resource⑤">media resource</a>.</p>
    <p>A <a data-link-type="dfn" href="#media-resource" id="ref-for-media-resource⑥">media resource</a> must remain alive at least as long as it continues to be
 referenced by a <code>[[resource reference]]</code>.</p>
    <p class="note" role="note"><span>NOTE:</span> When a <a data-link-type="dfn" href="#media-resource" id="ref-for-media-resource⑦">media resource</a> is no longer referenced by a <code>[[resource reference]]</code>, the resource may be destroyed. User agents are
     encouraged to destroy such resources quickly to reduce memory pressure and
-    facilitate resouce reuse.</p>
+    facilitate resource reuse.</p>
    <h3 class="heading settled" data-level="9.2" id="audiodata-interface"><span class="secno">9.2. </span><span class="content">AudioData Interface</span><a class="self-link" href="#audiodata-interface"></a></h3>
 <pre class="idl highlight def">[<a class="idl-code" data-link-type="extended-attribute" href="https://heycam.github.io/webidl/#Exposed" id="ref-for-Exposed⑥"><c- g>Exposed</c-></a>=(<c- n>Window</c->,<c- n>DedicatedWorker</c->)]
 <c- b>interface</c-> <dfn class="dfn-paneled idl-code" data-dfn-type="interface" data-export id="audiodata"><code><c- g>AudioData</c-></code></dfn> {
@@ -2902,7 +2902,7 @@ equal to <var>frameCount</var>, throw a <code class="idl"><a data-link-type="idl
        <p>Let <var>clone</var> be a new <code class="idl"><a data-link-type="idl" href="#audiodata" id="ref-for-audiodata②④">AudioData</a></code> initialized as follows:</p>
        <ol>
         <li data-md>
-         <p>Let <var>resource</var> be the <a data-link-type="dfn" href="#media-resource" id="ref-for-media-resource①③">media resource</a> refrenced by <var>data</var>’s <code class="idl"><a data-link-type="idl" href="#dom-audiodata-resource-reference-slot" id="ref-for-dom-audiodata-resource-reference-slot⑤">[[resource reference]]</a></code>.</p>
+         <p>Let <var>resource</var> be the <a data-link-type="dfn" href="#media-resource" id="ref-for-media-resource①③">media resource</a> referenced by <var>data</var>’s <code class="idl"><a data-link-type="idl" href="#dom-audiodata-resource-reference-slot" id="ref-for-dom-audiodata-resource-reference-slot⑤">[[resource reference]]</a></code>.</p>
         <li data-md>
          <p>Let <var>reference</var> be a new reference to <var>resource</var>.</p>
         <li data-md>
@@ -2951,7 +2951,7 @@ of a multi-channel signal, that happen at the exact same time.</p>
 and a sample refer to the same thing.</p>
    <p>All audio <a data-link-type="dfn" href="#sample" id="ref-for-sample">samples</a> in this specification are using linear pulse-code
 modulation (Linear PCM): quantization levels are uniform between values.</p>
-   <p class="note" role="note"><span>Note:</span> The Web Audio API, that is expected to be used with this specificaion,
+   <p class="note" role="note"><span>Note:</span> The Web Audio API, that is expected to be used with this specification,
 also uses Linear PCM.</p>
 <pre class="idl highlight def"><c- b>enum</c-> <dfn class="dfn-paneled idl-code" data-dfn-type="enum" data-export id="enumdef-audiosampleformat"><code><c- g>AudioSampleFormat</c-></code></dfn> {
   <a class="idl-code" data-link-type="enum-value" href="#dom-audiosampleformat-u8" id="ref-for-dom-audiosampleformat-u8①"><c- s>"U8"</c-></a>,
@@ -3009,7 +3009,7 @@ in different buffers, themselves arranged in an order described in the section <
    <p>The <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="minimum-value">minimum value</dfn> and <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="maximum-value">maximum value</dfn> of an audio sample,
 for a particular audio sample type, are the values below which
 (respectively above which) audio clipping might occur. They are otherwise regular
-types, that can hold values outside this interval during intermeditate
+types, that can hold values outside this interval during intermediate
 processing.</p>
    <p>The <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="bias-value">bias value</dfn> for an audio sample type is the value that often
 corresponds to the middle of the range (but often the range is not symmetrical).
@@ -3220,8 +3220,8 @@ with <var>init</var>, <var>frame</var>, and <var>currentPlaybackFrame</var>.</p>
          <p>If <code class="idl"><a data-link-type="idl" href="#dom-videoframeinit-timestamp" id="ref-for-dom-videoframeinit-timestamp①">timestamp</a></code> does not <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#map-exists" id="ref-for-map-exists④">exist</a> in <var>init</var>, throw a <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#exceptiondef-typeerror" id="ref-for-exceptiondef-typeerror①③">TypeError</a></code>.</p>
         <li data-md>
          <p>Let <var>resource</var> be a new <a data-link-type="dfn" href="#media-resource" id="ref-for-media-resource①⑥">media resource</a> containing a copy of <var>image</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/imagebitmap-and-animations.html#concept-imagebitmap-bitmap-data" id="ref-for-concept-imagebitmap-bitmap-data①">bitmap data</a>.</p>
-         <p class="note" role="note"><span>NOTE:</span> Implementers are should avoid a deep copy by using reference
-    coutning where feasible.</p>
+         <p class="note" role="note"><span>NOTE:</span> Implementers should avoid a deep copy by using reference
+    counting where feasible.</p>
         <li data-md>
          <p>Let <var>width</var> be <code>image.width</code> and <var>height</var> be <code>image.height</code>.</p>
         <li data-md>
@@ -3276,7 +3276,7 @@ with <var>init</var>, <var>frame</var>, and <var>image</var>.</p>
           <li data-md>
            <p>Assign <var>frame</var> to <code class="idl"><a data-link-type="idl" href="#dom-plane-parent-frame-slot" id="ref-for-dom-plane-parent-frame-slot">[[parent frame]]</a></code>.</p>
           <li data-md>
-           <p>Let <var>resourceStride</var> be the stride of the plane coresponding to <var>planeInit</var> in <var>resource</var>.</p>
+           <p>Let <var>resourceStride</var> be the stride of the plane corresponding to <var>planeInit</var> in <var>resource</var>.</p>
            <p class="issue" id="issue-e9094ad1"><a class="self-link" href="#issue-e9094ad1"></a> The spec should provide a definition (and possibly
     diagrams) for stride. See <a href="https://github.com/w3c/webcodecs/issues/166">#166</a>.</p>
           <li data-md>
@@ -3386,7 +3386,7 @@ from the <code class="idl"><a data-link-type="idl" href="#encodedvideochunk" id=
     <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="VideoFrame" data-dfn-type="method" data-export id="dom-videoframe-clone"><code>clone()</code></dfn>
     <dd data-md>
      <p>Creates a new <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe③①">VideoFrame</a></code> with a reference to the same <a data-link-type="dfn" href="#media-resource" id="ref-for-media-resource①⑧">media resource</a>.</p>
-     <p>When invoked, run the these steps:</p>
+     <p>When invoked, run these steps:</p>
      <ol>
       <li data-md>
        <p>If the value of <var>frame</var>’s <code class="idl"><a data-link-type="idl" href="#dom-videoframe-detached-slot" id="ref-for-dom-videoframe-detached-slot①">[[detached]]</a></code> internal slot is <code>true</code>, throw an <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#invalidstateerror" id="ref-for-invalidstateerror②①">InvalidStateError</a></code> <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-DOMException" id="ref-for-idl-DOMException①①">DOMException</a></code>.</p>
@@ -3436,7 +3436,7 @@ Close is final.</p>
        <p>Let <code class="idl"><a data-link-type="idl" href="#dom-videoframeplaneinit-cropleft" id="ref-for-dom-videoframeplaneinit-cropleft①">cropLeft</a></code>, <code class="idl"><a data-link-type="idl" href="#dom-videoframeplaneinit-croptop" id="ref-for-dom-videoframeplaneinit-croptop①">cropTop</a></code>, <code class="idl"><a data-link-type="idl" href="#dom-videoframeplaneinit-cropwidth" id="ref-for-dom-videoframeplaneinit-cropwidth①">cropWidth</a></code>, and <code class="idl"><a data-link-type="idl" href="#dom-videoframeplaneinit-cropheight" id="ref-for-dom-videoframeplaneinit-cropheight①">cropHeight</a></code> be the crop region of the decoded video frame <var>output</var> in
   pixels, prior to any aspect ratio adjustments.</p>
       <li data-md>
-       <p>Let <var>displayWidth</var> and <var>displayHeight</var> be the the display size of
+       <p>Let <var>displayWidth</var> and <var>displayHeight</var> be the display size of
   the decoded frame in pixels.</p>
       <li data-md>
        <p>If <var>displayAspectWidth</var> and <var>displayAspectHeight</var> are provided,
@@ -3560,7 +3560,7 @@ Close is final.</p>
            <p>Append <var>clonePlane</var> to <code class="idl"><a data-link-type="idl" href="#dom-videoframe-planes" id="ref-for-dom-videoframe-planes⑨">planes</a></code>.</p>
          </ol>
         <li data-md>
-         <p>Assign all remaining attributes of <var>frame</var> ( <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedwidth" id="ref-for-dom-videoframe-codedwidth⑥">codedWidth</a></code>, <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedheight" id="ref-for-dom-videoframe-codedheight⑥">codedHeight</a></code>, etc.) to those of the same name in <var>clone</var>.</p>
+         <p>Assign all remaining attributes of <var>frame</var> (<code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedwidth" id="ref-for-dom-videoframe-codedwidth⑥">codedWidth</a></code>, <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedheight" id="ref-for-dom-videoframe-codedheight⑥">codedHeight</a></code>, etc.) to those of the same name in <var>clone</var>.</p>
        </ol>
       <li data-md>
        <p>Return <var>clone</var>.</p>
@@ -3611,9 +3611,9 @@ Close is final.</p>
     <li data-md>
      <p>If <code class="idl"><a data-link-type="idl" href="#dom-plane-length" id="ref-for-dom-plane-length⑤">length</a></code> is greater than |<code>dst.byteLength</code>|, throw a <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#exceptiondef-typeerror" id="ref-for-exceptiondef-typeerror①⑥">TypeError</a></code>.</p>
     <li data-md>
-     <p>Let <var>resource</var> be the <a data-link-type="dfn" href="#media-resource" id="ref-for-media-resource②②">media resource</a> refrenced by <code class="idl"><a data-link-type="idl" href="#dom-plane-parent-frame-slot" id="ref-for-dom-plane-parent-frame-slot④">[[parent frame]]</a></code>'s <code class="idl"><a data-link-type="idl" href="#dom-videoframe-resource-reference-slot" id="ref-for-dom-videoframe-resource-reference-slot⑧">[[resource reference]]</a></code>.</p>
+     <p>Let <var>resource</var> be the <a data-link-type="dfn" href="#media-resource" id="ref-for-media-resource②②">media resource</a> referenced by <code class="idl"><a data-link-type="idl" href="#dom-plane-parent-frame-slot" id="ref-for-dom-plane-parent-frame-slot④">[[parent frame]]</a></code>'s <code class="idl"><a data-link-type="idl" href="#dom-videoframe-resource-reference-slot" id="ref-for-dom-videoframe-resource-reference-slot⑧">[[resource reference]]</a></code>.</p>
     <li data-md>
-     <p>Let <var>plane bytes</var> be the region of bytes in <a data-link-type="dfn" href="#media-resource" id="ref-for-media-resource②③">media resource</a> coresponding
+     <p>Let <var>plane bytes</var> be the region of bytes in <a data-link-type="dfn" href="#media-resource" id="ref-for-media-resource②③">media resource</a> corresponding
 to this plane.</p>
     <li data-md>
      <p>Copy the <var>plane bytes</var> into <var>dst</var>.</p>
@@ -3825,7 +3825,7 @@ for the available tracks and a mechanism for selecting a track to decode.</p>
       <li data-md>
        <p>Let <var>promise</var> be a new <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-promise" id="ref-for-idl-promise①③">Promise</a></code>.</p>
       <li data-md>
-       <p><a data-link-type="dfn" href="#enqueues-a-control-message" id="ref-for-enqueues-a-control-message②①">Queue a control message</a> to decode the the image with <var>options</var>, and <var>promise</var>.</p>
+       <p><a data-link-type="dfn" href="#enqueues-a-control-message" id="ref-for-enqueues-a-control-message②①">Queue a control message</a> to decode the image with <var>options</var>, and <var>promise</var>.</p>
       <li data-md>
        <p>Append <var>promise</var> to <code class="idl"><a data-link-type="idl" href="#dom-imagedecoder-pending-decode-promises-slot" id="ref-for-dom-imagedecoder-pending-decode-promises-slot①">[[pending decode promises]]</a></code>.</p>
       <li data-md>
@@ -4419,7 +4419,7 @@ with <code class="idl"><a data-link-type="idl" href="#imagetrack" id="ref-for-im
     <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="ImageTrackList" data-dfn-type="attribute" data-export id="dom-imagetracklist-selected-index-slot"><code>[[selected index]]</code></dfn>
     <dd data-md>
      <p>The index of the selected track in <code class="idl"><a data-link-type="idl" href="#dom-imagetracklist-track-list-slot" id="ref-for-dom-imagetracklist-track-list-slot④">[[track list]]</a></code>. A
-value of <code>-1</code> indeicates that no track is selected.</p>
+value of <code>-1</code> indicates that no track is selected.</p>
    </dl>
    <h4 class="heading settled" data-level="10.6.2" id="imagetracklist-attributes"><span class="secno">10.6.2. </span><span class="content">Attributes</span><a class="self-link" href="#imagetracklist-attributes"></a></h4>
    <dl>
@@ -4586,7 +4586,7 @@ expose some additional information in the form of low level codec features.</p>
    <p>A codec feature profile alone is unlikely to be uniquely identifying. Underlying
 codecs are often implemented entirely in software (be it part of the user agent
 binary or part of the operating system), such that all users who run that
-software will have a common set capabilities. Additionally, underlying codecs
+software will have a common set of capabilities. Additionally, underlying codecs
 are often implemented with hardware acceleration, but such hardware is mass
 produced and devices of a particular class and manufacture date (e.g. flagship
 phones manufactured in 2020) will often have common capabilities. There will be
@@ -6093,7 +6093,7 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
      <li><span class="dfn-paneled" id="term-for-iteration-continue">continue</span>
      <li><span class="dfn-paneled" id="term-for-queue-dequeue">dequeued</span>
      <li><span class="dfn-paneled" id="term-for-list-empty">empty <small>(for list)</small></span>
-     <li><span class="dfn-paneled" id="term-for-queue-enqueue">enqueing</span>
+     <li><span class="dfn-paneled" id="term-for-queue-enqueue">enqueuing</span>
      <li><span class="dfn-paneled" id="term-for-map-exists">exist</span>
      <li><span class="dfn-paneled" id="term-for-lists">list</span>
      <li><span class="dfn-paneled" id="term-for-ordered-map">map</span>
