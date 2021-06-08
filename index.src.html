@@ -269,7 +269,12 @@ Internal Slots {#audiodecoder-internal-slots}
 : <dfn attribute for=AudioDecoder>[[key chunk required]]</dfn>
 :: A boolean indicating that the next chunk passed to {{AudioDecoder/decode()}}
     must describe a [=key chunk=] as indicated by
-    {{EncodedAudioChunk/type}}.
+    {{EncodedAudioChunk/[[type]]}}.
+: <dfn attribute for=AudioDecoder>\[[state]]</dfn>
+:: The current {{CodecState}} of this {{AudioDecoder}}.
+: <dfn attribute for=AudioDecoder>\[[decodeQueueSize]]</dfn>
+:: The number of pending decode requests. This number will decrease as the
+    underlying codec is ready to accept new input.
 
 Constructors {#audiodecoder-constructors}
 -----------------------------------------
@@ -280,7 +285,7 @@ Constructors {#audiodecoder-constructors}
 2. Assign init.output to {{AudioDecoder/[[output callback]]}}.
 3. Assign init.error to {{AudioDecoder/[[error callback]]}}.
 4. Assign `true` to {{AudioDecoder/[[key chunk required]]}}.
-5. Assign "unconfigured" to d.state.
+5. Assign `"unconfigured"` to {{AudioDecoder/[[state]]}}
 6. Return d.
 
 Attributes {#audiodecoder-attributes}
@@ -289,13 +294,12 @@ Attributes {#audiodecoder-attributes}
   <dt>
     <dfn attribute for=AudioDecoder>state</dfn>
   </dt>
-  <dd>Describes the current state of the codec.</dd>
+  <dd>Returns the value of {{AudioDecoder/[[state]]}}.</dd>
   <dt>
     <dfn attribute for=AudioDecoder>decodeQueueSize</dfn>
   </dt>
   <dd>
-    The number of pending decode requests. This number will decrease as the
-    underlying codec is ready to accept new input.
+    Returns the value of {{AudioDecoder/[[decodeQueueSize]]}}.
   </dd>
 </dl>
 
@@ -315,8 +319,8 @@ Methods {#audiodecoder-methods}
     When invoked, run these steps:
     1. If |config| is not a [=valid AudioDecoderConfig=], throw a
         {{TypeError}}.
-    2. If {{AudioDecoder/state}} is `“closed”`, throw an {{InvalidStateError}}.
-    3. Set {{AudioDecoder/state}} to `"configured"`.
+    2. If {{AudioDecoder/[[state]]}} is `“closed”`, throw an {{InvalidStateError}}.
+    3. Set {{AudioDecoder/[[state]]}} to `"configured"`.
     4. Set {{AudioDecoder/[[key chunk required]]}} to `true`.
     5. [=Queue a control message=] to configure the decoder with |config|.
 
@@ -336,10 +340,10 @@ Methods {#audiodecoder-methods}
     [=Enqueues a control message=] to decode the given |chunk|.
 
     When invoked, run these steps:
-    1. If {{AudioDecoder/state}} is not `"configured"`, throw an
+    1. If {{AudioDecoder/[[state]]}} is not `"configured"`, throw an
         {{InvalidStateError}}.
     2. If {{AudioDecoder/[[key chunk required]]}} is `true`:
-        1. If |chunk|.{{EncodedAudioChunk/type}} is not
+        1. If |chunk|.{{EncodedAudioChunk/[[type]]}} is not
             {{EncodedAudioChunkType/key}}, throw a {{DataError}}.
         2. Implementers should inspect the |chunk|'s
             {{EncodedAudioChunk/[[internal data]]}} to verify that
@@ -347,7 +351,7 @@ Methods {#audiodecoder-methods}
             {{DataError}}.
         3. Otherwise, assign `false` to
             {{AudioDecoder/[[key chunk required]]}}.
-    3. Increment {{AudioDecoder/decodeQueueSize}}.
+    3. Increment {{AudioDecoder/[[decodeQueueSize]]}}.
     4. [=Queue a control message=] to decode the |chunk|.
 
     [=Running a control message=] to decode the chunk means performing these
@@ -358,7 +362,7 @@ Methods {#audiodecoder-methods}
         event loop to run the [=Close AudioDecoder=] algorithm with
         {{EncodingError}}.
     3. Queue a task on the [=control thread=] event loop to decrement
-        {{AudioDecoder/decodeQueueSize}}
+        {{AudioDecoder/[[decodeQueueSize]]}}
     4. Let |decoded outputs| be a [=list=] of decoded video data outputs emitted
         by {{AudioDecoder/[[codec implementation]]}}.
     5. If |decoded outputs| is not empty, queue a task on the [=control thread=]
@@ -372,7 +376,7 @@ Methods {#audiodecoder-methods}
     and emits all outputs.
 
     When invoked, run these steps:
-    1. If {{AudioDecoder/state}} is not `"configured"`, return
+    1. If {{AudioDecoder/[[state]]}} is not `"configured"`, return
         [=a promise rejected with=] {{InvalidStateError}} {{DOMException}}.
     2. Set {{AudioDecoder/[[key chunk required]]}} to `true`.
     3. Let |promise| be a new Promise.
@@ -450,7 +454,7 @@ Algorithms {#audiodecoder-algorithms}
             3. Let |resourceReference| be a reference to |resource|.
             4. Assign |resourceReference| to
                 {{AudioData/[[resource reference]]}}.
-            5. Let |timestamp| be the {{EncodedAudioChunk/timestamp}} of the
+            5. Let |timestamp| be the {{EncodedAudioChunk/[[timestamp]]}} of the
                 {{EncodedAudioChunk}} associated with |output|.
             6. Assign |timestamp| to {{AudioData/[[timestamp]]}}.
             7. Assign values to {{AudioData/[[format]]}},
@@ -462,18 +466,18 @@ Algorithms {#audiodecoder-algorithms}
   <dt><dfn>Reset AudioDecoder</dfn></dt>
   <dd>
     Run these steps:
-    1. If {{AudioDecoder/state}} is `"closed"`, throw an {{InvalidStateError}}.
-    2. Set {{AudioDecoder/state}} to `"unconfigured"`.
+    1. If {{AudioDecoder/[[state]]}} is `"closed"`, throw an {{InvalidStateError}}.
+    2. Set {{AudioDecoder/[[state]]}} to `"unconfigured"`.
     3. Signal {{AudioDecoder/[[codec implementation]]}} to cease producing
         output for the previous configuration.
     4. [=Reset the control message queue=].
-    5. Set {{AudioDecoder/decodeQueueSize}} to zero.
+    5. Set {{AudioDecoder/[[decodeQueueSize]]}} to zero.
   </dd>
   <dt><dfn>Close AudioDecoder</dfn> (with error)</dt>
   <dd>
     Run these steps:
     1. Run the [=Reset AudioDecoder=] algorithm.
-    2. Set {{AudioDecoder/state}} to `"closed"`.
+    2. Set {{AudioDecoder/[[state]]}} to `"closed"`.
     3. Clear {{AudioDecoder/[[codec implementation]]}} and release associated
         [=system resources=].
     4. If |error| is set, queue a task on the [=control thread=] event loop to
@@ -520,8 +524,11 @@ Internal Slots {#videodecoder-internal-slots}
 : <dfn attribute for=VideoDecoder>[[active decoder config]]</dfn>
 :: The {{VideoDecoderConfig}} that is actively applied.
 : <dfn attribute for=VideoDecoder>[[key chunk required]]</dfn>
-:: A boolean indicating that the next chunk passed to {{VideoDecoder/decode()}}
-    must describe a [=key chunk=] as indicated by {{EncodedVideoChunk/type}}.
+:: A boolean indicating that the next chunk passed to {{VideoDecoder/decode()}} must describe a [=key chunk=] as indicated by {{EncodedVideoChunk/type}}.
+: <dfn attribute for=VideoDecoder>\[[state]]</dfn>
+:: The current {{CodecState}} of this {{VideoDecoder}}.
+: <dfn attribute for=VideoDecoder>\[[decodeQueueSize]]</dfn>
+:: The number of pending decode requests. This number will decrease as the underlying codec is ready to accept new input.
 
 Constructors {#videodecoder-constructors}
 -----------------------------------------
@@ -532,7 +539,7 @@ Constructors {#videodecoder-constructors}
 2. Assign `init.output` to the {{VideoDecoder/[[output callback]]}} internal slot.
 3. Assign `init.error` to the {{VideoDecoder/[[error callback]]}} internal slot.
 4. Assign `true` to {{VideoDecoder/[[key chunk required]]}}.
-5. Assign "unconfigured" to `d.state`.
+5. Assign `"unconfigured"` to {{VideoDecoder/[[state]]}}.
 5. Return d.
 
 Attributes {#videodecoder-attributes}
@@ -541,13 +548,14 @@ Attributes {#videodecoder-attributes}
   <dt>
     <dfn attribute for=VideoDecoder>state</dfn>
   </dt>
-  <dd>Describes the current state of the codec.</dd>
+  <dd>
+    Returns the value of {{VideoDecoder/[[state]]}}.
+  </dd>
   <dt>
     <dfn attribute for=VideoDecoder>decodeQueueSize</dfn>
   </dt>
   <dd>
-    The number of pending decode requests. This number will decrease as the
-    underlying codec is ready to accept new input.
+    Returns the value of {{VideoDecoder/[[decodeQueueSize]]}}.
   </dd>
 </dl>
 
@@ -567,8 +575,8 @@ Methods {#videodecoder-methods}
     When invoked, run these steps:
     1. If |config| is not a [=valid VideoDecoderConfig=], throw a
         {{TypeError}}.
-    2. If {{VideoDecoder/state}} is `“closed”`, throw an {{InvalidStateError}}.
-    3. Set {{VideoDecoder/state}} to `"configured"`.
+    2. If {{VideoDecoder/[[state]]}} is `“closed”`, throw an {{InvalidStateError}}.
+    3. Set {{VideoDecoder/[[state]]}} to `"configured"`.
     4. Set {{VideoDecoder/[[key chunk required]]}} to `true`.
     5. [=Queue a control message=] to configure the decoder with |config|.
 
@@ -595,7 +603,7 @@ Methods {#videodecoder-methods}
         decoding to stall.
 
     When invoked, run these steps:
-    1. If {{VideoDecoder/state}} is not `"configured"`, throw an
+    1. If {{VideoDecoder/[[state]]}} is not `"configured"`, throw an
         {{InvalidStateError}}.
     2. If {{VideoDecoder/[[key chunk required]]}} is `true`:
         1. If |chunk|.{{EncodedVideoChunk/type}} is not
@@ -606,7 +614,7 @@ Methods {#videodecoder-methods}
             {{DataError}}.
         3. Otherwise, assign `false` to
             {{VideoDecoder/[[key chunk required]]}}.
-    3. Increment {{VideoDecoder/decodeQueueSize}}.
+    3. Increment {{VideoDecoder/[[decodeQueueSize]]}}.
     4. [=Queue a control message=] to decode the |chunk|.
 
     [=Running a control message=] to decode the chunk means performing these steps:
@@ -616,7 +624,7 @@ Methods {#videodecoder-methods}
         event loop to run the [=Close VideoDecoder=] algorithm with
         {{EncodingError}}.
     3. Queue a task on the [=control thread=] event loop to decrement
-        {{VideoDecoder/decodeQueueSize}}
+        {{VideoDecoder/[[decodeQueueSize]]}}
     4. Let |decoded outputs| be a [=list=] of decoded video data outputs emitted
         by {{VideoDecoder/[[codec implementation]]}}.
     5. If |decoded outputs| is not empty, queue a task on the [=control thread=]
@@ -630,7 +638,7 @@ Methods {#videodecoder-methods}
     and emits all outputs.
 
     When invoked, run these steps:
-    1. If {{VideoDecoder/state}} is not `"configured"`, return
+    1. If {{VideoDecoder/[[state]]}} is not `"configured"`, return
         [=a promise rejected with=] {{InvalidStateError}} {{DOMException}}.
     2. Set {{VideoDecoder/[[key chunk required]]}} to `true`.
     3. Let |promise| be a new Promise.
@@ -723,7 +731,7 @@ Algorithms {#videodecoder-algorithms}
     3. Signal {{VideoDecoder/[[codec implementation]]}} to cease producing
         output for the previous configuration.
     4. [=Reset the control message queue=].
-    5. Set {{VideoDecoder/decodeQueueSize}} to zero.
+    5. Set {{VideoDecoder/[[decodeQueueSize]]}} to zero.
   </dd>
   <dt><dfn>Close VideoDecoder</dfn> (with |error|)</dt>
   <dd>
@@ -784,6 +792,15 @@ Internal Slots {#audioencoder-internal-slots}
   The {{AudioDecoderConfig}} that describes how to decode the most recently
   emitted {{EncodedAudioChunk}}.
 </dd>
+<dt><dfn attribute for=AudioEncoder>\[[state]]</dfn></dt>
+<dd>
+  The current {{CodecState}} of this {{AudioEncoder}}.
+</dd>
+<dt><dfn attribute for=AudioEncoder>\[[encodeQueueSize]]</dfn></dt>
+<dd>
+  The number of pending encode requests. This number will decrease as the
+  underlying codec is ready to accept new input.
+</dd>
 </dl>
 
 Constructors {#audioencoder-constructors}
@@ -794,7 +811,7 @@ Constructors {#audioencoder-constructors}
 1. Let e be a new AudioEncoder object.
 2. Assign `init.output` to the {{AudioEncoder/[[output callback]]}} internal slot.
 3. Assign `init.error` to the {{AudioEncoder/[[error callback]]}} internal slot.
-4. Assign "unconfigured" to `e.state`.
+4. Assign `"unconfigured"` to {{AudioEncoder/[[state]]}}.
 5. Assign `null` to {{AudioEncoder/[[active encoder config]]}}.
 6. Assign `null` to {{AudioEncoder/[[active output config]]}}.
 7. Return e.
@@ -805,13 +822,12 @@ Attributes {#audioencoder-attributes}
   <dt>
     <dfn attribute for=AudioEncoder>state</dfn>
   </dt>
-  <dd>Describes the current state of the codec.</dd>
+  <dd>Returns the value of {{AudioEncoder/[[state]]}}.</dd>
   <dt>
     <dfn attribute for=AudioEncoder>encodeQueueSize</dfn>
   </dt>
   <dd>
-    The number of pending encode requests. This number will decrease as the
-    underlying codec is ready to accept new input.
+    Returns the value of {{AudioEncoder/[[encodeQueueSize]]}}.
   </dd>
 </dl>
 
@@ -831,8 +847,8 @@ Methods {#audioencoder-methods}
     When invoked, run these steps:
     1. If |config| is not a [=valid AudioEncoderConfig=], throw a
         {{TypeError}}.
-    2. If {{AudioEncoder/state}} is `"closed"`, throw an {{InvalidStateError}}.
-    3. Set {{AudioEncoder/state}} to `"configured"`.
+    2. If {{AudioEncoder/[[state]]}} is `"closed"`, throw an {{InvalidStateError}}.
+    3. Set {{AudioEncoder/[[state]]}} to `"configured"`.
     4. [=Queue a control message=] to configure the encoder using |config|.
 
     [=Running a control message=] to configure the encoder means performing these
@@ -854,11 +870,11 @@ Methods {#audioencoder-methods}
     When invoked, run these steps:
     1. If the value of |data|'s {{AudioData/[[detached]]}} internal slot is
         `true`, throw a {{TypeError}}.
-    2. If {{AudioEncoder/state}} is not `"configured"`, throw an
+    2. If {{AudioEncoder/[[state]]}} is not `"configured"`, throw an
         {{InvalidStateError}}.
     3. Let |dataClone| hold the result of running the [=Clone AudioData=]
         algorithm with |data|.
-    4. Increment {{AudioEncoder/encodeQueueSize}}.
+    4. Increment {{AudioEncoder/[[encodeQueueSize]]}}.
     5. [=Queue a control message=] to encode |dataClone|.
 
     [=Running a control message=] to encode the data means performing these steps.
@@ -868,7 +884,7 @@ Methods {#audioencoder-methods}
         event loop to run the [=Close AudioEncoder=] algorithm with
         {{EncodingError}}.
     3. Queue a task on the [=control thread=] event loop to decrement
-        {{AudioEncoder/encodeQueueSize}}.
+        {{AudioEncoder/[[encodeQueueSize]]}}.
     4. Let |encoded outputs| be a [=list=] of encoded audio data outputs
         emitted by {{AudioEncoder/[[codec implementation]]}}.
     5. If |encoded outputs| is not empty, queue a task on the
@@ -881,7 +897,7 @@ Methods {#audioencoder-methods}
     and emits all outputs.
 
     When invoked, run these steps:
-    1. If {{AudioEncoder/state}} is not `"configured"`, return
+    1. If {{AudioEncoder/[[state]]}} is not `"configured"`, return
         [=a promise rejected with=] {{InvalidStateError}} {{DOMException}}.
     2. Let |promise| be a new Promise.
     3. [=Queue a control message=] to flush the codec with |promise|.
@@ -997,20 +1013,20 @@ Algorithms {#audioencoder-algorithms}
   <dt><dfn>Reset AudioEncoder</dfn></dt>
   <dd>
     Run these steps:
-    1. If {{AudioEncoder/state}} is `"closed"`, throw an {{InvalidStateError}}.
-    2. Set {{AudioEncoder/state}} to `"unconfigured"`.
+    1. If {{AudioEncoder/[[state]]}} is `"closed"`, throw an {{InvalidStateError}}.
+    2. Set {{AudioEncoder/[[state]]}} to `"unconfigured"`.
     3. Set {{AudioEncoder/[[active encoder config]]}} to `null`.
     4. Set {{AudioEncoder/[[active output config]]}} to `null`.
     5. Signal {{AudioEncoder/[[codec implementation]]}} to cease producing
         output for the previous configuration.
     6. [=Reset the control message queue=].
-    7. Set {{AudioEncoder/encodeQueueSize}} to zero.
+    7. Set {{AudioEncoder/[[encodeQueueSize]]}} to zero.
   </dd>
   <dt><dfn>Close AudioEncoder</dfn> (with |error|)</dt>
   <dd>
     Run these steps:
     1. Run the [=Reset AudioEncoder=] algorithm.
-    2. Set {{AudioEncoder/state}} to `"closed"`.
+    2. Set {{AudioEncoder/[[state]]}} to `"closed"`.
     3. Clear {{AudioEncoder/[[codec implementation]]}} and release associated
         [=system resources=].
     4. If |error| is set, queue a task on the [=control thread=] event loop
@@ -1081,6 +1097,15 @@ Internal Slots {#videoencoder-internal-slots}
   The {{VideoDecoderConfig}} that describes how to decode the most recently
   emitted {{EncodedVideoChunk}}.
 </dd>
+<dt><dfn attribute for=VideoEncoder>\[[state]]</dfn></dt>
+<dd>
+  The current {{CodecState}} of this {{VideoEncoder}}.
+</dd>
+<dt><dfn attribute for=VideoEncoder>\[[encodeQueueSize]]</dfn></dt>
+<dd>
+  The number of pending encode requests. This number will decrease as the
+  underlying codec is ready to accept new input.
+</dd>
 </dl>
 
 Constructors {#videoencoder-constructors}
@@ -1091,7 +1116,7 @@ Constructors {#videoencoder-constructors}
 1. Let e be a new VideoEncoder object.
 2. Assign `init.output` to the {{VideoEncoder/[[output callback]]}} internal slot.
 3. Assign `init.error` to the {{VideoEncoder/[[error callback]]}} internal slot.
-4. Assign "unconfigured" to `e.state`.
+4. Assign "unconfigured" to {{VideoEncoder/[[state]]}}.
 5. Return e.
 
 Attributes {#videoencoder-attributes}
@@ -1100,13 +1125,12 @@ Attributes {#videoencoder-attributes}
   <dt>
     <dfn attribute for=VideoEncoder>state</dfn>
   </dt>
-  <dd>Describes the current state of the codec.</dd>
+  <dd>Returns the value of {{VideoEncoder/[[state]]}}.</dd>
   <dt>
     <dfn attribute for=VideoEncoder>encodeQueueSize</dfn>
   </dt>
   <dd>
-    The number of pending encode requests. This number will decrease as the
-    underlying codec is ready to accept new input.
+    Returns the value of {{VideoEncoder/[[encodeQueueSize]]}}.
   </dd>
 </dl>
 
@@ -1126,8 +1150,8 @@ Methods {#videoencoder-methods}
     When invoked, run these steps:
     1. If |config| is not a [=valid VideoEncoderConfig=], throw a
         {{TypeError}}.
-    2. If {{VideoEncoder/state}} is `"closed"`, throw an {{InvalidStateError}}.
-    3. Set {{VideoEncoder/state}} to `"configured"`.
+    2. If {{VideoEncoder/[[state]]}} is `"closed"`, throw an {{InvalidStateError}}.
+    3. Set {{VideoEncoder/[[state]]}} to `"configured"`.
     4. [=Queue a control message=] to configure the encoder using |config|.
 
     [=Running a control message=] to configure the encoder means performing these
@@ -1149,11 +1173,11 @@ Methods {#videoencoder-methods}
     When invoked, run these steps:
     1. If the value of |frame|'s {{VideoFrame/[[detached]]}} internal slot is
         `true`, throw a {{TypeError}}.
-    2. If {{VideoEncoder/state}} is not `"configured"`, throw an
+    2. If {{VideoEncoder/[[state]]}} is not `"configured"`, throw an
         {{InvalidStateError}}.
     3. Let |frameClone| hold the result of running the [=Clone VideoFrame=]
         algorithm with |frame|.
-    4. Increment {{VideoEncoder/encodeQueueSize}}.
+    4. Increment {{VideoEncoder/[[encodeQueueSize]]}}.
     5. [=Queue a control message=] to encode |frameClone|.
 
     [=Running a control message=] to encode the frame means performing these steps.
@@ -1163,7 +1187,7 @@ Methods {#videoencoder-methods}
         event loop to run the [=Close VideoEncoder=] algorithm with
         {{EncodingError}}.
     3. Queue a task on the [=control thread=] event loop to decrement
-        {{VideoEncoder/encodeQueueSize}}.
+        {{VideoEncoder/[[encodeQueueSize]]}}.
     4. Let |encoded outputs| be a [=list=] of encoded video data outputs
         emitted by {{VideoEncoder/[[codec implementation]]}}.
     5. If |encoded outputs| is not empty, queue a task on the [=control thread=]
@@ -1177,7 +1201,7 @@ Methods {#videoencoder-methods}
     and emits all outputs.
 
     When invoked, run these steps:
-    1. If {{VideoEncoder/state}} is not `"configured"`, return
+    1. If {{VideoEncoder/[[state]]}} is not `"configured"`, return
         [=a promise rejected with=] {{InvalidStateError}} {{DOMException}}.
     2. Let |promise| be a new Promise.
     3. [=Queue a control message=] to flush the codec with |promise|.
@@ -1302,20 +1326,20 @@ Algorithms {#videoencoder-algorithms}
   <dt><dfn>Reset VideoEncoder</dfn></dt>
   <dd>
     Run these steps:
-    1. If {{VideoEncoder/state}} is `"closed"`, throw an {{InvalidStateError}}.
-    2. Set {{VideoEncoder/state}} to `"unconfigured"`.
+    1. If {{VideoEncoder/[[state]]}} is `"closed"`, throw an {{InvalidStateError}}.
+    2. Set {{VideoEncoder/[[state]]}} to `"unconfigured"`.
     3. Set {{VideoEncoder/[[active encoder config]]}} to `null`.
     4. Set {{VideoEncoder/[[active output config]]}} to `null`.
     5. Signal {{VideoEncoder/[[codec implementation]]}} to cease producing
         output for the previous configuration.
     6. [=Reset the control message queue=].
-    7. Set {{VideoEncoder/encodeQueueSize}} to zero.
+    7. Set {{VideoEncoder/[[encodeQueueSize]]}} to zero.
   </dd>
   <dt><dfn>Close VideoEncoder</dfn> (with |error|)</dt>
   <dd>
     Run these steps:
     1. Run the [=Reset VideoEncoder=] algorithm.
-    2. Set {{VideoEncoder/state}} to `"closed"`.
+    2. Set {{VideoEncoder/[[state]]}} to `"closed"`.
     3. Clear {{VideoEncoder/[[codec implementation]]}} and release associated
         [=system resources=].
     4. If |error| is set, queue a task on the [=control thread=] event loop
@@ -1880,6 +1904,7 @@ interface EncodedAudioChunk {
   constructor(EncodedAudioChunkInit init);
   readonly attribute EncodedAudioChunkType type;
   readonly attribute long long timestamp;    // microseconds
+  readonly attribute unsigned long duration; // microseconds
   readonly attribute unsigned long byteLength;
 
   undefined copyTo([AllowShared] BufferSource destination);
@@ -1900,33 +1925,44 @@ enum EncodedAudioChunkType {
 ### Internal Slots ### {#encodedaudiochunk-internal-slots}
 : <dfn attribute for=EncodedAudioChunk>[[internal data]]</dfn></dt>
 :: An array of bytes representing the encoded chunk data.
+: <dfn attribute for=EncodedAudioChunk>\[[type]]</dfn>
+:: Describes whether the chunk is a [=key chunk=].
+: <dfn attribute for=EncodedAudioChunk>\[[timestamp]]</dfn>
+:: The presentation timestamp, given in microseconds.
+: <dfn attribute for=EncodedAudioChunk>\[[duration]]</dfn>
+:: The presentation duration, given in microseconds.
+: <dfn attribute for=EncodedAudioChunk>[[byte length]]</dfn>
+:: The byte length of {{EncodedAudioChunk/[[internal data]]}}.
 
 ### Constructors ###{#encodedaudiochunk-constructors}
 <dfn constructor for=EncodedAudioChunk title="EncodedAudioChunk(init)">
   EncodedAudioChunk(init)
 </dfn>
 1. Let |chunk| be a new {{EncodedAudioChunk}} object, initialized as follows
-    1. Assign `init.type` to {{EncodedAudioChunk/type}}.
-    2. Assign `init.timestamp` to {{EncodedAudioChunk/timestamp}}.
+    1. Assign `init.type` to {{EncodedAudioChunk/[[type]]}}.
+    2. Assign `init.timestamp` to {{EncodedAudioChunk/[[timestamp]]}}.
     3. Assign a copy of `init.data` to {{EncodedAudioChunk/[[internal data]]}}.
-    4. Assign `init.data.byteLength` to {{EncodedAudioChunk/byteLength}};
+    4. Assign `init.data.byteLength` to {{EncodedAudioChunk/[[byte length]]}};
 5. Return |chunk|.
 
 ### Attributes ###{#encodedaudiochunk-attributes}
 : <dfn attribute for=EncodedAudioChunk>type</dfn>
-:: Describes whether the chunk is a [=key chunk=].
+:: Returns the value of {{EncodedAudioChunk/[[type]]}}.
 
 : <dfn attribute for=EncodedAudioChunk>timestamp</dfn>
-:: The presentation timestamp, given in microseconds.
+:: Returns the value of {{EncodedAudioChunk/[[timestamp]]}}.
+
+: <dfn attribute for=EncodedAudioChunk>duration</dfn>
+:: Returns the value of {{EncodedAudioChunk/[[duration]]}}.
 
 : <dfn attribute for=EncodedAudioChunk>byteLength</dfn>
-:: The byte length of {{EncodedAudioChunk/[[internal data]]}}.
+:: Returns the value of {{EncodedAudioChunk/[[byte length]]}}.
 
 ### Methods ###{#encodedaudiochunk-methods}
 : <dfn method for=EncodedAudioChunk>copyTo(destination)</dfn>
 :: When invoked, run these steps:
-    1. If {{EncodedAudioChunk/byteLength}} is greater than
-        |destination|.`byteLength`, throw a {{TypeError}}.
+    1. If the {{EncodedAudioChunk/[[byte length]]}} of this {{EncodedAudioChunk}} is
+        greater than in |destination|, throw a {{TypeError}}.
     2. Copy the {{EncodedAudioChunk/[[internal data]]}} into |destination|.
 
 EncodedVideoChunk Interface{#encodedvideochunk-interface}
@@ -1959,39 +1995,48 @@ enum EncodedVideoChunkType {
 ### Internal Slots ### {#encodedvideochunk-internal-slots}
 : <dfn attribute for=EncodedVideoChunk>[[internal data]]</dfn></dt>
 :: An array of bytes representing the encoded chunk data.
+: <dfn attribute for=EncodedVideoChunk>\[[type]]</dfn>
+:: The {{EncodedAudioChunkType}} of this {{EncodedVideoChunk}};
+: <dfn attribute for=EncodedVideoChunk>\[[timestamp]]</dfn>
+:: The presentation timestamp, given in microseconds.
+: <dfn attribute for=EncodedVideoChunk>\[[duration]]</dfn>
+:: The presentation duration, given in microseconds.
+: <dfn attribute for=EncodedVideoChunk>[[byte length]]</dfn>
+:: The byte length of {{EncodedVideoChunk/[[internal data]]}}.
 
 ### Constructors ###{#encodedvideochunk-constructors}
 <dfn constructor for=EncodedVideoChunk title="EncodedVideoChunk(init)">
   EncodedVideoChunk(init)
 </dfn>
 1. Let |chunk| be a new {{EncodedVideoChunk}} object, initialized as follows
-    1. Assign `init.type` to {{EncodedVideoChunk/type}}.
-    2. Assign `init.timestamp` to {{EncodedVideoChunk/timestamp}}.
+    1. Assign `init.type` to {{EncodedVideoChunk/[[type]]}}.
+    2. Assign `init.timestamp` to {{EncodedVideoChunk/[[timestamp]]}}.
     3. If duration is present in init, assign `init.duration` to
-        {{EncodedVideoChunk/duration}}. Otherwise, assign `null` to
-        {{EncodedVideoChunk/duration}}.
+        {{EncodedVideoChunk/[[duration]]}}. Otherwise, assign `null` to
+        {{EncodedVideoChunk/[[duration]]}}.
     4. Assign a copy of `init.data` to {{EncodedVideoChunk/[[internal data]]}}.
-    5. Assign `init.data.byteLength` to {{EncodedVideoChunk/byteLength}};
+    5. Assign `init.data.byteLength` to {{EncodedVideoChunk/[[byte length]]}};
 3. Return |chunk|.
 
 ### Attributes ###{#encodedvideochunk-attributes}
 : <dfn attribute for=EncodedVideoChunk>type</dfn>
-:: Describes whether the chunk is a [=key chunk=].
+:: Returns the value of {{EncodedVideoChunk/[[type]]}}.
 
 : <dfn attribute for=EncodedVideoChunk>timestamp</dfn>
-:: The presentation timestamp, given in microseconds.
+:: Returns the value of {{EncodedVideoChunk/[[timestamp]]}}.
 
 : <dfn attribute for=EncodedVideoChunk>duration</dfn>
-:: The presentation duration, given in microseconds.
+:: Returns the value of {{EncodedVideoChunk/[[duration]]}}.
 
 : <dfn attribute for=EncodedVideoChunk>byteLength</dfn>
-:: The byte length of {{EncodedVideoChunk/[[internal data]]}}.
+:: Returns the value of {{EncodedVideoChunk/[[byte length]]}}.
 
 ### Methods ###{#encodedvideochunk-methods}
 : <dfn method for=EncodedVideoChunk>copyTo(destination)</dfn>
 :: When invoked, run these steps:
-    1. If {{EncodedVideoChunk/byteLength}} is greater than
-        |destination|.`byteLength`, throw a {{TypeError}}.
+    1. If {{EncodedVideoChunk/[[byte length]]}} is greater than
+        the {{EncodedVideoChunk/[[byte length]]}} of |destination|, throw a
+        {{TypeError}}.
     2. Copy the {{EncodedVideoChunk/[[internal data]]}} into |destination|.
 
 
@@ -2344,15 +2389,15 @@ When an {{AudioData}} has an {{AudioSampleFormat}} that is
 <dfn>interleaved</dfn>, the audio samples from different channels are laid out
 consecutively in the same buffer, in the order described in the section
 [[#audio-channel-ordering]]. The {{AudioData}} has a single plane, that contains a
-number of elements therefore equal to {{AudioData/numberOfFrames}} *
-{{AudioData/numberOfChannels}}.
+number of elements therefore equal to {{AudioData/[[number of frames]]}} *
+{{AudioData/[[number of channels]]}}.
 
 When an {{AudioData}} has an {{AudioSampleFormat}} that is
 <dfn>planar</dfn>, the audio samples from different channels are laid out
 in different buffers, themselves arranged in an order described in the section
 [[#audio-channel-ordering]]. The {{AudioData}} has a number of planes equal to the
-{{AudioData}}'s {{AudioData/numberOfChannels}}. Each plane contains
-{{AudioData/numberOfFrames}} elements.
+{{AudioData}}'s {{AudioData/[[number of channels]]}}. Each plane contains
+{{AudioData/[[number of frames]]}} elements.
 
 Note: The [[WEBAUDIO|Web Audio API]] currently uses {{FLTP}} exclusively.
 
@@ -3132,7 +3177,7 @@ interface ImageDecoder {
     12. If |init|'s {{ImageDecoderInit/data}} member is of type
         {{ReadableStream}}:
         1. Assign a new [=list=] to {{ImageDecoder/[[encoded data]]}}.
-        2. Assign `false` to {{ImageDecoder/complete}}
+        2. Assign `false` to {{ImageDecoder/[[complete]]}}
         3. [=Queue a control message=] to [=configure the image decoder=] with
             |init|.
         4. Let |reader| be the result of [=getting a reader=] for
@@ -3142,7 +3187,7 @@ interface ImageDecoder {
     13. Otherwise:
         1. Assert that `init.data` is of type {{BufferSource}}.
         2. Assign a copy of `init.data` to  {{ImageDecoder/[[encoded data]]}}.
-        3. Assign `true` to {{ImageDecoder/complete}}.
+        3. Assign `true` to {{ImageDecoder/[[complete]]}}.
         4. Reslove {{ImageDecoder/[[completed promise]]}}.
         5. Queue a control message to [=configure the image decoder=] with
             |init|.
@@ -3264,7 +3309,7 @@ interface ImageDecoder {
             7. Run the [=Fetch Stream Data Loop=] algorithm with |reader|.
 
         : [=read request/close steps=]
-        :: 1. Assign `true` to {{ImageDecoder/complete}}
+        :: 1. Assign `true` to {{ImageDecoder/[[complete]]}}
             2. Resolve {{ImageDecoder/[[completed promise]]}}.
 
         : [=read request/error steps=]
