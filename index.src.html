@@ -1296,7 +1296,11 @@ Algorithms {#videoencoder-algorithms}
                 temporal layer for |output|.
             2. Assign |temporal_layer_id| to
                 |chunkMetadata|.{{EncodedVideoChunkMetadata/temporalLayerId}}.
-        8. Invoke {{VideoEncoder/[[output callback]]}} with |chunk| and
+        8. If |encoderConfig|.{{VideoEncoderConfig/alpha}} is set to `"keep"`:
+            1. Let |alphaExtraData| be the encoded alpha data in |output|.
+            2. Assign |alphaExtraData| to
+                |chunkMetadata|.{{EncodedVideoChunkMetadata/alphaExtraData}}.
+        9. Invoke {{VideoEncoder/[[output callback]]}} with |chunk| and
             |chunkMetadata|.
   </dd>
   <dt><dfn>Reset VideoEncoder</dfn></dt>
@@ -1333,6 +1337,7 @@ The following metadata dictionary is emitted by the
 dictionary EncodedVideoChunkMetadata {
   VideoDecoderConfig decoderConfig;
   unsigned long temporalLayerId;
+  BufferSource alphaExtraData;
 };
 </xmp>
 
@@ -1343,6 +1348,10 @@ dictionary EncodedVideoChunkMetadata {
 : <dfn dict-member for=EncodedVideoChunkMetadata>temporalLayerId</dfn>
 :: A number that identifies the [=temporal layer=] for the associated
     {{EncodedVideoChunk}}.
+
+: <dfn dict-member for=EncodedVideoChunkMetadata>alphaExtraData</dfn>
+:: A {{BufferSource}} that contains the {{EncodedVideoChunk}}'s extra alpha
+    channel data.
 
 
 Configurations{#configurations}
@@ -1659,6 +1668,7 @@ dictionary VideoEncoderConfig {
   [EnforceRange] unsigned long displayWidth;
   [EnforceRange] unsigned long displayHeight;
   HardwareAcceleration hardwareAcceleration = "allow";
+  AlphaOption alpha = "discard";
   DOMString scalabilityMode;
 };
 </xmp>
@@ -1732,6 +1742,12 @@ To check if a {{VideoEncoderConfig}} is a <dfn>valid VideoEncoderConfig</dfn>,
   <dd>
     Configures hardware acceleration for this codec. See
     {{HardwareAcceleration}}.
+  </dd>
+
+<dt><dfn dict-member for=VideoEncoderConfig>alpha</dfn></dt>
+  <dd>
+    Whether the alpha component of the {{VideoFrame}} inputs should be kept
+    or discarded prior to encoding.
   </dd>
 
   <dt><dfn dict-member for=VideoEncoderConfig>scalabilityMode</dfn></dt>
@@ -2461,6 +2477,7 @@ interface VideoFrame {
   readonly attribute unsigned long displayWidth;
   readonly attribute unsigned long displayHeight;
   readonly attribute unsigned long long? duration;  // microseconds
+  readonly attribute boolean hasAlpha;
   readonly attribute long long? timestamp;          // microseconds
 
   VideoFrame clone();
@@ -2470,6 +2487,7 @@ interface VideoFrame {
 dictionary VideoFrameInit {
   unsigned long long duration;  // microseconds
   long long timestamp;          // microseconds
+  AlphaOption alpha = "keep";
 };
 
 dictionary VideoFramePlaneInit {
@@ -2484,6 +2502,11 @@ dictionary VideoFramePlaneInit {
   [EnforceRange] unsigned long displayHeight;
   [EnforceRange] unsigned long long duration;  // microseconds
   [EnforceRange] long long timestamp;          // microseconds
+};
+
+enum AlphaOption {
+  "keep",
+  "discard",
 };
 </xmp>
 
@@ -2774,6 +2797,17 @@ dictionary VideoFramePlaneInit {
     The {{VideoFrame/duration}} getter steps are to return
     {{VideoFrame/[[duration]]}}.
 
+: <dfn attribute for=VideoFrame>hasAlpha</dfn>
+:: Whether or not the {{VideoFrame}} has an alpha channel.
+    For planar {{PixelFormat}}s, the last {{Plane}} (highest index) in
+    {{VideoFrame/planes}} is an alpha plane. For interleaved {{PixelFormat}}s,
+    the alpha channel is interleaved within each block of related samples,
+    according to that {{PixelFormat}}'s specifications.
+
+ISSUE: {{VideoFrame}}s with an interleaved {{PixelFormat}} should omit copying
+    out alpha data, if {{VideoFrame/hasAlpha}} is `false`. See
+    [#157](https://github.com/w3c/webcodecs/issues/157)
+
 ### Methods ###{#videoframe-methods}
 : <dfn method for=VideoFrame>clone()</dfn>
 :: Creates a new {{VideoFrame}} with a reference to the same
@@ -2869,6 +2903,9 @@ dictionary VideoFramePlaneInit {
             {{Plane/stride}}, {{Plane/rows}}, {{Plane/length}}.
         4. Append |plane| to |planes|.
     6. Assign |planes| to |frame|.{{VideoFrame/planes}}.
+    7. If |otherFrame|.{{VideoFrame/hasAlpha}} is `true` and
+        |init|.{{VideoFrameInit/alpha}} is `"discard"`, run the
+        [=Discard alpha=] algorithm with |frame|.
     7. If {{VideoFrameInit/duration}} [=map/exists=] in |init|, assign it to
         |frame|.{{VideoFrame/duration}}. Otherwise, assign
         |otherFrame|.{{VideoFrame/duration}} to
@@ -2895,17 +2932,19 @@ dictionary VideoFramePlaneInit {
     3. Otherwise (|resource| does not use a recognized {{PixelFormat}}):
         1. Assign `""` to {{VideoFrame/format}}.
         2. Assign `null` to {{VideoFrame/planes}}.
-    4. Assign |width| to the following attributes of |frame|:
+    4. If |resource| has an alpha channel and |init|.{{VideoFrameInit/alpha}} is
+        `"discard"`, run the [=Discard alpha=] algorithm with |frame|.
+    5. Assign |width| to the following attributes of |frame|:
         {{VideoFrame/codedWidth}}, {{VideoFrame/cropWidth}},
         {{VideoFrame/displayWidth}}.
-    5. Assign |height| to the following attributes of |frame|:
+    6. Assign |height| to the following attributes of |frame|:
         {{VideoFrame/codedHeight}}, {{VideoFrame/cropHeight}},
         {{VideoFrame/displayHeight}}.
-    6. Assign `0` to frame's {{VideoFrame/cropTop}} and
+    7. Assign `0` to frame's {{VideoFrame/cropTop}} and
         {{VideoFrame/cropLeft}}.
-    7. Assign `init`.{{VideoFrameInit/duration}} to
+    8. Assign `init`.{{VideoFrameInit/duration}} to
         |frame|.{{VideoFrame/duration}}.
-    8. Assign `init`.{{VideoFrameInit/timestamp}} to
+    9. Assign `init`.{{VideoFrameInit/timestamp}} to
         |frame|.{{VideoFrame/timestamp}}.
 
 : <dfn>Clone VideoFrame</dfn> (with |frame|)
@@ -2924,6 +2963,15 @@ dictionary VideoFramePlaneInit {
         5. Assign all remaining attributes of |frame| (
             {{VideoFrame/codedWidth}}, {{VideoFrame/codedHeight}}, etc.) to those of the same name in |clone|.
     2. Return |clone|.
+
+: <dfn>Discard alpha</dfn> (with |frame|)
+:: 1. Let |format| be |frame|.{{VideoFrame/[[format]]}}.
+    2. If |format| describes a planar format, remove the last plane
+        from |frame|.{{VideoFrame/[[planes]]}}.
+    3. If |format| has {{PixelFormat}} counterpart without alpha, assign it to
+        to |frame|.{{VideoFrame/[[format]]}}.
+    4. Assign `false` to {{VideoFrame/hasAlpha}}.
+
 
 Plane Interface {#plane-interface}
 ----------------------------------
