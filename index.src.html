@@ -2759,6 +2759,25 @@ dictionary PlaneInit {
     The {{VideoFrame/duration}} getter steps are to return
     {{VideoFrame/[[duration]]}}.
 
+### Internal Structures ###{#videoframe-internal-structures}
+A <dfn>parsed copyto options</dfn> is a [=struct=] that consists of:
+  * A <dfn for="parsed copyto options">allocationSize</dfn> (an {{unsigned
+    long}})
+  * A <dfn for="parsed copyto options">computedLayouts</dfn> (a [=list=] of
+    [=computed plane layout=] structs).
+
+A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
+  * A <dfn for="computed plane layout">destinationOffset</dfn> (an
+    {{unsigned long}})
+  * A <dfn for="computed plane layout">destinationStride</dfn> (an
+    {{unsigned long}})
+  * A <dfn for="computed plane layout">sourceTop</dfn> (an {{unsigned long}})
+  * A <dfn for="computed plane layout">sourceHeight</dfn> (an {{unsigned long}})
+  * A <dfn for="computed plane layout">sourceLeftBytes</dfn> (an
+    {{unsigned long}})
+  * A <dfn for="computed plane layout">sourceWidthBytes</dfn> (an
+    {{unsigned long}})
+
 ### Methods ###{#videoframe-methods}
 : <dfn method for=VideoFrame>allocationSize(|options|)</dfn>
 :: Returns the minimum byte length for a valid destination {{BufferSource}}
@@ -2768,7 +2787,10 @@ dictionary PlaneInit {
     1. If {{VideoFrame/[[detached]]}} is `true`, return `0`.
     2. If {{VideoFrame/[[format]]}} is `""`, throw a {{NotSupportedError}}
         {{DOMException}}.
-    3. TODO
+    3. Let |parsedOptions| be the result of running the [=Parse
+        VideoFrameCopyToOptions=] algorithm with |options|.
+    4. If |parsedOptions| is an excpetion, throw |parsedOptions|.
+    5. Return |parsedOptions|' [=parsed copyto options/allocationSize=]
 
 : <dfn method for=VideoFrame>copyTo(|destination|, |options|)</dfn>
 :: Asynchronously copies the planes of this frame into |destination| according
@@ -2779,7 +2801,49 @@ dictionary PlaneInit {
     1. If {{VideoFrame/[[detached]]}} is `true`, return `0`.
     2. If {{VideoFrame/[[format]]}} is `""`, throw a {{NotSupportedError}}
         {{DOMException}}.
-    3. TODO
+    3. Let |parsedOptions| be the result of running the [=Parse
+        VideoFrameCopyToOptions=] algorithm with |options|.
+    4. If |parsedOptions| is an exception, return a promise rejected with
+        |parsedOptions|.
+    5. If `destionation.byteLength` is less than |parsedOptions|' [=parsed
+        copyto options/allocationSize=], return a promise rejected with a
+        {{TypeError}}.
+    6. Let |p| be a new {{Promise}}.
+    7. Let |copyStepsQueue| be the result of starting a new [=parallel queue=].
+    8. Enqueue the following steps to |copyStepsQueue|:
+        1. Let resource be the [=media resource=] referenced by
+            [[resource reference]].
+        2. Let |numPlanes| be the number of planes as defined by
+            {{VideoFrame/[[format]]}}.
+        3. Let |planeIndex| be `0`.
+        4. While |planeIndex| is less than |parsedOptions|' |numPlanes|:
+            1. Let |sourceStride| be the stride of the plane in |resource| as
+                identified by |planeIndex|.
+            2. Let |computedLayout| be the [=computed plane layout=] in
+                |parsedOptions|' [=parsed copyto options/computedLayouts=] at the
+                position of |planeIndex|
+            3. Let |sourceOffset| be the product of multiplying
+                |computedLayout|'s [=computed plane layout/sourceTop=] by
+                |sourceStride|
+            4. Add |computedLayout|'s [=computed plane layout/sourceLeftBytes=] to
+                sourceOffset.
+            5. Let |destinationOffset| be |computedLayout|'s
+                [=computed plane layout/destinationOffset=].
+            6. Let |rowBytes| be |computedLayout|'s
+                [=computed plane layout/sourceWidthBytes=].
+            7. Let |row| be `0`.
+            8. While |row| is less than |computedLayout|'s
+                [=computed plane layout/sourceHeight=]:
+                1. Copy |rowBytes| bytes from |resource| starting at
+                    |sourceOffset| to |destination| starting at
+                    |destinationOffset|.
+                2. Increment |sourceOffset| by |sourceStride|.
+                3. Increment |destinationOffset| by |computedLayout|'s
+                    [=computed plane layout/destinationStride=].
+                4. Increment |row| by `1`.
+            9. Increment |planeIndex| by `1`.
+        5. Queue a task on the [=control thread=] event loop to resolve |p|.
+    9. Return |p|.
 
 : <dfn method for=VideoFrame>clone()</dfn>
 :: Creates a new {{VideoFrame}} with a reference to the same
@@ -2901,6 +2965,140 @@ dictionary PlaneInit {
             those of the same name in |clone|.
     2. Return |clone|.
 
+: <dfn for=VideoFrame>Parse VideoFrameCopyToOptions</dfn> (with |options|)
+:: 1. Let |parsedRect| be the result of running the [=VideoFrame/Parse CopyTo
+        Rect=] with |options|.
+    2. If |parsedRect| is an exception, return |parsedRect|.
+    3. Let |parsedOptions| be the result of running the [=VideoFrame/Compute
+        Layout and Allocation Size=] algorithm with |parsedRect| and |options|.
+    6. Return |parsedOptions|.
+
+: <dfn for=VideoFrame>Parse CopyTo Rect</dfn> (with |options|)
+:: 1. Let |sourceRect| be the be the result of performing the getter steps for
+        {{VideoFrame/visibleRect}}.
+    2. If {{VideoFrameCopyToOptions/rect}} [=map/exists=] in |options|:
+        1. Let |optRect| be {{VideoFrameCopyToOptions/rect}}:
+        2. If either of |optRect|.{{VideoFrameRect/width}} or
+            {{VideoFrameRect/height}} is `0`, return a {{TypeError}}.
+        3. If the sum of |optRect|.{{VideoFrameRect/left}} and
+            |optRect|.{{VideoFrameRect/width}} is greater than
+            {{VideoFrame/[[coded width]]}}, return a {{TypeError}}.
+        4. If the sum of |optRect|.{{VideoFrameRect/top}} and
+            |optRect|.{{VideoFrameRect/height}} is greater than
+            {{VideoFrame/[[coded height]]}}, return a {{TypeError}}.
+        5. Assign |optRect| to |sourceRect|.
+    3. Let |planeIndex| be `0`.
+    4. Let |numPlanes| be the number of planes as defined by
+        {{VideoFrame/[[format]]}}
+    5. While |planeIndex| is less than |numPlanes|:
+
+        NOTE: The following steps validate |rect| is sample-aligned for this
+            frame's {{VideoFrame/[[format]]}}.
+
+        1. Let |plane| be the Plane identified by |planeIndex| as defined by
+            {{VideoFrame/[[format]]}}.
+        2. Let |sampleWidth| be the horizontal pixel size of each subsample
+            for |plane|.
+        3. Let |sampleHeight| be the vertical pixel size of each subsample
+            for |plane|.
+        4. If |sourceRect|.{{VideoFrameRect/left}} and
+            |sourceRect|.{{VideoFrameRect/width}} cannot be evenly divided by
+            |sampleWidth|, throw a {{TypeError}}.
+        5. If |sourceRect|.{{VideoFrameRect/top}} and
+            |sourceRect|.{{VideoFrameRect/height}} cannot be evenly divided by
+            |sampleHeight|, throw a {{TypeError}}.
+        6. Increment |planeIndex| by `1`
+    6. Return |sourceRect|.
+
+: <dfn for=VideoFrame>Compute Layout and Allocation Size</dfn> (with
+    |parsedRect| and |options|)
+:: 1. Let |numPlanes| be the number of planes as defined by
+        {{VideoFrame/[[format]]}}
+    2. If {{VideoFrameCopyToOptions/layout}} [=map/exists=] its size does not
+        equal |numPlanes|, throw a {{TypeError}}.
+    3. Let |minAllocationSize| be `0`.
+    4. Let |computedLayouts| be a new [=list=].
+    5. Let |endOffsets| be a new [=list=].
+    6. Let |planeIndex| be `0`.
+    7. While |planeIndex| < |numPlanes|:
+        1. Let |plane| be the Plane identified by |planeIndex| as defined by
+            {{VideoFrame/[[format]]}}.
+        2. Let |sampleBytes| be the number of bytes per sample for |plane|.
+        3. Let |sampleWidth| be the horizontal pixel size of each subsample
+            for |plane|.
+        4. Let |sampleHeight| be the vertical pixel size of each subsample
+            for |plane|.
+        5. Let |sampleWidthBytes| be the product of multiplying |sampleWidth| by
+            |sampleBytes|.
+        6. Let |computedLayout| be a new [=computed plane layout=].
+        7. Assign quotient of dividing |parsedRect|.{{VideoFrameRect/top}} by
+            |sampleHeight| to |computedLayout|'s [=computed plane layout/sourceTop=].
+        8. Assign quotient of dividing |parsedRect|.{{VideoFrameRect/height}} by
+            |sampleHeight| to |computedLayout|'s [=computed plane layout/sourceHeight=].
+        9. Assign quotient of dividing |parsedRect|.{{VideoFrameRect/left}} by
+            |sampleWidthBytes| to |computedLayout|'s
+            [=computed plane layout/sourceLeftBytes=].
+        10. Assign quotient of dividing |parsedRect|.{{VideoFrameRect/width}}
+            |sampleWidthBytes| to |computedLayout|'s
+            [=computed plane layout/sourceWidthBytes=].
+        11. If {{VideoFrameCopyToOptions/layout}} [=map/exists=]:
+            1. Let |planeLayout| be the {{PlaneLayout}} in
+                {{VideoFrameCopyToOptions/layout}} at position |planeIndex|.
+            2. If |planeLayout|.{{PlaneLayout/stride}} is less than
+                |computedLayout|'s [=computed plane layout/sourceWidthBytes=], return
+                a {{TypeError}}.
+            3. Assign |planeLayout|.{{PlaneLayout/offset}} to |computedLayout|'s
+                [=computed plane layout/destinationOffset=].
+            4. Assign |planeLayout|.{{PlaneLayout/stride}} to |computedLayout|'s
+                [=computed plane layout/destinationStride=].
+        12. Otherwise:
+
+            NOTE: If an explicit layout was not provided, the following steps
+                default to tight packing.
+
+            1. Assign |minAllocationSize| to |computedLayout|'s
+                [=computed plane layout/destinationOffset=].
+            2. Assign |computedLayout|'s [=computed plane layout/sourceWidthBytes=] to
+                |computedLayout|'s [=computed plane layout/destinationStride=].
+        13. Let |planeSize| be the product of multiplying |computedLayout|'s
+                [=computed plane layout/destinationStride=] and
+                [=computed plane layout/sourceHeight=].
+        14. Let |planeEnd| be the sum of |planeSize| and |computedLayout|'s
+                [=computed plane layout/destinationOffset=].
+        15. If |planeSize| or |planeEnd| is greater than maximum range of
+                {{unsigned long}}, return a {{TypeError}}.
+        16. Append |planeEnd| to |endOffsets|.
+        17. Assign the maximum of |minAllocationSize| and |planeEnd| to
+                |minAllocationSize|.
+
+                NOTE: The above step uses a maximum to allow for the
+                    possibility that user specified plane offsets may reorder
+                    planes.
+
+        18. Let |earlierPlaneIndex| be `0`.
+        19. While |earlierPlaneIndex| is less than |planeIndex|.
+            1. Let |earlierLayout| be `computedLayouts[earlierPlaneIndex]`.
+            2. If `endOffsets[planeIndex]` is less than or equal to
+                |earlierLayout|'s [=computed plane layout/destinationOffset=] or
+                if `endOffsets[earlierPlaneIndex]` is less than or equal to
+                |computedLayout|'s [=computed plane layout/destinationOffset=],
+                continue.
+
+                NOTE: If plane A ends before plane B starts, they do not
+                    overlap.
+
+            3. Otherwise, return a {{TypeError}}.
+            4. Increment |earlierPlaneIndex| by `1`.
+        20. Append |computedLayout| to |computedLayouts|.
+        21. Increment |planeIndex| by `1`.
+    8. Let |parsedOptions| be a new [=parsed copyto options=], initialized as
+        follows:
+        1. Assign |computedLayouts| to
+            [=parsed copyto options/computedLayouts=].
+        2. Assign |minAllocationSize| to
+            [=parsed copyto options/allocationSize=].
+    9. Return |parsedOptions|.
+
 VideoFrame CopyTo() Options {#videoframe-copyto-options}
 ------------------------------------------------------------
 Options to specify which {{VideoFrameRect}} to copy and the offset and
@@ -2912,6 +3110,15 @@ dictionary VideoFrameCopyToOptions {
   sequence<PlaneLayout> layout;
 };
 </xmp>
+
+<div class='note'>
+NOTE: The steps of {{VideoFrame/copyTo()}} or {{VideoFrame/allocationSize()}}
+will enforce the following requirements:
+    * The coordinates of {{VideoFrameCopyToOptions/rect}} must be
+        sample-aligned as determiend by {{VideoFrame/[[format]]}}.
+    * If {{VideoFrameCopyToOptions/layout}} [=map/exists=], a {{PlaneLayout}}
+        must be provided for all planes.
+</div>
 
 : <dfn dict-member for=VideoFrameCopyToOptions>rect</dfn>
 :: The {{VideoFrameRect}} describing the rectangle of pixels to copy from the
