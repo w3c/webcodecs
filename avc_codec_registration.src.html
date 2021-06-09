@@ -15,8 +15,10 @@ Boilerplate: omit conformance
 
 Abstract: This registration is entered into the [[webcodecs-codec-registry]].
     It describes, for AVC (H.264), the (1) fully qualified codec strings, (2)
-    the {{VideoDecoderConfig.description}} bytes, and (3) the
-    codec-specific extensions to the {{VideoEncoderConfig}}.
+    the {{VideoDecoderConfig.description}} bytes, (3) the codec-specific
+    extensions to {{VideoEncoderConfig}}, (4) the
+    {{EncodedVideoChunk.[[internal data]]}} bytes, and (5) the meaning of
+    {{EncodedVideoChunk.[[type]]}}.
 
     The registration is not intended to include any information on whether a
     codec format is encumbered by intellectual property claims. Implementers and
@@ -35,7 +37,10 @@ Markup Shorthands:css no, markdown yes, dfn yes
 <pre class='anchors'>
 spec: WEBCODECS; urlPrefix: https://w3c.github.io/webcodecs/#
     type: attribute
+        text: EncodedVideoChunk.[[internal data]]; url: dom-encodedvideochunk-internal-data-slot
+        text: EncodedVideoChunk.[[type]]; url: dom-encodedvideochunk-type-slot
         text: VideoDecoderConfig.description; url: dom-videodecoderconfig-description
+        text: VideoEncoder.[[output callback]]; url: dom-videoencoder-output-callback-slot
     type: interface
         text: EncodedVideoChunk; url: encodedvideochunk
         text: VideoEncoder; url: videoencoder
@@ -154,7 +159,7 @@ SPS and PPS are described in greater detail in sections G.3.41 and G.3.55 of
   <dt><dfn enum-value for=AvcBitstreamFormat>avc</dfn></dt>
   <dd>
     SPS and PPS data are not included in the bitstream and are instead emitted
-    via the {{VideoEncoder}} [[output callback]] as the
+    via the {{VideoEncoder.[[output callback]]}} as the
     {{VideoDecoderConfig.description}} of the
     {{VideoDecoderConfig}}.
     <var ignore=''>output_config</var>.
@@ -163,6 +168,38 @@ SPS and PPS are described in greater detail in sections G.3.41 and G.3.55 of
         section 5.3.3.1. This format is commonly used in .MP4 files, where the
         player generally has random access to the media data.
 </dl>
+
+EncodedVideoChunk data {#encodedvideochunk-data}
+------------------------------------------------
+
+{{EncodedVideoChunk.[[internal data]]}} must be an access unit as defined in
+[[ITU-T-REC-H.264]] section 7.4.1.2.
+
+NOTE: An access unit contains exactly one primary coded picture.
+
+If the bitstream is in "avc" format, {{EncodedVideoChunk.[[internal data]]}}
+must be in canonical format, as defined in [iso14496-15] section 5.3.2.
+
+If the bitstream is in "annexb" format, {{EncodedVideoChunk.[[internal data]]}}
+must be in Annex B format, as defined in [ITU-T-REC-H.264] Annex B.
+
+NOTE: Since {{EncodedVideoChunk.[[internal data]]}} is inherently byte-aligned,
+    implementations are not required to recover byte-alignment.
+
+EncodedVideoChunk type {#encodedvideochunk-type}
+------------------------------------------------
+
+{{EncodedVideoChunk.[[type]]}} may be "keyframe" only if the chunk contains a
+primary coded picture that is an instantaneous decoding refresh (IDR) picture,
+and all required parameter sets are contained in the chunk.
+
+If the bitstream is in "avc" format, no parameter sets are required.
+
+NOTE: If the bitstream is in "avc" format, parameter sets necessary for decoding
+    must be included in {{VideoDecoderConfig.description}}.
+
+If the bitstream is in "annexb" format, all parameter sets necessary to decode
+all video data NAL units in the keyframe chunk are required.
 
 Privacy and Security Considerations {#privacy-and-security-considerations}
 ==========================================================================
