@@ -1321,9 +1321,9 @@ Algorithms {#videoencoder-algorithms}
             2. Assign |temporal_layer_id| to
                 |chunkMetadata|.{{EncodedVideoChunkMetadata/temporalLayerId}}.
         8. If |encoderConfig|.{{VideoEncoderConfig/alpha}} is set to `"keep"`:
-            1. Let |alphaExtraData| be the encoded alpha data in |output|.
-            2. Assign |alphaExtraData| to
-                |chunkMetadata|.{{EncodedVideoChunkMetadata/alphaExtraData}}.
+            1. Let |alphaSideData| be the encoded alpha data in |output|.
+            2. Assign |alphaSideData| to
+                |chunkMetadata|.{{EncodedVideoChunkMetadata/alphaSideData}}.
         9. Invoke {{VideoEncoder/[[output callback]]}} with |chunk| and
             |chunkMetadata|.
   </dd>
@@ -1361,7 +1361,7 @@ The following metadata dictionary is emitted by the
 dictionary EncodedVideoChunkMetadata {
   VideoDecoderConfig decoderConfig;
   unsigned long temporalLayerId;
-  BufferSource alphaExtraData;
+  BufferSource alphaSideData;
 };
 </xmp>
 
@@ -1373,7 +1373,7 @@ dictionary EncodedVideoChunkMetadata {
 :: A number that identifies the [=temporal layer=] for the associated
     {{EncodedVideoChunk}}.
 
-: <dfn dict-member for=EncodedVideoChunkMetadata>alphaExtraData</dfn>
+: <dfn dict-member for=EncodedVideoChunkMetadata>alphaSideData</dfn>
 :: A {{BufferSource}} that contains the {{EncodedVideoChunk}}'s extra alpha
     channel data.
 
@@ -1848,6 +1848,32 @@ specialized hardware.
     NOTE: This will cause the configuration to be unsupported on platforms where
     an accelerated codec is unavailable or is incompatible with other aspects of
     the codec configuration.
+  </dd>
+</dl>
+
+Alpha Option{#alpha-option}
+---------------------------
+<xmp class='idl'>
+enum AlphaOption {
+  "keep",
+  "discard",
+};
+</xmp>
+
+Describes how the user agent should behave when dealing with alpha channels, for
+a variety of different operations.
+
+<dl>
+  <dt><dfn enum-value for=AlphaOption>keep</dfn></dt>
+  <dd>
+    Indicates that the user agent should preserve alpha channel data for
+    {{VideoFrame}}s, if it is present. A {{VideoFrame}}'s
+    {{VideoFrame/[[has alpha]]}} should remain untouched.
+  </dd>
+  <dt><dfn enum-value for=AlphaOption>discard</dfn></dt>
+  <dd>
+    Indicates that the user agent should ignore or remove {{VideoFrame}}'s alpha
+    channel data. {{VideoFrame}}'s {{VideoFrame/}}
   </dd>
 </dl>
 
@@ -2548,11 +2574,6 @@ dictionary VideoFramePlaneInit {
   [EnforceRange] unsigned long long duration;  // microseconds
   [EnforceRange] long long timestamp;          // microseconds
 };
-
-enum AlphaOption {
-  "keep",
-  "discard",
-};
 </xmp>
 
 ### Internal Slots ###{#videoframe-internal-slots}
@@ -2610,6 +2631,37 @@ enum AlphaOption {
 : <dfn attribute for=VideoFrame>\[[timestamp]]</dfn>
 ::  The presentation timestamp, given in microseconds. The timestamp is copied
     from the {{EncodedVideoChunk}} corresponding to this {{VideoFrame}}.
+
+: <dfn attribute for=VideoFrame>[[has alpha]]</dfn>
+::  Whether the frame has an alpha channel.
+
+    When this is `false`:
+    1. The frame must be treated as fully opaque (e.g, by any method which takes
+        a {{CanvasImageSource}}).
+    2. If {{VideoFrame/[[format]]}} is a [=planar=] {{PixelFormat}}, there must
+        not be an alpha plane.
+    3. If {{VideoFrame/[[format]]}} is instead [=interleaved=], blocks of
+        samples may contain an unused `X` channel, whose values are undefined
+        and must be ignored when rendering. The position of the `X` channel is
+        defined by {{VideoFrame/[[format]]}}, and replaces where the alpha `A`
+        channel would have been.
+
+    When this is `true`:
+    1. The frame must be treated as transparent for the pixels and degrees
+        indicated by the alpha values.
+    2. If {{VideoFrame/[[format]]}} is a [=planar=] {{PixelFormat}}, the alpha
+        plane must appear after non-alpha planes, as described by
+        {{VideoFrame/[[format]]}}. The alpha plane must therefore have the
+        highest index number.
+    3. If {{VideoFrame/[[format]]}} is instead [=interleaved=], the alpha
+        channel will appear in the `A` position, as defined by
+        {{VideoFrame/[[format]]}}.
+
+NOTE: A {{VideoFrame}} with a `false` value of {{VideoFrame/[[has alpha]]}}
+    might still be referencing a [=media resource=] which has an alpha channel.
+    In that case, instead of deleting or overwritting data, it is allowed to
+    not expose the alpha plane for [=planar=] {{PixelFormat}}, and ignore the
+    alpha values for [=interleaved=] ones, as specified above.
 
 ### Constructors ###{#videoframe-constructors}
 
@@ -2843,16 +2895,10 @@ enum AlphaOption {
     {{VideoFrame/[[duration]]}}.
 
 : <dfn attribute for=VideoFrame>hasAlpha</dfn>
-:: Whether or not the {{VideoFrame}} has an alpha channel. If this is `false`,
-    the frame is considered to be opaque, and must be rendered as such.
-    For planar {{PixelFormat}}s, the last {{Plane}} (highest index) in
-    {{VideoFrame/planes}} is an alpha plane. For interleaved {{PixelFormat}}s,
-    the alpha channel is interleaved within each block of related samples,
-    according to that {{PixelFormat}}'s specifications.
+:: Whether or not the {{VideoFrame}} has an alpha channel.
 
-ISSUE: {{VideoFrame}}s with an interleaved {{PixelFormat}} should omit copying
-    out alpha data, if {{VideoFrame/hasAlpha}} is `false`. See
-    [#157](https://github.com/w3c/webcodecs/issues/157)
+    The {{VideoFrame/hasAlpha}} getter steps are to return
+    {{VideoFrame/[[has alpha]]}}.
 
 ### Methods ###{#videoframe-methods}
 : <dfn method for=VideoFrame>clone()</dfn>
@@ -2949,9 +2995,9 @@ ISSUE: {{VideoFrame}}s with an interleaved {{PixelFormat}} should omit copying
             {{Plane/stride}}, {{Plane/rows}}, {{Plane/length}}.
         4. Append |plane| to |planes|.
     6. Assign |planes| to |frame|.{{VideoFrame/planes}}.
-    7. If |otherFrame|.{{VideoFrame/hasAlpha}} is `true` and
-        |init|.{{VideoFrameInit/alpha}} is `"discard"`, run the
-        [=Discard alpha=] algorithm with |frame|.
+    7. If |init|.{{VideoFrameInit/alpha}} is {{AlphaOption/keep}},
+        assign |otherFrame|.{{VideoFrame/[[has alpha]]}} to
+        |frame|.{{VideoFrame/[[has alpha]]}}, or `false` otherwise.
     8. If {{VideoFrameInit/duration}} [=map/exists=] in |init|, assign it to
         |frame|.{{VideoFrame/duration}}. Otherwise, assign
         |otherFrame|.{{VideoFrame/duration}} to
@@ -2978,19 +3024,20 @@ ISSUE: {{VideoFrame}}s with an interleaved {{PixelFormat}} should omit copying
     3. Otherwise (|resource| does not use a recognized {{PixelFormat}}):
         1. Assign `""` to {{VideoFrame/format}}.
         2. Assign `null` to {{VideoFrame/planes}}.
-    4. If |resource| has an alpha channel and |init|.{{VideoFrameInit/alpha}} is
-        `"discard"`, run the [=Discard alpha=] algorithm with |frame|.
-    5. Assign |width| to the following attributes of |frame|:
+    4. Let |alpha| be whether or not |resource| has an alpha channel.
+    5. If |init|.{{VideoFrameInit/alpha}} is {{AlphaOption/keep}}, assign
+        |alpha| to |frame|.{{VideoFrame/[[has alpha]]}}, or `false` otherwise.
+    6. Assign |width| to the following attributes of |frame|:
         {{VideoFrame/codedWidth}}, {{VideoFrame/cropWidth}},
         {{VideoFrame/displayWidth}}.
-    6. Assign |height| to the following attributes of |frame|:
+    7. Assign |height| to the following attributes of |frame|:
         {{VideoFrame/codedHeight}}, {{VideoFrame/cropHeight}},
         {{VideoFrame/displayHeight}}.
-    7. Assign `0` to frame's {{VideoFrame/cropTop}} and
+    8. Assign `0` to frame's {{VideoFrame/cropTop}} and
         {{VideoFrame/cropLeft}}.
-    8. Assign `init`.{{VideoFrameInit/duration}} to
+    9. Assign `init`.{{VideoFrameInit/duration}} to
         |frame|.{{VideoFrame/duration}}.
-    9. Assign `init`.{{VideoFrameInit/timestamp}} to
+    10. Assign `init`.{{VideoFrameInit/timestamp}} to
         |frame|.{{VideoFrame/timestamp}}.
 
 : <dfn>Clone VideoFrame</dfn> (with |frame|)
@@ -3009,20 +3056,6 @@ ISSUE: {{VideoFrame}}s with an interleaved {{PixelFormat}} should omit copying
         5. Assign all remaining attributes of |frame|
             ({{VideoFrame/codedWidth}}, {{VideoFrame/codedHeight}}, etc.) to those of the same name in |clone|.
     2. Return |clone|.
-
-: <dfn>Discard alpha</dfn> (with |frame|)
-:: 1. Let |format| be |frame|.{{VideoFrame/[[format]]}}.
-    2. If |format| describes a planar format, remove the last plane
-        from |frame|.{{VideoFrame/[[planes]]}}.
-    3. If |format| without an alpha channel has a {{PixelFormat}} equivalent:
-        1. Let |newFormat| be the {{PixelFormat}} counterpart to |format|
-            without alpha.
-        2. Assign |newFormat| to |frame|.{{VideoFrame/[[format]]}}.
-    4. Assign `false` to {{VideoFrame/hasAlpha}}.
-
-NOTE: User Agents are not required to overwrite alpha data immediately when
-    discarding alpha from interleaved formats. However, alpha data must be
-    overwritten when copying out data from a {{VideoFrame}}.
 
 Plane Interface {#plane-interface}
 ----------------------------------
