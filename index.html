@@ -6,7 +6,7 @@
   <link href="https://www.w3.org/StyleSheets/TR/2016/W3C-ED" rel="stylesheet" type="text/css">
   <meta content="Bikeshed version 800b43329, updated Tue May 25 14:13:32 2021 -0700" name="generator">
   <link href="https://www.w3.org/TR/webcodecs/" rel="canonical">
-  <meta content="402ed876f87ba9c4b43958e9704921eccb8ff94b" name="document-revision">
+  <meta content="942a4aaa0965068a962418cda90b98b0eb2a1616" name="document-revision">
 <style>
 main > dl > dd {
   margin-bottom: 1em;
@@ -897,29 +897,16 @@ message queue</a>. Invoking codec methods will often queue a control message
 to schedule work.</p>
    <p><dfn class="dfn-paneled" data-dfn-type="dfn" data-lt="running a control message|control message steps" data-noexport id="running-a-control-message">Running a control
 message</dfn> means performing a sequence of steps specified by the method
-that enqueued the message. The steps of a control message may depend on <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="injected-state">injected state</dfn>, supplied by the method that enqueued the message.</p>
-   <p><dfn class="dfn-paneled" data-dfn-type="dfn" data-lt="Reset the control message queue" data-noexport id="reset-the-control-message-queue">Resetting the control message
-    queue</dfn> means performing these steps:</p>
-   <ol>
-    <li data-md>
-     <p>For each <a data-link-type="dfn" href="#control-messages" id="ref-for-control-messages③">control message</a> in the <a data-link-type="dfn" href="#control-message-queue" id="ref-for-control-message-queue①">control message queue</a>:</p>
-     <ol>
-      <li data-md>
-       <p>If a control message’s <a data-link-type="dfn" href="#injected-state" id="ref-for-injected-state">injected state</a> includes a promise, reject
-that promise.</p>
-      <li data-md>
-       <p>Remove the message from the queue.</p>
-     </ol>
-   </ol>
+that enqueued the message.</p>
    <p>The <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="codec-processing-loop">codec processing loop</dfn> must run these steps:</p>
    <ol>
     <li data-md>
      <p>While true:</p>
      <ol>
       <li data-md>
-       <p>If the <a data-link-type="dfn" href="#control-message-queue" id="ref-for-control-message-queue②">control message queue</a> is empty, <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#iteration-continue" id="ref-for-iteration-continue">continue</a>.</p>
+       <p>If the <a data-link-type="dfn" href="#control-message-queue" id="ref-for-control-message-queue①">control message queue</a> is empty, <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#iteration-continue" id="ref-for-iteration-continue">continue</a>.</p>
       <li data-md>
-       <p>Dequeue <var>front message</var> from the <a data-link-type="dfn" href="#control-message-queue" id="ref-for-control-message-queue③">control message queue</a>.</p>
+       <p>Dequeue <var>front message</var> from the <a data-link-type="dfn" href="#control-message-queue" id="ref-for-control-message-queue②">control message queue</a>.</p>
       <li data-md>
        <p>Run <a data-link-type="dfn" href="#running-a-control-message" id="ref-for-running-a-control-message">control message steps</a> described by <var>front message</var>.</p>
      </ol>
@@ -969,6 +956,9 @@ that promise.</p>
     <dd data-md>
      <p>The number of pending decode requests. This number will decrease as the
 underlying codec is ready to accept new input.</p>
+    <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="AudioDecoder" data-dfn-type="attribute" data-export id="dom-audiodecoder-pending-flush-promises-slot"><code>[[pending flush promises]]</code></dfn>
+    <dd data-md>
+     <p>A list of unresolved promises returned by calls to <code class="idl"><a data-link-type="idl" href="#dom-audiodecoder-flush" id="ref-for-dom-audiodecoder-flush①">flush()</a></code>.</p>
    </dl>
    <h3 class="heading settled" data-level="3.2" id="audiodecoder-constructors"><span class="secno">3.2. </span><span class="content">Constructors</span><a class="self-link" href="#audiodecoder-constructors"></a></h3>
     <dfn class="dfn-paneled idl-code" data-dfn-for="AudioDecoder" data-dfn-type="constructor" data-export data-lt="AudioDecoder(init)|constructor(init)" id="dom-audiodecoder-audiodecoder" title="AudioDecoder(init)"><code> AudioDecoder(init) </code></dfn> 
@@ -1068,7 +1058,7 @@ by <code class="idl"><a data-link-type="idl" href="#dom-audiodecoder-codec-imple
      </ol>
     <dt><dfn class="dfn-paneled idl-code" data-dfn-for="AudioDecoder" data-dfn-type="method" data-export id="dom-audiodecoder-flush"><code>flush()</code></dfn>
     <dd>
-      Completes all <a data-link-type="dfn" href="#control-messages" id="ref-for-control-messages④">control messages</a> in the <a data-link-type="dfn" href="#control-message-queue" id="ref-for-control-message-queue④">control message queue</a> and emits all outputs. 
+      Completes all <a data-link-type="dfn" href="#control-messages" id="ref-for-control-messages③">control messages</a> in the <a data-link-type="dfn" href="#control-message-queue" id="ref-for-control-message-queue③">control message queue</a> and emits all outputs. 
      <p>When invoked, run these steps:</p>
      <ol>
       <li data-md>
@@ -1079,6 +1069,8 @@ by <code class="idl"><a data-link-type="idl" href="#dom-audiodecoder-codec-imple
        <p>Let <var>promise</var> be a new Promise.</p>
       <li data-md>
        <p><a data-link-type="dfn" href="#enqueues-a-control-message" id="ref-for-enqueues-a-control-message④">Queue a control message</a> to flush the codec with <var>promise</var>.</p>
+      <li data-md>
+       <p>Append <var>promise</var> to <code class="idl"><a data-link-type="idl" href="#dom-audiodecoder-pending-flush-promises-slot" id="ref-for-dom-audiodecoder-pending-flush-promises-slot">[[pending flush promises]]</a></code>.</p>
       <li data-md>
        <p>Return <var>promise</var>.</p>
      </ol>
@@ -1094,18 +1086,24 @@ by <code class="idl"><a data-link-type="idl" href="#dom-audiodecoder-codec-imple
       <li data-md>
        <p>If <var>decoded outputs</var> is not empty, queue a task on the <a data-link-type="dfn" href="#control-thread" id="ref-for-control-thread⑥">control thread</a> event loop to run the <a data-link-type="dfn" href="#output-audiodata" id="ref-for-output-audiodata①">Output AudioData</a> algorithm with <var>decoded outputs</var>.</p>
       <li data-md>
-       <p>Queue a task on the <a data-link-type="dfn" href="#control-thread" id="ref-for-control-thread⑦">control thread</a> event loop to resolve <var>promise</var>.</p>
+       <p>Queue a task on the <a data-link-type="dfn" href="#control-thread" id="ref-for-control-thread⑦">control thread</a> event loop to run these steps:</p>
+       <ol>
+        <li data-md>
+         <p>Remove <var>promise</var> from <code class="idl"><a data-link-type="idl" href="#dom-audiodecoder-pending-flush-promises-slot" id="ref-for-dom-audiodecoder-pending-flush-promises-slot①">[[pending flush promises]]</a></code>.</p>
+        <li data-md>
+         <p>Resolve <var>promise</var>.</p>
+       </ol>
      </ol>
     <dt><dfn class="dfn-paneled idl-code" data-dfn-for="AudioDecoder" data-dfn-type="method" data-export id="dom-audiodecoder-reset"><code>reset()</code></dfn>
     <dd>
-      Immediately resets all state including configuration, <a data-link-type="dfn" href="#control-messages" id="ref-for-control-messages⑤">control messages</a> in the <a data-link-type="dfn" href="#control-message-queue" id="ref-for-control-message-queue⑤">control message queue</a>, and all pending
+      Immediately resets all state including configuration, <a data-link-type="dfn" href="#control-messages" id="ref-for-control-messages④">control messages</a> in the <a data-link-type="dfn" href="#control-message-queue" id="ref-for-control-message-queue④">control message queue</a>, and all pending
     callbacks. 
-     <p>When invoked, run the <a data-link-type="dfn" href="#reset-audiodecoder" id="ref-for-reset-audiodecoder">Reset AudioDecoder</a> algorithm.</p>
+     <p>When invoked, run the <a data-link-type="dfn" href="#reset-audiodecoder" id="ref-for-reset-audiodecoder">Reset AudioDecoder</a> algorithm with an <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#aborterror" id="ref-for-aborterror">AbortError</a></code> <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-DOMException" id="ref-for-idl-DOMException①">DOMException</a></code>.</p>
     <dt><dfn class="dfn-paneled idl-code" data-dfn-for="AudioDecoder" data-dfn-type="method" data-export id="dom-audiodecoder-close"><code>close()</code></dfn>
     <dd>
       Immediately aborts all pending work and releases <a data-link-type="dfn" href="#system-resources" id="ref-for-system-resources">system resources</a>.
     Close is final. 
-     <p>When invoked, run the <a data-link-type="dfn" href="#close-audiodecoder" id="ref-for-close-audiodecoder②">Close AudioDecoder</a> algorithm.</p>
+     <p>When invoked, run the <a data-link-type="dfn" href="#close-audiodecoder" id="ref-for-close-audiodecoder②">Close AudioDecoder</a> algorithm with an <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#aborterror" id="ref-for-aborterror①">AbortError</a></code> <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-DOMException" id="ref-for-idl-DOMException②">DOMException</a></code>.</p>
     <dt><dfn class="dfn-paneled idl-code" data-dfn-for="AudioDecoder" data-dfn-type="method" data-export id="dom-audiodecoder-isconfigsupported"><code>isConfigSupported(config)</code></dfn>
     <dd>
       Returns a promise indicating whether the provided <var>config</var> is supported by
@@ -1172,7 +1170,7 @@ the <a data-link-type="dfn" href="#check-configuration-support" id="ref-for-chec
          <p>Invoke <code class="idl"><a data-link-type="idl" href="#dom-audiodecoder-output-callback-slot" id="ref-for-dom-audiodecoder-output-callback-slot①">[[output callback]]</a></code> with <var>data</var>.</p>
        </ol>
      </ol>
-    <dt><dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="reset-audiodecoder">Reset AudioDecoder</dfn>
+    <dt><dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="reset-audiodecoder">Reset AudioDecoder</dfn> (with <var>exception</var>)
     <dd>
       Run these steps: 
      <ol>
@@ -1184,23 +1182,31 @@ the <a data-link-type="dfn" href="#check-configuration-support" id="ref-for-chec
        <p>Signal <code class="idl"><a data-link-type="idl" href="#dom-audiodecoder-codec-implementation-slot" id="ref-for-dom-audiodecoder-codec-implementation-slot⑤">[[codec implementation]]</a></code> to cease producing
 output for the previous configuration.</p>
       <li data-md>
-       <p><a data-link-type="dfn" href="#reset-the-control-message-queue" id="ref-for-reset-the-control-message-queue">Reset the control message queue</a>.</p>
+       <p>Remove all <a data-link-type="dfn" href="#control-messages" id="ref-for-control-messages⑤">control messages</a> from the <a data-link-type="dfn" href="#control-message-queue" id="ref-for-control-message-queue⑤">control message queue</a>.</p>
       <li data-md>
        <p>Set <code class="idl"><a data-link-type="idl" href="#dom-audiodecoder-decodequeuesize-slot" id="ref-for-dom-audiodecoder-decodequeuesize-slot③">[[decodeQueueSize]]</a></code> to zero.</p>
+      <li data-md>
+       <p>For each <var>promise</var> in <code class="idl"><a data-link-type="idl" href="#dom-audiodecoder-pending-flush-promises-slot" id="ref-for-dom-audiodecoder-pending-flush-promises-slot②">[[pending flush promises]]</a></code>:</p>
+       <ol>
+        <li data-md>
+         <p>Reject <var>promise</var> with <var>exception</var>.</p>
+        <li data-md>
+         <p>Remove <var>promise</var> from <code class="idl"><a data-link-type="idl" href="#dom-audiodecoder-pending-flush-promises-slot" id="ref-for-dom-audiodecoder-pending-flush-promises-slot③">[[pending flush promises]]</a></code>.</p>
+       </ol>
      </ol>
-    <dt><dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="close-audiodecoder">Close AudioDecoder</dfn> (with error)
+    <dt><dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="close-audiodecoder">Close AudioDecoder</dfn> (with <var>exception</var>)
     <dd>
       Run these steps: 
      <ol>
       <li data-md>
-       <p>Run the <a data-link-type="dfn" href="#reset-audiodecoder" id="ref-for-reset-audiodecoder①">Reset AudioDecoder</a> algorithm.</p>
+       <p>Run the <a data-link-type="dfn" href="#reset-audiodecoder" id="ref-for-reset-audiodecoder①">Reset AudioDecoder</a> algorithm with <var>exception</var>.</p>
       <li data-md>
        <p>Set <code class="idl"><a data-link-type="idl" href="#dom-audiodecoder-state-slot" id="ref-for-dom-audiodecoder-state-slot⑧">[[state]]</a></code> to <code>"closed"</code>.</p>
       <li data-md>
        <p>Clear <code class="idl"><a data-link-type="idl" href="#dom-audiodecoder-codec-implementation-slot" id="ref-for-dom-audiodecoder-codec-implementation-slot⑥">[[codec implementation]]</a></code> and release associated <a data-link-type="dfn" href="#system-resources" id="ref-for-system-resources①">system resources</a>.</p>
       <li data-md>
-       <p>If <var>error</var> is set, queue a task on the <a data-link-type="dfn" href="#control-thread" id="ref-for-control-thread⑧">control thread</a> event loop to
-invoke the <code class="idl"><a data-link-type="idl" href="#dom-audiodecoder-error-callback-slot" id="ref-for-dom-audiodecoder-error-callback-slot①">[[error callback]]</a></code> with <var>error</var>.</p>
+       <p>If <var>exception</var> is not an <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#aborterror" id="ref-for-aborterror②">AbortError</a></code> <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-DOMException" id="ref-for-idl-DOMException③">DOMException</a></code>, queue a task on
+the <a data-link-type="dfn" href="#control-thread" id="ref-for-control-thread⑧">control thread</a> event loop to invoke the <code class="idl"><a data-link-type="idl" href="#dom-audiodecoder-error-callback-slot" id="ref-for-dom-audiodecoder-error-callback-slot①">[[error callback]]</a></code> with <var>exception</var>.</p>
      </ol>
    </dl>
    <h2 class="heading settled" data-level="4" id="videodecoder-interface"><span class="secno">4. </span><span class="content">VideoDecoder Interface</span><a class="self-link" href="#videodecoder-interface"></a></h2>
@@ -1250,6 +1256,9 @@ invoke the <code class="idl"><a data-link-type="idl" href="#dom-audiodecoder-err
     <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="VideoDecoder" data-dfn-type="attribute" data-export id="dom-videodecoder-decodequeuesize-slot"><code>[[decodeQueueSize]]</code></dfn>
     <dd data-md>
      <p>The number of pending decode requests. This number will decrease as the underlying codec is ready to accept new input.</p>
+    <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="VideoDecoder" data-dfn-type="attribute" data-export id="dom-videodecoder-pending-flush-promises-slot"><code>[[pending flush promises]]</code></dfn>
+    <dd data-md>
+     <p>A list of unresolved promises returned by calls to <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-flush" id="ref-for-dom-videodecoder-flush①">flush()</a></code>.</p>
    </dl>
    <h3 class="heading settled" data-level="4.2" id="videodecoder-constructors"><span class="secno">4.2. </span><span class="content">Constructors</span><a class="self-link" href="#videodecoder-constructors"></a></h3>
     <dfn class="dfn-paneled idl-code" data-dfn-for="VideoDecoder" data-dfn-type="constructor" data-export data-lt="VideoDecoder(init)|constructor(init)" id="dom-videodecoder-videodecoder" title="VideoDecoder(init)"><code> VideoDecoder(init) </code></dfn> 
@@ -1358,13 +1367,15 @@ by <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-codec-imple
      <p>When invoked, run these steps:</p>
      <ol>
       <li data-md>
-       <p>If <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-state-slot" id="ref-for-dom-videodecoder-state-slot⑤">[[state]]</a></code> is not <code>"configured"</code>, return <a data-link-type="dfn" href="https://heycam.github.io/webidl/#a-promise-rejected-with" id="ref-for-a-promise-rejected-with②">a promise rejected with</a> <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#invalidstateerror" id="ref-for-invalidstateerror⑥">InvalidStateError</a></code> <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-DOMException" id="ref-for-idl-DOMException①">DOMException</a></code>.</p>
+       <p>If <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-state-slot" id="ref-for-dom-videodecoder-state-slot⑤">[[state]]</a></code> is not <code>"configured"</code>, return <a data-link-type="dfn" href="https://heycam.github.io/webidl/#a-promise-rejected-with" id="ref-for-a-promise-rejected-with②">a promise rejected with</a> <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#invalidstateerror" id="ref-for-invalidstateerror⑥">InvalidStateError</a></code> <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-DOMException" id="ref-for-idl-DOMException④">DOMException</a></code>.</p>
       <li data-md>
        <p>Set <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-key-chunk-required-slot" id="ref-for-dom-videodecoder-key-chunk-required-slot④">[[key chunk required]]</a></code> to <code>true</code>.</p>
       <li data-md>
        <p>Let <var>promise</var> be a new Promise.</p>
       <li data-md>
        <p><a data-link-type="dfn" href="#enqueues-a-control-message" id="ref-for-enqueues-a-control-message⑨">Queue a control message</a> to flush the codec with <var>promise</var>.</p>
+      <li data-md>
+       <p>Append <var>promise</var> to <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-pending-flush-promises-slot" id="ref-for-dom-videodecoder-pending-flush-promises-slot">[[pending flush promises]]</a></code>.</p>
       <li data-md>
        <p>Return <var>promise</var>.</p>
      </ol>
@@ -1380,18 +1391,24 @@ by <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-codec-imple
       <li data-md>
        <p>If <var>decoded outputs</var> is not empty, queue a task on the <a data-link-type="dfn" href="#control-thread" id="ref-for-control-thread①②">control thread</a> event loop to run the <a data-link-type="dfn" href="#output-videoframes" id="ref-for-output-videoframes①">Output VideoFrames</a> algorithm with <var>decoded outputs</var>.</p>
       <li data-md>
-       <p>Queue a task on the <a data-link-type="dfn" href="#control-thread" id="ref-for-control-thread①③">control thread</a> event loop to resolve <var>promise</var>.</p>
+       <p>Queue a task on the <a data-link-type="dfn" href="#control-thread" id="ref-for-control-thread①③">control thread</a> event loop to run these steps:</p>
+       <ol>
+        <li data-md>
+         <p>Remove <var>promise</var> from <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-pending-flush-promises-slot" id="ref-for-dom-videodecoder-pending-flush-promises-slot①">[[pending flush promises]]</a></code>.</p>
+        <li data-md>
+         <p>Resolve <var>promise</var>.</p>
+       </ol>
      </ol>
     <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoDecoder" data-dfn-type="method" data-export id="dom-videodecoder-reset"><code>reset()</code></dfn>
     <dd>
       Immediately resets all state including configuration, <a data-link-type="dfn" href="#control-messages" id="ref-for-control-messages⑦">control messages</a> in the <a data-link-type="dfn" href="#control-message-queue" id="ref-for-control-message-queue⑦">control message queue</a>, and all pending
     callbacks. 
-     <p>When invoked, run the <a data-link-type="dfn" href="#reset-videodecoder" id="ref-for-reset-videodecoder">Reset VideoDecoder</a> algorithm.</p>
+     <p>When invoked, run the <a data-link-type="dfn" href="#reset-videodecoder" id="ref-for-reset-videodecoder">Reset VideoDecoder</a> algorithm with an <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#aborterror" id="ref-for-aborterror③">AbortError</a></code> <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-DOMException" id="ref-for-idl-DOMException⑤">DOMException</a></code>.</p>
     <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoDecoder" data-dfn-type="method" data-export id="dom-videodecoder-close"><code>close()</code></dfn>
     <dd>
       Immediately aborts all pending work and releases <a data-link-type="dfn" href="#system-resources" id="ref-for-system-resources②">system resources</a>.
     Close is final. 
-     <p>When invoked, run the <a data-link-type="dfn" href="#close-videodecoder" id="ref-for-close-videodecoder②">Close VideoDecoder</a> algorithm.</p>
+     <p>When invoked, run the <a data-link-type="dfn" href="#close-videodecoder" id="ref-for-close-videodecoder②">Close VideoDecoder</a> algorithm with an <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#aborterror" id="ref-for-aborterror④">AbortError</a></code> <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-DOMException" id="ref-for-idl-DOMException⑥">DOMException</a></code>.</p>
     <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoDecoder" data-dfn-type="method" data-export id="dom-videodecoder-isconfigsupported"><code>isConfigSupported(config)</code></dfn>
     <dd>
       Returns a promise indicating whether the provided <var>config</var> is supported by
@@ -1448,7 +1465,7 @@ the <a data-link-type="dfn" href="#check-configuration-support" id="ref-for-chec
          <p>Invoke <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-output-callback-slot" id="ref-for-dom-videodecoder-output-callback-slot①">[[output callback]]</a></code> with <var>frame</var>.</p>
        </ol>
      </ol>
-    <dt><dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="reset-videodecoder">Reset VideoDecoder</dfn>
+    <dt><dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="reset-videodecoder">Reset VideoDecoder</dfn> (with <var>exception</var>)
     <dd>
       Run these steps: 
      <ol>
@@ -1460,23 +1477,31 @@ the <a data-link-type="dfn" href="#check-configuration-support" id="ref-for-chec
        <p>Signal <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-codec-implementation-slot" id="ref-for-dom-videodecoder-codec-implementation-slot⑤">[[codec implementation]]</a></code> to cease producing
 output for the previous configuration.</p>
       <li data-md>
-       <p><a data-link-type="dfn" href="#reset-the-control-message-queue" id="ref-for-reset-the-control-message-queue①">Reset the control message queue</a>.</p>
+       <p>Remove all <a data-link-type="dfn" href="#control-messages" id="ref-for-control-messages⑧">control messages</a> from the <a data-link-type="dfn" href="#control-message-queue" id="ref-for-control-message-queue⑧">control message queue</a>.</p>
       <li data-md>
        <p>Set <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-decodequeuesize-slot" id="ref-for-dom-videodecoder-decodequeuesize-slot③">[[decodeQueueSize]]</a></code> to zero.</p>
+      <li data-md>
+       <p>For each <var>promise</var> in <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-pending-flush-promises-slot" id="ref-for-dom-videodecoder-pending-flush-promises-slot②">[[pending flush promises]]</a></code>:</p>
+       <ol>
+        <li data-md>
+         <p>Reject <var>promise</var> with <var>exception</var>.</p>
+        <li data-md>
+         <p>Remove <var>promise</var> from <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-pending-flush-promises-slot" id="ref-for-dom-videodecoder-pending-flush-promises-slot③">[[pending flush promises]]</a></code>.</p>
+       </ol>
      </ol>
-    <dt><dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="close-videodecoder">Close VideoDecoder</dfn> (with <var>error</var>)
+    <dt><dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="close-videodecoder">Close VideoDecoder</dfn> (with <var>exception</var>)
     <dd>
       Run these steps: 
      <ol>
       <li data-md>
-       <p>Run the <a data-link-type="dfn" href="#reset-videodecoder" id="ref-for-reset-videodecoder①">Reset VideoDecoder</a> algorithm.</p>
+       <p>Run the <a data-link-type="dfn" href="#reset-videodecoder" id="ref-for-reset-videodecoder①">Reset VideoDecoder</a> algorithm with <var>exception</var>.</p>
       <li data-md>
        <p>Set <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-state" id="ref-for-dom-videodecoder-state③">state</a></code> to <code>"closed"</code>.</p>
       <li data-md>
        <p>Clear <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-codec-implementation-slot" id="ref-for-dom-videodecoder-codec-implementation-slot⑥">[[codec implementation]]</a></code> and release associated <a data-link-type="dfn" href="#system-resources" id="ref-for-system-resources③">system resources</a>.</p>
       <li data-md>
-       <p>If <var>error</var> is set, queue a task on the <a data-link-type="dfn" href="#control-thread" id="ref-for-control-thread①④">control thread</a> event loop to
-invoke the <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-error-callback-slot" id="ref-for-dom-videodecoder-error-callback-slot①">[[error callback]]</a></code> with <var>error</var>.</p>
+       <p>If <var>exception</var> is not an <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#aborterror" id="ref-for-aborterror⑤">AbortError</a></code> <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-DOMException" id="ref-for-idl-DOMException⑦">DOMException</a></code>, queue a task on
+the <a data-link-type="dfn" href="#control-thread" id="ref-for-control-thread①④">control thread</a> event loop to invoke the <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-error-callback-slot" id="ref-for-dom-videodecoder-error-callback-slot①">[[error callback]]</a></code> with <var>exception</var>.</p>
      </ol>
    </dl>
    <h2 class="heading settled" data-level="5" id="audioencoder-interface"><span class="secno">5. </span><span class="content">AudioEncoder Interface</span><a class="self-link" href="#audioencoder-interface"></a></h2>
@@ -1523,6 +1548,8 @@ invoke the <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-err
     <dt><dfn class="dfn-paneled idl-code" data-dfn-for="AudioEncoder" data-dfn-type="attribute" data-export id="dom-audioencoder-encodequeuesize-slot"><code>[[encodeQueueSize]]</code></dfn>
     <dd> The number of pending encode requests. This number will decrease as the
   underlying codec is ready to accept new input. 
+    <dt><dfn class="dfn-paneled idl-code" data-dfn-for="AudioEncoder" data-dfn-type="attribute" data-export id="dom-audioencoder-pending-flush-promises-slot"><code>[[pending flush promises]]</code></dfn>
+    <dd> A list of unresolved promises returned by calls to <code class="idl"><a data-link-type="idl" href="#dom-audioencoder-flush" id="ref-for-dom-audioencoder-flush①">flush()</a></code>. 
    </dl>
    <h3 class="heading settled" data-level="5.2" id="audioencoder-constructors"><span class="secno">5.2. </span><span class="content">Constructors</span><a class="self-link" href="#audioencoder-constructors"></a></h3>
     <dfn class="dfn-paneled idl-code" data-dfn-for="AudioEncoder" data-dfn-type="constructor" data-export data-lt="AudioEncoder(init)|constructor(init)" id="dom-audioencoder-audioencoder" title="AudioEncoder(init)"><code> AudioEncoder(init) </code></dfn> 
@@ -1616,15 +1643,17 @@ emitted by <code class="idl"><a data-link-type="idl" href="#dom-audioencoder-cod
      </ol>
     <dt><dfn class="dfn-paneled idl-code" data-dfn-for="AudioEncoder" data-dfn-type="method" data-export id="dom-audioencoder-flush"><code>flush()</code></dfn>
     <dd>
-      Completes all <a data-link-type="dfn" href="#control-messages" id="ref-for-control-messages⑧">control messages</a> in the <a data-link-type="dfn" href="#control-message-queue" id="ref-for-control-message-queue⑧">control message queue</a> and emits all outputs. 
+      Completes all <a data-link-type="dfn" href="#control-messages" id="ref-for-control-messages⑨">control messages</a> in the <a data-link-type="dfn" href="#control-message-queue" id="ref-for-control-message-queue⑨">control message queue</a> and emits all outputs. 
      <p>When invoked, run these steps:</p>
      <ol>
       <li data-md>
-       <p>If <code class="idl"><a data-link-type="idl" href="#dom-audioencoder-state-slot" id="ref-for-dom-audioencoder-state-slot⑤">[[state]]</a></code> is not <code>"configured"</code>, return <a data-link-type="dfn" href="https://heycam.github.io/webidl/#a-promise-rejected-with" id="ref-for-a-promise-rejected-with④">a promise rejected with</a> <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#invalidstateerror" id="ref-for-invalidstateerror①⓪">InvalidStateError</a></code> <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-DOMException" id="ref-for-idl-DOMException②">DOMException</a></code>.</p>
+       <p>If <code class="idl"><a data-link-type="idl" href="#dom-audioencoder-state-slot" id="ref-for-dom-audioencoder-state-slot⑤">[[state]]</a></code> is not <code>"configured"</code>, return <a data-link-type="dfn" href="https://heycam.github.io/webidl/#a-promise-rejected-with" id="ref-for-a-promise-rejected-with④">a promise rejected with</a> <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#invalidstateerror" id="ref-for-invalidstateerror①⓪">InvalidStateError</a></code> <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-DOMException" id="ref-for-idl-DOMException⑧">DOMException</a></code>.</p>
       <li data-md>
        <p>Let <var>promise</var> be a new Promise.</p>
       <li data-md>
        <p><a data-link-type="dfn" href="#enqueues-a-control-message" id="ref-for-enqueues-a-control-message①④">Queue a control message</a> to flush the codec with <var>promise</var>.</p>
+      <li data-md>
+       <p>Append <var>promise</var> to <code class="idl"><a data-link-type="idl" href="#dom-audioencoder-pending-flush-promises-slot" id="ref-for-dom-audioencoder-pending-flush-promises-slot">[[pending flush promises]]</a></code>.</p>
       <li data-md>
        <p>Return <var>promise</var>.</p>
      </ol>
@@ -1640,18 +1669,24 @@ emitted by <code class="idl"><a data-link-type="idl" href="#dom-audioencoder-cod
       <li data-md>
        <p>If <var>encoded outputs</var> is not empty, queue a task on the <a data-link-type="dfn" href="#control-thread" id="ref-for-control-thread①⑧">control thread</a> event loop to run the <a data-link-type="dfn" href="#output-encodedaudiochunks" id="ref-for-output-encodedaudiochunks①">Output EncodedAudioChunks</a> algorithm with <var>encoded outputs</var>.</p>
       <li data-md>
-       <p>Queue a task on the <a data-link-type="dfn" href="#control-thread" id="ref-for-control-thread①⑨">control thread</a> event loop to resolve <var>promise</var>.</p>
+       <p>Queue a task on the <a data-link-type="dfn" href="#control-thread" id="ref-for-control-thread①⑨">control thread</a> event loop to run these steps:</p>
+       <ol>
+        <li data-md>
+         <p>Remove <var>promise</var> from <code class="idl"><a data-link-type="idl" href="#dom-audioencoder-pending-flush-promises-slot" id="ref-for-dom-audioencoder-pending-flush-promises-slot①">[[pending flush promises]]</a></code>.</p>
+        <li data-md>
+         <p>Resolve <var>promise</var>.</p>
+       </ol>
      </ol>
     <dt><dfn class="dfn-paneled idl-code" data-dfn-for="AudioEncoder" data-dfn-type="method" data-export id="dom-audioencoder-reset"><code>reset()</code></dfn>
     <dd>
-      Immediately resets all state including configuration, <a data-link-type="dfn" href="#control-messages" id="ref-for-control-messages⑨">control messages</a> in the <a data-link-type="dfn" href="#control-message-queue" id="ref-for-control-message-queue⑨">control message queue</a>, and all pending
+      Immediately resets all state including configuration, <a data-link-type="dfn" href="#control-messages" id="ref-for-control-messages①⓪">control messages</a> in the <a data-link-type="dfn" href="#control-message-queue" id="ref-for-control-message-queue①⓪">control message queue</a>, and all pending
     callbacks. 
-     <p>When invoked, run the <a data-link-type="dfn" href="#reset-audioencoder" id="ref-for-reset-audioencoder">Reset AudioEncoder</a> algorithm.</p>
+     <p>When invoked, run the <a data-link-type="dfn" href="#reset-audioencoder" id="ref-for-reset-audioencoder">Reset AudioEncoder</a> algorithm with an <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#aborterror" id="ref-for-aborterror⑥">AbortError</a></code> <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-DOMException" id="ref-for-idl-DOMException⑨">DOMException</a></code>.</p>
     <dt><dfn class="dfn-paneled idl-code" data-dfn-for="AudioEncoder" data-dfn-type="method" data-export id="dom-audioencoder-close"><code>close()</code></dfn>
     <dd>
       Immediately aborts all pending work and releases <a data-link-type="dfn" href="#system-resources" id="ref-for-system-resources④">system resources</a>.
     Close is final. 
-     <p>When invoked, run the <a data-link-type="dfn" href="#close-audioencoder" id="ref-for-close-audioencoder②">Close AudioEncoder</a> algorithm.</p>
+     <p>When invoked, run the <a data-link-type="dfn" href="#close-audioencoder" id="ref-for-close-audioencoder②">Close AudioEncoder</a> algorithm with an <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#aborterror" id="ref-for-aborterror⑦">AbortError</a></code> <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-DOMException" id="ref-for-idl-DOMException①⓪">DOMException</a></code>.</p>
     <dt><dfn class="dfn-paneled idl-code" data-dfn-for="AudioEncoder" data-dfn-type="method" data-export id="dom-audioencoder-isconfigsupported"><code>isConfigSupported(config)</code></dfn>
     <dd>
       Returns a promise indicating whether the provided <var>config</var> is supported by
@@ -1743,7 +1778,7 @@ not <a data-link-type="dfn" href="#equal-dictionaries" id="ref-for-equal-diction
          <p>Invoke <code class="idl"><a data-link-type="idl" href="#dom-audioencoder-output-callback-slot" id="ref-for-dom-audioencoder-output-callback-slot①">[[output callback]]</a></code> with <var>chunk</var> and <var>chunkMetadata</var>.</p>
        </ol>
      </ol>
-    <dt><dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="reset-audioencoder">Reset AudioEncoder</dfn>
+    <dt><dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="reset-audioencoder">Reset AudioEncoder</dfn> (with <var>exception</var>)
     <dd>
       Run these steps: 
      <ol>
@@ -1759,23 +1794,31 @@ not <a data-link-type="dfn" href="#equal-dictionaries" id="ref-for-equal-diction
        <p>Signal <code class="idl"><a data-link-type="idl" href="#dom-audioencoder-codec-implementation-slot" id="ref-for-dom-audioencoder-codec-implementation-slot⑥">[[codec implementation]]</a></code> to cease producing
 output for the previous configuration.</p>
       <li data-md>
-       <p><a data-link-type="dfn" href="#reset-the-control-message-queue" id="ref-for-reset-the-control-message-queue②">Reset the control message queue</a>.</p>
+       <p>Remove all <a data-link-type="dfn" href="#control-messages" id="ref-for-control-messages①①">control messages</a> from the <a data-link-type="dfn" href="#control-message-queue" id="ref-for-control-message-queue①①">control message queue</a>.</p>
       <li data-md>
        <p>Set <code class="idl"><a data-link-type="idl" href="#dom-audioencoder-encodequeuesize-slot" id="ref-for-dom-audioencoder-encodequeuesize-slot③">[[encodeQueueSize]]</a></code> to zero.</p>
+      <li data-md>
+       <p>For each <var>promise</var> in <code class="idl"><a data-link-type="idl" href="#dom-audioencoder-pending-flush-promises-slot" id="ref-for-dom-audioencoder-pending-flush-promises-slot②">[[pending flush promises]]</a></code>:</p>
+       <ol>
+        <li data-md>
+         <p>Reject <var>promise</var> with <var>exception</var>.</p>
+        <li data-md>
+         <p>Remove <var>promise</var> from <code class="idl"><a data-link-type="idl" href="#dom-audioencoder-pending-flush-promises-slot" id="ref-for-dom-audioencoder-pending-flush-promises-slot③">[[pending flush promises]]</a></code>.</p>
+       </ol>
      </ol>
-    <dt><dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="close-audioencoder">Close AudioEncoder</dfn> (with <var>error</var>)
+    <dt><dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="close-audioencoder">Close AudioEncoder</dfn> (with <var>exception</var>)
     <dd>
       Run these steps: 
      <ol>
       <li data-md>
-       <p>Run the <a data-link-type="dfn" href="#reset-audioencoder" id="ref-for-reset-audioencoder①">Reset AudioEncoder</a> algorithm.</p>
+       <p>Run the <a data-link-type="dfn" href="#reset-audioencoder" id="ref-for-reset-audioencoder①">Reset AudioEncoder</a> algorithm with <var>exception</var>.</p>
       <li data-md>
        <p>Set <code class="idl"><a data-link-type="idl" href="#dom-audioencoder-state-slot" id="ref-for-dom-audioencoder-state-slot⑧">[[state]]</a></code> to <code>"closed"</code>.</p>
       <li data-md>
        <p>Clear <code class="idl"><a data-link-type="idl" href="#dom-audioencoder-codec-implementation-slot" id="ref-for-dom-audioencoder-codec-implementation-slot⑦">[[codec implementation]]</a></code> and release associated <a data-link-type="dfn" href="#system-resources" id="ref-for-system-resources⑤">system resources</a>.</p>
       <li data-md>
-       <p>If <var>error</var> is set, queue a task on the <a data-link-type="dfn" href="#control-thread" id="ref-for-control-thread②⓪">control thread</a> event loop
-invoke the <code class="idl"><a data-link-type="idl" href="#dom-audioencoder-error-callback-slot" id="ref-for-dom-audioencoder-error-callback-slot①">[[error callback]]</a></code> with <var>error</var>.</p>
+       <p>If <var>exception</var> is not an <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#aborterror" id="ref-for-aborterror⑧">AbortError</a></code> <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-DOMException" id="ref-for-idl-DOMException①①">DOMException</a></code>, queue a task on
+the <a data-link-type="dfn" href="#control-thread" id="ref-for-control-thread②⓪">control thread</a> event loop to invoke the <code class="idl"><a data-link-type="idl" href="#dom-audiodecoder-error-callback-slot" id="ref-for-dom-audiodecoder-error-callback-slot②">[[error callback]]</a></code> with <var>exception</var>.</p>
      </ol>
    </dl>
    <h3 class="heading settled" data-level="5.6" id="encoded-audio-chunk-metadata"><span class="secno">5.6. </span><span class="content">EncodedAudioChunkMetadata</span><a class="self-link" href="#encoded-audio-chunk-metadata"></a></h3>
@@ -1833,6 +1876,8 @@ invoke the <code class="idl"><a data-link-type="idl" href="#dom-audioencoder-err
     <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoEncoder" data-dfn-type="attribute" data-export id="dom-videoencoder-encodequeuesize-slot"><code>[[encodeQueueSize]]</code></dfn>
     <dd> The number of pending encode requests. This number will decrease as the
   underlying codec is ready to accept new input. 
+    <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoEncoder" data-dfn-type="attribute" data-export id="dom-videoencoder-pending-flush-promises-slot"><code>[[pending flush promises]]</code></dfn>
+    <dd> A list of unresolved promises returned by calls to <code class="idl"><a data-link-type="idl" href="#dom-videoencoder-flush" id="ref-for-dom-videoencoder-flush①">flush()</a></code>. 
    </dl>
    <h3 class="heading settled" data-level="6.2" id="videoencoder-constructors"><span class="secno">6.2. </span><span class="content">Constructors</span><a class="self-link" href="#videoencoder-constructors"></a></h3>
     <dfn class="dfn-paneled idl-code" data-dfn-for="VideoEncoder" data-dfn-type="constructor" data-export data-lt="VideoEncoder(init)|constructor(init)" id="dom-videoencoder-videoencoder" title="VideoEncoder(init)"><code> VideoEncoder(init) </code></dfn> 
@@ -1921,15 +1966,17 @@ emitted by <code class="idl"><a data-link-type="idl" href="#dom-videoencoder-cod
      </ol>
     <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoEncoder" data-dfn-type="method" data-export id="dom-videoencoder-flush"><code>flush()</code></dfn>
     <dd>
-      Completes all <a data-link-type="dfn" href="#control-messages" id="ref-for-control-messages①⓪">control messages</a> in the <a data-link-type="dfn" href="#control-message-queue" id="ref-for-control-message-queue①⓪">control message queue</a> and emits all outputs. 
+      Completes all <a data-link-type="dfn" href="#control-messages" id="ref-for-control-messages①②">control messages</a> in the <a data-link-type="dfn" href="#control-message-queue" id="ref-for-control-message-queue①②">control message queue</a> and emits all outputs. 
      <p>When invoked, run these steps:</p>
      <ol>
       <li data-md>
-       <p>If <code class="idl"><a data-link-type="idl" href="#dom-videoencoder-state-slot" id="ref-for-dom-videoencoder-state-slot⑤">[[state]]</a></code> is not <code>"configured"</code>, return <a data-link-type="dfn" href="https://heycam.github.io/webidl/#a-promise-rejected-with" id="ref-for-a-promise-rejected-with⑥">a promise rejected with</a> <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#invalidstateerror" id="ref-for-invalidstateerror①④">InvalidStateError</a></code> <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-DOMException" id="ref-for-idl-DOMException③">DOMException</a></code>.</p>
+       <p>If <code class="idl"><a data-link-type="idl" href="#dom-videoencoder-state-slot" id="ref-for-dom-videoencoder-state-slot⑤">[[state]]</a></code> is not <code>"configured"</code>, return <a data-link-type="dfn" href="https://heycam.github.io/webidl/#a-promise-rejected-with" id="ref-for-a-promise-rejected-with⑥">a promise rejected with</a> <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#invalidstateerror" id="ref-for-invalidstateerror①④">InvalidStateError</a></code> <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-DOMException" id="ref-for-idl-DOMException①②">DOMException</a></code>.</p>
       <li data-md>
        <p>Let <var>promise</var> be a new Promise.</p>
       <li data-md>
        <p><a data-link-type="dfn" href="#enqueues-a-control-message" id="ref-for-enqueues-a-control-message①⑨">Queue a control message</a> to flush the codec with <var>promise</var>.</p>
+      <li data-md>
+       <p>Append <var>promise</var> to <code class="idl"><a data-link-type="idl" href="#dom-videoencoder-pending-flush-promises-slot" id="ref-for-dom-videoencoder-pending-flush-promises-slot">[[pending flush promises]]</a></code>.</p>
       <li data-md>
        <p>Return <var>promise</var>.</p>
      </ol>
@@ -1945,18 +1992,24 @@ emitted by <code class="idl"><a data-link-type="idl" href="#dom-videoencoder-cod
       <li data-md>
        <p>If <var>encoded outputs</var> is not empty, queue a task on the <a data-link-type="dfn" href="#control-thread" id="ref-for-control-thread②④">control thread</a> event loop to run the <a data-link-type="dfn" href="#output-encodedvideochunks" id="ref-for-output-encodedvideochunks①">Output EncodedVideoChunks</a> algorithm with <var>encoded outputs</var>.</p>
       <li data-md>
-       <p>Queue a task on the <a data-link-type="dfn" href="#control-thread" id="ref-for-control-thread②⑤">control thread</a> event loop to resolve <var>promise</var>.</p>
+       <p>Queue a task on the <a data-link-type="dfn" href="#control-thread" id="ref-for-control-thread②⑤">control thread</a> event loop to run these steps:</p>
+       <ol>
+        <li data-md>
+         <p>Remove <var>promise</var> from <code class="idl"><a data-link-type="idl" href="#dom-videoencoder-pending-flush-promises-slot" id="ref-for-dom-videoencoder-pending-flush-promises-slot①">[[pending flush promises]]</a></code>.</p>
+        <li data-md>
+         <p>Resolve <var>promise</var>.</p>
+       </ol>
      </ol>
     <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoEncoder" data-dfn-type="method" data-export id="dom-videoencoder-reset"><code>reset()</code></dfn>
     <dd>
-      Immediately resets all state including configuration, <a data-link-type="dfn" href="#control-messages" id="ref-for-control-messages①①">control messages</a> in the <a data-link-type="dfn" href="#control-message-queue" id="ref-for-control-message-queue①①">control message queue</a>, and all pending
+      Immediately resets all state including configuration, <a data-link-type="dfn" href="#control-messages" id="ref-for-control-messages①③">control messages</a> in the <a data-link-type="dfn" href="#control-message-queue" id="ref-for-control-message-queue①③">control message queue</a>, and all pending
     callbacks. 
-     <p>When invoked, run the <a data-link-type="dfn" href="#reset-videoencoder" id="ref-for-reset-videoencoder">Reset VideoEncoder</a> algorithm.</p>
+     <p>When invoked, run the <a data-link-type="dfn" href="#reset-videoencoder" id="ref-for-reset-videoencoder">Reset VideoEncoder</a> algorithm with an <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#aborterror" id="ref-for-aborterror⑨">AbortError</a></code> <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-DOMException" id="ref-for-idl-DOMException①③">DOMException</a></code>.</p>
     <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoEncoder" data-dfn-type="method" data-export id="dom-videoencoder-close"><code>close()</code></dfn>
     <dd>
       Immediately aborts all pending work and releases <a data-link-type="dfn" href="#system-resources" id="ref-for-system-resources⑥">system resources</a>.
     Close is final. 
-     <p>When invoked, run the <a data-link-type="dfn" href="#close-videoencoder" id="ref-for-close-videoencoder②">Close VideoEncoder</a> algorithm.</p>
+     <p>When invoked, run the <a data-link-type="dfn" href="#close-videoencoder" id="ref-for-close-videoencoder②">Close VideoEncoder</a> algorithm with an <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#aborterror" id="ref-for-aborterror①⓪">AbortError</a></code> <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-DOMException" id="ref-for-idl-DOMException①④">DOMException</a></code>.</p>
     <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoEncoder" data-dfn-type="method" data-export id="dom-videoencoder-isconfigsupported"><code>isConfigSupported(config)</code></dfn>
     <dd>
       Returns a promise indicating whether the provided <var>config</var> is supported by
@@ -2063,7 +2116,7 @@ temporal layer for <var>output</var>.</p>
          <p>Invoke <code class="idl"><a data-link-type="idl" href="#dom-videoencoder-output-callback-slot" id="ref-for-dom-videoencoder-output-callback-slot①">[[output callback]]</a></code> with <var>chunk</var> and <var>chunkMetadata</var>.</p>
        </ol>
      </ol>
-    <dt><dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="reset-videoencoder">Reset VideoEncoder</dfn>
+    <dt><dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="reset-videoencoder">Reset VideoEncoder</dfn> (with <var>exception</var>)
     <dd>
       Run these steps: 
      <ol>
@@ -2079,23 +2132,31 @@ temporal layer for <var>output</var>.</p>
        <p>Signal <code class="idl"><a data-link-type="idl" href="#dom-videoencoder-codec-implementation-slot" id="ref-for-dom-videoencoder-codec-implementation-slot⑥">[[codec implementation]]</a></code> to cease producing
 output for the previous configuration.</p>
       <li data-md>
-       <p><a data-link-type="dfn" href="#reset-the-control-message-queue" id="ref-for-reset-the-control-message-queue③">Reset the control message queue</a>.</p>
+       <p>Remove all <a data-link-type="dfn" href="#control-messages" id="ref-for-control-messages①④">control messages</a> from the <a data-link-type="dfn" href="#control-message-queue" id="ref-for-control-message-queue①④">control message queue</a>.</p>
       <li data-md>
        <p>Set <code class="idl"><a data-link-type="idl" href="#dom-videoencoder-encodequeuesize-slot" id="ref-for-dom-videoencoder-encodequeuesize-slot③">[[encodeQueueSize]]</a></code> to zero.</p>
+      <li data-md>
+       <p>For each <var>promise</var> in <code class="idl"><a data-link-type="idl" href="#dom-videoencoder-pending-flush-promises-slot" id="ref-for-dom-videoencoder-pending-flush-promises-slot②">[[pending flush promises]]</a></code>:</p>
+       <ol>
+        <li data-md>
+         <p>Reject <var>promise</var> with <var>exception</var>.</p>
+        <li data-md>
+         <p>Remove <var>promise</var> from <code class="idl"><a data-link-type="idl" href="#dom-videoencoder-pending-flush-promises-slot" id="ref-for-dom-videoencoder-pending-flush-promises-slot③">[[pending flush promises]]</a></code>.</p>
+       </ol>
      </ol>
-    <dt><dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="close-videoencoder">Close VideoEncoder</dfn> (with <var>error</var>)
+    <dt><dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="close-videoencoder">Close VideoEncoder</dfn> (with <var>exception</var>)
     <dd>
       Run these steps: 
      <ol>
       <li data-md>
-       <p>Run the <a data-link-type="dfn" href="#reset-videoencoder" id="ref-for-reset-videoencoder①">Reset VideoEncoder</a> algorithm.</p>
+       <p>Run the <a data-link-type="dfn" href="#reset-videoencoder" id="ref-for-reset-videoencoder①">Reset VideoEncoder</a> algorithm with <var>exception</var>.</p>
       <li data-md>
        <p>Set <code class="idl"><a data-link-type="idl" href="#dom-videoencoder-state-slot" id="ref-for-dom-videoencoder-state-slot⑧">[[state]]</a></code> to <code>"closed"</code>.</p>
       <li data-md>
        <p>Clear <code class="idl"><a data-link-type="idl" href="#dom-videoencoder-codec-implementation-slot" id="ref-for-dom-videoencoder-codec-implementation-slot⑦">[[codec implementation]]</a></code> and release associated <a data-link-type="dfn" href="#system-resources" id="ref-for-system-resources⑦">system resources</a>.</p>
       <li data-md>
-       <p>If <var>error</var> is set, queue a task on the <a data-link-type="dfn" href="#control-thread" id="ref-for-control-thread②⑥">control thread</a> event loop
-invoke the <code class="idl"><a data-link-type="idl" href="#dom-videoencoder-error-callback-slot" id="ref-for-dom-videoencoder-error-callback-slot①">[[error callback]]</a></code> with <var>error</var>.</p>
+       <p>If <var>exception</var> is not an <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#aborterror" id="ref-for-aborterror①①">AbortError</a></code> <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-DOMException" id="ref-for-idl-DOMException①⑤">DOMException</a></code>, queue a task on
+the <a data-link-type="dfn" href="#control-thread" id="ref-for-control-thread②⑥">control thread</a> event loop to invoke the <code class="idl"><a data-link-type="idl" href="#dom-audiodecoder-error-callback-slot" id="ref-for-dom-audiodecoder-error-callback-slot③">[[error callback]]</a></code> with <var>exception</var>.</p>
      </ol>
    </dl>
    <h3 class="heading settled" data-level="6.6" id="encoded-video-chunk-metadata"><span class="secno">6.6. </span><span class="content">EncodedVideoChunkMetadata</span><a class="self-link" href="#encoded-video-chunk-metadata"></a></h3>
@@ -2492,7 +2553,7 @@ keys and values. For nested dictionaries, apply this definition recursively.
         been released. 
    </dl>
    <h3 class="heading settled" data-level="7.13" id="error-callback"><span class="secno">7.13. </span><span class="content">WebCodecsErrorCallback</span><a class="self-link" href="#error-callback"></a></h3>
-<pre class="idl highlight def"><c- b>callback</c-> <dfn class="dfn-paneled idl-code" data-dfn-type="callback" data-export id="callbackdef-webcodecserrorcallback"><code><c- g>WebCodecsErrorCallback</c-></code></dfn> = <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-undefined" id="ref-for-idl-undefined②④"><c- b>undefined</c-></a>(<a data-link-type="idl-name" href="https://heycam.github.io/webidl/#idl-DOMException" id="ref-for-idl-DOMException④"><c- n>DOMException</c-></a> <dfn class="idl-code" data-dfn-for="WebCodecsErrorCallback" data-dfn-type="argument" data-export id="dom-webcodecserrorcallback-error"><code><c- g>error</c-></code><a class="self-link" href="#dom-webcodecserrorcallback-error"></a></dfn>);
+<pre class="idl highlight def"><c- b>callback</c-> <dfn class="dfn-paneled idl-code" data-dfn-type="callback" data-export id="callbackdef-webcodecserrorcallback"><code><c- g>WebCodecsErrorCallback</c-></code></dfn> = <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-undefined" id="ref-for-idl-undefined②④"><c- b>undefined</c-></a>(<a data-link-type="idl-name" href="https://heycam.github.io/webidl/#idl-DOMException" id="ref-for-idl-DOMException①⑥"><c- n>DOMException</c-></a> <dfn class="idl-code" data-dfn-for="WebCodecsErrorCallback" data-dfn-type="argument" data-export id="dom-webcodecserrorcallback-error"><code><c- g>error</c-></code><a class="self-link" href="#dom-webcodecserrorcallback-error"></a></dfn>);
 </pre>
    <h2 class="heading settled" data-level="8" id="encoded-media-interfaces"><span class="secno">8. </span><span class="content">Encoded Media Interfaces (Chunks)</span><a class="self-link" href="#encoded-media-interfaces"></a></h2>
     These interfaces represent chunks of encoded media. 
@@ -2834,7 +2895,7 @@ destination buffer.</p>
      <p>When invoked, run these steps:</p>
      <ol>
       <li data-md>
-       <p>If the value of <var>frame</var>’s <code class="idl"><a data-link-type="idl" href="#dom-audiodata-detached-slot" id="ref-for-dom-audiodata-detached-slot③">[[detached]]</a></code> internal slot is <code>true</code>, throw an <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#invalidstateerror" id="ref-for-invalidstateerror①⑥">InvalidStateError</a></code> <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-DOMException" id="ref-for-idl-DOMException⑤">DOMException</a></code>.</p>
+       <p>If the value of <var>frame</var>’s <code class="idl"><a data-link-type="idl" href="#dom-audiodata-detached-slot" id="ref-for-dom-audiodata-detached-slot③">[[detached]]</a></code> internal slot is <code>true</code>, throw an <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#invalidstateerror" id="ref-for-invalidstateerror①⑥">InvalidStateError</a></code> <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-DOMException" id="ref-for-idl-DOMException①⑦">DOMException</a></code>.</p>
       <li data-md>
        <p>Let <var>copyElementCount</var> be the result of running the <a data-link-type="dfn" href="#compute-copy-element-count" id="ref-for-compute-copy-element-count①">Compute Copy Element Count</a> algorithm with <var>options</var>.</p>
       <li data-md>
@@ -2856,7 +2917,7 @@ greater than <code>destination.byteLength</code>, throw a <code class="idl"><a d
      <p>When invoked, run these steps:</p>
      <ol>
       <li data-md>
-       <p>If the value of <var>frame</var>’s <code class="idl"><a data-link-type="idl" href="#dom-audiodata-detached-slot" id="ref-for-dom-audiodata-detached-slot④">[[detached]]</a></code> internal slot is <code>true</code>, throw an <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#invalidstateerror" id="ref-for-invalidstateerror①⑦">InvalidStateError</a></code> <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-DOMException" id="ref-for-idl-DOMException⑥">DOMException</a></code>.</p>
+       <p>If the value of <var>frame</var>’s <code class="idl"><a data-link-type="idl" href="#dom-audiodata-detached-slot" id="ref-for-dom-audiodata-detached-slot④">[[detached]]</a></code> internal slot is <code>true</code>, throw an <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#invalidstateerror" id="ref-for-invalidstateerror①⑦">InvalidStateError</a></code> <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-DOMException" id="ref-for-idl-DOMException①⑧">DOMException</a></code>.</p>
       <li data-md>
        <p>Return the result of running the <a data-link-type="dfn" href="#clone-audiodata" id="ref-for-clone-audiodata①">Clone AudioData</a> algorithm with <a data-link-type="dfn" href="https://heycam.github.io/webidl/#this" id="ref-for-this">this</a>.</p>
      </ol>
@@ -3175,9 +3236,9 @@ from the <code class="idl"><a data-link-type="idl" href="#encodedvideochunk" id=
    <ol>
     <li data-md>
      <p><a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/canvas.html#check-the-usability-of-the-image-argument" id="ref-for-check-the-usability-of-the-image-argument">Check the usability of the image argument</a>. If this throws an
-exception or returns <var>bad</var>, then throw an <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#invalidstateerror" id="ref-for-invalidstateerror①⑧">InvalidStateError</a></code> <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-DOMException" id="ref-for-idl-DOMException⑦">DOMException</a></code>.</p>
+exception or returns <var>bad</var>, then throw an <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#invalidstateerror" id="ref-for-invalidstateerror①⑧">InvalidStateError</a></code> <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-DOMException" id="ref-for-idl-DOMException①⑨">DOMException</a></code>.</p>
     <li data-md>
-     <p>If the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/origin.html#concept-origin" id="ref-for-concept-origin">origin</a> of <var>image</var>’s image data is not <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/origin.html#same-origin" id="ref-for-same-origin">same origin</a> with the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#entry-settings-object" id="ref-for-entry-settings-object">entry settings object</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/origin.html#concept-origin" id="ref-for-concept-origin①">origin</a>, then throw a <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#securityerror" id="ref-for-securityerror">SecurityError</a></code> <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-DOMException" id="ref-for-idl-DOMException⑧">DOMException</a></code>.</p>
+     <p>If the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/origin.html#concept-origin" id="ref-for-concept-origin">origin</a> of <var>image</var>’s image data is not <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/origin.html#same-origin" id="ref-for-same-origin">same origin</a> with the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#entry-settings-object" id="ref-for-entry-settings-object">entry settings object</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/origin.html#concept-origin" id="ref-for-concept-origin①">origin</a>, then throw a <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#securityerror" id="ref-for-securityerror">SecurityError</a></code> <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-DOMException" id="ref-for-idl-DOMException②⓪">DOMException</a></code>.</p>
     <li data-md>
      <p>Let <var>frame</var> be a new <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe②⑥">VideoFrame</a></code>.</p>
     <li data-md>
@@ -3192,7 +3253,7 @@ exception or returns <var>bad</var>, then throw an <code class="idl"><a data-lin
          <p>If <code class="idl"><a data-link-type="idl" href="#dom-videoframeinit-timestamp" id="ref-for-dom-videoframeinit-timestamp">timestamp</a></code> does not <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#map-exists" id="ref-for-map-exists③">exist</a> in <var>init</var>, throw a <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#exceptiondef-typeerror" id="ref-for-exceptiondef-typeerror①②">TypeError</a></code>.</p>
         <li data-md>
          <p>If <var>image</var>’s media data has no <a data-link-type="dfn" href="https://www.w3.org/TR/css-images-3/#natural-dimensions" id="ref-for-natural-dimensions">natural dimensions</a> (e.g., it’s a vector graphic with no specified content size), then
-throw an <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#invalidstateerror" id="ref-for-invalidstateerror①⑨">InvalidStateError</a></code> <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-DOMException" id="ref-for-idl-DOMException⑨">DOMException</a></code>.</p>
+throw an <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#invalidstateerror" id="ref-for-invalidstateerror①⑨">InvalidStateError</a></code> <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-DOMException" id="ref-for-idl-DOMException②①">DOMException</a></code>.</p>
         <li data-md>
          <p>Let <var>resource</var> be a new <a data-link-type="dfn" href="#media-resource" id="ref-for-media-resource①⑤">media resource</a> containing a copy of <var>image</var>’s media data. If this is an animated image, <var>image</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/imagebitmap-and-animations.html#concept-imagebitmap-bitmap-data" id="ref-for-concept-imagebitmap-bitmap-data">bitmap data</a> must only be taken from the default image of the
 animation (the one that the format defines is to be used when
@@ -3207,7 +3268,7 @@ such image, the first frame of the animation.</p>
        <p><code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/media.html#htmlvideoelement" id="ref-for-htmlvideoelement">HTMLVideoElement</a></code></p>
        <ol>
         <li data-md>
-         <p>If <var>image</var>’s <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/media.html#dom-media-networkstate" id="ref-for-dom-media-networkstate">networkState</a></code> attribute is <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/media.html#dom-media-network_empty" id="ref-for-dom-media-network_empty">NETWORK_EMPTY</a></code>, then throw an <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#invalidstateerror" id="ref-for-invalidstateerror②⓪">InvalidStateError</a></code> <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-DOMException" id="ref-for-idl-DOMException①⓪">DOMException</a></code>.</p>
+         <p>If <var>image</var>’s <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/media.html#dom-media-networkstate" id="ref-for-dom-media-networkstate">networkState</a></code> attribute is <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/media.html#dom-media-network_empty" id="ref-for-dom-media-network_empty">NETWORK_EMPTY</a></code>, then throw an <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#invalidstateerror" id="ref-for-invalidstateerror②⓪">InvalidStateError</a></code> <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-DOMException" id="ref-for-idl-DOMException②②">DOMException</a></code>.</p>
         <li data-md>
          <p>Let <var>currentPlaybackFrame</var> be the <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe②⑦">VideoFrame</a></code> at the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/media.html#current-playback-position" id="ref-for-current-playback-position">current
 playback position</a>.</p>
@@ -3395,7 +3456,7 @@ from the <code class="idl"><a data-link-type="idl" href="#encodedvideochunk" id=
      <p>When invoked, run these steps:</p>
      <ol>
       <li data-md>
-       <p>If the value of <var>frame</var>’s <code class="idl"><a data-link-type="idl" href="#dom-videoframe-detached-slot" id="ref-for-dom-videoframe-detached-slot①">[[detached]]</a></code> internal slot is <code>true</code>, throw an <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#invalidstateerror" id="ref-for-invalidstateerror②①">InvalidStateError</a></code> <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-DOMException" id="ref-for-idl-DOMException①①">DOMException</a></code>.</p>
+       <p>If the value of <var>frame</var>’s <code class="idl"><a data-link-type="idl" href="#dom-videoframe-detached-slot" id="ref-for-dom-videoframe-detached-slot①">[[detached]]</a></code> internal slot is <code>true</code>, throw an <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#invalidstateerror" id="ref-for-invalidstateerror②①">InvalidStateError</a></code> <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-DOMException" id="ref-for-idl-DOMException②③">DOMException</a></code>.</p>
       <li data-md>
        <p>Return the result of running the <a data-link-type="dfn" href="#clone-videoframe" id="ref-for-clone-videoframe①">Clone VideoFrame</a> algorithm with <a data-link-type="dfn" href="https://heycam.github.io/webidl/#this" id="ref-for-this①">this</a>.</p>
      </ol>
@@ -3783,7 +3844,7 @@ Support</a> algorithm with <code>init.type</code>.</p>
       <li data-md>
        <p>If <var>supported</var> is <code>false</code>, queue a task on the <a data-link-type="dfn" href="#control-thread" id="ref-for-control-thread②⑦">control thread</a> event
 loop to run the <a data-link-type="dfn" href="#imagedecoder-close-imagedecoder" id="ref-for-imagedecoder-close-imagedecoder">Close ImageDecoder</a> algorithm
-with a <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#notsupportederror" id="ref-for-notsupportederror⑨">NotSupportedError</a></code> <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-DOMException" id="ref-for-idl-DOMException①②">DOMException</a></code> and abort
+with a <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#notsupportederror" id="ref-for-notsupportederror⑨">NotSupportedError</a></code> <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-DOMException" id="ref-for-idl-DOMException②④">DOMException</a></code> and abort
 these steps.</p>
       <li data-md>
        <p>If <var>supported</var> is <code>true</code>, assign the <code class="idl"><a data-link-type="idl" href="#dom-imagedecoder-codec-implementation-slot" id="ref-for-dom-imagedecoder-codec-implementation-slot①">[[codec implementation]]</a></code> internal slot with an
@@ -3823,9 +3884,9 @@ for the available tracks and a mechanism for selecting a track to decode.</p>
      <p>When invoked, run these steps:</p>
      <ol>
       <li data-md>
-       <p>If <code class="idl"><a data-link-type="idl" href="#dom-imagedecoder-closed-slot" id="ref-for-dom-imagedecoder-closed-slot①">[[closed]]</a></code> is <code>true</code>, return a <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-promise" id="ref-for-idl-promise①①">Promise</a></code> rejected with an <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#invalidstateerror" id="ref-for-invalidstateerror②③">InvalidStateError</a></code> <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-DOMException" id="ref-for-idl-DOMException①③">DOMException</a></code>.</p>
+       <p>If <code class="idl"><a data-link-type="idl" href="#dom-imagedecoder-closed-slot" id="ref-for-dom-imagedecoder-closed-slot①">[[closed]]</a></code> is <code>true</code>, return a <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-promise" id="ref-for-idl-promise①①">Promise</a></code> rejected with an <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#invalidstateerror" id="ref-for-invalidstateerror②③">InvalidStateError</a></code> <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-DOMException" id="ref-for-idl-DOMException②⑤">DOMException</a></code>.</p>
       <li data-md>
-       <p>If <code class="idl"><a data-link-type="idl" href="#dom-imagedecoder-imagetracklist-slot" id="ref-for-dom-imagedecoder-imagetracklist-slot③">[[ImageTrackList]]</a></code>'s <code class="idl"><a data-link-type="idl" href="#dom-imagetracklist-selected-index-slot" id="ref-for-dom-imagetracklist-selected-index-slot①">[[selected index]]</a></code> is '-1', return a <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-promise" id="ref-for-idl-promise①②">Promise</a></code> rejected with an <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#invalidstateerror" id="ref-for-invalidstateerror②④">InvalidStateError</a></code> <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-DOMException" id="ref-for-idl-DOMException①④">DOMException</a></code>.</p>
+       <p>If <code class="idl"><a data-link-type="idl" href="#dom-imagedecoder-imagetracklist-slot" id="ref-for-dom-imagedecoder-imagetracklist-slot③">[[ImageTrackList]]</a></code>'s <code class="idl"><a data-link-type="idl" href="#dom-imagetracklist-selected-index-slot" id="ref-for-dom-imagetracklist-selected-index-slot①">[[selected index]]</a></code> is '-1', return a <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-promise" id="ref-for-idl-promise①②">Promise</a></code> rejected with an <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#invalidstateerror" id="ref-for-invalidstateerror②④">InvalidStateError</a></code> <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-DOMException" id="ref-for-idl-DOMException②⑥">DOMException</a></code>.</p>
       <li data-md>
        <p>If <var>options</var> is <code>undefined</code>, assign a new <code class="idl"><a data-link-type="idl" href="#dictdef-imagedecodeoptions" id="ref-for-dictdef-imagedecodeoptions①">ImageDecodeOptions</a></code> to <var>options</var>.</p>
       <li data-md>
@@ -3853,13 +3914,13 @@ progressive decoding, run the <a data-link-type="dfn" href="#imagedecoder-decode
     <dd data-md>
      <p>Immediately aborts all pending work.</p>
      <p>When invoked, run the <a data-link-type="dfn" href="#imagedecoder-reset-imagedecoder" id="ref-for-imagedecoder-reset-imagedecoder">Reset ImageDecoder</a> algorithm with
-and <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#aborterror" id="ref-for-aborterror">AbortError</a></code> <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-DOMException" id="ref-for-idl-DOMException①⑤">DOMException</a></code>.</p>
+an <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#aborterror" id="ref-for-aborterror①②">AbortError</a></code> <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-DOMException" id="ref-for-idl-DOMException②⑦">DOMException</a></code>.</p>
     <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="ImageDecoder" data-dfn-type="method" data-export id="dom-imagedecoder-close"><code>close()</code></dfn>
     <dd data-md>
      <p>Immediately aborts all pending work and releases system resources. Close is
 final.</p>
      <p>When invoked, run the <a data-link-type="dfn" href="#imagedecoder-close-imagedecoder" id="ref-for-imagedecoder-close-imagedecoder①">Close ImageDecoder</a> algorithm with
-and <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#aborterror" id="ref-for-aborterror①">AbortError</a></code> <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-DOMException" id="ref-for-idl-DOMException①⑥">DOMException</a></code>.</p>
+an <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#aborterror" id="ref-for-aborterror①③">AbortError</a></code> <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-DOMException" id="ref-for-idl-DOMException②⑧">DOMException</a></code>.</p>
     <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="ImageDecoder" data-dfn-type="method" data-export id="dom-imagedecoder-istypesupported"><code>isTypeSupported(type)</code></dfn>
     <dd data-md>
      <p>Returns a promise indicating whether the provided config is supported by the
@@ -3891,7 +3952,7 @@ user agent.</p>
           <li data-md>
            <p>If <code class="idl"><a data-link-type="idl" href="#dom-imagedecoder-closed-slot" id="ref-for-dom-imagedecoder-closed-slot②">[[closed]]</a></code> is <code>true</code>, abort these steps.</p>
           <li data-md>
-           <p>If <var>chunk</var> is not a Uint8Array object, queue a task on the <a data-link-type="dfn" href="#control-thread" id="ref-for-control-thread②⑧">control thread</a> event loop to run the <a data-link-type="dfn" href="#imagedecoder-close-imagedecoder" id="ref-for-imagedecoder-close-imagedecoder②">Close ImageDecoder</a> algorithm with a <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#dataerror" id="ref-for-dataerror④">DataError</a></code> <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-DOMException" id="ref-for-idl-DOMException①⑦">DOMException</a></code> and abort these steps.</p>
+           <p>If <var>chunk</var> is not a Uint8Array object, queue a task on the <a data-link-type="dfn" href="#control-thread" id="ref-for-control-thread②⑧">control thread</a> event loop to run the <a data-link-type="dfn" href="#imagedecoder-close-imagedecoder" id="ref-for-imagedecoder-close-imagedecoder②">Close ImageDecoder</a> algorithm with a <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#dataerror" id="ref-for-dataerror④">DataError</a></code> <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-DOMException" id="ref-for-idl-DOMException②⑨">DOMException</a></code> and abort these steps.</p>
           <li data-md>
            <p>Let <var>bytes</var> be the byte sequence represented by the Uint8Array
 object.</p>
@@ -3916,7 +3977,7 @@ object.</p>
         <dd data-md>
          <ol>
           <li data-md>
-           <p>Queue a task on the <a data-link-type="dfn" href="#control-thread" id="ref-for-control-thread②⑨">control thread</a> event loop to run the <a data-link-type="dfn" href="#imagedecoder-close-imagedecoder" id="ref-for-imagedecoder-close-imagedecoder③">Close ImageDecoder</a> algorithm with a <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#notreadableerror" id="ref-for-notreadableerror">NotReadableError</a></code> <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-DOMException" id="ref-for-idl-DOMException①⑧">DOMException</a></code></p>
+           <p>Queue a task on the <a data-link-type="dfn" href="#control-thread" id="ref-for-control-thread②⑨">control thread</a> event loop to run the <a data-link-type="dfn" href="#imagedecoder-close-imagedecoder" id="ref-for-imagedecoder-close-imagedecoder③">Close ImageDecoder</a> algorithm with a <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#notreadableerror" id="ref-for-notreadableerror">NotReadableError</a></code> <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-DOMException" id="ref-for-idl-DOMException③⓪">DOMException</a></code></p>
          </ol>
        </dl>
       <li data-md>
@@ -4220,7 +4281,7 @@ generations]]</a></code> with key <var>frameIndex</var> and value <var>frameGene
       <li data-md>
        <p>Assert that <code class="idl"><a data-link-type="idl" href="#dom-imagedecoder-complete" id="ref-for-dom-imagedecoder-complete⑥">complete</a></code> is <code>true</code> or <code class="idl"><a data-link-type="idl" href="#dom-imagedecoder-closed-slot" id="ref-for-dom-imagedecoder-closed-slot⑥">[[closed]]</a></code> is <code>true</code>.</p>
       <li data-md>
-       <p>If <code class="idl"><a data-link-type="idl" href="#dom-imagedecoder-complete" id="ref-for-dom-imagedecoder-complete⑦">complete</a></code> is <code>true</code>, let <var>exception</var> be a <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#exceptiondef-rangeerror" id="ref-for-exceptiondef-rangeerror③">RangeError</a></code>. Otherwise, let <var>exception</var> be an <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#invalidstateerror" id="ref-for-invalidstateerror②⑤">InvalidStateError</a></code> <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-DOMException" id="ref-for-idl-DOMException①⑨">DOMException</a></code>.</p>
+       <p>If <code class="idl"><a data-link-type="idl" href="#dom-imagedecoder-complete" id="ref-for-dom-imagedecoder-complete⑦">complete</a></code> is <code>true</code>, let <var>exception</var> be a <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#exceptiondef-rangeerror" id="ref-for-exceptiondef-rangeerror③">RangeError</a></code>. Otherwise, let <var>exception</var> be an <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#invalidstateerror" id="ref-for-invalidstateerror②⑤">InvalidStateError</a></code> <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-DOMException" id="ref-for-idl-DOMException③①">DOMException</a></code>.</p>
       <li data-md>
        <p>Queue a task on the <a data-link-type="dfn" href="#control-thread" id="ref-for-control-thread③⑤">control thread</a> event loop to run these steps:</p>
        <ol>
@@ -4243,7 +4304,7 @@ generations]]</a></code> with key <var>frameIndex</var> and value <var>frameGene
         <li data-md>
          <p>If <code class="idl"><a data-link-type="idl" href="#dom-imagedecoder-closed-slot" id="ref-for-dom-imagedecoder-closed-slot⑧">[[closed]]</a></code>, abort these steps.</p>
         <li data-md>
-         <p>Run the <a data-link-type="dfn" href="#imagedecoder-close-imagedecoder" id="ref-for-imagedecoder-close-imagedecoder⑥">Close ImageDecoder</a> algorithm with an <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#encodingerror" id="ref-for-encodingerror④">EncodingError</a></code> <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-DOMException" id="ref-for-idl-DOMException②⓪">DOMException</a></code>.</p>
+         <p>Run the <a data-link-type="dfn" href="#imagedecoder-close-imagedecoder" id="ref-for-imagedecoder-close-imagedecoder⑥">Close ImageDecoder</a> algorithm with an <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#encodingerror" id="ref-for-encodingerror④">EncodingError</a></code> <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-DOMException" id="ref-for-idl-DOMException③②">DOMException</a></code>.</p>
        </ol>
      </ol>
     <dt data-md><dfn class="dfn-paneled" data-dfn-for="ImageDecoder" data-dfn-type="dfn" data-noexport id="imagedecoder-check-type-support">Check Type Support</dfn> (with <var>type</var>)
@@ -4529,7 +4590,7 @@ frames.</p>
       <li data-md>
        <p>Run the <a data-link-type="dfn" href="#imagedecoder-reset-imagedecoder" id="ref-for-imagedecoder-reset-imagedecoder②">Reset ImageDecoder</a> algorithm on <code class="idl"><a data-link-type="idl" href="#dom-imagetrack-imagedecoder-slot" id="ref-for-dom-imagetrack-imagedecoder-slot②">[[ImageDecoder]]</a></code>.</p>
       <li data-md>
-       <p><a data-link-type="dfn" href="#enqueues-a-control-message" id="ref-for-enqueues-a-control-message②②">Queue a control message</a> to <code class="idl"><a data-link-type="idl" href="#dom-imagetrack-imagedecoder-slot" id="ref-for-dom-imagetrack-imagedecoder-slot③">[[ImageDecoder]]</a></code>'s <a data-link-type="dfn" href="#control-message-queue" id="ref-for-control-message-queue①②">control message queue</a> to update the internal selected track
+       <p><a data-link-type="dfn" href="#enqueues-a-control-message" id="ref-for-enqueues-a-control-message②②">Queue a control message</a> to <code class="idl"><a data-link-type="idl" href="#dom-imagetrack-imagedecoder-slot" id="ref-for-dom-imagetrack-imagedecoder-slot③">[[ImageDecoder]]</a></code>'s <a data-link-type="dfn" href="#control-message-queue" id="ref-for-control-message-queue①⑤">control message queue</a> to update the internal selected track
 index with <var>selectedIndex</var>.</p>
      </ol>
      <p><a data-link-type="dfn" href="#running-a-control-message" id="ref-for-running-a-control-message①⑥">Running a control message</a> to update the internal selected track index
@@ -5033,7 +5094,6 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
    <li><a href="#imagetracklist">ImageTrackList</a><span>, in §10.6</span>
    <li><a href="#videoframe-initialize-frame-from-other-frame">Initialize Frame From Other Frame</a><span>, in §9.4.5</span>
    <li><a href="#videoframe-initialize-frame-with-resource-and-size">Initialize Frame With Resource and Size</a><span>, in §9.4.5</span>
-   <li><a href="#injected-state">injected state</a><span>, in §2.2</span>
    <li><a href="#interleaved">interleaved</a><span>, in §9.3.1</span>
    <li>
     [[internal data]]
@@ -5115,6 +5175,14 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
    <li><a href="#output-videoframes">Output VideoFrames</a><span>, in §4.5</span>
    <li><a href="#dom-plane-parent-frame-slot">[[parent frame]]</a><span>, in §9.5.1</span>
    <li><a href="#dom-imagedecoder-pending-decode-promises-slot">[[pending decode promises]]</a><span>, in §10.2.1</span>
+   <li>
+    [[pending flush promises]]
+    <ul>
+     <li><a href="#dom-audiodecoder-pending-flush-promises-slot">attribute for AudioDecoder</a><span>, in §3.1</span>
+     <li><a href="#dom-audioencoder-pending-flush-promises-slot">attribute for AudioEncoder</a><span>, in §5.1</span>
+     <li><a href="#dom-videodecoder-pending-flush-promises-slot">attribute for VideoDecoder</a><span>, in §4.1</span>
+     <li><a href="#dom-videoencoder-pending-flush-promises-slot">attribute for VideoEncoder</a><span>, in §6.1</span>
+    </ul>
    <li><a href="#enumdef-pixelformat">PixelFormat</a><span>, in §9.6</span>
    <li><a href="#planar">planar</a><span>, in §9.3.1</span>
    <li><a href="#plane">Plane</a><span>, in §9.5</span>
@@ -5150,7 +5218,6 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
    <li><a href="#reset-audiodecoder">Reset AudioDecoder</a><span>, in §3.5</span>
    <li><a href="#reset-audioencoder">Reset AudioEncoder</a><span>, in §5.5</span>
    <li><a href="#imagedecoder-reset-imagedecoder">Reset ImageDecoder</a><span>, in §10.2.5</span>
-   <li><a href="#reset-the-control-message-queue">Reset the control message queue</a><span>, in §2.2</span>
    <li><a href="#reset-videodecoder">Reset VideoDecoder</a><span>, in §4.5</span>
    <li><a href="#reset-videoencoder">Reset VideoEncoder</a><span>, in §6.5</span>
    <li><a href="#imagedecoder-resolve-decode">Resolve Decode</a><span>, in §10.2.5</span>
@@ -5697,7 +5764,15 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
   <aside class="dfn-panel" data-for="term-for-aborterror">
    <a href="https://heycam.github.io/webidl/#aborterror">https://heycam.github.io/webidl/#aborterror</a><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-aborterror">10.2.4. Methods</a> <a href="#ref-for-aborterror①">(2)</a>
+    <li><a href="#ref-for-aborterror">3.4. Methods</a> <a href="#ref-for-aborterror①">(2)</a>
+    <li><a href="#ref-for-aborterror②">3.5. Algorithms</a>
+    <li><a href="#ref-for-aborterror③">4.4. Methods</a> <a href="#ref-for-aborterror④">(2)</a>
+    <li><a href="#ref-for-aborterror⑤">4.5. Algorithms</a>
+    <li><a href="#ref-for-aborterror⑥">5.4. Methods</a> <a href="#ref-for-aborterror⑦">(2)</a>
+    <li><a href="#ref-for-aborterror⑧">5.5. Algorithms</a>
+    <li><a href="#ref-for-aborterror⑨">6.4. Methods</a> <a href="#ref-for-aborterror①⓪">(2)</a>
+    <li><a href="#ref-for-aborterror①①">6.5. Algorithms</a>
+    <li><a href="#ref-for-aborterror①②">10.2.4. Methods</a> <a href="#ref-for-aborterror①③">(2)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-AllowShared">
@@ -5730,17 +5805,21 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
   <aside class="dfn-panel" data-for="term-for-idl-DOMException">
    <a href="https://heycam.github.io/webidl/#idl-DOMException">https://heycam.github.io/webidl/#idl-DOMException</a><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-idl-DOMException">3.4. Methods</a>
-    <li><a href="#ref-for-idl-DOMException①">4.4. Methods</a>
-    <li><a href="#ref-for-idl-DOMException②">5.4. Methods</a>
-    <li><a href="#ref-for-idl-DOMException③">6.4. Methods</a>
-    <li><a href="#ref-for-idl-DOMException④">7.13. WebCodecsErrorCallback</a>
-    <li><a href="#ref-for-idl-DOMException⑤">9.2.4. Methods</a> <a href="#ref-for-idl-DOMException⑥">(2)</a>
-    <li><a href="#ref-for-idl-DOMException⑦">9.4.2. Constructors</a> <a href="#ref-for-idl-DOMException⑧">(2)</a> <a href="#ref-for-idl-DOMException⑨">(3)</a> <a href="#ref-for-idl-DOMException①⓪">(4)</a>
-    <li><a href="#ref-for-idl-DOMException①①">9.4.4. Methods</a>
-    <li><a href="#ref-for-idl-DOMException①②">10.2.2. Constructor</a>
-    <li><a href="#ref-for-idl-DOMException①③">10.2.4. Methods</a> <a href="#ref-for-idl-DOMException①④">(2)</a> <a href="#ref-for-idl-DOMException①⑤">(3)</a> <a href="#ref-for-idl-DOMException①⑥">(4)</a>
-    <li><a href="#ref-for-idl-DOMException①⑦">10.2.5. Algorithms</a> <a href="#ref-for-idl-DOMException①⑧">(2)</a> <a href="#ref-for-idl-DOMException①⑨">(3)</a> <a href="#ref-for-idl-DOMException②⓪">(4)</a>
+    <li><a href="#ref-for-idl-DOMException">3.4. Methods</a> <a href="#ref-for-idl-DOMException①">(2)</a> <a href="#ref-for-idl-DOMException②">(3)</a>
+    <li><a href="#ref-for-idl-DOMException③">3.5. Algorithms</a>
+    <li><a href="#ref-for-idl-DOMException④">4.4. Methods</a> <a href="#ref-for-idl-DOMException⑤">(2)</a> <a href="#ref-for-idl-DOMException⑥">(3)</a>
+    <li><a href="#ref-for-idl-DOMException⑦">4.5. Algorithms</a>
+    <li><a href="#ref-for-idl-DOMException⑧">5.4. Methods</a> <a href="#ref-for-idl-DOMException⑨">(2)</a> <a href="#ref-for-idl-DOMException①⓪">(3)</a>
+    <li><a href="#ref-for-idl-DOMException①①">5.5. Algorithms</a>
+    <li><a href="#ref-for-idl-DOMException①②">6.4. Methods</a> <a href="#ref-for-idl-DOMException①③">(2)</a> <a href="#ref-for-idl-DOMException①④">(3)</a>
+    <li><a href="#ref-for-idl-DOMException①⑤">6.5. Algorithms</a>
+    <li><a href="#ref-for-idl-DOMException①⑥">7.13. WebCodecsErrorCallback</a>
+    <li><a href="#ref-for-idl-DOMException①⑦">9.2.4. Methods</a> <a href="#ref-for-idl-DOMException①⑧">(2)</a>
+    <li><a href="#ref-for-idl-DOMException①⑨">9.4.2. Constructors</a> <a href="#ref-for-idl-DOMException②⓪">(2)</a> <a href="#ref-for-idl-DOMException②①">(3)</a> <a href="#ref-for-idl-DOMException②②">(4)</a>
+    <li><a href="#ref-for-idl-DOMException②③">9.4.4. Methods</a>
+    <li><a href="#ref-for-idl-DOMException②④">10.2.2. Constructor</a>
+    <li><a href="#ref-for-idl-DOMException②⑤">10.2.4. Methods</a> <a href="#ref-for-idl-DOMException②⑥">(2)</a> <a href="#ref-for-idl-DOMException②⑦">(3)</a> <a href="#ref-for-idl-DOMException②⑧">(4)</a>
+    <li><a href="#ref-for-idl-DOMException②⑨">10.2.5. Algorithms</a> <a href="#ref-for-idl-DOMException③⓪">(2)</a> <a href="#ref-for-idl-DOMException③①">(3)</a> <a href="#ref-for-idl-DOMException③②">(4)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-idl-DOMString">
@@ -6769,22 +6848,30 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
   <aside class="dfn-panel" data-for="control-message-queue">
    <b><a href="#control-message-queue">#control-message-queue</a></b><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-control-message-queue">2.2. Control Thread and Codec Thread</a> <a href="#ref-for-control-message-queue①">(2)</a> <a href="#ref-for-control-message-queue②">(3)</a> <a href="#ref-for-control-message-queue③">(4)</a>
-    <li><a href="#ref-for-control-message-queue④">3.4. Methods</a> <a href="#ref-for-control-message-queue⑤">(2)</a>
+    <li><a href="#ref-for-control-message-queue">2.2. Control Thread and Codec Thread</a> <a href="#ref-for-control-message-queue①">(2)</a> <a href="#ref-for-control-message-queue②">(3)</a>
+    <li><a href="#ref-for-control-message-queue③">3.4. Methods</a> <a href="#ref-for-control-message-queue④">(2)</a>
+    <li><a href="#ref-for-control-message-queue⑤">3.5. Algorithms</a>
     <li><a href="#ref-for-control-message-queue⑥">4.4. Methods</a> <a href="#ref-for-control-message-queue⑦">(2)</a>
-    <li><a href="#ref-for-control-message-queue⑧">5.4. Methods</a> <a href="#ref-for-control-message-queue⑨">(2)</a>
-    <li><a href="#ref-for-control-message-queue①⓪">6.4. Methods</a> <a href="#ref-for-control-message-queue①①">(2)</a>
-    <li><a href="#ref-for-control-message-queue①②">10.7.2. Attributes</a>
+    <li><a href="#ref-for-control-message-queue⑧">4.5. Algorithms</a>
+    <li><a href="#ref-for-control-message-queue⑨">5.4. Methods</a> <a href="#ref-for-control-message-queue①⓪">(2)</a>
+    <li><a href="#ref-for-control-message-queue①①">5.5. Algorithms</a>
+    <li><a href="#ref-for-control-message-queue①②">6.4. Methods</a> <a href="#ref-for-control-message-queue①③">(2)</a>
+    <li><a href="#ref-for-control-message-queue①④">6.5. Algorithms</a>
+    <li><a href="#ref-for-control-message-queue①⑤">10.7.2. Attributes</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="control-messages">
    <b><a href="#control-messages">#control-messages</a></b><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-control-messages">2.2. Control Thread and Codec Thread</a> <a href="#ref-for-control-messages①">(2)</a> <a href="#ref-for-control-messages②">(3)</a> <a href="#ref-for-control-messages③">(4)</a>
-    <li><a href="#ref-for-control-messages④">3.4. Methods</a> <a href="#ref-for-control-messages⑤">(2)</a>
+    <li><a href="#ref-for-control-messages">2.2. Control Thread and Codec Thread</a> <a href="#ref-for-control-messages①">(2)</a> <a href="#ref-for-control-messages②">(3)</a>
+    <li><a href="#ref-for-control-messages③">3.4. Methods</a> <a href="#ref-for-control-messages④">(2)</a>
+    <li><a href="#ref-for-control-messages⑤">3.5. Algorithms</a>
     <li><a href="#ref-for-control-messages⑥">4.4. Methods</a> <a href="#ref-for-control-messages⑦">(2)</a>
-    <li><a href="#ref-for-control-messages⑧">5.4. Methods</a> <a href="#ref-for-control-messages⑨">(2)</a>
-    <li><a href="#ref-for-control-messages①⓪">6.4. Methods</a> <a href="#ref-for-control-messages①①">(2)</a>
+    <li><a href="#ref-for-control-messages⑧">4.5. Algorithms</a>
+    <li><a href="#ref-for-control-messages⑨">5.4. Methods</a> <a href="#ref-for-control-messages①⓪">(2)</a>
+    <li><a href="#ref-for-control-messages①①">5.5. Algorithms</a>
+    <li><a href="#ref-for-control-messages①②">6.4. Methods</a> <a href="#ref-for-control-messages①③">(2)</a>
+    <li><a href="#ref-for-control-messages①④">6.5. Algorithms</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="enqueues-a-control-message">
@@ -6810,21 +6897,6 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
     <li><a href="#ref-for-running-a-control-message①③">10.2.2. Constructor</a> <a href="#ref-for-running-a-control-message①④">(2)</a>
     <li><a href="#ref-for-running-a-control-message①⑤">10.2.4. Methods</a>
     <li><a href="#ref-for-running-a-control-message①⑥">10.7.2. Attributes</a>
-   </ul>
-  </aside>
-  <aside class="dfn-panel" data-for="injected-state">
-   <b><a href="#injected-state">#injected-state</a></b><b>Referenced in:</b>
-   <ul>
-    <li><a href="#ref-for-injected-state">2.2. Control Thread and Codec Thread</a>
-   </ul>
-  </aside>
-  <aside class="dfn-panel" data-for="reset-the-control-message-queue">
-   <b><a href="#reset-the-control-message-queue">#reset-the-control-message-queue</a></b><b>Referenced in:</b>
-   <ul>
-    <li><a href="#ref-for-reset-the-control-message-queue">3.5. Algorithms</a>
-    <li><a href="#ref-for-reset-the-control-message-queue①">4.5. Algorithms</a>
-    <li><a href="#ref-for-reset-the-control-message-queue②">5.5. Algorithms</a>
-    <li><a href="#ref-for-reset-the-control-message-queue③">6.5. Algorithms</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="codec-processing-loop">
@@ -6872,6 +6944,8 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
    <ul>
     <li><a href="#ref-for-dom-audiodecoder-error-callback-slot">3.2. Constructors</a>
     <li><a href="#ref-for-dom-audiodecoder-error-callback-slot①">3.5. Algorithms</a>
+    <li><a href="#ref-for-dom-audiodecoder-error-callback-slot②">5.5. Algorithms</a>
+    <li><a href="#ref-for-dom-audiodecoder-error-callback-slot③">6.5. Algorithms</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dom-audiodecoder-key-chunk-required-slot">
@@ -6896,6 +6970,13 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
     <li><a href="#ref-for-dom-audiodecoder-decodequeuesize-slot">3.3. Attributes</a>
     <li><a href="#ref-for-dom-audiodecoder-decodequeuesize-slot①">3.4. Methods</a> <a href="#ref-for-dom-audiodecoder-decodequeuesize-slot②">(2)</a>
     <li><a href="#ref-for-dom-audiodecoder-decodequeuesize-slot③">3.5. Algorithms</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="dom-audiodecoder-pending-flush-promises-slot">
+   <b><a href="#dom-audiodecoder-pending-flush-promises-slot">#dom-audiodecoder-pending-flush-promises-slot</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-dom-audiodecoder-pending-flush-promises-slot">3.4. Methods</a> <a href="#ref-for-dom-audiodecoder-pending-flush-promises-slot①">(2)</a>
+    <li><a href="#ref-for-dom-audiodecoder-pending-flush-promises-slot②">3.5. Algorithms</a> <a href="#ref-for-dom-audiodecoder-pending-flush-promises-slot③">(2)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dom-audiodecoder-audiodecoder">
@@ -6933,6 +7014,7 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
    <b><a href="#dom-audiodecoder-flush">#dom-audiodecoder-flush</a></b><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-dom-audiodecoder-flush">3. AudioDecoder Interface</a>
+    <li><a href="#ref-for-dom-audiodecoder-flush①">3.1. Internal Slots</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dom-audiodecoder-reset">
@@ -7045,6 +7127,13 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
     <li><a href="#ref-for-dom-videodecoder-decodequeuesize-slot③">4.5. Algorithms</a>
    </ul>
   </aside>
+  <aside class="dfn-panel" data-for="dom-videodecoder-pending-flush-promises-slot">
+   <b><a href="#dom-videodecoder-pending-flush-promises-slot">#dom-videodecoder-pending-flush-promises-slot</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-dom-videodecoder-pending-flush-promises-slot">4.4. Methods</a> <a href="#ref-for-dom-videodecoder-pending-flush-promises-slot①">(2)</a>
+    <li><a href="#ref-for-dom-videodecoder-pending-flush-promises-slot②">4.5. Algorithms</a> <a href="#ref-for-dom-videodecoder-pending-flush-promises-slot③">(2)</a>
+   </ul>
+  </aside>
   <aside class="dfn-panel" data-for="dom-videodecoder-videodecoder">
    <b><a href="#dom-videodecoder-videodecoder">#dom-videodecoder-videodecoder</a></b><b>Referenced in:</b>
    <ul>
@@ -7081,6 +7170,7 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
    <b><a href="#dom-videodecoder-flush">#dom-videodecoder-flush</a></b><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-dom-videodecoder-flush">4. VideoDecoder Interface</a>
+    <li><a href="#ref-for-dom-videodecoder-flush①">4.1. Internal Slots</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dom-videodecoder-reset">
@@ -7158,7 +7248,6 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
    <b><a href="#dom-audioencoder-error-callback-slot">#dom-audioencoder-error-callback-slot</a></b><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-dom-audioencoder-error-callback-slot">5.2. Constructors</a>
-    <li><a href="#ref-for-dom-audioencoder-error-callback-slot①">5.5. Algorithms</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dom-audioencoder-active-encoder-config-slot">
@@ -7191,6 +7280,13 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
     <li><a href="#ref-for-dom-audioencoder-encodequeuesize-slot">5.3. Attributes</a>
     <li><a href="#ref-for-dom-audioencoder-encodequeuesize-slot①">5.4. Methods</a> <a href="#ref-for-dom-audioencoder-encodequeuesize-slot②">(2)</a>
     <li><a href="#ref-for-dom-audioencoder-encodequeuesize-slot③">5.5. Algorithms</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="dom-audioencoder-pending-flush-promises-slot">
+   <b><a href="#dom-audioencoder-pending-flush-promises-slot">#dom-audioencoder-pending-flush-promises-slot</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-dom-audioencoder-pending-flush-promises-slot">5.4. Methods</a> <a href="#ref-for-dom-audioencoder-pending-flush-promises-slot①">(2)</a>
+    <li><a href="#ref-for-dom-audioencoder-pending-flush-promises-slot②">5.5. Algorithms</a> <a href="#ref-for-dom-audioencoder-pending-flush-promises-slot③">(2)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dom-audioencoder-audioencoder">
@@ -7227,6 +7323,7 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
    <b><a href="#dom-audioencoder-flush">#dom-audioencoder-flush</a></b><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-dom-audioencoder-flush">5. AudioEncoder Interface</a>
+    <li><a href="#ref-for-dom-audioencoder-flush①">5.1. Internal Slots</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dom-audioencoder-reset">
@@ -7319,7 +7416,6 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
    <b><a href="#dom-videoencoder-error-callback-slot">#dom-videoencoder-error-callback-slot</a></b><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-dom-videoencoder-error-callback-slot">6.2. Constructors</a>
-    <li><a href="#ref-for-dom-videoencoder-error-callback-slot①">6.5. Algorithms</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dom-videoencoder-active-encoder-config-slot">
@@ -7350,6 +7446,13 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
     <li><a href="#ref-for-dom-videoencoder-encodequeuesize-slot">6.3. Attributes</a>
     <li><a href="#ref-for-dom-videoencoder-encodequeuesize-slot①">6.4. Methods</a> <a href="#ref-for-dom-videoencoder-encodequeuesize-slot②">(2)</a>
     <li><a href="#ref-for-dom-videoencoder-encodequeuesize-slot③">6.5. Algorithms</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="dom-videoencoder-pending-flush-promises-slot">
+   <b><a href="#dom-videoencoder-pending-flush-promises-slot">#dom-videoencoder-pending-flush-promises-slot</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-dom-videoencoder-pending-flush-promises-slot">6.4. Methods</a> <a href="#ref-for-dom-videoencoder-pending-flush-promises-slot①">(2)</a>
+    <li><a href="#ref-for-dom-videoencoder-pending-flush-promises-slot②">6.5. Algorithms</a> <a href="#ref-for-dom-videoencoder-pending-flush-promises-slot③">(2)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dom-videoencoder-videoencoder">
@@ -7386,6 +7489,7 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
    <b><a href="#dom-videoencoder-flush">#dom-videoencoder-flush</a></b><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-dom-videoencoder-flush">6. VideoEncoder Interface</a>
+    <li><a href="#ref-for-dom-videoencoder-flush①">6.1. Internal Slots</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dom-videoencoder-reset">
