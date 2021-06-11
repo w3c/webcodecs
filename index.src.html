@@ -2488,8 +2488,8 @@ dictionary VideoFramePlaneInit {
 
 dictionary PlaneInit {
   required BufferSource data;
-  [EnforceRange] required unsigned long rows;
-  [EnforceRange] required unsigned long offset;
+  [EnforceRange] required unsigned long stride;
+  [EnforceRange] unsigned long offset = 0;
 };
 </xmp>
 
@@ -2635,12 +2635,24 @@ dictionary PlaneInit {
             {{VideoFrame/[[resource reference]]}}.
     2. Assign {{VideoFramePlaneInit/format}} to {{VideoFrame/[[format]]}}.
     3. For each |planeInit| in |planes|:
-        1. Copy |planeInit|.{{PlaneInit/data}} to |resource|.
+        1. Let |rows| be the number of sample rows for the Plane coresponding
+            to |planeInit| as defined by {{VideoFrame/[[format]]}}.
+        2. Let |dataOffset| be `0`.
+        3. If {{PlaneInit/offset}} [=map/exists=], assign {{PlaneInit/offset}}
+            to |dataOffset|.
+        4. Let |row| be `0`.
+        5. While |row| is less than |rows|:
+            1. Copy bytes from {{PlaneInit/data}} to |resource|, starting with
+                the byte positioned at |dataOffset| and stopping after
+                {{PlaneInit/stride}} bytes have been copied.
 
-            NOTE: The user agent may use {{VideoFramePlaneInit/visibleRect}}
-                to copy only the visible rectangle. It may also reposition the
-                visible rectangle within |resource|. The final position will be
-                reflected by {{VideoFrame/visibleRect}}.
+                NOTE: The user agent may use {{VideoFramePlaneInit/visibleRect}}
+                    to copy only the visible rectangle. It may also reposition
+                    the visible rectangle within |resource|. The final position
+                    will be reflected by {{VideoFrame/visibleRect}}.
+
+            2. Increment |dataOffset| by {{PlaneInit/stride}}.
+            3. Increment |row| by `1`.
 
     4. Let |resourceCodedWidth| be the coded width of |resource|.
     5. Let |resourceCodedHeight| be the coded height of |resource|.
