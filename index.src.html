@@ -81,6 +81,10 @@ spec: infra; urlPrefix: https://infra.spec.whatwg.org/#
 
 spec: mediastream-recording; urlPrefix: https://www.w3.org/TR/mediastream-recording/#
     type: interface; text: MediaRecorder; url: mediarecorder
+    type: interface; text: BitrateMode; url: bitratemode
+    for: BitrateMode;
+        type: enum-value; text: constant; url: dom-bitratemode-constant
+        type: enum-value; text: variable; url: dom-bitratemode-variable
 
 spec: media-capabilities; urlPrefix: https://w3c.github.io/media-capabilities/#
     type: method; text: decodingInfo(); url: dom-mediacapabilities-decodinginfo
@@ -1684,6 +1688,7 @@ dictionary VideoEncoderConfig {
   [EnforceRange] unsigned long displayHeight;
   HardwareAcceleration hardwareAcceleration = "allow";
   DOMString scalabilityMode;
+  BitrateMode bitrateMode = "variable";
 };
 </xmp>
 
@@ -1761,6 +1766,15 @@ To check if a {{VideoEncoderConfig}} is a <dfn>valid VideoEncoderConfig</dfn>,
   <dt><dfn dict-member for=VideoEncoderConfig>scalabilityMode</dfn></dt>
   <dd>
     An encoding [=scalability mode identifier=] as defined by [[WebRTC-SVC]].
+  </dd>
+
+  <dt><dfn dict-member for=VideoEncoderConfig>bitrateMode</dfn></dt>
+  <dd>
+    Configures encoding to use a {{BitrateMode/constant}} or
+    {{BitrateMode/variable}} bitrate as defined by [[MEDIASTREAM-RECORDING]].
+
+    NOTE: The precise degree of bitrate fluctuation in either mode is
+        implementer defined.
   </dd>
 </dl>
 
