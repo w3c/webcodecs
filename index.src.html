@@ -2907,6 +2907,10 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
     to |options|. The format of the data is the same as this {{VideoFrame}}'s
     {{VideoFrame/format}}.
 
+    NOTE: Promises that are returned by several calls to
+        {{VideoFrame/copyTo()}} are not guaranteed to resolve in the order they
+        were returned.
+
     When invoked, run these steps:
     1. If {{VideoFrame/[[detached]]}} is `true`, return `0`.
     2. If {{VideoFrame/[[format]]}} is `""`, throw a {{NotSupportedError}}
@@ -3112,10 +3116,10 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
         3. Let |sampleHeight| be the vertical pixel size of each subsample
             for |plane|.
         4. If |sourceRect|.{{VideoFrameRect/left}} and
-            |sourceRect|.{{VideoFrameRect/width}} cannot be evenly divided by
+            |sourceRect|.{{VideoFrameRect/width}} are not both multiples of
             |sampleWidth|, throw a {{TypeError}}.
         5. If |sourceRect|.{{VideoFrameRect/top}} and
-            |sourceRect|.{{VideoFrameRect/height}} cannot be evenly divided by
+            |sourceRect|.{{VideoFrameRect/height}} are not both multiples of
             |sampleHeight|, throw a {{TypeError}}.
         6. Increment |planeIndex| by `1`
     6. Return |sourceRect|.
@@ -3141,22 +3145,24 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
         5. Let |sampleWidthBytes| be the product of multiplying |sampleWidth| by
             |sampleBytes|.
         6. Let |computedLayout| be a new [=computed plane layout=].
-        7. Assign quotient of dividing |parsedRect|.{{VideoFrameRect/top}} by
-            |sampleHeight| to |computedLayout|'s [=computed plane layout/sourceTop=].
-        8. Assign quotient of dividing |parsedRect|.{{VideoFrameRect/height}} by
-            |sampleHeight| to |computedLayout|'s [=computed plane layout/sourceHeight=].
-        9. Assign quotient of dividing |parsedRect|.{{VideoFrameRect/left}} by
-            |sampleWidthBytes| to |computedLayout|'s
-            [=computed plane layout/sourceLeftBytes=].
-        10. Assign quotient of dividing |parsedRect|.{{VideoFrameRect/width}}
-            |sampleWidthBytes| to |computedLayout|'s
-            [=computed plane layout/sourceWidthBytes=].
+        7. Set |computedLayout|'s [=computed plane layout/sourceTop=] to the
+            result of the integer division of
+            |parsedRect|.{{VideoFrameRect/top}} by |sampleHeight|.
+        8. Set |computedLayout|'s [=computed plane layout/sourceHeight=] to the
+            result of the integer division of
+            |parsedRect|.{{VideoFrameRect/height}} by |sampleHeight|
+        9. Set |computedLayout|'s [=computed plane layout/sourceLeftBytes=] to
+            the result of the integer division of
+            |parsedRect|.{{VideoFrameRect/left}} by |sampleWidthBytes|.
+        10. Set |computedLayout|'s [=computed plane layout/sourceWidthBytes=] to
+            the result of the integer division of
+            |parsedRect|.{{VideoFrameRect/width}} by |sampleWidthBytes|.
         11. If {{VideoFrameCopyToOptions/layout}} [=map/exists=]:
             1. Let |planeLayout| be the {{PlaneLayout}} in
                 {{VideoFrameCopyToOptions/layout}} at position |planeIndex|.
             2. If |planeLayout|.{{PlaneLayout/stride}} is less than
-                |computedLayout|'s [=computed plane layout/sourceWidthBytes=], return
-                a {{TypeError}}.
+                |computedLayout|'s [=computed plane layout/sourceWidthBytes=],
+                return a {{TypeError}}.
             3. Assign |planeLayout|.{{PlaneLayout/offset}} to |computedLayout|'s
                 [=computed plane layout/destinationOffset=].
             4. Assign |planeLayout|.{{PlaneLayout/stride}} to |computedLayout|'s
@@ -3234,8 +3240,8 @@ will enforce the following requirements:
 :: The {{VideoFrameRect}} describing the rectangle of pixels to copy from the
     {{VideoFrame}}. If unspecified, the {{VideoFrame/visibleRect}} will be used.
 
-    NOTE: The coded rectangle can be easily specified by passing
-        {{VideoFrame}}'s {{VideoFrame/codedRect}}.
+    NOTE: The coded rectangle can be specified by passing {{VideoFrame}}'s
+        {{VideoFrame/codedRect}}.
 
 : <dfn dict-member for=VideoFrameCopyToOptions>layout</dfn>
 :: The {{PlaneLayout}} for each plane in {{VideoFrame}}, affording the option
