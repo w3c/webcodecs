@@ -81,6 +81,10 @@ spec: infra; urlPrefix: https://infra.spec.whatwg.org/#
 
 spec: mediastream-recording; urlPrefix: https://www.w3.org/TR/mediastream-recording/#
     type: interface; text: MediaRecorder; url: mediarecorder
+    type: interface; text: BitrateMode; url: bitratemode
+    for: BitrateMode;
+        type: enum-value; text: constant; url: dom-bitratemode-constant
+        type: enum-value; text: variable; url: dom-bitratemode-variable
 
 spec: media-capabilities; urlPrefix: https://w3c.github.io/media-capabilities/#
     type: method; text: decodingInfo(); url: dom-mediacapabilities-decodinginfo
@@ -214,15 +218,7 @@ to schedule work.
 
 <dfn lt="running a control message|control message steps">Running a control
 message</dfn> means performing a sequence of steps specified by the method
-that enqueued the message. The steps of a control message may depend on
-<dfn>injected state</dfn>, supplied by the method that enqueued the message.
-
-<dfn lt="Reset the control message queue">Resetting the control message
-    queue</dfn> means performing these steps:
-1. For each [=control message=] in the [=control message queue=]:
-    1. If a control message's [=injected state=] includes a promise, reject
-        that promise.
-    2. Remove the message from the queue.
+that enqueued the message.
 
 The <dfn>codec processing loop</dfn> must run these steps:
 1. While true:
@@ -275,6 +271,8 @@ Internal Slots {#audiodecoder-internal-slots}
 : <dfn attribute for=AudioDecoder>\[[decodeQueueSize]]</dfn>
 :: The number of pending decode requests. This number will decrease as the
     underlying codec is ready to accept new input.
+: <dfn attribute for=AudioDecoder>[[pending flush promises]]</dfn>
+:: A list of unresolved promises returned by calls to {{AudioDecoder/flush()}}.
 
 Constructors {#audiodecoder-constructors}
 -----------------------------------------
@@ -381,7 +379,8 @@ Methods {#audiodecoder-methods}
     2. Set {{AudioDecoder/[[key chunk required]]}} to `true`.
     3. Let |promise| be a new Promise.
     4. [=Queue a control message=] to flush the codec with |promise|.
-    5. Return |promise|.
+    5. Append |promise| to {{AudioDecoder/[[pending flush promises]]}}.
+    6. Return |promise|.
 
     [=Running a control message=] to flush the codec means performing these steps
         with |promise|.
@@ -392,7 +391,9 @@ Methods {#audiodecoder-methods}
     3. If |decoded outputs| is not empty, queue a task on the [=control thread=]
         event loop to run the [=Output AudioData=] algorithm with
         |decoded outputs|.
-    4. Queue a task on the [=control thread=] event loop to resolve |promise|.
+    4. Queue a task on the [=control thread=] event loop to run these steps:
+        1. Remove |promise| from {{AudioDecoder/[[pending flush promises]]}}.
+        2. Resolve |promise|.
   </dd>
 
   <dt><dfn method for=AudioDecoder>reset()</dfn></dt>
@@ -401,7 +402,8 @@ Methods {#audiodecoder-methods}
     [=control messages=] in the [=control message queue=], and all pending
     callbacks.
 
-    When invoked, run the [=Reset AudioDecoder=] algorithm.
+    When invoked, run the [=Reset AudioDecoder=] algorithm with an
+    {{AbortError}} {{DOMException}}.
   </dd>
 
   <dt><dfn method for=AudioDecoder>close()</df></dt>
@@ -409,7 +411,8 @@ Methods {#audiodecoder-methods}
     Immediately aborts all pending work and releases [=system resources=].
     Close is final.
 
-    When invoked, run the [=Close AudioDecoder=] algorithm.
+    When invoked, run the [=Close AudioDecoder=] algorithm with an
+    {{AbortError}} {{DOMException}}.
   </dd>
 
   <dt><dfn method for=AudioDecoder>isConfigSupported(config)</dfn></dt>
@@ -463,25 +466,28 @@ Algorithms {#audiodecoder-algorithms}
                 {{AudioData/[[number of channels]]}} as determined by |output|.
         3. Invoke {{AudioDecoder/[[output callback]]}} with |data|.
   </dd>
-  <dt><dfn>Reset AudioDecoder</dfn></dt>
+  <dt><dfn>Reset AudioDecoder</dfn> (with |exception|)</dt>
   <dd>
     Run these steps:
     1. If {{AudioDecoder/[[state]]}} is `"closed"`, throw an {{InvalidStateError}}.
     2. Set {{AudioDecoder/[[state]]}} to `"unconfigured"`.
     3. Signal {{AudioDecoder/[[codec implementation]]}} to cease producing
         output for the previous configuration.
-    4. [=Reset the control message queue=].
+    4. Remove all [=control messages=] from the [=control message queue=].
     5. Set {{AudioDecoder/[[decodeQueueSize]]}} to zero.
+    6. For each |promise| in {{AudioDecoder/[[pending flush promises]]}}:
+        1. Reject |promise| with |exception|.
+        2. Remove |promise| from {{AudioDecoder/[[pending flush promises]]}}.
   </dd>
-  <dt><dfn>Close AudioDecoder</dfn> (with error)</dt>
+  <dt><dfn>Close AudioDecoder</dfn> (with |exception|)</dt>
   <dd>
     Run these steps:
-    1. Run the [=Reset AudioDecoder=] algorithm.
+    1. Run the [=Reset AudioDecoder=] algorithm with |exception|.
     2. Set {{AudioDecoder/[[state]]}} to `"closed"`.
     3. Clear {{AudioDecoder/[[codec implementation]]}} and release associated
         [=system resources=].
-    4. If |error| is set, queue a task on the [=control thread=] event loop to
-        invoke the {{AudioDecoder/[[error callback]]}} with |error|.
+    4. If |exception| is not an {{AbortError}} {{DOMException}}, queue a task on
+        the [=control thread=] event loop to invoke the {{AudioDecoder/[[error callback]]}} with |exception|.
   </dd>
 </dl>
 
@@ -529,6 +535,9 @@ Internal Slots {#videodecoder-internal-slots}
 :: The current {{CodecState}} of this {{VideoDecoder}}.
 : <dfn attribute for=VideoDecoder>\[[decodeQueueSize]]</dfn>
 :: The number of pending decode requests. This number will decrease as the underlying codec is ready to accept new input.
+: <dfn attribute for=VideoDecoder>[[pending flush promises]]</dfn>
+:: A list of unresolved promises returned by calls to {{VideoDecoder/flush()}}.
+
 
 Constructors {#videodecoder-constructors}
 -----------------------------------------
@@ -643,7 +652,8 @@ Methods {#videodecoder-methods}
     2. Set {{VideoDecoder/[[key chunk required]]}} to `true`.
     3. Let |promise| be a new Promise.
     4. [=Queue a control message=] to flush the codec with |promise|.
-    5. Return |promise|.
+    5. Append |promise| to {{VideoDecoder/[[pending flush promises]]}}.
+    6. Return |promise|.
 
     [=Running a control message=] to flush the codec means performing these steps
         with |promise|.
@@ -654,7 +664,9 @@ Methods {#videodecoder-methods}
     3. If |decoded outputs| is not empty, queue a task on the [=control thread=]
         event loop to run the [=Output VideoFrames=] algorithm with
         |decoded outputs|.
-    4. Queue a task on the [=control thread=] event loop to resolve |promise|.
+    4. Queue a task on the [=control thread=] event loop to run these steps:
+        1. Remove |promise| from {{VideoDecoder/[[pending flush promises]]}}.
+        2. Resolve |promise|.
   </dd>
 
   <dt><dfn method for=VideoDecoder>reset()</dfn></dt>
@@ -663,7 +675,8 @@ Methods {#videodecoder-methods}
     [=control messages=] in the [=control message queue=], and all pending
     callbacks.
 
-    When invoked, run the [=Reset VideoDecoder=] algorithm.
+    When invoked, run the [=Reset VideoDecoder=] algorithm with an
+    {{AbortError}} {{DOMException}}.
   </dd>
 
   <dt><dfn method for=VideoDecoder>close()</df></dt>
@@ -671,7 +684,8 @@ Methods {#videodecoder-methods}
     Immediately aborts all pending work and releases [=system resources=].
     Close is final.
 
-    When invoked, run the [=Close VideoDecoder=] algorithm.
+    When invoked, run the [=Close VideoDecoder=] algorithm with an
+    {{AbortError}} {{DOMException}}.
   </dd>
 
   <dt><dfn method for=VideoDecoder>isConfigSupported(config)</dfn></dt>
@@ -723,25 +737,29 @@ Algorithms {#videodecoder-algorithms}
             and |displayAspectHeight|.
         5. Invoke {{VideoDecoder/[[output callback]]}} with |frame|.
   </dd>
-  <dt><dfn>Reset VideoDecoder</dfn></dt>
+  <dt><dfn>Reset VideoDecoder</dfn> (with |exception|)</dt>
   <dd>
     Run these steps:
     1. If {{VideoDecoder/state}} is `"closed"`, throw an {{InvalidStateError}}.
     2. Set {{VideoDecoder/state}} to `"unconfigured"`.
     3. Signal {{VideoDecoder/[[codec implementation]]}} to cease producing
         output for the previous configuration.
-    4. [=Reset the control message queue=].
+    4. Remove all [=control messages=] from the [=control message queue=].
     5. Set {{VideoDecoder/[[decodeQueueSize]]}} to zero.
+    6. For each |promise| in {{VideoDecoder/[[pending flush promises]]}}:
+        1. Reject |promise| with |exception|.
+        2. Remove |promise| from {{VideoDecoder/[[pending flush promises]]}}.
   </dd>
-  <dt><dfn>Close VideoDecoder</dfn> (with |error|)</dt>
+  <dt><dfn>Close VideoDecoder</dfn> (with |exception|)</dt>
   <dd>
     Run these steps:
-    1. Run the [=Reset VideoDecoder=] algorithm.
+    1. Run the [=Reset VideoDecoder=] algorithm with |exception|.
     2. Set {{VideoDecoder/state}} to `"closed"`.
     3. Clear {{VideoDecoder/[[codec implementation]]}} and release associated
         [=system resources=].
-    4. If |error| is set, queue a task on the [=control thread=] event loop to
-        invoke the {{VideoDecoder/[[error callback]]}} with |error|.
+    4. If |exception| is not an {{AbortError}} {{DOMException}}, queue a task on
+        the [=control thread=] event loop to invoke the
+        {{VideoDecoder/[[error callback]]}} with |exception|.
   </dd>
 </dl>
 
@@ -800,6 +818,10 @@ Internal Slots {#audioencoder-internal-slots}
 <dd>
   The number of pending encode requests. This number will decrease as the
   underlying codec is ready to accept new input.
+</dd>
+<dt><dfn attribute for=AudioEncoder>[[pending flush promises]]</dfn></dt>
+<dd>
+  A list of unresolved promises returned by calls to {{AudioEncoder/flush()}}.
 </dd>
 </dl>
 
@@ -901,7 +923,8 @@ Methods {#audioencoder-methods}
         [=a promise rejected with=] {{InvalidStateError}} {{DOMException}}.
     2. Let |promise| be a new Promise.
     3. [=Queue a control message=] to flush the codec with |promise|.
-    4. Return |promise|.
+    4. Append |promise| to {{AudioEncoder/[[pending flush promises]]}}.
+    5. Return |promise|.
 
     [=Running a control message=] to flush the codec means performing these steps
         with |promise|.
@@ -909,10 +932,12 @@ Methods {#audioencoder-methods}
         pending outputs=].
     2. Let |encoded outputs| be a [=list=] of encoded audio data outputs
         emitted by {{AudioEncoder/[[codec implementation]]}}.
-    5. If |encoded outputs| is not empty, queue a task on the [=control thread=]
+    3. If |encoded outputs| is not empty, queue a task on the [=control thread=]
         event loop to run the [=Output EncodedAudioChunks=] algorithm with
         |encoded outputs|.
-    3. Queue a task on the [=control thread=] event loop to resolve |promise|.
+    4. Queue a task on the [=control thread=] event loop to run these steps:
+        1. Remove |promise| from {{AudioEncoder/[[pending flush promises]]}}.
+        2. Resolve |promise|.
   </dd>
 
   <dt><dfn method for=AudioEncoder>reset()</dfn></dt>
@@ -921,7 +946,8 @@ Methods {#audioencoder-methods}
     [=control messages=] in the [=control message queue=], and all pending
     callbacks.
 
-    When invoked, run the [=Reset AudioEncoder=] algorithm.
+    When invoked, run the [=Reset AudioEncoder=] algorithm with an
+    {{AbortError}} {{DOMException}}.
   </dd>
 
   <dt><dfn method for=AudioEncoder>close()</df></dt>
@@ -929,7 +955,8 @@ Methods {#audioencoder-methods}
     Immediately aborts all pending work and releases [=system resources=].
     Close is final.
 
-    When invoked, run the [=Close AudioEncoder=] algorithm.
+    When invoked, run the [=Close AudioEncoder=] algorithm with an
+    {{AbortError}} {{DOMException}}.
   </dd>
 
   <dt><dfn method for=AudioEncoder>isConfigSupported(config)</dfn></dt>
@@ -1010,7 +1037,7 @@ Algorithms {#audioencoder-algorithms}
         7. Invoke {{AudioEncoder/[[output callback]]}} with |chunk| and
             |chunkMetadata|.
   </dd>
-  <dt><dfn>Reset AudioEncoder</dfn></dt>
+  <dt><dfn>Reset AudioEncoder</dfn> (with |exception|)</dt>
   <dd>
     Run these steps:
     1. If {{AudioEncoder/[[state]]}} is `"closed"`, throw an {{InvalidStateError}}.
@@ -1019,18 +1046,22 @@ Algorithms {#audioencoder-algorithms}
     4. Set {{AudioEncoder/[[active output config]]}} to `null`.
     5. Signal {{AudioEncoder/[[codec implementation]]}} to cease producing
         output for the previous configuration.
-    6. [=Reset the control message queue=].
+    6. Remove all [=control messages=] from the [=control message queue=].
     7. Set {{AudioEncoder/[[encodeQueueSize]]}} to zero.
+    8. For each |promise| in {{AudioEncoder/[[pending flush promises]]}}:
+        1. Reject |promise| with |exception|.
+        2. Remove |promise| from {{AudioEncoder/[[pending flush promises]]}}.
   </dd>
-  <dt><dfn>Close AudioEncoder</dfn> (with |error|)</dt>
+  <dt><dfn>Close AudioEncoder</dfn> (with |exception|)</dt>
   <dd>
     Run these steps:
-    1. Run the [=Reset AudioEncoder=] algorithm.
+    1. Run the [=Reset AudioEncoder=] algorithm with |exception|.
     2. Set {{AudioEncoder/[[state]]}} to `"closed"`.
     3. Clear {{AudioEncoder/[[codec implementation]]}} and release associated
         [=system resources=].
-    4. If |error| is set, queue a task on the [=control thread=] event loop
-        invoke the {{AudioEncoder/[[error callback]]}} with |error|.
+    4. If |exception| is not an {{AbortError}} {{DOMException}}, queue a task on
+        the [=control thread=] event loop to invoke the
+        {{AudioDecoder/[[error callback]]}} with |exception|.
   </dd>
 </dl>
 
@@ -1105,6 +1136,10 @@ Internal Slots {#videoencoder-internal-slots}
 <dd>
   The number of pending encode requests. This number will decrease as the
   underlying codec is ready to accept new input.
+</dd>
+<dt><dfn attribute for=VideoEncoder>[[pending flush promises]]</dfn></dt>
+<dd>
+  A list of unresolved promises returned by calls to {{VideoEncoder/flush()}}.
 </dd>
 </dl>
 
@@ -1205,7 +1240,8 @@ Methods {#videoencoder-methods}
         [=a promise rejected with=] {{InvalidStateError}} {{DOMException}}.
     2. Let |promise| be a new Promise.
     3. [=Queue a control message=] to flush the codec with |promise|.
-    4. Return |promise|.
+    4. Append |promise| to {{VideoEncoder/[[pending flush promises]]}}.
+    5. Return |promise|.
 
     [=Running a control message=] to flush the codec means performing these steps
         with |promise|.
@@ -1213,10 +1249,12 @@ Methods {#videoencoder-methods}
         pending outputs=].
     2. Let |encoded outputs| be a [=list=] of encoded video data outputs
         emitted by {{VideoEncoder/[[codec implementation]]}}.
-    5. If |encoded outputs| is not empty, queue a task on the [=control thread=]
+    3. If |encoded outputs| is not empty, queue a task on the [=control thread=]
         event loop to run the [=Output EncodedVideoChunks=] algorithm with
         |encoded outputs|.
-    3. Queue a task on the [=control thread=] event loop to resolve |promise|.
+    4. Queue a task on the [=control thread=] event loop to run these steps:
+        1. Remove |promise| from {{VideoEncoder/[[pending flush promises]]}}.
+        2. Resolve |promise|.
   </dd>
 
   <dt><dfn method for=VideoEncoder>reset()</dfn></dt>
@@ -1225,7 +1263,8 @@ Methods {#videoencoder-methods}
     [=control messages=] in the [=control message queue=], and all pending
     callbacks.
 
-    When invoked, run the [=Reset VideoEncoder=] algorithm.
+    When invoked, run the [=Reset VideoEncoder=] algorithm with an
+    {{AbortError}} {{DOMException}}.
   </dd>
 
   <dt><dfn method for=VideoEncoder>close()</df></dt>
@@ -1233,7 +1272,8 @@ Methods {#videoencoder-methods}
     Immediately aborts all pending work and releases [=system resources=].
     Close is final.
 
-    When invoked, run the [=Close VideoEncoder=] algorithm.
+    When invoked, run the [=Close VideoEncoder=] algorithm with an
+    {{AbortError}} {{DOMException}}.
   </dd>
 
   <dt><dfn method for=VideoEncoder>isConfigSupported(config)</dfn></dt>
@@ -1325,7 +1365,7 @@ Algorithms {#videoencoder-algorithms}
         8. Invoke {{VideoEncoder/[[output callback]]}} with |chunk| and
             |chunkMetadata|.
   </dd>
-  <dt><dfn>Reset VideoEncoder</dfn></dt>
+  <dt><dfn>Reset VideoEncoder</dfn> (with |exception|)</dt>
   <dd>
     Run these steps:
     1. If {{VideoEncoder/[[state]]}} is `"closed"`, throw an {{InvalidStateError}}.
@@ -1334,18 +1374,21 @@ Algorithms {#videoencoder-algorithms}
     4. Set {{VideoEncoder/[[active output config]]}} to `null`.
     5. Signal {{VideoEncoder/[[codec implementation]]}} to cease producing
         output for the previous configuration.
-    6. [=Reset the control message queue=].
+    6. Remove all [=control messages=] from the [=control message queue=].
     7. Set {{VideoEncoder/[[encodeQueueSize]]}} to zero.
+    8. For each |promise| in {{VideoEncoder/[[pending flush promises]]}}:
+        1. Reject |promise| with |exception|.
+        2. Remove |promise| from {{VideoEncoder/[[pending flush promises]]}}.
   </dd>
-  <dt><dfn>Close VideoEncoder</dfn> (with |error|)</dt>
+  <dt><dfn>Close VideoEncoder</dfn> (with |exception|)</dt>
   <dd>
     Run these steps:
-    1. Run the [=Reset VideoEncoder=] algorithm.
+    1. Run the [=Reset VideoEncoder=] algorithm with |exception|.
     2. Set {{VideoEncoder/[[state]]}} to `"closed"`.
     3. Clear {{VideoEncoder/[[codec implementation]]}} and release associated
         [=system resources=].
-    4. If |error| is set, queue a task on the [=control thread=] event loop
-        invoke the {{VideoEncoder/[[error callback]]}} with |error|.
+    4. If |exception| is not an {{AbortError}} {{DOMException}}, queue a task on
+        the [=control thread=] event loop to invoke the {{AudioDecoder/[[error callback]]}} with |exception|.
   </dd>
 </dl>
 
@@ -1686,6 +1729,7 @@ dictionary VideoEncoderConfig {
   [EnforceRange] unsigned long displayHeight;
   HardwareAcceleration hardwareAcceleration = "allow";
   DOMString scalabilityMode;
+  BitrateMode bitrateMode = "variable";
 };
 </xmp>
 
@@ -1763,6 +1807,15 @@ To check if a {{VideoEncoderConfig}} is a <dfn>valid VideoEncoderConfig</dfn>,
   <dt><dfn dict-member for=VideoEncoderConfig>scalabilityMode</dfn></dt>
   <dd>
     An encoding [=scalability mode identifier=] as defined by [[WebRTC-SVC]].
+  </dd>
+
+  <dt><dfn dict-member for=VideoEncoderConfig>bitrateMode</dfn></dt>
+  <dd>
+    Configures encoding to use a {{BitrateMode/constant}} or
+    {{BitrateMode/variable}} bitrate as defined by [[MEDIASTREAM-RECORDING]].
+
+    NOTE: The precise degree of bitrate fluctuation in either mode is
+        implementation defined.
   </dd>
 </dl>
 
@@ -3477,14 +3530,14 @@ interface ImageDecoder {
 :: Immediately aborts all pending work.
 
     When invoked, run the [=ImageDecoder/Reset ImageDecoder=] algorithm with
-    and {{AbortError}} {{DOMException}}.
+    an {{AbortError}} {{DOMException}}.
 
 : <dfn method for=ImageDecoder>close()</dfn>
 :: Immediately aborts all pending work and releases system resources. Close is
     final.
 
     When invoked, run the [=ImageDecoder/Close ImageDecoder=] algorithm with
-    and {{AbortError}} {{DOMException}}.
+    an {{AbortError}} {{DOMException}}.
 
 : <dfn method for=ImageDecoder>isTypeSupported(type)</dfn>
 :: Returns a promise indicating whether the provided config is supported by the
