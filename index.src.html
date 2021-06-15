@@ -2107,13 +2107,15 @@ interface AudioData {
 
 dictionary AudioDataInit {
   required AudioSampleFormat format;
-  [EnforceRange] required float sampleRate;
+  [EnforceRange] required unsigned long sampleRate;
   [EnforceRange] required unsigned long numberOfFrames;
   [EnforceRange] required unsigned long numberOfChannels;
   [EnforceRange] required long long timestamp;  // microseconds
   required BufferSource data;
 };
 </xmp>
+
+TODO: Call out planar format layout
 
 ### Internal Slots ###{#audiodata-internal-slots}
 : <dfn attribute for=AudioData>\[[detached]]</dfn>
@@ -2319,8 +2321,8 @@ dictionary AudioDataInit {
 <xmp class='idl'>
 dictionary AudioDataCopyToOptions {
   [EnforceRange] required unsigned long planeIndex;
-  unsigned long frameOffset = 0;
-  unsigned long frameCount;
+  [EnforceRange] unsigned long frameOffset = 0;
+  [EnforceRange] unsigned long frameCount;
 };
 </xmp>
 
