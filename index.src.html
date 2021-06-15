@@ -81,6 +81,10 @@ spec: infra; urlPrefix: https://infra.spec.whatwg.org/#
 
 spec: mediastream-recording; urlPrefix: https://www.w3.org/TR/mediastream-recording/#
     type: interface; text: MediaRecorder; url: mediarecorder
+    type: interface; text: BitrateMode; url: bitratemode
+    for: BitrateMode;
+        type: enum-value; text: constant; url: dom-bitratemode-constant
+        type: enum-value; text: variable; url: dom-bitratemode-variable
 
 spec: media-capabilities; urlPrefix: https://w3c.github.io/media-capabilities/#
     type: method; text: decodingInfo(); url: dom-mediacapabilities-decodinginfo
@@ -214,15 +218,7 @@ to schedule work.
 
 <dfn lt="running a control message|control message steps">Running a control
 message</dfn> means performing a sequence of steps specified by the method
-that enqueued the message. The steps of a control message may depend on
-<dfn>injected state</dfn>, supplied by the method that enqueued the message.
-
-<dfn lt="Reset the control message queue">Resetting the control message
-    queue</dfn> means performing these steps:
-1. For each [=control message=] in the [=control message queue=]:
-    1. If a control message's [=injected state=] includes a promise, reject
-        that promise.
-    2. Remove the message from the queue.
+that enqueued the message.
 
 The <dfn>codec processing loop</dfn> must run these steps:
 1. While true:
@@ -275,6 +271,8 @@ Internal Slots {#audiodecoder-internal-slots}
 : <dfn attribute for=AudioDecoder>\[[decodeQueueSize]]</dfn>
 :: The number of pending decode requests. This number will decrease as the
     underlying codec is ready to accept new input.
+: <dfn attribute for=AudioDecoder>[[pending flush promises]]</dfn>
+:: A list of unresolved promises returned by calls to {{AudioDecoder/flush()}}.
 
 Constructors {#audiodecoder-constructors}
 -----------------------------------------
@@ -381,7 +379,8 @@ Methods {#audiodecoder-methods}
     2. Set {{AudioDecoder/[[key chunk required]]}} to `true`.
     3. Let |promise| be a new Promise.
     4. [=Queue a control message=] to flush the codec with |promise|.
-    5. Return |promise|.
+    5. Append |promise| to {{AudioDecoder/[[pending flush promises]]}}.
+    6. Return |promise|.
 
     [=Running a control message=] to flush the codec means performing these steps
         with |promise|.
@@ -392,7 +391,9 @@ Methods {#audiodecoder-methods}
     3. If |decoded outputs| is not empty, queue a task on the [=control thread=]
         event loop to run the [=Output AudioData=] algorithm with
         |decoded outputs|.
-    4. Queue a task on the [=control thread=] event loop to resolve |promise|.
+    4. Queue a task on the [=control thread=] event loop to run these steps:
+        1. Remove |promise| from {{AudioDecoder/[[pending flush promises]]}}.
+        2. Resolve |promise|.
   </dd>
 
   <dt><dfn method for=AudioDecoder>reset()</dfn></dt>
@@ -401,7 +402,8 @@ Methods {#audiodecoder-methods}
     [=control messages=] in the [=control message queue=], and all pending
     callbacks.
 
-    When invoked, run the [=Reset AudioDecoder=] algorithm.
+    When invoked, run the [=Reset AudioDecoder=] algorithm with an
+    {{AbortError}} {{DOMException}}.
   </dd>
 
   <dt><dfn method for=AudioDecoder>close()</df></dt>
@@ -409,7 +411,8 @@ Methods {#audiodecoder-methods}
     Immediately aborts all pending work and releases [=system resources=].
     Close is final.
 
-    When invoked, run the [=Close AudioDecoder=] algorithm.
+    When invoked, run the [=Close AudioDecoder=] algorithm with an
+    {{AbortError}} {{DOMException}}.
   </dd>
 
   <dt><dfn method for=AudioDecoder>isConfigSupported(config)</dfn></dt>
@@ -463,25 +466,28 @@ Algorithms {#audiodecoder-algorithms}
                 {{AudioData/[[number of channels]]}} as determined by |output|.
         3. Invoke {{AudioDecoder/[[output callback]]}} with |data|.
   </dd>
-  <dt><dfn>Reset AudioDecoder</dfn></dt>
+  <dt><dfn>Reset AudioDecoder</dfn> (with |exception|)</dt>
   <dd>
     Run these steps:
     1. If {{AudioDecoder/[[state]]}} is `"closed"`, throw an {{InvalidStateError}}.
     2. Set {{AudioDecoder/[[state]]}} to `"unconfigured"`.
     3. Signal {{AudioDecoder/[[codec implementation]]}} to cease producing
         output for the previous configuration.
-    4. [=Reset the control message queue=].
+    4. Remove all [=control messages=] from the [=control message queue=].
     5. Set {{AudioDecoder/[[decodeQueueSize]]}} to zero.
+    6. For each |promise| in {{AudioDecoder/[[pending flush promises]]}}:
+        1. Reject |promise| with |exception|.
+        2. Remove |promise| from {{AudioDecoder/[[pending flush promises]]}}.
   </dd>
-  <dt><dfn>Close AudioDecoder</dfn> (with error)</dt>
+  <dt><dfn>Close AudioDecoder</dfn> (with |exception|)</dt>
   <dd>
     Run these steps:
-    1. Run the [=Reset AudioDecoder=] algorithm.
+    1. Run the [=Reset AudioDecoder=] algorithm with |exception|.
     2. Set {{AudioDecoder/[[state]]}} to `"closed"`.
     3. Clear {{AudioDecoder/[[codec implementation]]}} and release associated
         [=system resources=].
-    4. If |error| is set, queue a task on the [=control thread=] event loop to
-        invoke the {{AudioDecoder/[[error callback]]}} with |error|.
+    4. If |exception| is not an {{AbortError}} {{DOMException}}, queue a task on
+        the [=control thread=] event loop to invoke the {{AudioDecoder/[[error callback]]}} with |exception|.
   </dd>
 </dl>
 
@@ -529,6 +535,9 @@ Internal Slots {#videodecoder-internal-slots}
 :: The current {{CodecState}} of this {{VideoDecoder}}.
 : <dfn attribute for=VideoDecoder>\[[decodeQueueSize]]</dfn>
 :: The number of pending decode requests. This number will decrease as the underlying codec is ready to accept new input.
+: <dfn attribute for=VideoDecoder>[[pending flush promises]]</dfn>
+:: A list of unresolved promises returned by calls to {{VideoDecoder/flush()}}.
+
 
 Constructors {#videodecoder-constructors}
 -----------------------------------------
@@ -643,7 +652,8 @@ Methods {#videodecoder-methods}
     2. Set {{VideoDecoder/[[key chunk required]]}} to `true`.
     3. Let |promise| be a new Promise.
     4. [=Queue a control message=] to flush the codec with |promise|.
-    5. Return |promise|.
+    5. Append |promise| to {{VideoDecoder/[[pending flush promises]]}}.
+    6. Return |promise|.
 
     [=Running a control message=] to flush the codec means performing these steps
         with |promise|.
@@ -654,7 +664,9 @@ Methods {#videodecoder-methods}
     3. If |decoded outputs| is not empty, queue a task on the [=control thread=]
         event loop to run the [=Output VideoFrames=] algorithm with
         |decoded outputs|.
-    4. Queue a task on the [=control thread=] event loop to resolve |promise|.
+    4. Queue a task on the [=control thread=] event loop to run these steps:
+        1. Remove |promise| from {{VideoDecoder/[[pending flush promises]]}}.
+        2. Resolve |promise|.
   </dd>
 
   <dt><dfn method for=VideoDecoder>reset()</dfn></dt>
@@ -663,7 +675,8 @@ Methods {#videodecoder-methods}
     [=control messages=] in the [=control message queue=], and all pending
     callbacks.
 
-    When invoked, run the [=Reset VideoDecoder=] algorithm.
+    When invoked, run the [=Reset VideoDecoder=] algorithm with an
+    {{AbortError}} {{DOMException}}.
   </dd>
 
   <dt><dfn method for=VideoDecoder>close()</df></dt>
@@ -671,7 +684,8 @@ Methods {#videodecoder-methods}
     Immediately aborts all pending work and releases [=system resources=].
     Close is final.
 
-    When invoked, run the [=Close VideoDecoder=] algorithm.
+    When invoked, run the [=Close VideoDecoder=] algorithm with an
+    {{AbortError}} {{DOMException}}.
   </dd>
 
   <dt><dfn method for=VideoDecoder>isConfigSupported(config)</dfn></dt>
@@ -723,25 +737,29 @@ Algorithms {#videodecoder-algorithms}
             and |displayAspectHeight|.
         5. Invoke {{VideoDecoder/[[output callback]]}} with |frame|.
   </dd>
-  <dt><dfn>Reset VideoDecoder</dfn></dt>
+  <dt><dfn>Reset VideoDecoder</dfn> (with |exception|)</dt>
   <dd>
     Run these steps:
     1. If {{VideoDecoder/state}} is `"closed"`, throw an {{InvalidStateError}}.
     2. Set {{VideoDecoder/state}} to `"unconfigured"`.
     3. Signal {{VideoDecoder/[[codec implementation]]}} to cease producing
         output for the previous configuration.
-    4. [=Reset the control message queue=].
+    4. Remove all [=control messages=] from the [=control message queue=].
     5. Set {{VideoDecoder/[[decodeQueueSize]]}} to zero.
+    6. For each |promise| in {{VideoDecoder/[[pending flush promises]]}}:
+        1. Reject |promise| with |exception|.
+        2. Remove |promise| from {{VideoDecoder/[[pending flush promises]]}}.
   </dd>
-  <dt><dfn>Close VideoDecoder</dfn> (with |error|)</dt>
+  <dt><dfn>Close VideoDecoder</dfn> (with |exception|)</dt>
   <dd>
     Run these steps:
-    1. Run the [=Reset VideoDecoder=] algorithm.
+    1. Run the [=Reset VideoDecoder=] algorithm with |exception|.
     2. Set {{VideoDecoder/state}} to `"closed"`.
     3. Clear {{VideoDecoder/[[codec implementation]]}} and release associated
         [=system resources=].
-    4. If |error| is set, queue a task on the [=control thread=] event loop to
-        invoke the {{VideoDecoder/[[error callback]]}} with |error|.
+    4. If |exception| is not an {{AbortError}} {{DOMException}}, queue a task on
+        the [=control thread=] event loop to invoke the
+        {{VideoDecoder/[[error callback]]}} with |exception|.
   </dd>
 </dl>
 
@@ -800,6 +818,10 @@ Internal Slots {#audioencoder-internal-slots}
 <dd>
   The number of pending encode requests. This number will decrease as the
   underlying codec is ready to accept new input.
+</dd>
+<dt><dfn attribute for=AudioEncoder>[[pending flush promises]]</dfn></dt>
+<dd>
+  A list of unresolved promises returned by calls to {{AudioEncoder/flush()}}.
 </dd>
 </dl>
 
@@ -901,7 +923,8 @@ Methods {#audioencoder-methods}
         [=a promise rejected with=] {{InvalidStateError}} {{DOMException}}.
     2. Let |promise| be a new Promise.
     3. [=Queue a control message=] to flush the codec with |promise|.
-    4. Return |promise|.
+    4. Append |promise| to {{AudioEncoder/[[pending flush promises]]}}.
+    5. Return |promise|.
 
     [=Running a control message=] to flush the codec means performing these steps
         with |promise|.
@@ -909,10 +932,12 @@ Methods {#audioencoder-methods}
         pending outputs=].
     2. Let |encoded outputs| be a [=list=] of encoded audio data outputs
         emitted by {{AudioEncoder/[[codec implementation]]}}.
-    5. If |encoded outputs| is not empty, queue a task on the [=control thread=]
+    3. If |encoded outputs| is not empty, queue a task on the [=control thread=]
         event loop to run the [=Output EncodedAudioChunks=] algorithm with
         |encoded outputs|.
-    3. Queue a task on the [=control thread=] event loop to resolve |promise|.
+    4. Queue a task on the [=control thread=] event loop to run these steps:
+        1. Remove |promise| from {{AudioEncoder/[[pending flush promises]]}}.
+        2. Resolve |promise|.
   </dd>
 
   <dt><dfn method for=AudioEncoder>reset()</dfn></dt>
@@ -921,7 +946,8 @@ Methods {#audioencoder-methods}
     [=control messages=] in the [=control message queue=], and all pending
     callbacks.
 
-    When invoked, run the [=Reset AudioEncoder=] algorithm.
+    When invoked, run the [=Reset AudioEncoder=] algorithm with an
+    {{AbortError}} {{DOMException}}.
   </dd>
 
   <dt><dfn method for=AudioEncoder>close()</df></dt>
@@ -929,7 +955,8 @@ Methods {#audioencoder-methods}
     Immediately aborts all pending work and releases [=system resources=].
     Close is final.
 
-    When invoked, run the [=Close AudioEncoder=] algorithm.
+    When invoked, run the [=Close AudioEncoder=] algorithm with an
+    {{AbortError}} {{DOMException}}.
   </dd>
 
   <dt><dfn method for=AudioEncoder>isConfigSupported(config)</dfn></dt>
@@ -1010,7 +1037,7 @@ Algorithms {#audioencoder-algorithms}
         7. Invoke {{AudioEncoder/[[output callback]]}} with |chunk| and
             |chunkMetadata|.
   </dd>
-  <dt><dfn>Reset AudioEncoder</dfn></dt>
+  <dt><dfn>Reset AudioEncoder</dfn> (with |exception|)</dt>
   <dd>
     Run these steps:
     1. If {{AudioEncoder/[[state]]}} is `"closed"`, throw an {{InvalidStateError}}.
@@ -1019,18 +1046,22 @@ Algorithms {#audioencoder-algorithms}
     4. Set {{AudioEncoder/[[active output config]]}} to `null`.
     5. Signal {{AudioEncoder/[[codec implementation]]}} to cease producing
         output for the previous configuration.
-    6. [=Reset the control message queue=].
+    6. Remove all [=control messages=] from the [=control message queue=].
     7. Set {{AudioEncoder/[[encodeQueueSize]]}} to zero.
+    8. For each |promise| in {{AudioEncoder/[[pending flush promises]]}}:
+        1. Reject |promise| with |exception|.
+        2. Remove |promise| from {{AudioEncoder/[[pending flush promises]]}}.
   </dd>
-  <dt><dfn>Close AudioEncoder</dfn> (with |error|)</dt>
+  <dt><dfn>Close AudioEncoder</dfn> (with |exception|)</dt>
   <dd>
     Run these steps:
-    1. Run the [=Reset AudioEncoder=] algorithm.
+    1. Run the [=Reset AudioEncoder=] algorithm with |exception|.
     2. Set {{AudioEncoder/[[state]]}} to `"closed"`.
     3. Clear {{AudioEncoder/[[codec implementation]]}} and release associated
         [=system resources=].
-    4. If |error| is set, queue a task on the [=control thread=] event loop
-        invoke the {{AudioEncoder/[[error callback]]}} with |error|.
+    4. If |exception| is not an {{AbortError}} {{DOMException}}, queue a task on
+        the [=control thread=] event loop to invoke the
+        {{AudioDecoder/[[error callback]]}} with |exception|.
   </dd>
 </dl>
 
@@ -1105,6 +1136,10 @@ Internal Slots {#videoencoder-internal-slots}
 <dd>
   The number of pending encode requests. This number will decrease as the
   underlying codec is ready to accept new input.
+</dd>
+<dt><dfn attribute for=VideoEncoder>[[pending flush promises]]</dfn></dt>
+<dd>
+  A list of unresolved promises returned by calls to {{VideoEncoder/flush()}}.
 </dd>
 </dl>
 
@@ -1205,7 +1240,8 @@ Methods {#videoencoder-methods}
         [=a promise rejected with=] {{InvalidStateError}} {{DOMException}}.
     2. Let |promise| be a new Promise.
     3. [=Queue a control message=] to flush the codec with |promise|.
-    4. Return |promise|.
+    4. Append |promise| to {{VideoEncoder/[[pending flush promises]]}}.
+    5. Return |promise|.
 
     [=Running a control message=] to flush the codec means performing these steps
         with |promise|.
@@ -1213,10 +1249,12 @@ Methods {#videoencoder-methods}
         pending outputs=].
     2. Let |encoded outputs| be a [=list=] of encoded video data outputs
         emitted by {{VideoEncoder/[[codec implementation]]}}.
-    5. If |encoded outputs| is not empty, queue a task on the [=control thread=]
+    3. If |encoded outputs| is not empty, queue a task on the [=control thread=]
         event loop to run the [=Output EncodedVideoChunks=] algorithm with
         |encoded outputs|.
-    3. Queue a task on the [=control thread=] event loop to resolve |promise|.
+    4. Queue a task on the [=control thread=] event loop to run these steps:
+        1. Remove |promise| from {{VideoEncoder/[[pending flush promises]]}}.
+        2. Resolve |promise|.
   </dd>
 
   <dt><dfn method for=VideoEncoder>reset()</dfn></dt>
@@ -1225,7 +1263,8 @@ Methods {#videoencoder-methods}
     [=control messages=] in the [=control message queue=], and all pending
     callbacks.
 
-    When invoked, run the [=Reset VideoEncoder=] algorithm.
+    When invoked, run the [=Reset VideoEncoder=] algorithm with an
+    {{AbortError}} {{DOMException}}.
   </dd>
 
   <dt><dfn method for=VideoEncoder>close()</df></dt>
@@ -1233,7 +1272,8 @@ Methods {#videoencoder-methods}
     Immediately aborts all pending work and releases [=system resources=].
     Close is final.
 
-    When invoked, run the [=Close VideoEncoder=] algorithm.
+    When invoked, run the [=Close VideoEncoder=] algorithm with an
+    {{AbortError}} {{DOMException}}.
   </dd>
 
   <dt><dfn method for=VideoEncoder>isConfigSupported(config)</dfn></dt>
@@ -1292,8 +1332,10 @@ Algorithms {#videoencoder-algorithms}
         5. Let |outputConfig| be a {{VideoDecoderConfig}} that describes
             |output|. Initialize |outputConfig| as follows:
             1. Assign `encoderConfig.codec` to `outputConfig.codec`.
-            2. Assign `encoderConfig.width` to `outputConfig.cropWidth`.
-            3. Assign `encoderConfig.height` to `outputConfig.cropHeight`.
+            2. Assign `encoderConfig.width` to
+                `outputConfig.visibleRect.width`.
+            3. Assign `encoderConfig.height` to
+                `outputConfig.visibleRect.height`.
             4. Assign `encoderConfig.displayWidth` to
                 `outputConfig.displayWidth`.
             5. Assign `encoderConfig.displayHeight` to
@@ -1323,7 +1365,7 @@ Algorithms {#videoencoder-algorithms}
         8. Invoke {{VideoEncoder/[[output callback]]}} with |chunk| and
             |chunkMetadata|.
   </dd>
-  <dt><dfn>Reset VideoEncoder</dfn></dt>
+  <dt><dfn>Reset VideoEncoder</dfn> (with |exception|)</dt>
   <dd>
     Run these steps:
     1. If {{VideoEncoder/[[state]]}} is `"closed"`, throw an {{InvalidStateError}}.
@@ -1332,18 +1374,21 @@ Algorithms {#videoencoder-algorithms}
     4. Set {{VideoEncoder/[[active output config]]}} to `null`.
     5. Signal {{VideoEncoder/[[codec implementation]]}} to cease producing
         output for the previous configuration.
-    6. [=Reset the control message queue=].
+    6. Remove all [=control messages=] from the [=control message queue=].
     7. Set {{VideoEncoder/[[encodeQueueSize]]}} to zero.
+    8. For each |promise| in {{VideoEncoder/[[pending flush promises]]}}:
+        1. Reject |promise| with |exception|.
+        2. Remove |promise| from {{VideoEncoder/[[pending flush promises]]}}.
   </dd>
-  <dt><dfn>Close VideoEncoder</dfn> (with |error|)</dt>
+  <dt><dfn>Close VideoEncoder</dfn> (with |exception|)</dt>
   <dd>
     Run these steps:
-    1. Run the [=Reset VideoEncoder=] algorithm.
+    1. Run the [=Reset VideoEncoder=] algorithm with |exception|.
     2. Set {{VideoEncoder/[[state]]}} to `"closed"`.
     3. Clear {{VideoEncoder/[[codec implementation]]}} and release associated
         [=system resources=].
-    4. If |error| is set, queue a task on the [=control thread=] event loop
-        invoke the {{VideoEncoder/[[error callback]]}} with |error|.
+    4. If |exception| is not an {{AbortError}} {{DOMException}}, queue a task on
+        the [=control thread=] event loop to invoke the {{AudioDecoder/[[error callback]]}} with |exception|.
   </dd>
 </dl>
 
@@ -1598,14 +1643,14 @@ run these steps:
 
   <dt><dfn dict-member for=VideoDecoderConfig>codedWidth</dfn></dt>
   <dd>
-    Width of the VideoFrame in pixels, prior to any cropping or aspect ratio
-        adjustments.
+    Width of the VideoFrame in pixels, potentionally including non-visible
+    padding, and prior to considering potential ratio adjustments.
   </dd>
 
   <dt><dfn dict-member for=VideoDecoderConfig>codedHeight</dfn></dt>
   <dd>
-    Height of the VideoFrame in pixels, prior to any cropping or aspect ratio
-        adjustments.
+    Height of the VideoFrame in pixels, potentionally including non-visible
+    padding, and prior to considering potential ratio adjustments.
   </dd>
 
   NOTE: {{VideoDecoderConfig/codedWidth}} and {{VideoDecoderConfig/codedHeight}}
@@ -1684,6 +1729,7 @@ dictionary VideoEncoderConfig {
   [EnforceRange] unsigned long displayHeight;
   HardwareAcceleration hardwareAcceleration = "allow";
   DOMString scalabilityMode;
+  BitrateMode bitrateMode = "variable";
 };
 </xmp>
 
@@ -1713,7 +1759,7 @@ To check if a {{VideoEncoderConfig}} is a <dfn>valid VideoEncoderConfig</dfn>,
     display aspect ratio adjustments.
 
     The encoder must scale any {{VideoFrame}} whose
-    {{VideoFrame/[[crop width]]}} differs from this value.
+    {{VideoFrame/[[visible width]]}} differs from this value.
   </dd>
 
   <dt><dfn dict-member for=VideoEncoderConfig>height</dfn></dt>
@@ -1722,7 +1768,7 @@ To check if a {{VideoEncoderConfig}} is a <dfn>valid VideoEncoderConfig</dfn>,
     display aspect ratio adjustments.
 
     The encoder must scale any {{VideoFrame}} whose
-    {{VideoFrame/[[crop height]]}} differs from this value.
+    {{VideoFrame/[[visible height]]}} differs from this value.
   </dd>
 </dl>
 
@@ -1761,6 +1807,15 @@ To check if a {{VideoEncoderConfig}} is a <dfn>valid VideoEncoderConfig</dfn>,
   <dt><dfn dict-member for=VideoEncoderConfig>scalabilityMode</dfn></dt>
   <dd>
     An encoding [=scalability mode identifier=] as defined by [[WebRTC-SVC]].
+  </dd>
+
+  <dt><dfn dict-member for=VideoEncoderConfig>bitrateMode</dfn></dt>
+  <dd>
+    Configures encoding to use a {{BitrateMode/constant}} or
+    {{BitrateMode/variable}} bitrate as defined by [[MEDIASTREAM-RECORDING]].
+
+    NOTE: The precise degree of bitrate fluctuation in either mode is
+        implementation defined.
   </dd>
 </dl>
 
@@ -2519,22 +2574,23 @@ NOTE: {{VideoFrame}} is a {{CanvasImageSource}}. A {{VideoFrame}} may be
 [Exposed=(Window,DedicatedWorker)]
 interface VideoFrame {
   constructor(CanvasImageSource image, optional VideoFrameInit init = {});
-  constructor(sequence<(Plane or PlaneInit)> planes,
+  constructor(sequence<PlaneInit> planes,
               VideoFramePlaneInit init);
 
   readonly attribute PixelFormat format;
-  readonly attribute FrozenArray<Plane>? planes;
   readonly attribute unsigned long codedWidth;
   readonly attribute unsigned long codedHeight;
-  readonly attribute unsigned long cropLeft;
-  readonly attribute unsigned long cropTop;
-  readonly attribute unsigned long cropWidth;
-  readonly attribute unsigned long cropHeight;
+  readonly attribute VideoFrameRect codedRect;
+  readonly attribute VideoFrameRect visibleRect;
   readonly attribute unsigned long displayWidth;
   readonly attribute unsigned long displayHeight;
   readonly attribute unsigned long long? duration;  // microseconds
   readonly attribute long long? timestamp;          // microseconds
-
+  unsigned long allocationSize(
+      optional VideoFrameCopyToOptions options = {});
+  Promise<sequence<PlaneLayout>> copyTo(
+      [AllowShared] BufferSource destination,
+      optional VideoFrameCopyToOptions options = {});
   VideoFrame clone();
   undefined close();
 };
@@ -2548,14 +2604,17 @@ dictionary VideoFramePlaneInit {
   required PixelFormat format;
   [EnforceRange] required unsigned long codedWidth;
   [EnforceRange] required unsigned long codedHeight;
-  [EnforceRange] unsigned long cropLeft;
-  [EnforceRange] unsigned long cropTop;
-  [EnforceRange] unsigned long cropWidth;
-  [EnforceRange] unsigned long cropHeight;
+  VideoFrameRect visibleRect;
   [EnforceRange] unsigned long displayWidth;
   [EnforceRange] unsigned long displayHeight;
   [EnforceRange] unsigned long long duration;  // microseconds
   [EnforceRange] long long timestamp;          // microseconds
+};
+
+dictionary PlaneInit {
+  required BufferSource data;
+  [EnforceRange] required unsigned long stride;
+  [EnforceRange] unsigned long offset = 0;
 };
 </xmp>
 
@@ -2572,32 +2631,27 @@ dictionary VideoFramePlaneInit {
 : <dfn attribute for=VideoFrame>\[[format]]</dfn>
 :: A {{PixelFormat}} describing the pixel format of the {{VideoFrame}}.
 
-: <dfn attribute for=VideoFrame>\[[planes]]</dfn>
-:: A list of {{Plane}}s describing the memory layout of the pixel data in
-    {{VideoFrame}}. The number of {{Plane}}s and their semantics are
-    determined by {{VideoFrame/[[format]]}}.
-
 : <dfn attribute for=VideoFrame>[[coded width]]</dfn>
-:: Width of the {{VideoFrame}} in pixels, prior to any cropping or aspect
-    ratio adjustments.
+:: Width of the {{VideoFrame}} in pixels, potentionally including non-visible
+    padding, and prior to considering potential ratio adjustments.
 
 : <dfn attribute for=VideoFrame>[[coded height]]</dfn>
-:: Height of the {{VideoFrame}} in pixels, prior to any cropping or aspect
-    ratio adjustments.
+:: Height of the {{VideoFrame}} in pixels, potentionally including non-visible
+    padding, and prior to considering potential ratio adjustments.
 
-: <dfn attribute for=VideoFrame>[[crop left]]</dfn>
-:: The number of pixels to remove from the left of the {{VideoFrame}},
-    prior to aspect ratio adjustments.
+: <dfn attribute for=VideoFrame>[[visible left]]</dfn>
+:: The number of pixels defining the left offset of the visible rectangle.
 
-: <dfn attribute for=VideoFrame>[[crop top]]</dfn>
-:: The number of pixels to remove from the top of the {{VideoFrame}},
-    prior to aspect ratio adjustments.
+: <dfn attribute for=VideoFrame>[[visible top]]</dfn>
+:: The number of pixels defining the top offset of the visible rectangle.
 
-: <dfn attribute for=VideoFrame>[[crop width]]</dfn>
-:: The width of pixels to include in the crop, starting from cropLeft.
+: <dfn attribute for=VideoFrame>[[visible width]]</dfn>
+:: The width of pixels to include in visible rectangle, starting from
+    {{VideoFrame/[[visible left]]}}.
 
-: <dfn attribute for=VideoFrame>[[crop height]]</dfn>
-:: The height of pixels to include in the crop, starting from cropLeft.
+: <dfn attribute for=VideoFrame>[[visible height]]</dfn>
+:: The height of pixels to include in visible rectangle, starting from
+    {{VideoFrame/[[visible top]]}}.
 
 : <dfn attribute for=VideoFrame>[[display width]]</dfn>
 :: Width of the {{VideoFrame}} when displayed after applying aspect ratio
@@ -2686,7 +2740,7 @@ dictionary VideoFramePlaneInit {
     (e.g. wrong number of planes), throw a {{TypeError}}.
 
     ISSUE: The spec should list additional format specific validation steps (
-        e.g. number and order of planes, acceptable sizing, etc...).  See
+        e.g. number and order of planes, acceptable sizing, etc...). See
         [#165](https://github.com/w3c/webcodecs/issues/165).
 
 3. Let |resource| be a new [=media resource=] allocated in accordance with
@@ -2698,66 +2752,68 @@ dictionary VideoFramePlaneInit {
 
     NOTE: The user agent may choose to allocate resource with a larger coded
       size and plane strides to improve memory alignment. Increases will be
-      reflected by {{VideoFrame/codedWidth}}, {{VideoFrame/codedHeight}}, and
-      {{Plane/stride}}.
+      reflected by {{VideoFrame/codedWidth}} and {{VideoFrame/codedHeight}}.
 
 4. Let |resourceReference| be a reference to |resource|.
 5. Let |frame| be a new {{VideoFrame}} object initialized as follows:
     1. Assign |resourceReference| to
             {{VideoFrame/[[resource reference]]}}.
     2. Assign {{VideoFramePlaneInit/format}} to {{VideoFrame/[[format]]}}.
-    3. Assign a new [=list=] to {{VideoFrame/[[planes]]}}.
-    4. For each |planeInit| in |planes|:
-        1. Copy |planeInit|.{{PlaneInit/src}} to |resource|.
+    3. For each |planeInit| in |planes|:
+        1. Let |rows| be the number of sample rows for the Plane coresponding
+            to |planeInit| as defined by {{VideoFrame/[[format]]}}.
+        2. Let |dataOffset| be `0`.
+        3. If {{PlaneInit/offset}} [=map/exists=], assign {{PlaneInit/offset}}
+            to |dataOffset|.
+        4. Let |row| be `0`.
+        5. While |row| is less than |rows|:
+            1. Copy bytes from {{PlaneInit/data}} to |resource|, starting with
+                the byte positioned at |dataOffset| and stopping after
+                {{PlaneInit/stride}} bytes have been copied.
 
-            NOTE: The user agent may use {{VideoFramePlaneInit/cropLeft}}
-                and {{VideoFramePlaneInit/cropTop}} to copy only the crop
-                region. It may also reposition the crop region within
-                |resource|. The final position will be reflected by
-                {{VideoFrame/cropLeft}} and {{VideoFrame/cropTop}}.
+                NOTE: The user agent may use {{VideoFramePlaneInit/visibleRect}}
+                    to copy only the visible rectangle. It may also reposition
+                    the visible rectangle within |resource|. The final position
+                    will be reflected by {{VideoFrame/visibleRect}}.
 
-        2. Let |plane| be a new {{Plane}} initialized as follows:
-            1. Assign |frame| to {{Plane/[[parent frame]]}}.
-            2. Let |resourceStride| be the stride of the plane corresponding to
-                |planeInit| in |resource|.
+            2. Increment |dataOffset| by {{PlaneInit/stride}}.
+            3. Increment |row| by `1`.
 
-                ISSUE: The spec should provide a definition (and possibly
-                    diagrams) for stride. See
-                    [#166](https://github.com/w3c/webcodecs/issues/166).
-
-            3. Assign |resourceStride| to {{Plane/stride}}.
-            4. Assign |planeInit|.{{PlaneInit/rows}} to {{Plane/rows}}.
-            5. Assign the product of ({{Plane/stride}} * {{Plane/rows}}) to
-                {{Plane/length}}.
-        3. Append |plane| to {{VideoFrame/[[planes]]}}.
-
-    5. Let |resourceCodedWidth| be the coded width of |resource|.
-    6. Let |resourceCodedHeight| be the coded height of |resource|.
-    7. Let |resourceCropLeft| be the left offset of the crop origin of
+    4. Let |resourceCodedWidth| be the coded width of |resource|.
+    5. Let |resourceCodedHeight| be the coded height of |resource|.
+    6. Let |resourceVisibleLeft| be the left offset for the visible rectangle of
         |resource|.
-    8. Let |resourceCropTop| be the top offset of the crop origin of
+    7. Let |resourceVisibleTop| be the top offset for the visible rectangle of
         |resource|.
 
         ISSUE: The spec should provide definitions (and possibly diagrams) for
-            coded size, crop size, and display size. See
+            coded size, visible rectangle, and display size. See
             [#166](https://github.com/w3c/webcodecs/issues/166).
 
-    9. Assign |resourceCodedWidth|, |resourceCodedHeight|, |resourceCropLeft|,
-        and |resourceCropTop| to {{VideoFrame/[[coded width]]}},
-        {{VideoFrame/[[coded height]]}}, {{VideoFrame/[[crop left]]}}, and
-        {{VideoFrame/[[crop top]]}} respectively.
-    10. If |init|.{{VideoFramePlaneInit/cropWidth}} [=map/exists=], assign
-        it to {{VideoFrame/[[crop width]]}}. Otherwise, assign
-        {{VideoFrame/[[coded width]]}} to {{VideoFrame/[[crop width]]}}.
-    11. If |init|.{{VideoFramePlaneInit/cropHeight}} [=map/exists=], assign it
-        to {{VideoFrame/[[crop height]]}}. Otehrwise, assign
-        {{VideoFrame/[[coded height]]}} to {{VideoFrame/[[crop height]]}}.
+    8. Assign |resourceCodedWidth|, |resourceCodedHeight|,
+        |resourceVisibleLeft|, and |resourceVisibleTop| to
+        {{VideoFrame/[[coded width]]}}, {{VideoFrame/[[coded height]]}},
+        {{VideoFrame/[[visible left]]}}, and {{VideoFrame/[[visible top]]}}
+        respectively.
+
+    10. If |init|.{{VideoFramePlaneInit/visibleRect}} [=map/exists=]:
+        1. Assign
+            {{VideoFramePlaneInit/visibleRect}}.{{VideoFrameRect/width}} to
+            {{VideoFrame/[[visible width]]}}.
+        2. Assign
+            {{VideoFramePlaneInit/visibleRect}}.{{VideoFrameRect/height}} to
+            {{VideoFrame/[[visible height]]}}.
+    11. Otherwise:
+        1. Assign {{VideoFrame/[[coded width]]}} to
+            {{VideoFrame/[[visible width]]}}.
+        2. Assign {{VideoFrame/[[coded height]]}} to
+            {{VideoFrame/[[visible height]]}}.
     12. If |init|.{{VideoFramePlaneInit/displayWidth}} [=map/exists=], assign
         it to {{VideoFrame/[[display width]]}}. Otherwise, assign
-        {{VideoFrame/[[crop width]]}} to {{VideoFrame/[[display width]]}}.
+        {{VideoFrame/[[visible width]]}} to {{VideoFrame/[[display width]]}}.
     13. If |init|.{{VideoFramePlaneInit/displayHeight}} [=map/exists=], assign
         it to {{VideoFrame/[[display height]]}}. Otherwise, assign
-        {{VideoFrame/[[crop height]]}} to {{VideoFrame/[[display height]]}}.
+        {{VideoFrame/[[visible height]]}} to {{VideoFrame/[[display height]]}}.
     14. Assign |init|'s {{VideoFramePlaneInit/timestamp}} and
         {{VideoFramePlaneInit/duration}} to {{VideoFrame/[[timestamp]]}} and
         {{VideoFrame/[[duration]]}} respectively.
@@ -2771,52 +2827,46 @@ dictionary VideoFramePlaneInit {
     The {{VideoFrame/format}} getter steps are to return
     {{VideoFrame/[[format]]}}.
 
-: <dfn attribute for=VideoFrame>planes</dfn>
-:: Holds pixel data data, laid out as described by format and Plane
-    attributes.
-
-    The {{VideoFrame/planes}} getter steps are to return
-    {{VideoFrame/[[planes]]}}.
-
 : <dfn attribute for=VideoFrame>codedWidth</dfn>
-:: Width of the {{VideoFrame}} in pixels, prior to any cropping or aspect ratio
-    adjustments.
+:: Width of the {{VideoFrame}} in pixels, potentionally including non-visible
+    padding, and prior to considering potential ratio adjustments.
 
     The {{VideoFrame/codedWidth}} getter steps are to return
     {{VideoFrame/[[coded width]]}}.
 
 : <dfn attribute for=VideoFrame>codedHeight</dfn>
-:: Height of the VideoFrame in pixels, prior to any cropping or aspect ratio
-    adjustments.
+:: Height of the {{VideoFrame}} in pixels, potentionally including non-visible
+    padding, and prior to considering potential ratio adjustments.
 
     The {{VideoFrame/codedHeight}} getter steps are to return
     {{VideoFrame/[[coded height]]}}.
 
-: <dfn attribute for=VideoFrame>cropLeft</dfn>
-:: The number of pixels to remove from the left of the VideoFrame, prior to
-    aspect ratio adjustments.
+: <dfn attribute for=VideoFrame>codedRect</dfn>
+:: A {{VideoFrameRect}} with width and height matching {{VideoFrame/codedWidth}}
+    and {{VideoFrame/codedHeight}} and origin always at (0,0). Offered for
+    convenience for use with {{VideoFrame/allocationSize()}} and
+    {{VideoFrame/copyTo()}}.
 
-    The {{VideoFrame/cropLeft}} getter steps are to return
-    {{VideoFrame/[[crop left]]}}.
+    The {{VideoFrame/codedRect}} getter steps are:
+    1. Let |rect| be a new {{VideoFrameRect}}, initialized as follows:
+        1. Assign `0` to {{VideoFrameRect/left}} and {{VideoFrameRect/top}}.
+        2. Assign {{VideoFrame/[[coded width]]}} and
+            {{VideoFrame/[[coded height]]}} to {{VideoFrameRect/width}} and
+            {{VideoFrameRect/height}} respectively.
+    2. Return |rect|.
 
-: <dfn attribute for=VideoFrame>cropTop</dfn>
-:: The number of pixels to remove from the top of the VideoFrame, prior to
-    aspect ratio adjustments.
+: <dfn attribute for=VideoFrame>visibleRect</dfn>
+:: A {{VideoFrameRect}} describing the visible rectangle of pixels for this
+    {{VideoFrame}}.
 
-    The {{VideoFrame/cropTop}} getter steps are to return
-    {{VideoFrame/[[crop top]]}}.
-
-: <dfn attribute for=VideoFrame>cropWidth</dfn>
-:: The width of pixels to include in the crop, starting from cropLeft.
-
-    The {{VideoFrame/cropWidth}} getter steps are to return
-    {{VideoFrame/[[crop width]]}}.
-
-: <dfn attribute for=VideoFrame>cropHeight</dfn>
-:: The height of pixels to include in the crop, starting from cropLeft.
-
-    The {{VideoFrame/cropHeight}} getter steps are to return
-    {{VideoFrame/[[crop height]]}}.
+    The {{VideoFrame/visibleRect}} getter steps are:
+    1. Let |rect| be a new {{VideoFrameRect}}, initialized as follows:
+        1. Assign {{VideoFrame/[[visible left]]}},
+            {{VideoFrame/[[visible top]]}}, {{VideoFrame/[[visible width]]}},
+            and {{VideoFrame/[[visible height]]}} to {{VideoFrameRect/left}},
+            {{VideoFrameRect/top}}, {{VideoFrameRect/width}}, and
+            {{VideoFrameRect/height}} respectively.
+    2. Return |rect|.
 
 : <dfn attribute for=VideoFrame>displayWidth</dfn>
 :: Width of the VideoFrame when displayed after applying aspect ratio
@@ -2846,7 +2896,96 @@ dictionary VideoFramePlaneInit {
     The {{VideoFrame/duration}} getter steps are to return
     {{VideoFrame/[[duration]]}}.
 
+### Internal Structures ###{#videoframe-internal-structures}
+A <dfn>parsed copyto options</dfn> is a [=struct=] that consists of:
+  * A <dfn for="parsed copyto options">allocationSize</dfn> (an {{unsigned
+    long}})
+  * A <dfn for="parsed copyto options">computedLayouts</dfn> (a [=list=] of
+    [=computed plane layout=] structs).
+
+A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
+  * A <dfn for="computed plane layout">destinationOffset</dfn> (an
+    {{unsigned long}})
+  * A <dfn for="computed plane layout">destinationStride</dfn> (an
+    {{unsigned long}})
+  * A <dfn for="computed plane layout">sourceTop</dfn> (an {{unsigned long}})
+  * A <dfn for="computed plane layout">sourceHeight</dfn> (an {{unsigned long}})
+  * A <dfn for="computed plane layout">sourceLeftBytes</dfn> (an
+    {{unsigned long}})
+  * A <dfn for="computed plane layout">sourceWidthBytes</dfn> (an
+    {{unsigned long}})
+
 ### Methods ###{#videoframe-methods}
+: <dfn method for=VideoFrame>allocationSize(|options|)</dfn>
+:: Returns the minimum byte length for a valid destination {{BufferSource}}
+    to be used with {{VideoFrame/copyTo()}} with the given options.
+
+    When invoked, run these steps:
+    1. If {{VideoFrame/[[detached]]}} is `true`, return `0`.
+    2. If {{VideoFrame/[[format]]}} is `""`, throw a {{NotSupportedError}}
+        {{DOMException}}.
+    3. Let |parsedOptions| be the result of running the [=Parse
+        VideoFrameCopyToOptions=] algorithm with |options|.
+    4. If |parsedOptions| is an excpetion, throw |parsedOptions|.
+    5. Return |parsedOptions|' [=parsed copyto options/allocationSize=]
+
+: <dfn method for=VideoFrame>copyTo(|destination|, |options|)</dfn>
+:: Asynchronously copies the planes of this frame into |destination| according
+    to |options|. The format of the data is the same as this {{VideoFrame}}'s
+    {{VideoFrame/format}}.
+
+    NOTE: Promises that are returned by several calls to
+        {{VideoFrame/copyTo()}} are not guaranteed to resolve in the order they
+        were returned.
+
+    When invoked, run these steps:
+    1. If {{VideoFrame/[[detached]]}} is `true`, return `0`.
+    2. If {{VideoFrame/[[format]]}} is `""`, throw a {{NotSupportedError}}
+        {{DOMException}}.
+    3. Let |parsedOptions| be the result of running the [=Parse
+        VideoFrameCopyToOptions=] algorithm with |options|.
+    4. If |parsedOptions| is an exception, return a promise rejected with
+        |parsedOptions|.
+    5. If `destionation.byteLength` is less than |parsedOptions|' [=parsed
+        copyto options/allocationSize=], return a promise rejected with a
+        {{TypeError}}.
+    6. Let |p| be a new {{Promise}}.
+    7. Let |copyStepsQueue| be the result of starting a new [=parallel queue=].
+    8. Enqueue the following steps to |copyStepsQueue|:
+        1. Let resource be the [=media resource=] referenced by
+            [[resource reference]].
+        2. Let |numPlanes| be the number of planes as defined by
+            {{VideoFrame/[[format]]}}.
+        3. Let |planeIndex| be `0`.
+        4. While |planeIndex| is less than |parsedOptions|' |numPlanes|:
+            1. Let |sourceStride| be the stride of the plane in |resource| as
+                identified by |planeIndex|.
+            2. Let |computedLayout| be the [=computed plane layout=] in
+                |parsedOptions|' [=parsed copyto options/computedLayouts=] at the
+                position of |planeIndex|
+            3. Let |sourceOffset| be the product of multiplying
+                |computedLayout|'s [=computed plane layout/sourceTop=] by
+                |sourceStride|
+            4. Add |computedLayout|'s [=computed plane layout/sourceLeftBytes=] to
+                sourceOffset.
+            5. Let |destinationOffset| be |computedLayout|'s
+                [=computed plane layout/destinationOffset=].
+            6. Let |rowBytes| be |computedLayout|'s
+                [=computed plane layout/sourceWidthBytes=].
+            7. Let |row| be `0`.
+            8. While |row| is less than |computedLayout|'s
+                [=computed plane layout/sourceHeight=]:
+                1. Copy |rowBytes| bytes from |resource| starting at
+                    |sourceOffset| to |destination| starting at
+                    |destinationOffset|.
+                2. Increment |sourceOffset| by |sourceStride|.
+                3. Increment |destinationOffset| by |computedLayout|'s
+                    [=computed plane layout/destinationStride=].
+                4. Increment |row| by `1`.
+            9. Increment |planeIndex| by `1`.
+        5. Queue a task on the [=control thread=] event loop to resolve |p|.
+    9. Return |p|.
+
 : <dfn method for=VideoFrame>clone()</dfn>
 :: Creates a new {{VideoFrame}} with a reference to the same
     [=media resource=].
@@ -2857,7 +2996,6 @@ dictionary VideoFramePlaneInit {
     2. Return the result of running the [=Clone VideoFrame=] algorithm with
         [=this=].
 
-
 : <dfn method for=VideoFrame>close()</dfn>
 :: Clears all state and releases the reference to the [=media resource=].
     Close is final.
@@ -2866,55 +3004,56 @@ dictionary VideoFramePlaneInit {
     1. Assign `null` to {{VideoFrame/[[resource reference]]}}.
     2. Assign `true` to {{VideoFrame/[[detached]]}}.
     3. Assign `""` to {{VideoFrame/format}}.
-    4. Assign `null` to {{VideoFrame/planes}}.
-    5. Assign `0` to {{VideoFrame/codedWidth}}, {{VideoFrame/codedHeight}},
-        {{VideoFrame/cropLeft}}, {{VideoFrame/cropTop}},
-        {{VideoFrame/cropWidth}}, {{VideoFrame/cropHeight}},
-        {{VideoFrame/displayWidth}}, and {{VideoFrame/displayHeight}}.
-    6. Assign `null` to {{VideoFrame/duration}} and {{VideoFrame/timestamp}}.
+    4. Assign `0` to {{VideoFrame/[[coded width]]}},
+        {{VideoFrame/[[coded height]]}}, {{VideoFrame/[[visible left]]}},
+        {{VideoFrame/[[visible top]]}}, {{VideoFrame/[[visible width]]}},
+        {{VideoFrame/[[visible height]]}}, {{VideoFrame/[[display width]]}},
+        and {{VideoFrame/[[display height]]}}.
+    5. Assign `null` to {{VideoFrame/[[duration]]}} and
+        {{VideoFrame/[[timestamp]]}}.
 
 ### Algorithms ###{#videoframe-algorithms}
   <dfn>Create a VideoFrame</dfn> (with |output|, |timestamp|, |duration|, |displayAspectWidth|, and |displayAspectHeight|)
-  1. Let |planes| be a sequence of {{Plane}}s containing the decoded
-      video frame data from |output|.
-  2. Let |pixelFormat| be the {{PixelFormat}} of |planes|.
-  3. Let |init| be a {{VideoFramePlaneInit}} with the following
-      keys:
-      1. Assign |timestamp| to {{VideoFrameInit/timestamp}}.
-      2. Assign |duration| to {{VideoFrameInit/duration}}.
-      3. Let {{VideoFramePlaneInit/codedWidth}} and
-          {{VideoFramePlaneInit/codedHeight}}
-          be the width and height of the decoded video frame |output| in
-          pixels, prior to any cropping or aspect ratio adjustments.
-      4. Let {{VideoFramePlaneInit/cropLeft}},
-          {{VideoFramePlaneInit/cropTop}},
-          {{VideoFramePlaneInit/cropWidth}}, and
-          {{VideoFramePlaneInit/cropHeight}}
-          be the crop region of the decoded video frame |output| in
-          pixels, prior to any aspect ratio adjustments.
-      5. Let |displayWidth| and |displayHeight| be the display size of
-          the decoded frame in pixels.
-      6. If |displayAspectWidth| and |displayAspectHeight| are provided,
+  1. Let |frame| be a new {{VideoFrame}}, constructed as follows:
+      1. Assign `false` to {{VideoFrame/[[detached]]}}.
+      2. Let |resource| be the [=media resource=] described by |output|.
+      3. Let |resourceReference| be a reference to |resource|.
+      4. Assign |resourceReference| to {{VideoFrame/[[resource reference]]}}.
+      5. If |output| uses a recognized {{PixelFormat}}, assign that format to
+          {{VideoFrame/[[format]]}}. Otherwise, assign `""` to
+          {{VideoFrame/[[format]]}}.
+      6. Let |codedWidth| and |codedHeight| be the coded width and height of the
+          |output| in pixels.
+      8. Let |visibleLeft|, |visibleTop|, |visibleWidth|, and |visibleHeight| be
+          the left, top, width and height for the visible rectangle of |output|.
+      7. Let |displayWidth| and |displayHeight| be the the display size of
+          |output| in pixels.
+      8. If |displayAspectWidth| and |displayAspectHeight| are provided,
           increase |displayWidth| or |displayHeight| until the ratio of
           |displayWidth| to |displayHeight| matches the ratio of
           |displayAspectWidth| to |displayAspectHeight|.
-      7. Assign the value of |displayWidth| and |displayHeight| to
-          {{VideoFramePlaneInit/displayWidth}} and
-          {{VideoFramePlaneInit/displayHeight}} respectively.
-  4. Return a new {{VideoFrame}}, constructed with |pixelFormat|,
-      |planes|, and |init|.
+      9. Assign |codedWidth|, |codedHeight|, |visibleLeft|, |visibleTop|,
+          |visibleWidth|, |visibleHeight|, |displayWidth|, and
+          |displayHeight| to {{VideoFrame/[[coded width]]}},
+          {{VideoFrame/[[coded height]]}}, {{VideoFrame/[[visible left]]}},
+          {{VideoFrame/[[visible top]]}}, {{VideoFrame/[[visible width]]}},
+          and {{VideoFrame/[[visible height]]}} respectively..
+      10. Assign |duration| and |timestamp| to {{VideoFrame/[[duration]]}} and
+          {{VideoFrame/[[timestamp]]}} respectively.
+  2. Return |frame|.
 
 : To check if a {{VideoFramePlaneInit}} is a
     <dfn>valid VideoFramePlaneInit</dfn>, run these steps:
 :: 1. If {{VideoFramePlaneInit/codedWidth}} = 0 or
         {{VideoFramePlaneInit/codedHeight}} = 0,return `false`.
-    2. If {{VideoFramePlaneInit/cropWidth}} = 0 or
-        {{VideoFramePlaneInit/cropHeight}} = 0, return `false`.
-    3. If {{VideoFramePlaneInit/cropTop}} +
-        {{VideoFramePlaneInit/cropHeight}} >=
+    2. If {{VideoFramePlaneInit/visibleRect}}.{{VideoFrameRect/width}} = 0
+        or {{VideoFramePlaneInit/visibleRect}}.{{VideoFrameRect/height}} =
+        0, return `false`.
+    3. If {{VideoFramePlaneInit/visibleRect}}.{{VideoFrameRect/top}} +
+        {{VideoFramePlaneInit/visibleRect}}.{{VideoFrameRect/height}} >=
         {{VideoFramePlaneInit/codedHeight}}, return `false`.
-    4. If {{VideoFramePlaneInit/cropLeft}} +
-        {{VideoFramePlaneInit/cropWidth}} >=
+    4. If {{VideoFramePlaneInit/visibleRect}}.{{VideoFrameRect/left}} +
+        {{VideoFramePlaneInit/visibleRect}}.{{VideoFrameRect/width}} >=
         {{VideoFramePlaneInit/codedWidth}}, return `false`.
     5. If {{VideoFramePlaneInit/displayWidth}} = 0 or
         {{VideoFramePlaneInit/displayHeight}} = 0, return `false`.
@@ -2928,24 +3067,13 @@ dictionary VideoFramePlaneInit {
         {{VideoFrame/[[resource reference]]}}.
     3. Assign the following attributes from |otherFrame| to |frame|:
         {{VideoFrame/format}}, {{VideoFrame/codedWidth}},
-        {{VideoFrame/codedHeight}}, {{VideoFrame/cropLeft}},
-        {{VideoFrame/cropTop}}, {{VideoFrame/cropWidth}},
-        {{VideoFrame/cropHeight}}, {{VideoFrame/displayWidth}},
-        {{VideoFrame/displayHeight}}.
-    4. Let |planes| be a new [=list=].
-    5. For each |otherPlane| in |otherFrame|.{{VideoFrame/planes}}:
-        1. Let |plane| be a new {{Plane}}.
-        2. Assign a reference for |frame| to |plane|'s
-            {{Plane/[[parent frame]]}}.
-        3. Assign the following attributes from |otherPlane| to |plane|:
-            {{Plane/stride}}, {{Plane/rows}}, {{Plane/length}}.
-        4. Append |plane| to |planes|.
-    6. Assign |planes| to |frame|.{{VideoFrame/planes}}.
-    7. If {{VideoFrameInit/duration}} [=map/exists=] in |init|, assign it to
+        {{VideoFrame/codedHeight}}, {{VideoFrame/visibleRect}},
+        {{VideoFrame/displayWidth}}, {{VideoFrame/displayHeight}}.
+    4. If {{VideoFrameInit/duration}} [=map/exists=] in |init|, assign it to
         |frame|.{{VideoFrame/duration}}. Otherwise, assign
         |otherFrame|.{{VideoFrame/duration}} to
         |frame|.{{VideoFrame/duration}}.
-    8. If {{VideoFrameInit/timestamp}} [=map/exists=] in |init|, assign it to
+    5. If {{VideoFrameInit/timestamp}} [=map/exists=] in |init|, assign it to
         |frame|.{{VideoFrame/timestamp}}. Otherwise, assign
         |otherFrame|.{{VideoFrame/timestamp}} to
         |frame|.{{VideoFrame/timestamp}}.
@@ -2954,27 +3082,15 @@ dictionary VideoFramePlaneInit {
     |init|,  |frame|, |resource|, |width| and |height|)
 :: 1. Assign a new reference for |resource| to |frame|'s
         {{VideoFrame/[[resource reference]]}}.
-    2. If |resource| uses a recognized {{PixelFormat}}:
-        1. Assign the {{PixelFormat}} of |resource| to {{VideoFrame/format}}.
-        2. Let |planes| be a list of {{Plane}}s describing the
-            [=media resource=] in accordance with the {{VideoFrame/format}}.
-
-            ISSUE: The spec should define explicit rules for each
-                {{PixelFormat}} and reference them in the step above. See
-                [#165](https://github.com/w3c/webcodecs/issues/165).
-
-        3. Assign |planes| to {{VideoFrame/planes}}.
-    3. Otherwise (|resource| does not use a recognized {{PixelFormat}}):
-        1. Assign `""` to {{VideoFrame/format}}.
-        2. Assign `null` to {{VideoFrame/planes}}.
+    2. If |resource| uses a recognized {{PixelFormat}}, assign the
+        {{PixelFormat}} of |resource| to {{VideoFrame/[[format]]}}.
+    3. Otherwise, assign `""` to {{VideoFrame/[[format]]}}.
     4. Assign |width| to the following attributes of |frame|:
-        {{VideoFrame/codedWidth}}, {{VideoFrame/cropWidth}},
-        {{VideoFrame/displayWidth}}.
+        {{VideoFrame/codedWidth}}, {{VideoFrame/displayWidth}}.
     5. Assign |height| to the following attributes of |frame|:
-        {{VideoFrame/codedHeight}}, {{VideoFrame/cropHeight}},
-        {{VideoFrame/displayHeight}}.
-    6. Assign `0` to frame's {{VideoFrame/cropTop}} and
-        {{VideoFrame/cropLeft}}.
+        {{VideoFrame/codedHeight}}, {{VideoFrame/displayHeight}}.
+    6. Assign «[ "left:" → `0`, "top" → `0`, "width" → |width|, "height" →
+        |height| ]» to |frame|.{{VideoFrame/visibleRect}}.
     7. Assign `init`.{{VideoFrameInit/duration}} to
         |frame|.{{VideoFrame/duration}}.
     8. Assign `init`.{{VideoFrameInit/timestamp}} to
@@ -2985,80 +3101,234 @@ dictionary VideoFramePlaneInit {
         1. Assign |frame|.{{VideoFrame/[[resource reference]]}} to
             {{VideoFrame/[[resource reference]]}}.
         2. Assign |frame|.{{VideoFrame/format}} to {{VideoFrame/format}}.
-        3. Assign a new [=list=] to {{VideoFrame/planes}}.
-        4. For each |plane| in {{VideoFrame/planes}}:
-            1. Let |clonePlane| be a new {{Plane}} initialized as follows:
-                1. Assign |clone| to |clonePlane|.{{Plane/[[parent frame]]}}.
-                2. Assign |plane|.{{Plane/stride}} to {{Plane/stride}}.
-                3. Assign |plane|.{{Plane/rows}} to {{Plane/rows}}.
-                4. Assign |plane|.{{Plane/length}} to {{Plane/length}}.
-            2. Append |clonePlane| to {{VideoFrame/planes}}.
-        5. Assign all remaining attributes of |frame|
-            ({{VideoFrame/codedWidth}}, {{VideoFrame/codedHeight}}, etc.) to those of the same name in |clone|.
+        3. Assign all remaining attributes of |frame| (
+            {{VideoFrame/codedWidth}}, {{VideoFrame/codedHeight}}, etc.) to
+            those of the same name in |clone|.
     2. Return |clone|.
 
-Plane Interface {#plane-interface}
-----------------------------------
-A {{Plane}} is solely constructed by its {{VideoFrame}}. During construction,
-    the User Agent may use knowledge of the frame’s {{PixelFormat}} to add
-    padding to the {{Plane}} to improve memory alignment.
+: <dfn for=VideoFrame>Parse VideoFrameCopyToOptions</dfn> (with |options|)
+:: 1. Let |parsedRect| be the result of running the [=VideoFrame/Parse CopyTo
+        Rect=] with |options|.
+    2. If |parsedRect| is an exception, return |parsedRect|.
+    3. Let |parsedOptions| be the result of running the [=VideoFrame/Compute
+        Layout and Allocation Size=] algorithm with |parsedRect| and |options|.
+    6. Return |parsedOptions|.
 
-A {{Plane}} cannot be used after the {{VideoFrame}} is destroyed. A new
-    {{VideoFrame}} can be assembled from existing {{Plane}}s, and the new
-    {{VideoFrame}} will remain valid when the original is destroyed. This makes
-    it possible to efficiently add an alpha plane to an existing
-    {{VideoFrame}}.
+: <dfn for=VideoFrame>Parse CopyTo Rect</dfn> (with |options|)
+:: 1. Let |sourceRect| be the be the result of performing the getter steps for
+        {{VideoFrame/visibleRect}}.
+    2. If {{VideoFrameCopyToOptions/rect}} [=map/exists=] in |options|:
+        1. Let |optRect| be {{VideoFrameCopyToOptions/rect}}:
+        2. If either of |optRect|.{{VideoFrameRect/width}} or
+            {{VideoFrameRect/height}} is `0`, return a {{TypeError}}.
+        3. If the sum of |optRect|.{{VideoFrameRect/left}} and
+            |optRect|.{{VideoFrameRect/width}} is greater than
+            {{VideoFrame/[[coded width]]}}, return a {{TypeError}}.
+        4. If the sum of |optRect|.{{VideoFrameRect/top}} and
+            |optRect|.{{VideoFrameRect/height}} is greater than
+            {{VideoFrame/[[coded height]]}}, return a {{TypeError}}.
+        5. Assign |optRect| to |sourceRect|.
+    3. Let |planeIndex| be `0`.
+    4. Let |numPlanes| be the number of planes as defined by
+        {{VideoFrame/[[format]]}}
+    5. While |planeIndex| is less than |numPlanes|:
 
+        NOTE: The following steps validate |rect| is sample-aligned for this
+            frame's {{VideoFrame/[[format]]}}.
+
+        1. Let |plane| be the Plane identified by |planeIndex| as defined by
+            {{VideoFrame/[[format]]}}.
+        2. Let |sampleWidth| be the horizontal pixel size of each subsample
+            for |plane|.
+        3. Let |sampleHeight| be the vertical pixel size of each subsample
+            for |plane|.
+        4. If |sourceRect|.{{VideoFrameRect/left}} and
+            |sourceRect|.{{VideoFrameRect/width}} are not both multiples of
+            |sampleWidth|, throw a {{TypeError}}.
+        5. If |sourceRect|.{{VideoFrameRect/top}} and
+            |sourceRect|.{{VideoFrameRect/height}} are not both multiples of
+            |sampleHeight|, throw a {{TypeError}}.
+        6. Increment |planeIndex| by `1`
+    6. Return |sourceRect|.
+
+: <dfn for=VideoFrame>Compute Layout and Allocation Size</dfn> (with
+    |parsedRect| and |options|)
+:: 1. Let |numPlanes| be the number of planes as defined by
+        {{VideoFrame/[[format]]}}
+    2. If {{VideoFrameCopyToOptions/layout}} [=map/exists=] its size does not
+        equal |numPlanes|, throw a {{TypeError}}.
+    3. Let |minAllocationSize| be `0`.
+    4. Let |computedLayouts| be a new [=list=].
+    5. Let |endOffsets| be a new [=list=].
+    6. Let |planeIndex| be `0`.
+    7. While |planeIndex| < |numPlanes|:
+        1. Let |plane| be the Plane identified by |planeIndex| as defined by
+            {{VideoFrame/[[format]]}}.
+        2. Let |sampleBytes| be the number of bytes per sample for |plane|.
+        3. Let |sampleWidth| be the horizontal pixel size of each subsample
+            for |plane|.
+        4. Let |sampleHeight| be the vertical pixel size of each subsample
+            for |plane|.
+        5. Let |sampleWidthBytes| be the product of multiplying |sampleWidth| by
+            |sampleBytes|.
+        6. Let |computedLayout| be a new [=computed plane layout=].
+        7. Set |computedLayout|'s [=computed plane layout/sourceTop=] to the
+            result of the integer division of
+            |parsedRect|.{{VideoFrameRect/top}} by |sampleHeight|.
+        8. Set |computedLayout|'s [=computed plane layout/sourceHeight=] to the
+            result of the integer division of
+            |parsedRect|.{{VideoFrameRect/height}} by |sampleHeight|
+        9. Set |computedLayout|'s [=computed plane layout/sourceLeftBytes=] to
+            the result of the integer division of
+            |parsedRect|.{{VideoFrameRect/left}} by |sampleWidthBytes|.
+        10. Set |computedLayout|'s [=computed plane layout/sourceWidthBytes=] to
+            the result of the integer division of
+            |parsedRect|.{{VideoFrameRect/width}} by |sampleWidthBytes|.
+        11. If {{VideoFrameCopyToOptions/layout}} [=map/exists=]:
+            1. Let |planeLayout| be the {{PlaneLayout}} in
+                {{VideoFrameCopyToOptions/layout}} at position |planeIndex|.
+            2. If |planeLayout|.{{PlaneLayout/stride}} is less than
+                |computedLayout|'s [=computed plane layout/sourceWidthBytes=],
+                return a {{TypeError}}.
+            3. Assign |planeLayout|.{{PlaneLayout/offset}} to |computedLayout|'s
+                [=computed plane layout/destinationOffset=].
+            4. Assign |planeLayout|.{{PlaneLayout/stride}} to |computedLayout|'s
+                [=computed plane layout/destinationStride=].
+        12. Otherwise:
+
+            NOTE: If an explicit layout was not provided, the following steps
+                default to tight packing.
+
+            1. Assign |minAllocationSize| to |computedLayout|'s
+                [=computed plane layout/destinationOffset=].
+            2. Assign |computedLayout|'s [=computed plane layout/sourceWidthBytes=] to
+                |computedLayout|'s [=computed plane layout/destinationStride=].
+        13. Let |planeSize| be the product of multiplying |computedLayout|'s
+                [=computed plane layout/destinationStride=] and
+                [=computed plane layout/sourceHeight=].
+        14. Let |planeEnd| be the sum of |planeSize| and |computedLayout|'s
+                [=computed plane layout/destinationOffset=].
+        15. If |planeSize| or |planeEnd| is greater than maximum range of
+                {{unsigned long}}, return a {{TypeError}}.
+        16. Append |planeEnd| to |endOffsets|.
+        17. Assign the maximum of |minAllocationSize| and |planeEnd| to
+                |minAllocationSize|.
+
+                NOTE: The above step uses a maximum to allow for the
+                    possibility that user specified plane offsets may reorder
+                    planes.
+
+        18. Let |earlierPlaneIndex| be `0`.
+        19. While |earlierPlaneIndex| is less than |planeIndex|.
+            1. Let |earlierLayout| be `computedLayouts[earlierPlaneIndex]`.
+            2. If `endOffsets[planeIndex]` is less than or equal to
+                |earlierLayout|'s [=computed plane layout/destinationOffset=] or
+                if `endOffsets[earlierPlaneIndex]` is less than or equal to
+                |computedLayout|'s [=computed plane layout/destinationOffset=],
+                continue.
+
+                NOTE: If plane A ends before plane B starts, they do not
+                    overlap.
+
+            3. Otherwise, return a {{TypeError}}.
+            4. Increment |earlierPlaneIndex| by `1`.
+        20. Append |computedLayout| to |computedLayouts|.
+        21. Increment |planeIndex| by `1`.
+    8. Let |parsedOptions| be a new [=parsed copyto options=], initialized as
+        follows:
+        1. Assign |computedLayouts| to
+            [=parsed copyto options/computedLayouts=].
+        2. Assign |minAllocationSize| to
+            [=parsed copyto options/allocationSize=].
+    9. Return |parsedOptions|.
+
+VideoFrame CopyTo() Options {#videoframe-copyto-options}
+------------------------------------------------------------
+Options to specify which {{VideoFrameRect}} to copy and the offset and
+stride of planes in the destination buffer.
 
 <xmp class='idl'>
-[Exposed=(Window,DedicatedWorker)]
-interface Plane {
-  readonly attribute unsigned long stride;
-  readonly attribute unsigned long rows;
-  readonly attribute unsigned long length;
-
-  undefined readInto(ArrayBufferView dst);
-};
-
-dictionary PlaneInit {
-  required BufferSource src;
-  [EnforceRange] required unsigned long stride;
-  [EnforceRange] required unsigned long rows;
+dictionary VideoFrameCopyToOptions {
+  VideoFrameRect rect;
+  sequence<PlaneLayout> layout;
 };
 </xmp>
 
-### Internal Slots ###{#plane-internal-slots}
-<dl>
-  <dt><dfn attribute for=Plane>[[parent frame]]</dfn></dt>
-  <dd>Refers to the {{VideoFrame}} that constructed and owns this plane.</dd>
-</dl>
+<div class='note'>
+NOTE: The steps of {{VideoFrame/copyTo()}} or {{VideoFrame/allocationSize()}}
+will enforce the following requirements:
+    * The coordinates of {{VideoFrameCopyToOptions/rect}} must be
+        sample-aligned as determiend by {{VideoFrame/[[format]]}}.
+    * If {{VideoFrameCopyToOptions/layout}} [=map/exists=], a {{PlaneLayout}}
+        must be provided for all planes.
+</div>
 
-### Attributes ###{#plane-attributes}
-<dl>
-  <dt><dfn attribute for=Plane>stride</dfn></dt>
-  <dd>The width of each row including any padding.</dd>
-  <dt><dfn attribute for=Plane>rows</dfn></dt>
-  <dd>The number of rows.</dd>
-  <dt><dfn attribute for=Plane>length</dfn></dt>
-  <dd>The total byte length of the plane (stride * rows).</dd>
-</dl>
+: <dfn dict-member for=VideoFrameCopyToOptions>rect</dfn>
+:: The {{VideoFrameRect}} describing the rectangle of pixels to copy from the
+    {{VideoFrame}}. If unspecified, the {{VideoFrame/visibleRect}} will be used.
 
-### Methods ###{#plane-methods}
-<dfn method for=Plane>readInto(|dst|)</dfn>
+    NOTE: The coded rectangle can be specified by passing {{VideoFrame}}'s
+        {{VideoFrame/codedRect}}.
 
-Copies the plane data into dst.
+: <dfn dict-member for=VideoFrameCopyToOptions>layout</dfn>
+:: The {{PlaneLayout}} for each plane in {{VideoFrame}}, affording the option
+    to specify an offset and stride for each plane in the destination
+    {{BufferSource}}. If unspecified, the planes will be tightly packed. It is
+    invalid to specify planes that overlap.
 
-When invoked, run these steps:
-1. If {{Plane/[[parent frame]]}} has been destroyed, throw an
-    {{InvalidStateError}}.
-2. If {{Plane/length}} is greater than |`dst.byteLength`|, throw a
-    {{TypeError}}.
-3. Let |resource| be the [=media resource=] referenced by
-    {{Plane/[[parent frame]]}}'s {{VideoFrame/[[resource reference]]}}.
-4. Let |plane bytes| be the region of bytes in [=media resource=] corresponding
-    to this plane.
-5. Copy the |plane bytes| into |dst|.
+VideoFrame Rectangle (Rect) {#videoframe-rect}
+----------------------------------------------
+A {{VideoFrameRect}} is a dictionary specifying the position and dimensions of
+a rectangle of pixels within a {{VideoFrame}}. {{VideoFrameRect}} is used with
+{{VideoFrame/copyTo()}} and {{VideoFrame/allocationSize()}} to describe the
+dimensions of the source rectangle. {{VideoFrame}} defines
+{{VideoFrame/codedRect}} and {{VideoFrame/visibleRect}} for convenient copying
+ of the coded size and visible region respectively.
 
+<xmp class='idl'>
+dictionary VideoFrameRect {
+  [EnforceRange] required unsigned long left;
+  [EnforceRange] required unsigned long top;
+  [EnforceRange] required unsigned long width;
+  [EnforceRange] required unsigned long height;
+};
+</xmp>
+
+: <dfn dict-member for=VideoFrameRect>left</dfn>
+:: The left offset in pixels for this {{VideoFrameRect}}.
+
+: <dfn dict-member for=VideoFrameRect>top</dfn>
+:: The top offset in pixels for this {{VideoFrameRect}}.
+
+: <dfn dict-member for=VideoFrameRect>width</dfn>
+:: The width in pixels for this {{VideoFrameRect}}.
+
+: <dfn dict-member for=VideoFrameRect>height</dfn>
+:: The height in pixels for this {{VideoFrameRect}}.
+
+Plane Layout{#plane-layout}
+---------------------------
+A {{PlaneLayout}} is a dictionary specifying the offset and stride of a
+{{VideoFrame}} plane once copied to a {{BufferSource}}. A sequence of
+{{PlaneLayout}}s may be provided to {{VideoFrame}}'s {{VideoFrame/copyTo()}} to
+specify how the plane is laid out in the destination {{BufferSource}}}.
+Alternatively, callers can inspect {{VideoFrame/copyTo()}}'s returned sequence
+of {{PlaneLayout}}s to learn the the offset and stride for planes as decided by
+the user agent.
+
+<xmp class='idl'>
+dictionary PlaneLayout {
+  [EnforceRange] required unsigned long offset;
+  [EnforceRange] required unsigned long stride;
+};
+</xmp>
+
+: <dfn dict-member for=PlaneLayout>offset</dfn>
+:: The offset in bytes where the given plane begins within a {{BufferSource}}.
+
+: <dfn dict-member for=PlaneLayout>stride</dfn>
+:: The number of bytes, including padding, used by each row of the plane within
+    a {{BufferSource}}.
 
 Pixel Format{#pixel-format}
 ---------------------------
@@ -3293,14 +3563,14 @@ interface ImageDecoder {
 :: Immediately aborts all pending work.
 
     When invoked, run the [=ImageDecoder/Reset ImageDecoder=] algorithm with
-    and {{AbortError}} {{DOMException}}.
+    an {{AbortError}} {{DOMException}}.
 
 : <dfn method for=ImageDecoder>close()</dfn>
 :: Immediately aborts all pending work and releases system resources. Close is
     final.
 
     When invoked, run the [=ImageDecoder/Close ImageDecoder=] algorithm with
-    and {{AbortError}} {{DOMException}}.
+    an {{AbortError}} {{DOMException}}.
 
 : <dfn method for=ImageDecoder>isTypeSupported(type)</dfn>
 :: Returns a promise indicating whether the provided config is supported by the
