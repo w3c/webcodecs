@@ -4148,28 +4148,30 @@ A User Agent is allowed to [=reclaim a codec=], freeing the resources of a
 [=inactive codec=] or a [=background codec=].
 
 An <dfn>inactive codec</dfn> is a codec that has not received a call to
-`encode()` or `decode()` in the past 1 second, and has no pending outputs.
+`encode()` or `decode()` in the past 1 second, and has not called its
+`output()` callback in the past 1 second.
 
 A <dfn>background codec</dfn> is a codec whose {{ownerDocument}}'s
 {{Document/hidden}} attribute is {{hidden|"hidden"}}.
-
-When selecting which [=reclaimable codec=] to evict, the User Agent should
-prioritize, in order, the following criteria:
-    1. What type of resource is the codec holding on to? User Agents must only
-        reclaim codecs that will alevieate the pressure of scarce resources.
-    2. Is the codec both a [=background codec=] and an [=inactive codec=]? These
-        codecs should be prioritized for reclamation, as they are least likely
-        to be disruptive to user experience.
-    2. Otherwise, prefer reclaiming codecs that are [=background codec=]s,
-        before [=inactive codec=]s.
-    4. Any other heuristics, determined by the User Agent. For example,
-        heuristics might prioritize reclaiming the oldest codecs, the ones with
-        the least recent activity, or the least frequent activity.
 
 To <dfn>reclaim a codec</dfn>, a User Agent must run the appropriate
 close algorithm (amongst [=Close AudioDecoder=], [=Close AudioEncoder=],
 [=Close VideoDecoder=] and [=Close VideoEncoder=]) with a {{QuotaExceededError}}
 {{DOMException}}.
+
+When selecting which [=reclaimable codec=] to evict, the User Agent should
+consider the following criteria:
+    - What type of resource is the codec holding on to? User Agents should
+        reclaim codecs that will alleviate the pressure of scarce resources.
+    - How disruptive might reclaiming the codec be? User Agents should consider
+        whether the codec is a [=background codec=], an [=inactive codec=], or
+        both. Codecs that are both are least likely disrupt to user experience
+        when reclaimed. Otherwise, User Agents might prefer reclaiming codecs
+        that are [=background codec=]s, before [=inactive codec=]s in
+        foreground pages.
+    - Any other heuristics, determined by the User Agent. For example,
+        heuristics might prioritize reclaiming the oldest codecs, the ones with
+        the least recent activity, or the least frequent activity.
 
 Security Considerations{#security-considerations}
 =================================================
