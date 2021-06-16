@@ -97,6 +97,9 @@ spec: css-images-3; urlPrefix: https://www.w3.org/TR/css-images-3/
 
 spec: webrtc-svc; urlPrefix: https://w3c.github.io/webrtc-svc/
     type: dfn; text: scalability mode identifier; url:#scalabilitymodes*
+
+spec: visibility-state; urlPrefix: https://www.w3.org/TR/page-visibility/#
+    type: enum-value; text: hidden; url: dom-visibilitystate-hidden
 </pre>
 
 <style>
@@ -4133,6 +4136,40 @@ interface ImageTrack : EventTarget {
 : <dfn event for=ImageTrack>change</dfn>
 :: Fired at the {{ImageTrack}} when the {{ImageTrack/frameCount}} is altered.
 
+Resource Reclamation{#resource-reclamation}
+==============================================
+
+When resources are constrained, a User Agent might want to pro-actively reclaim
+codecs. This is particularly true in the case where hardware codecs are limited,
+and shared accross all web pages.
+
+A User Agent is allowed to [=reclaim a codec=], freeing the resources of a
+<dfn>reclaimable codec</dfn>, which is a defined as a codec that is either an
+[=inactive codec=] or a [=background codec=].
+
+An <dfn>inactive codec</dfn> is a codec that has not received a call to
+`encode()` or `decode()` in the past 1 second, and has no pending outputs.
+
+A <dfn>background codec</dfn> is a codec whose {{ownerDocument}}'s
+{{Document/hidden}} attribute is {{hidden|"hidden"}}.
+
+When selecting which [=reclaimable codec=] to evict, the User Agent should
+prioritize, in order, the following criteria:
+    1. What type of resource is the codec holding on to? User Agents must only
+        reclaim codecs that will alevieate the pressure of scarce resources.
+    2. Is the codec both a [=background codec=] and an [=inactive codec=]? These
+        codecs should be prioritized for reclamation, as they are least likely
+        to be disruptive to user experience.
+    2. Otherwise, prefer reclaiming codecs that are [=background codec=]s,
+        before [=inactive codec=]s.
+    4. Any other heuristics, determined by the User Agent. For example,
+        heuristics might prioritize reclaiming the oldest codecs, the ones with
+        the least recent activity, or the least frequent activity.
+
+To <dfn>reclaim a codec</dfn>, a User Agent must run the appropriate
+close algorithm (amongst [=Close AudioDecoder=], [=Close AudioEncoder=],
+[=Close VideoDecoder=] and [=Close VideoEncoder=]) with a {{QuotaExceededError}}
+{{DOMException}}.
 
 Security Considerations{#security-considerations}
 =================================================
