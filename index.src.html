@@ -1361,10 +1361,13 @@ Algorithms {#videoencoder-algorithms}
                 {{VideoEncoder/[[active output config]]}}.
         7. If |encoderConfig|.{{VideoEncoderConfig/scalabilityMode}}
             describes multiple [=temporal layers=]:
-            1. Let |temporal_layer_id| be the zero-based index describing the
+            1. Let |svc| be a new {{SvcOutputMetadata}} instance.
+            2. Let |temporal_layer_id| be the zero-based index describing the
                 temporal layer for |output|.
-            2. Assign |temporal_layer_id| to
-                |chunkMetadata|.{{EncodedVideoChunkMetadata/temporalLayerId}}.
+            3. Assign |temporal_layer_id| to
+                |svc|.{{SvcOutputMetadata/temporalLayerId}}.
+            4. Assign |svc| to
+                |chunkMetadata|.{{EncodedVideoChunkMetadata/svc}}.
         8. Invoke {{VideoEncoder/[[output callback]]}} with |chunk| and
             |chunkMetadata|.
   </dd>
@@ -1404,6 +1407,10 @@ The following metadata dictionary is emitted by the
 <xmp class='idl'>
 dictionary EncodedVideoChunkMetadata {
   VideoDecoderConfig decoderConfig;
+  SvcOutputMetadata svc;
+};
+
+dictionary SvcOutputMetadata {
   unsigned long temporalLayerId;
 };
 </xmp>
@@ -1412,7 +1419,11 @@ dictionary EncodedVideoChunkMetadata {
 :: A {{VideoDecoderConfig}} that authors may use to decode the associated
     {{EncodedVideoChunk}}.
 
-: <dfn dict-member for=EncodedVideoChunkMetadata>temporalLayerId</dfn>
+: <dfn dict-member for=EncodedVideoChunkMetadata>svc</dfn>
+:: A collection of metadata describing this {{EncodedVideoChunk}} with respect
+    to the configured {{VideoEncoderConfig/scalabilityMode}}.
+
+: <dfn dict-member for=SvcOutputMetadata>temporalLayerId</dfn>
 :: A number that identifies the [=temporal layer=] for the associated
     {{EncodedVideoChunk}}.
 
