@@ -25,7 +25,6 @@ They do so perhaps because each particular Web API that has codecs internally ha
 
 Provide web apps with efficient access to built-in (software and hardware) media encoders and decoders for encoding and decoding media with the following properties:
 - **Streamability**: the ability to operate on a stream of data, that is not necessarily all in memory (possibly on the network, possibly on disk, etc.).
-- **Clocking**: the ability to drive the decoding or encoding using a specific clock domain, to be able to control clock drifts
 - **Efficiency**: the ability to leverage the UA, the system and/or hardware available on the host to make the decoding or encoding process more efficient. Limit the amount of garbage (in the “garbage collection” sense), to limit GC pressure to a minimum, to avoid the inherent non-determinism brought in by the GCs.  Allow encoding and decoding to run off the main thread
 - **Composability**: Work well with other Web APIs, such as Streams, WebTransport and WebAssembly.
 - **Resilience**: the ability to recover in case of problems (network underruns, frame drop because resources are missing, etc.)
