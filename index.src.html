@@ -1358,9 +1358,9 @@ Algorithms {#videoencoder-algorithms}
                 {{VideoEncoder/[[active output config]]}}.
         7. If |encoderConfig|.{{VideoEncoderConfig/scalabilityMode}}
             describes multiple [=temporal layers=]:
-            1. Let |temporal_layer_id| be the zero-based index describing the
+            1. Let |svc| be a new {{SvcOutputMetadata}} instance.
+            2. Let |temporal_layer_id| be the zero-based index describing the
                 temporal layer for |output|.
-            2. Let |svc| be a new {{SvcOutputMetadata}} instance.
             3. Assign |temporal_layer_id| to
                 |svc|.{{SvcOutputMetadata/temporalLayerId}}.
             4. Assign |svc| to
@@ -1417,7 +1417,8 @@ dictionary SvcOutputMetadata {
     {{EncodedVideoChunk}}.
 
 : <dfn dict-member for=EncodedVideoChunkMetadata>svc</dfn>
-:: A collection of metadata related to the {{EncodedVideoChunk}}'s SVC options.
+:: A collection of metadata describing this {{EncodedVideoChunk}} with respect
+    to the configured {{VideoEncoderConfig/scalabilityMode}}.
 
 : <dfn dict-member for=SvcOutputMetadata>temporalLayerId</dfn>
 :: A number that identifies the [=temporal layer=] for the associated
