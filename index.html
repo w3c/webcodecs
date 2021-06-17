@@ -6,7 +6,7 @@
   <link href="https://www.w3.org/StyleSheets/TR/2016/W3C-ED" rel="stylesheet" type="text/css">
   <meta content="Bikeshed version 3d6a6fcbb, updated Wed Jun 16 16:19:39 2021 -0700" name="generator">
   <link href="https://www.w3.org/TR/webcodecs/" rel="canonical">
-  <meta content="29987866dfaf2c57f581a7d02ec7cdd5be8ff722" name="document-revision">
+  <meta content="3584fb9e06938383f63146443ae7d06f871b6dfb" name="document-revision">
 <style>
 main > dl > dd {
   margin-bottom: 1em;
@@ -2104,10 +2104,14 @@ not <a data-link-type="dfn" href="#equal-dictionaries" id="ref-for-equal-diction
          <p>If <var>encoderConfig</var>.<code class="idl"><a data-link-type="idl" href="#dom-videoencoderconfig-scalabilitymode" id="ref-for-dom-videoencoderconfig-scalabilitymode①">scalabilityMode</a></code> describes multiple <a data-link-type="dfn" href="#temporal-layer" id="ref-for-temporal-layer">temporal layers</a>:</p>
          <ol>
           <li data-md>
+           <p>Let <var>svc</var> be a new <code class="idl"><a data-link-type="idl" href="#dictdef-svcoutputmetadata" id="ref-for-dictdef-svcoutputmetadata">SvcOutputMetadata</a></code> instance.</p>
+          <li data-md>
            <p>Let <var>temporal_layer_id</var> be the zero-based index describing the
 temporal layer for <var>output</var>.</p>
           <li data-md>
-           <p>Assign <var>temporal_layer_id</var> to <var>chunkMetadata</var>.<code class="idl"><a data-link-type="idl" href="#dom-encodedvideochunkmetadata-temporallayerid" id="ref-for-dom-encodedvideochunkmetadata-temporallayerid">temporalLayerId</a></code>.</p>
+           <p>Assign <var>temporal_layer_id</var> to <var>svc</var>.<code class="idl"><a data-link-type="idl" href="#dom-svcoutputmetadata-temporallayerid" id="ref-for-dom-svcoutputmetadata-temporallayerid">temporalLayerId</a></code>.</p>
+          <li data-md>
+           <p>Assign <var>svc</var> to <var>chunkMetadata</var>.<code class="idl"><a data-link-type="idl" href="#dom-encodedvideochunkmetadata-svc" id="ref-for-dom-encodedvideochunkmetadata-svc">svc</a></code>.</p>
          </ol>
         <li data-md>
          <p>Invoke <code class="idl"><a data-link-type="idl" href="#dom-videoencoder-output-callback-slot" id="ref-for-dom-videoencoder-output-callback-slot①">[[output callback]]</a></code> with <var>chunk</var> and <var>chunkMetadata</var>.</p>
@@ -2160,16 +2164,24 @@ the <a data-link-type="dfn" href="#control-thread" id="ref-for-control-thread②
     The following metadata dictionary is emitted by the <code class="idl"><a data-link-type="idl" href="#callbackdef-encodedvideochunkoutputcallback" id="ref-for-callbackdef-encodedvideochunkoutputcallback②">EncodedVideoChunkOutputCallback</a></code> alongside an associated <code class="idl"><a data-link-type="idl" href="#encodedvideochunk" id="ref-for-encodedvideochunk⑦">EncodedVideoChunk</a></code>. 
 <pre class="idl highlight def"><c- b>dictionary</c-> <dfn class="dfn-paneled idl-code" data-dfn-type="dictionary" data-export id="dictdef-encodedvideochunkmetadata"><code><c- g>EncodedVideoChunkMetadata</c-></code></dfn> {
   <a data-link-type="idl-name" href="#dictdef-videodecoderconfig" id="ref-for-dictdef-videodecoderconfig⑤"><c- n>VideoDecoderConfig</c-></a> <a class="idl-code" data-link-type="dict-member" data-type="VideoDecoderConfig " href="#dom-encodedvideochunkmetadata-decoderconfig" id="ref-for-dom-encodedvideochunkmetadata-decoderconfig①"><c- g>decoderConfig</c-></a>;
-  <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-unsigned-long" id="ref-for-idl-unsigned-long"><c- b>unsigned</c-> <c- b>long</c-></a> <a class="idl-code" data-link-type="dict-member" data-type="unsigned long " href="#dom-encodedvideochunkmetadata-temporallayerid" id="ref-for-dom-encodedvideochunkmetadata-temporallayerid①"><c- g>temporalLayerId</c-></a>;
+  <a data-link-type="idl-name" href="#dictdef-svcoutputmetadata" id="ref-for-dictdef-svcoutputmetadata①"><c- n>SvcOutputMetadata</c-></a> <a class="idl-code" data-link-type="dict-member" data-type="SvcOutputMetadata " href="#dom-encodedvideochunkmetadata-svc" id="ref-for-dom-encodedvideochunkmetadata-svc①"><c- g>svc</c-></a>;
+};
+
+<c- b>dictionary</c-> <dfn class="dfn-paneled idl-code" data-dfn-type="dictionary" data-export id="dictdef-svcoutputmetadata"><code><c- g>SvcOutputMetadata</c-></code></dfn> {
+  <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-unsigned-long" id="ref-for-idl-unsigned-long"><c- b>unsigned</c-> <c- b>long</c-></a> <a class="idl-code" data-link-type="dict-member" data-type="unsigned long " href="#dom-svcoutputmetadata-temporallayerid" id="ref-for-dom-svcoutputmetadata-temporallayerid①"><c- g>temporalLayerId</c-></a>;
 };
 </pre>
    <dl>
     <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="EncodedVideoChunkMetadata" data-dfn-type="dict-member" data-export id="dom-encodedvideochunkmetadata-decoderconfig"><code>decoderConfig</code></dfn>, <span> of type <a data-link-type="idl-name" href="#dictdef-videodecoderconfig" id="ref-for-dictdef-videodecoderconfig⑥">VideoDecoderConfig</a></span>
     <dd data-md>
      <p>A <code class="idl"><a data-link-type="idl" href="#dictdef-videodecoderconfig" id="ref-for-dictdef-videodecoderconfig⑦">VideoDecoderConfig</a></code> that authors may use to decode the associated <code class="idl"><a data-link-type="idl" href="#encodedvideochunk" id="ref-for-encodedvideochunk⑧">EncodedVideoChunk</a></code>.</p>
-    <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="EncodedVideoChunkMetadata" data-dfn-type="dict-member" data-export id="dom-encodedvideochunkmetadata-temporallayerid"><code>temporalLayerId</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#idl-unsigned-long" id="ref-for-idl-unsigned-long①">unsigned long</a></span>
+    <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="EncodedVideoChunkMetadata" data-dfn-type="dict-member" data-export id="dom-encodedvideochunkmetadata-svc"><code>svc</code></dfn>, <span> of type <a data-link-type="idl-name" href="#dictdef-svcoutputmetadata" id="ref-for-dictdef-svcoutputmetadata②">SvcOutputMetadata</a></span>
     <dd data-md>
-     <p>A number that identifies the <a data-link-type="dfn" href="#temporal-layer" id="ref-for-temporal-layer①">temporal layer</a> for the associated <code class="idl"><a data-link-type="idl" href="#encodedvideochunk" id="ref-for-encodedvideochunk⑨">EncodedVideoChunk</a></code>.</p>
+     <p>A collection of metadata describing this <code class="idl"><a data-link-type="idl" href="#encodedvideochunk" id="ref-for-encodedvideochunk⑨">EncodedVideoChunk</a></code> with respect
+to the configured <code class="idl"><a data-link-type="idl" href="#dom-videoencoderconfig-scalabilitymode" id="ref-for-dom-videoencoderconfig-scalabilitymode②">scalabilityMode</a></code>.</p>
+    <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="SvcOutputMetadata" data-dfn-type="dict-member" data-export id="dom-svcoutputmetadata-temporallayerid"><code>temporalLayerId</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#idl-unsigned-long" id="ref-for-idl-unsigned-long①">unsigned long</a></span>
+    <dd data-md>
+     <p>A number that identifies the <a data-link-type="dfn" href="#temporal-layer" id="ref-for-temporal-layer①">temporal layer</a> for the associated <code class="idl"><a data-link-type="idl" href="#encodedvideochunk" id="ref-for-encodedvideochunk①⓪">EncodedVideoChunk</a></code>.</p>
    </dl>
    <h2 class="heading settled" data-level="7" id="configurations"><span class="secno">7. </span><span class="content">Configurations</span><a class="self-link" href="#configurations"></a></h2>
    <h3 class="heading settled" data-level="7.1" id="config-support"><span class="secno">7.1. </span><span class="content"><dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="check-configuration-support">Check Configuration Support</dfn> (with <var>config</var>)</span><a class="self-link" href="#config-support"></a></h3>
@@ -2397,7 +2409,7 @@ run these steps:</p>
   [<a class="idl-code" data-link-type="extended-attribute" href="https://heycam.github.io/webidl/#EnforceRange" id="ref-for-EnforceRange①②"><c- g>EnforceRange</c-></a>] <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-unsigned-long" id="ref-for-idl-unsigned-long②⓪"><c- b>unsigned</c-> <c- b>long</c-></a> <a class="idl-code" data-link-type="dict-member" data-type="unsigned long " href="#dom-videoencoderconfig-displaywidth" id="ref-for-dom-videoencoderconfig-displaywidth"><c- g>displayWidth</c-></a>;
   [<a class="idl-code" data-link-type="extended-attribute" href="https://heycam.github.io/webidl/#EnforceRange" id="ref-for-EnforceRange①③"><c- g>EnforceRange</c-></a>] <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-unsigned-long" id="ref-for-idl-unsigned-long②①"><c- b>unsigned</c-> <c- b>long</c-></a> <a class="idl-code" data-link-type="dict-member" data-type="unsigned long " href="#dom-videoencoderconfig-displayheight" id="ref-for-dom-videoencoderconfig-displayheight"><c- g>displayHeight</c-></a>;
   <a data-link-type="idl-name" href="#enumdef-hardwareacceleration" id="ref-for-enumdef-hardwareacceleration③"><c- n>HardwareAcceleration</c-></a> <a class="idl-code" data-default="&quot;allow&quot;" data-link-type="dict-member" data-type="HardwareAcceleration " href="#dom-videoencoderconfig-hardwareacceleration" id="ref-for-dom-videoencoderconfig-hardwareacceleration"><c- g>hardwareAcceleration</c-></a> = "allow";
-  <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-DOMString" id="ref-for-idl-DOMString⑦"><c- b>DOMString</c-></a> <a class="idl-code" data-link-type="dict-member" data-type="DOMString " href="#dom-videoencoderconfig-scalabilitymode" id="ref-for-dom-videoencoderconfig-scalabilitymode②"><c- g>scalabilityMode</c-></a>;
+  <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-DOMString" id="ref-for-idl-DOMString⑦"><c- b>DOMString</c-></a> <a class="idl-code" data-link-type="dict-member" data-type="DOMString " href="#dom-videoencoderconfig-scalabilitymode" id="ref-for-dom-videoencoderconfig-scalabilitymode③"><c- g>scalabilityMode</c-></a>;
   <a data-link-type="idl-name" href="https://www.w3.org/TR/mediastream-recording/#bitratemode" id="ref-for-bitratemode"><c- n>BitrateMode</c-></a> <a class="idl-code" data-default="&quot;variable&quot;" data-link-type="dict-member" data-type="BitrateMode " href="#dom-videoencoderconfig-bitratemode" id="ref-for-dom-videoencoderconfig-bitratemode"><c- g>bitrateMode</c-></a> = "variable";
 };
 </pre>
@@ -2422,21 +2434,21 @@ run these steps:</p>
     <dd>The average bitrate of the encoded video given in units of bits per second.
     <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoEncoderConfig" data-dfn-type="dict-member" data-export id="dom-videoencoderconfig-width"><code>width</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#idl-unsigned-long" id="ref-for-idl-unsigned-long②②">unsigned long</a></span>
     <dd>
-      The encoded width of output <code class="idl"><a data-link-type="idl" href="#encodedvideochunk" id="ref-for-encodedvideochunk①⓪">EncodedVideoChunk</a></code>s in pixels, prior to any
+      The encoded width of output <code class="idl"><a data-link-type="idl" href="#encodedvideochunk" id="ref-for-encodedvideochunk①①">EncodedVideoChunk</a></code>s in pixels, prior to any
     display aspect ratio adjustments. 
      <p>The encoder must scale any <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe⑦">VideoFrame</a></code> whose <code class="idl"><a data-link-type="idl" href="#dom-videoframe-visible-width-slot" id="ref-for-dom-videoframe-visible-width-slot">[[visible width]]</a></code> differs from this value.</p>
     <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoEncoderConfig" data-dfn-type="dict-member" data-export id="dom-videoencoderconfig-height"><code>height</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#idl-unsigned-long" id="ref-for-idl-unsigned-long②③">unsigned long</a></span>
     <dd>
-      The encoded height of output <code class="idl"><a data-link-type="idl" href="#encodedvideochunk" id="ref-for-encodedvideochunk①①">EncodedVideoChunk</a></code>s in pixels, prior to any
+      The encoded height of output <code class="idl"><a data-link-type="idl" href="#encodedvideochunk" id="ref-for-encodedvideochunk①②">EncodedVideoChunk</a></code>s in pixels, prior to any
     display aspect ratio adjustments. 
      <p>The encoder must scale any <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe⑧">VideoFrame</a></code> whose <code class="idl"><a data-link-type="idl" href="#dom-videoframe-visible-height-slot" id="ref-for-dom-videoframe-visible-height-slot">[[visible height]]</a></code> differs from this value.</p>
    </dl>
    <dl>
     <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoEncoderConfig" data-dfn-type="dict-member" data-export id="dom-videoencoderconfig-displaywidth"><code>displayWidth</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#idl-unsigned-long" id="ref-for-idl-unsigned-long②④">unsigned long</a></span>
-    <dd> The intended display width of output <code class="idl"><a data-link-type="idl" href="#encodedvideochunk" id="ref-for-encodedvideochunk①②">EncodedVideoChunk</a></code>s in pixels.
+    <dd> The intended display width of output <code class="idl"><a data-link-type="idl" href="#encodedvideochunk" id="ref-for-encodedvideochunk①③">EncodedVideoChunk</a></code>s in pixels.
     Defaults to <code class="idl"><a data-link-type="idl" href="#dom-videoencoderconfig-width" id="ref-for-dom-videoencoderconfig-width②">width</a></code> if not present. 
     <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoEncoderConfig" data-dfn-type="dict-member" data-export id="dom-videoencoderconfig-displayheight"><code>displayHeight</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#idl-unsigned-long" id="ref-for-idl-unsigned-long②⑤">unsigned long</a></span>
-    <dd> The intended display height of output <code class="idl"><a data-link-type="idl" href="#encodedvideochunk" id="ref-for-encodedvideochunk①③">EncodedVideoChunk</a></code>s in pixels.
+    <dd> The intended display height of output <code class="idl"><a data-link-type="idl" href="#encodedvideochunk" id="ref-for-encodedvideochunk①④">EncodedVideoChunk</a></code>s in pixels.
     Defaults to <code class="idl"><a data-link-type="idl" href="#dom-videoencoderconfig-width" id="ref-for-dom-videoencoderconfig-width③">width</a></code> if not present. 
    </dl>
    <div class="note" role="note">
@@ -2674,7 +2686,7 @@ greater than in <var>destination</var>, throw a <code class="idl"><a data-link-t
      <p>An array of bytes representing the encoded chunk data.</p>
     <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="EncodedVideoChunk" data-dfn-type="attribute" data-export id="dom-encodedvideochunk-type-slot"><code>[[type]]</code></dfn>
     <dd data-md>
-     <p>The <code class="idl"><a data-link-type="idl" href="#enumdef-encodedaudiochunktype" id="ref-for-enumdef-encodedaudiochunktype④">EncodedAudioChunkType</a></code> of this <code class="idl"><a data-link-type="idl" href="#encodedvideochunk" id="ref-for-encodedvideochunk①④">EncodedVideoChunk</a></code>;</p>
+     <p>The <code class="idl"><a data-link-type="idl" href="#enumdef-encodedaudiochunktype" id="ref-for-enumdef-encodedaudiochunktype④">EncodedAudioChunkType</a></code> of this <code class="idl"><a data-link-type="idl" href="#encodedvideochunk" id="ref-for-encodedvideochunk①⑤">EncodedVideoChunk</a></code>;</p>
     <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="EncodedVideoChunk" data-dfn-type="attribute" data-export id="dom-encodedvideochunk-timestamp-slot"><code>[[timestamp]]</code></dfn>
     <dd data-md>
      <p>The presentation timestamp, given in microseconds.</p>
@@ -2689,7 +2701,7 @@ greater than in <var>destination</var>, throw a <code class="idl"><a data-link-t
     <dfn class="dfn-paneled idl-code" data-dfn-for="EncodedVideoChunk" data-dfn-type="constructor" data-export data-lt="EncodedVideoChunk(init)|constructor(init)" id="dom-encodedvideochunk-encodedvideochunk" title="EncodedVideoChunk(init)"><code> EncodedVideoChunk(init) </code></dfn> 
    <ol>
     <li data-md>
-     <p>Let <var>chunk</var> be a new <code class="idl"><a data-link-type="idl" href="#encodedvideochunk" id="ref-for-encodedvideochunk①⑤">EncodedVideoChunk</a></code> object, initialized as follows</p>
+     <p>Let <var>chunk</var> be a new <code class="idl"><a data-link-type="idl" href="#encodedvideochunk" id="ref-for-encodedvideochunk①⑥">EncodedVideoChunk</a></code> object, initialized as follows</p>
      <ol>
       <li data-md>
        <p>Assign <code>init.type</code> to <code class="idl"><a data-link-type="idl" href="#dom-encodedvideochunk-type-slot" id="ref-for-dom-encodedvideochunk-type-slot">[[type]]</a></code>.</p>
@@ -3220,11 +3232,11 @@ adjustments.</p>
     <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="VideoFrame" data-dfn-type="attribute" data-export id="dom-videoframe-duration-slot"><code>[[duration]]</code></dfn>
     <dd data-md>
      <p>The presentation duration, given in microseconds. The duration is copied
-    from the <code class="idl"><a data-link-type="idl" href="#encodedvideochunk" id="ref-for-encodedvideochunk①⑥">EncodedVideoChunk</a></code> corresponding to this <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe②①">VideoFrame</a></code>.</p>
+    from the <code class="idl"><a data-link-type="idl" href="#encodedvideochunk" id="ref-for-encodedvideochunk①⑦">EncodedVideoChunk</a></code> corresponding to this <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe②①">VideoFrame</a></code>.</p>
     <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="VideoFrame" data-dfn-type="attribute" data-export id="dom-videoframe-timestamp-slot"><code>[[timestamp]]</code></dfn>
     <dd data-md>
      <p>The presentation timestamp, given in microseconds. The timestamp is copied
-from the <code class="idl"><a data-link-type="idl" href="#encodedvideochunk" id="ref-for-encodedvideochunk①⑦">EncodedVideoChunk</a></code> corresponding to this <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe②②">VideoFrame</a></code>.</p>
+from the <code class="idl"><a data-link-type="idl" href="#encodedvideochunk" id="ref-for-encodedvideochunk①⑧">EncodedVideoChunk</a></code> corresponding to this <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe②②">VideoFrame</a></code>.</p>
    </dl>
    <h4 class="heading settled" data-level="9.4.2" id="videoframe-constructors"><span class="secno">9.4.2. </span><span class="content">Constructors</span><a class="self-link" href="#videoframe-constructors"></a></h4>
    <p><dfn class="dfn-paneled idl-code" data-dfn-for="VideoFrame" data-dfn-type="constructor" data-export data-lt="VideoFrame(image, init)|constructor(image, init)|VideoFrame(image)|constructor(image)" id="dom-videoframe-videoframe" title="VideoFrame(image, init)"><code> VideoFrame(image, init) </code></dfn></p>
@@ -3452,12 +3464,12 @@ adjustments.</p>
     <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="VideoFrame" data-dfn-type="attribute" data-export id="dom-videoframe-timestamp"><code>timestamp</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#idl-long-long" id="ref-for-idl-long-long①②">long long</a>, readonly, nullable</span>
     <dd data-md>
      <p>The presentation timestamp, given in microseconds. The timestamp is copied
-from the <code class="idl"><a data-link-type="idl" href="#encodedvideochunk" id="ref-for-encodedvideochunk①⑧">EncodedVideoChunk</a></code> corresponding to this VideoFrame.</p>
+from the <code class="idl"><a data-link-type="idl" href="#encodedvideochunk" id="ref-for-encodedvideochunk①⑨">EncodedVideoChunk</a></code> corresponding to this VideoFrame.</p>
      <p>The <code class="idl"><a data-link-type="idl" href="#dom-videoframe-timestamp" id="ref-for-dom-videoframe-timestamp①">timestamp</a></code> getter steps are to return <code class="idl"><a data-link-type="idl" href="#dom-videoframe-timestamp-slot" id="ref-for-dom-videoframe-timestamp-slot②">[[timestamp]]</a></code>.</p>
     <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="VideoFrame" data-dfn-type="attribute" data-export id="dom-videoframe-duration"><code>duration</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#idl-unsigned-long-long" id="ref-for-idl-unsigned-long-long①②">unsigned long long</a>, readonly, nullable</span>
     <dd data-md>
      <p>The presentation duration, given in microseconds. The duration is copied
-from the <code class="idl"><a data-link-type="idl" href="#encodedvideochunk" id="ref-for-encodedvideochunk①⑨">EncodedVideoChunk</a></code> corresponding to this VideoFrame.</p>
+from the <code class="idl"><a data-link-type="idl" href="#encodedvideochunk" id="ref-for-encodedvideochunk②⓪">EncodedVideoChunk</a></code> corresponding to this VideoFrame.</p>
      <p>The <code class="idl"><a data-link-type="idl" href="#dom-videoframe-duration" id="ref-for-dom-videoframe-duration①">duration</a></code> getter steps are to return <code class="idl"><a data-link-type="idl" href="#dom-videoframe-duration-slot" id="ref-for-dom-videoframe-duration-slot②">[[duration]]</a></code>.</p>
    </dl>
    <h4 class="heading settled" data-level="9.4.4" id="videoframe-internal-structures"><span class="secno">9.4.4. </span><span class="content">Internal Structures</span><a class="self-link" href="#videoframe-internal-structures"></a></h4>
@@ -5568,9 +5580,11 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
      <li><a href="#dom-videodecodersupport-supported">dict-member for VideoDecoderSupport</a><span>, in §7.3.2</span>
      <li><a href="#dom-videoencodersupport-supported">dict-member for VideoEncoderSupport</a><span>, in §7.3.4</span>
     </ul>
+   <li><a href="#dom-encodedvideochunkmetadata-svc">svc</a><span>, in §6.6</span>
+   <li><a href="#dictdef-svcoutputmetadata">SvcOutputMetadata</a><span>, in §6.6</span>
    <li><a href="#system-resources">system resources</a><span>, in §1</span>
    <li><a href="#temporal-layer">Temporal Layer</a><span>, in §1</span>
-   <li><a href="#dom-encodedvideochunkmetadata-temporallayerid">temporalLayerId</a><span>, in §6.6</span>
+   <li><a href="#dom-svcoutputmetadata-temporallayerid">temporalLayerId</a><span>, in §6.6</span>
    <li>
     [[timestamp]]
     <ul>
@@ -6628,9 +6642,9 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
    <dt id="biblio-rfc7231">[RFC7231]
    <dd>R. Fielding, Ed.; J. Reschke, Ed.. <a href="https://httpwg.org/specs/rfc7231.html">Hypertext Transfer Protocol (HTTP/1.1): Semantics and Content</a>. June 2014. Proposed Standard. URL: <a href="https://httpwg.org/specs/rfc7231.html">https://httpwg.org/specs/rfc7231.html</a>
    <dt id="biblio-webaudio">[WEBAUDIO]
-   <dd>Paul Adenot; Hongchan Choi. <a href="https://www.w3.org/TR/webaudio/">Web Audio API</a>. 6 May 2021. PR. URL: <a href="https://www.w3.org/TR/webaudio/">https://www.w3.org/TR/webaudio/</a>
+   <dd>Paul Adenot; Hongchan Choi. <a href="https://www.w3.org/TR/webaudio/">Web Audio API</a>. 17 June 2021. REC. URL: <a href="https://www.w3.org/TR/webaudio/">https://www.w3.org/TR/webaudio/</a>
    <dt id="biblio-webcodecs-codec-registry">[WEBCODECS-CODEC-REGISTRY]
-   <dd>Chris Cunningham; Paul Adenot; Bernard Aboba. <a href="https://www.w3.org/TR/webcodecs-codec-registry/">WebCodecs Codec Registry</a>. 11 June 2021. WD. URL: <a href="https://www.w3.org/TR/webcodecs-codec-registry/">https://www.w3.org/TR/webcodecs-codec-registry/</a>
+   <dd>Chris Cunningham; Paul Adenot; Bernard Aboba. <a href="https://www.w3.org/TR/webcodecs-codec-registry/">WebCodecs Codec Registry</a>. 17 June 2021. WD. URL: <a href="https://www.w3.org/TR/webcodecs-codec-registry/">https://www.w3.org/TR/webcodecs-codec-registry/</a>
   </dl>
   <h2 class="no-num no-ref heading settled" id="idl-index"><span class="content">IDL Index</span><a class="self-link" href="#idl-index"></a></h2>
 <pre class="idl highlight def">[<a class="idl-code" data-link-type="extended-attribute" href="https://heycam.github.io/webidl/#Exposed"><c- g>Exposed</c-></a>=(<c- n>Window</c->,<c- n>DedicatedWorker</c->)]
@@ -6735,7 +6749,11 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
 
 <c- b>dictionary</c-> <a href="#dictdef-encodedvideochunkmetadata"><code><c- g>EncodedVideoChunkMetadata</c-></code></a> {
   <a data-link-type="idl-name" href="#dictdef-videodecoderconfig"><c- n>VideoDecoderConfig</c-></a> <a class="idl-code" data-link-type="dict-member" data-type="VideoDecoderConfig " href="#dom-encodedvideochunkmetadata-decoderconfig"><c- g>decoderConfig</c-></a>;
-  <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-unsigned-long"><c- b>unsigned</c-> <c- b>long</c-></a> <a class="idl-code" data-link-type="dict-member" data-type="unsigned long " href="#dom-encodedvideochunkmetadata-temporallayerid"><c- g>temporalLayerId</c-></a>;
+  <a data-link-type="idl-name" href="#dictdef-svcoutputmetadata"><c- n>SvcOutputMetadata</c-></a> <a class="idl-code" data-link-type="dict-member" data-type="SvcOutputMetadata " href="#dom-encodedvideochunkmetadata-svc"><c- g>svc</c-></a>;
+};
+
+<c- b>dictionary</c-> <a href="#dictdef-svcoutputmetadata"><code><c- g>SvcOutputMetadata</c-></code></a> {
+  <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-unsigned-long"><c- b>unsigned</c-> <c- b>long</c-></a> <a class="idl-code" data-link-type="dict-member" data-type="unsigned long " href="#dom-svcoutputmetadata-temporallayerid"><c- g>temporalLayerId</c-></a>;
 };
 
 <c- b>dictionary</c-> <a href="#dictdef-audiodecodersupport"><code><c- g>AudioDecoderSupport</c-></code></a> {
@@ -7832,6 +7850,13 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
     <li><a href="#ref-for-dictdef-encodedvideochunkmetadata①">6.5. Algorithms</a>
    </ul>
   </aside>
+  <aside class="dfn-panel" data-for="dictdef-svcoutputmetadata">
+   <b><a href="#dictdef-svcoutputmetadata">#dictdef-svcoutputmetadata</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-dictdef-svcoutputmetadata">6.5. Algorithms</a>
+    <li><a href="#ref-for-dictdef-svcoutputmetadata①">6.6. EncodedVideoChunkMetadata</a> <a href="#ref-for-dictdef-svcoutputmetadata②">(2)</a>
+   </ul>
+  </aside>
   <aside class="dfn-panel" data-for="dom-encodedvideochunkmetadata-decoderconfig">
    <b><a href="#dom-encodedvideochunkmetadata-decoderconfig">#dom-encodedvideochunkmetadata-decoderconfig</a></b><b>Referenced in:</b>
    <ul>
@@ -7839,11 +7864,18 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
     <li><a href="#ref-for-dom-encodedvideochunkmetadata-decoderconfig①">6.6. EncodedVideoChunkMetadata</a>
    </ul>
   </aside>
-  <aside class="dfn-panel" data-for="dom-encodedvideochunkmetadata-temporallayerid">
-   <b><a href="#dom-encodedvideochunkmetadata-temporallayerid">#dom-encodedvideochunkmetadata-temporallayerid</a></b><b>Referenced in:</b>
+  <aside class="dfn-panel" data-for="dom-encodedvideochunkmetadata-svc">
+   <b><a href="#dom-encodedvideochunkmetadata-svc">#dom-encodedvideochunkmetadata-svc</a></b><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-dom-encodedvideochunkmetadata-temporallayerid">6.5. Algorithms</a>
-    <li><a href="#ref-for-dom-encodedvideochunkmetadata-temporallayerid①">6.6. EncodedVideoChunkMetadata</a>
+    <li><a href="#ref-for-dom-encodedvideochunkmetadata-svc">6.5. Algorithms</a>
+    <li><a href="#ref-for-dom-encodedvideochunkmetadata-svc①">6.6. EncodedVideoChunkMetadata</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="dom-svcoutputmetadata-temporallayerid">
+   <b><a href="#dom-svcoutputmetadata-temporallayerid">#dom-svcoutputmetadata-temporallayerid</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-dom-svcoutputmetadata-temporallayerid">6.5. Algorithms</a>
+    <li><a href="#ref-for-dom-svcoutputmetadata-temporallayerid①">6.6. EncodedVideoChunkMetadata</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="check-configuration-support">
@@ -8180,7 +8212,8 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
    <ul>
     <li><a href="#ref-for-dom-videoencoderconfig-scalabilitymode">1. Definitions</a>
     <li><a href="#ref-for-dom-videoencoderconfig-scalabilitymode①">6.5. Algorithms</a>
-    <li><a href="#ref-for-dom-videoencoderconfig-scalabilitymode②">7.8. VideoEncoderConfig</a>
+    <li><a href="#ref-for-dom-videoencoderconfig-scalabilitymode②">6.6. EncodedVideoChunkMetadata</a>
+    <li><a href="#ref-for-dom-videoencoderconfig-scalabilitymode③">7.8. VideoEncoderConfig</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dom-videoencoderconfig-bitratemode">
@@ -8417,12 +8450,12 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
     <li><a href="#ref-for-encodedvideochunk④">6. VideoEncoder Interface</a>
     <li><a href="#ref-for-encodedvideochunk⑤">6.1. Internal Slots</a>
     <li><a href="#ref-for-encodedvideochunk⑥">6.5. Algorithms</a>
-    <li><a href="#ref-for-encodedvideochunk⑦">6.6. EncodedVideoChunkMetadata</a> <a href="#ref-for-encodedvideochunk⑧">(2)</a> <a href="#ref-for-encodedvideochunk⑨">(3)</a>
-    <li><a href="#ref-for-encodedvideochunk①⓪">7.8. VideoEncoderConfig</a> <a href="#ref-for-encodedvideochunk①①">(2)</a> <a href="#ref-for-encodedvideochunk①②">(3)</a> <a href="#ref-for-encodedvideochunk①③">(4)</a>
-    <li><a href="#ref-for-encodedvideochunk①④">8.2.1. Internal Slots</a>
-    <li><a href="#ref-for-encodedvideochunk①⑤">8.2.2. Constructors</a>
-    <li><a href="#ref-for-encodedvideochunk①⑥">9.4.1. Internal Slots</a> <a href="#ref-for-encodedvideochunk①⑦">(2)</a>
-    <li><a href="#ref-for-encodedvideochunk①⑧">9.4.3. Attributes</a> <a href="#ref-for-encodedvideochunk①⑨">(2)</a>
+    <li><a href="#ref-for-encodedvideochunk⑦">6.6. EncodedVideoChunkMetadata</a> <a href="#ref-for-encodedvideochunk⑧">(2)</a> <a href="#ref-for-encodedvideochunk⑨">(3)</a> <a href="#ref-for-encodedvideochunk①⓪">(4)</a>
+    <li><a href="#ref-for-encodedvideochunk①①">7.8. VideoEncoderConfig</a> <a href="#ref-for-encodedvideochunk①②">(2)</a> <a href="#ref-for-encodedvideochunk①③">(3)</a> <a href="#ref-for-encodedvideochunk①④">(4)</a>
+    <li><a href="#ref-for-encodedvideochunk①⑤">8.2.1. Internal Slots</a>
+    <li><a href="#ref-for-encodedvideochunk①⑥">8.2.2. Constructors</a>
+    <li><a href="#ref-for-encodedvideochunk①⑦">9.4.1. Internal Slots</a> <a href="#ref-for-encodedvideochunk①⑧">(2)</a>
+    <li><a href="#ref-for-encodedvideochunk①⑨">9.4.3. Attributes</a> <a href="#ref-for-encodedvideochunk②⓪">(2)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dictdef-encodedvideochunkinit">
