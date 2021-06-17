@@ -4139,17 +4139,18 @@ interface ImageTrack : EventTarget {
 Resource Reclamation{#resource-reclamation}
 ==============================================
 
-When resources are constrained, a User Agent might want to pro-actively reclaim
-codecs. This is particularly true in the case where hardware codecs are limited,
-and shared accross all web pages.
+When resources are constrained, a User Agent may proactively reclaim codecs.
+This is particularly true in the case where hardware codecs are limited, and
+shared accross all web pages.
 
-A User Agent is allowed to [=reclaim a codec=], freeing the resources of a
-<dfn>reclaimable codec</dfn>, which is a defined as a codec that is either an
-[=inactive codec=] or a [=background codec=].
+A User Agent may only [=reclaim a codec=] that is either an
+[=inactive codec=], a [=background codec=], or both. A User Agent MUST NOT
+reclaim a codec that is both active and in the foreground, e.g any codec that is
+neither an [=inactive codec=] nor a [=background codec=].
 
 An <dfn>inactive codec</dfn> is a codec that has not received a call to
-`encode()` or `decode()` in the past 1 second, and has not called its
-`output()` callback in the past 1 second.
+`encode()` or `decode()` in the past `3 seconds`, and has not called its
+`output()` callback in the past `3 seconds`.
 
 A <dfn>background codec</dfn> is a codec whose {{ownerDocument}}'s
 {{Document/hidden}} attribute is {{hidden|"hidden"}}.
@@ -4159,8 +4160,8 @@ close algorithm (amongst [=Close AudioDecoder=], [=Close AudioEncoder=],
 [=Close VideoDecoder=] and [=Close VideoEncoder=]) with a {{QuotaExceededError}}
 {{DOMException}}.
 
-When selecting which [=reclaimable codec=] to evict, the User Agent should
-consider the following criteria:
+When selecting which codec to reclaim, the User Agent should consider the
+following criteria:
     - What type of resource is the codec holding on to? User Agents should
         reclaim codecs that will alleviate the pressure of scarce resources.
     - How disruptive might reclaiming the codec be? User Agents should consider
