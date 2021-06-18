@@ -2555,7 +2555,7 @@ NOTE: {{VideoFrame}} is a {{CanvasImageSource}}. A {{VideoFrame}} may be
     {{CanvasDrawImage}}'s {{CanvasDrawImage/drawImage()}}.
 
 <xmp class='idl'>
-[Exposed=(Window,DedicatedWorker)]
+[Exposed=(Window,DedicatedWorker), Serializable, Transferable]
 interface VideoFrame {
   constructor(CanvasImageSource image, optional VideoFrameInit init = {});
   constructor(sequence<PlaneInit> planes,
@@ -2984,17 +2984,7 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
 :: Clears all state and releases the reference to the [=media resource=].
     Close is final.
 
-    When invoked, run these steps:
-    1. Assign `null` to {{VideoFrame/[[resource reference]]}}.
-    2. Assign `true` to {{VideoFrame/[[detached]]}}.
-    3. Assign `""` to {{VideoFrame/format}}.
-    4. Assign `0` to {{VideoFrame/[[coded width]]}},
-        {{VideoFrame/[[coded height]]}}, {{VideoFrame/[[visible left]]}},
-        {{VideoFrame/[[visible top]]}}, {{VideoFrame/[[visible width]]}},
-        {{VideoFrame/[[visible height]]}}, {{VideoFrame/[[display width]]}},
-        and {{VideoFrame/[[display height]]}}.
-    5. Assign `null` to {{VideoFrame/[[duration]]}} and
-        {{VideoFrame/[[timestamp]]}}.
+    When invoked, run the [=Close VideoFrame=] algorithm with [=this=].
 
 ### Algorithms ###{#videoframe-algorithms}
   <dfn>Create a VideoFrame</dfn> (with |output|, |timestamp|, |duration|, |displayAspectWidth|, and |displayAspectHeight|)
@@ -3082,13 +3072,27 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
 
 : <dfn>Clone VideoFrame</dfn> (with |frame|)
 :: 1. Let |clone| be a new {{VideoFrame}} initialized as follows:
-        1. Assign |frame|.{{VideoFrame/[[resource reference]]}} to
+        1. Let |resource| be the [=media resource=] referenced by |frame|’s
+            [[resource reference]].
+        2. Let |newReference| be a new reference to |resource|.
+        3. Assign |newReference| to |clone|'s
             {{VideoFrame/[[resource reference]]}}.
-        2. Assign |frame|.{{VideoFrame/format}} to {{VideoFrame/format}}.
-        3. Assign all remaining attributes of |frame| (
-            {{VideoFrame/codedWidth}}, {{VideoFrame/codedHeight}}, etc.) to
-            those of the same name in |clone|.
+        4. Assign all remaining internal slots of |frame| (excluding
+            {{VideoFrame/[[resource reference]]}}) to those of the same name
+            in |clone|.
     2. Return |clone|.
+
+: <dfn>Close VideoFrame</dfn> (with |frame|)
+:: 1. Assign `null` to |frame|'s {{VideoFrame/[[resource reference]]}}.
+    2. Assign `true` to |frame|'s {{VideoFrame/[[detached]]}}.
+    3. Assign `""` to |frame|'s {{VideoFrame/format}}.
+    4. Assign `0` to |frame|'s {{VideoFrame/[[coded width]]}},
+        {{VideoFrame/[[coded height]]}}, {{VideoFrame/[[visible left]]}},
+        {{VideoFrame/[[visible top]]}}, {{VideoFrame/[[visible width]]}},
+        {{VideoFrame/[[visible height]]}}, {{VideoFrame/[[display width]]}},
+        and {{VideoFrame/[[display height]]}}.
+    5. Assign `null` to |frame|'s {{VideoFrame/[[duration]]}} and
+        {{VideoFrame/[[timestamp]]}}.
 
 : <dfn for=VideoFrame>Parse VideoFrameCopyToOptions</dfn> (with |options|)
 :: 1. Let |parsedRect| be the result of running the [=VideoFrame/Parse CopyTo
@@ -3225,6 +3229,45 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
         2. Assign |minAllocationSize| to
             [=parsed copyto options/allocationSize=].
     9. Return |parsedOptions|.
+
+### Transfer and Serialization ###{#videoframe-transfer-serialization}
+
+NOTE: Transferring a {{VideoFrame}} moves it's [=media resource=] reference to
+    the destination frame, and "closes" the original source frame. Serializing
+    a {{VideoFrame}} creates a "clone" of the source frame, resulting in two
+    frames that point to the same [=media resource=].
+
+: The {{VideoFrame}} [=transfer steps=], with |value| and |dataHolder|, are:
+:: 1. If |value|'s {{VideoFrame/[[detached]]}} is `true`, throw an
+        {{InvalidStateError}} {{DOMException}}.
+    2. For all {{VideoFrame}} internal slots in |value|, assign the value of
+        each internal slot to a field in |dataHolder| with the same name as the
+        internal slot.
+    3. Run the [=Close VideoFrame=] algorithm with |value|.
+
+: The {{VideoFrame}} [=transfer-receiving steps=], with |dataHolder| and |value|, are:
+:: 1. For all named fields in |dataHolder|, assign the value of each named
+        field to the {{VideoFrame}} internal slot in |value| with the same name
+        as the named field.
+
+: The {{VideoFrame}} [=serialization steps=], with |value|, |serialized|, and  |forStorage|, are:
+:: 1. If |value|'s {{VideoFrame/[[detached]]}} is `true`, throw an
+        {{InvalidStateError}} {{DOMException}}.
+    2. If |forStorage| is `true`, throw a {{TypeError}}.
+    3. Let |resource| be the [=media resource=] referenced by
+            |value|'s {{VideoFrame/[[resource reference]]}}.
+    4. Let |newReference| be a new reference to |resource|.
+    5. Assign |newReference| to |serialized|.[[resource reference]].
+    6. For all remaining {{VideoFrame}} internal slots (excluding
+        {{VideoFrame/[[resource reference]]}}) in |value|, assign the value of
+        each internal slot to a field in |serialized| with the same name as the
+        internal slot.
+
+: The {{VideoFrame}} [=deserialization steps=]</dfn> (with |serialized|, and |value|) are:
+:: 1. For all named fields in |serialized|, assign the value of each named
+        field to the {{VideoFrame}} internal slot in |value| with the same name
+        as the named field.
+
 
 VideoFrame CopyTo() Options {#videoframe-copyto-options}
 ------------------------------------------------------------
