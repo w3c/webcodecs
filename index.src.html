@@ -2154,7 +2154,7 @@ AudioData Interface {#audiodata-interface}
 ---------------------------------------------
 
 <xmp class='idl'>
-[Exposed=(Window,DedicatedWorker)]
+[Exposed=(Window,DedicatedWorker), Serializable, Transferable]
 interface AudioData {
   constructor(AudioDataInit init);
 
@@ -2315,9 +2315,7 @@ dictionary AudioDataInit {
 :: Clears all state and releases the reference to the [=media resource=].
     Close is final.
 
-    When invoked, run these steps:
-    1. Assign `true` to the {{AudioData/[[detached]]}} internal slot.
-    2. Assign `null` to {{AudioData/[[resource reference]]}}.
+    When invoked, run the [=Close AudioData=] algorithm with [=this=].
 
 ### Algorithms ### {#audiodata-algorithms}
 
@@ -2354,6 +2352,49 @@ dictionary AudioDataInit {
             {{AudioData/[[timestamp]]}} slots to the corresponding slots in
             |clone|.
     2. Return |clone|.
+
+: <dfn>Close AudioData</dfn> (with |data|)
+:: Run these steps:
+        1. Assign `true` to |data|'s {{AudioData/[[detached]]}} internal slot.
+        2. Assign `null` to |data|'s {{AudioData/[[resource reference]]}}.
+
+### Transfer and Serialization ###{#audiodata-transfer-serialization}
+
+NOTE: Transferring an {{AudioData}} moves its {{AudioData/[[resource
+    reference]]}} to the destination object, and "closes" the original source
+    object. Serializing an {{AudioData}} creates a "clone" of the source object,
+    resulting in two objects that refrence the same [=media resource=].
+
+: The {{AudioData}} [=transfer steps=], with |value| and |dataHolder|, are:
+:: 1. If |value|'s {{AudioData/[[detached]]}} is `true`, throw an
+        {{DataCloneError}} {{DOMException}}.
+    2. For all {{AudioData}} internal slots in |value|, assign the value of
+        each internal slot to a field in |dataHolder| with the same name as the
+        internal slot.
+    3. Run the [=Close AudioData=] algorithm with |value|.
+
+: The {{AudioData}} [=transfer-receiving steps=], with |dataHolder| and |value|, are:
+:: 1. For all named fields in |dataHolder|, assign the value of each named
+        field to the {{AudioData}} internal slot in |value| with the same name
+        as the named field.
+
+: The {{AudioData}} [=serialization steps=], with |value|, |serialized|, and  |forStorage|, are:
+:: 1. If |value|'s {{AudioData/[[detached]]}} is `true`, throw an
+        {{DataCloneError}} {{DOMException}}.
+    2. If |forStorage| is `true`, throw a {{TypeError}}.
+    3. Let |resource| be the [=media resource=] referenced by
+            |value|'s {{AudioData/[[resource reference]]}}.
+    4. Let |newReference| be a new reference to |resource|.
+    5. Assign |newReference| to |serialized|.[[resource reference]].
+    6. For all remaining {{AudioData}} internal slots (excluding
+        {{AudioData/[[resource reference]]}}) in |value|, assign the value of
+        each internal slot to a field in |serialized| with the same name as the
+        internal slot.
+
+: The {{AudioData}} [=deserialization steps=]</dfn> (with |serialized|, and |value|) are:
+:: 1. For all named fields in |serialized|, assign the value of each named
+        field to the {{AudioData}} internal slot in |value| with the same name
+        as the named field.
 
 ### AudioDataCopyToOptions ### {#audiodata-copy-to-options}
 
@@ -3232,14 +3273,14 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
 
 ### Transfer and Serialization ###{#videoframe-transfer-serialization}
 
-NOTE: Transferring a {{VideoFrame}} moves it's [=media resource=] reference to
-    the destination frame, and "closes" the original source frame. Serializing
-    a {{VideoFrame}} creates a "clone" of the source frame, resulting in two
-    frames that point to the same [=media resource=].
+NOTE: Transferring a {{VideoFrame}} moves its {{VideoFrame/[[resource
+    reference]]}} to the destination frame, and "closes" the original source
+    frame. Serializing a {{VideoFrame}} creates a "clone" of the source frame,
+    resulting in two frames that refrence the same [=media resource=].
 
 : The {{VideoFrame}} [=transfer steps=], with |value| and |dataHolder|, are:
 :: 1. If |value|'s {{VideoFrame/[[detached]]}} is `true`, throw an
-        {{InvalidStateError}} {{DOMException}}.
+        {{DataCloneError}} {{DOMException}}.
     2. For all {{VideoFrame}} internal slots in |value|, assign the value of
         each internal slot to a field in |dataHolder| with the same name as the
         internal slot.
@@ -3252,7 +3293,7 @@ NOTE: Transferring a {{VideoFrame}} moves it's [=media resource=] reference to
 
 : The {{VideoFrame}} [=serialization steps=], with |value|, |serialized|, and  |forStorage|, are:
 :: 1. If |value|'s {{VideoFrame/[[detached]]}} is `true`, throw an
-        {{InvalidStateError}} {{DOMException}}.
+        {{DataCloneError}} {{DOMException}}.
     2. If |forStorage| is `true`, throw a {{TypeError}}.
     3. Let |resource| be the [=media resource=] referenced by
             |value|'s {{VideoFrame/[[resource reference]]}}.
