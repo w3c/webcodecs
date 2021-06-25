@@ -3438,6 +3438,8 @@ enum PixelFormat {
   "I420A",
   // 4:2:2 Y, U, V
   "I422",
+  // 4:4:4 Y, U, V
+  "I444",
 };
 </xmp>
 
@@ -3519,6 +3521,21 @@ enum PixelFormat {
     The {{VideoFrame/codedHeight}} MUST be even.  Similarly, the crop
     coordinates ({{VideoFrame/displayWidth}} and {{VideoFrame/displayHeight}})
     MUST be even.
+  </dd>
+  <dt><dfn enum-value for=PixelFormat>I444</dfn></dt>
+  <dd>
+
+    This format is composed of three distinct planes, one plane of Luma and two
+    planes of Chroma, denoted Y, U and V, and present in this order. It is also
+    often refered to as Planar YUV 4:4:4.
+
+    Each sample in this format is 8 bits. This format does not use
+    [=sub-sampling=].
+
+    There are {{VideoFrame/codedWidth}} * {{VideoFrame/codedHeight}} samples (and
+    therefore bytes) in all three planes, arranged starting at the top left in the
+    image, in {{VideoFrame/codedHeight}} lines of {{VideoFrame/codedWidth}}
+    samples.
   </dd>
 </dl>
 
