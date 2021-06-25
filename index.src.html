@@ -3333,6 +3333,8 @@ enum PixelFormat {
   "NV12",
   // 32bpp RGBA
   "RGBA",
+  // 32bpp RGBX (opaque)
+  "RGBX",
 };
 </xmp>
 
@@ -3497,6 +3499,20 @@ enum PixelFormat {
     There are {{VideoFrame/codedWidth}} * {{VideoFrame/codedHeight}} * 4 samples
     (and therefore bytes) in the single plane, arranged starting at the top
     left in the image, in {{VideoFrame/codedHeight}} lines of
+    {{VideoFrame/codedWidth}} samples.
+  </dd>
+  <dt><dfn enum-value for=PixelFormat>RGBX</dfn></dt>
+  <dd>
+
+    This format is composed of a single plane, that encodes four components:
+    Red, Green, Blue, and a padding value, present in this order.
+
+    Each sample in this format is 8 bits. The fourth element in each pixel is to
+    be ignored, the image is always fully opaque.
+
+    There are {{VideoFrame/codedWidth}} * {{VideoFrame/codedHeight}} * 4 samples
+    (and therefore bytes) in the single plane, arranged starting at the top left
+    in the image, in {{VideoFrame/codedHeight}} lines of
     {{VideoFrame/codedWidth}} samples.
   </dd>
 </dl>
