@@ -3329,6 +3329,8 @@ enum PixelFormat {
   "I422",
   // 4:4:4 Y, U, V
   "I444",
+  // 4:2:0 Y, UV
+  "NV12",
 };
 </xmp>
 
@@ -3425,6 +3427,62 @@ enum PixelFormat {
     therefore bytes) in all three planes, arranged starting at the top left in the
     image, in {{VideoFrame/codedHeight}} lines of {{VideoFrame/codedWidth}}
     samples.
+  </dd>
+  <dt><dfn enum-value for=PixelFormat>NV12</dfn></dt>
+  <dd>
+
+    This format is composed of two distinct planes, one plane of Luma and then
+    another plane for the two Chroma components. The two planes are present in
+    this order, and are refered to as respectively the Y plane and the UV plane.
+
+    The U an V components are sub-sampled horizontaly and vertically by a factor
+    of 2 compared to the components in the Y planes.
+
+    Each sample in this format is 8 bits.
+
+    There are {{VideoFrame/codedWidth}} * {{VideoFrame/codedHeight}} samples (and
+    therefore bytes) in the Y plane, arranged starting at the top left in the
+    image, in {{VideoFrame/codedHeight}} lines of {{VideoFrame/codedWidth}}
+    samples.
+
+    The UV planes is composed of interleaved U and V values, in
+    {{VideoFrame/codedWidth}} * {{VideoFrame/codedHeight}} / 4 elements (of two
+    bytes each), arranged starting at the top left in the image, in
+    {{VideoFrame/codedHeight}} / 2 lines of {{VideoFrame/codedWidth}} / 2
+    elements. Each element is composed of a two Chroma values, the U and V
+    value, in this order.
+
+    The {{VideoFrame/codedWidth}} and {{VideoFrame/codedHeight}} MUST be even.
+    Similarly, the visible rectangle ({{VideoFrame/displayWidth}} and
+    {{VideoFrame/displayHeight}}) MUST be even.
+
+    <div class=example>
+    An image in the NV12 pixel format that is 16 pixels wide and 9 pixels tall
+    will be arranged like so in memory:
+
+    ```
+        YYYYYYYYYYYYYY
+        YYYYYYYYYYYYYY
+        YYYYYYYYYYYYYY
+        YYYYYYYYYYYYYY
+        YYYYYYYYYYYYYY
+        YYYYYYYYYYYYYY
+        YYYYYYYYYYYYYY
+        YYYYYYYYYYYYYY
+        YYYYYYYYYYYYYY
+        UVUVUVUVUVUVUV
+        UVUVUVUVUVUVUV
+        UVUVUVUVUVUVUV
+        UVUVUVUVUVUVUV
+        UVUVUVUVUVUVUV
+        UVUVUVUVUVUVUV
+        UVUVUVUVUVUVUV
+        UVUVUVUVUVUVUV
+        UVUVUVUVUVUVUV
+    ```
+
+    All samples being linear in memory.
+  </div>
   </dd>
 </dl>
 
