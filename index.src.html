@@ -3337,6 +3337,8 @@ enum PixelFormat {
   "RGBX",
   // 32bpp BGRA
   "BGRA",
+  // 32bpp BGRX (opaque)
+  "BGRX",
 };
 </xmp>
 
@@ -3524,6 +3526,20 @@ enum PixelFormat {
     Blue, Green, Red, and an alpha value, present in this order.
 
     Each sample in this format is 8 bits.
+
+    There are {{VideoFrame/codedWidth}} * {{VideoFrame/codedHeight}} * 4 samples
+    (and therefore bytes) in the single plane, arranged starting at the top left
+    in the image, in {{VideoFrame/codedHeight}} lines of
+    {{VideoFrame/codedWidth}} samples.
+  </dd>
+  <dt><dfn enum-value for=PixelFormat>BGRX</dfn></dt>
+  <dd>
+
+    This format is composed of a single plane, that encodes four components:
+    Blue, Green, Red, and a padding value, present in this order.
+
+    Each sample in this format is 8 bits. The fourth element in each pixel is to
+    be ignored, the image is always fully opaque.
 
     There are {{VideoFrame/codedWidth}} * {{VideoFrame/codedHeight}} * 4 samples
     (and therefore bytes) in the single plane, arranged starting at the top left
