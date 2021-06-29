@@ -2173,7 +2173,7 @@ interface AudioData {
 
 dictionary AudioDataInit {
   required AudioSampleFormat format;
-  [EnforceRange] required unsigned long sampleRate;
+  required float sampleRate;
   [EnforceRange] required unsigned long numberOfFrames;
   [EnforceRange] required unsigned long numberOfChannels;
   [EnforceRange] required long long timestamp;  // microseconds
@@ -2210,13 +2210,7 @@ dictionary AudioDataInit {
   AudioData(init)
 </dfn>
 1. If |init| is not a [=valid AudioDataInit=], throw a {{TypeError}}.
-2. Let |bytesPerSample| be the number of bytes per sample, as defined by
-    |init|.{{AudioDataInit/format}}.
-2. If the product of multiplying |init|.{{AudioDataInit/numberOfFrames}} by
-    an by |init|.{{AudioDataInit/numberOfChannels}} and |bytesPerSample| is
-    greater than |init|.{{AudioDataInit/data}}.`byteLength`, throw a
-    {{TypeError}}.
-3. Let |frame| be a new {{AudioData}} object, initialized as follows:
+2. Let |frame| be a new {{AudioData}} object, initialized as follows:
     1. Assign `false` to {{AudioData/[[detached]]}}.
     2. Assign |init|.{{AudioDataInit/format}} to
         {{AudioData/[[format]]}}.
@@ -2232,7 +2226,7 @@ dictionary AudioDataInit {
         |init|.{{AudioDataInit/data}}.
     8. Let |resourceReference| be a reference to |resource|.
     9. Assign |resourceReference| to {{AudioData/[[resource reference]]}}.
-4. Return |frame|.
+3. Return |frame|.
 
 ### Attributes ###{#audiodata-attributes}
 
@@ -2392,21 +2386,10 @@ dictionary AudioDataInit {
     5. Return `true`.
 
 <div class='note'>
-Note: An {{AudioDataInit}}'s {{AudioDataInit/data}} must have the following
-    memory layout:
-    - If {{AudioDataInit/format}} describes an [=interleaved=]
-        {{AudioSampleFormat}}, {{AudioDataInit/data}} should contain
-        one block of samples for each of the {{AudioDataInit/numberOfFrames}}
-        frames, layed out end to end, as a single plane. Within each block of
-        samples, the `nth` sample corresponds to the `nth` of the
-        {{AudioDataInit/numberOfChannels}} channels.
-    - If {{AudioDataInit/format}} describes a [=planar=] {{AudioSampleFormat}},
-        each channel's samples must be consecutively layed out in memory,
-        forming a plane. Every plane must be layed out directly after the
-        previous plane, preserving the ordering of channels. This means that the
-        samples for the `nth` channel must start in {{AudioDataInit/data}} at
-        index `n * numberOfFrames`, and end {{AudioDataInit/numberOfFrames}}
-        frames later.
+Note: We assume that {{AudioDataInit}}'s {{AudioDataInit/data}}'s memory layout
+    matches the expectations of the [=planar=] or [=interleaved=]
+    {{AudioDataInit/format}}. There is no real way to verify whether the samples
+    conform to their {{AudioSampleFormat}}.
 </div>
 
 ### AudioDataCopyToOptions ### {#audiodata-copy-to-options}
