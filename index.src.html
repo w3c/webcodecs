@@ -2150,6 +2150,27 @@ NOTE: When a [=media resource=] is no longer referenced by a
     encouraged to destroy such resources quickly to reduce memory pressure and
     facilitate resource reuse.
 
+### Transfer and Serialization ### {#raw-media-serialization-and-transfer}
+
+This section is non-normative.
+
+{{AudioData}} and {{VideoFrame}} are both [=transferable objects|transferable=]
+and [=serializable objects|serializable=] objects. Their transfer and
+serialization steps are defined in [[#audiodata-transfer-serialization]] and
+[[#videoframe-transfer-serialization]] respectively.
+
+Transferring an {{AudioData}} or {{VideoFrame}} moves its `[[resource
+reference]]` to the destination object and closes (as in {{AudioData/close()}})
+the source object. Authors may use this facility
+to move an {{AudioData}} or {{VideoFrame}} between realms without copying the
+underlying [=media resource=].
+
+Serializing an {{AudioData}} or {{VideoFrame}} effectively clones (as in
+{{VideoFrame/clone()}}) the source object, resulting in two objects that
+reference the same [=media resource=]. Authors may use this facility to clone
+an {{AudioData}} or {{VideoFrame}} to another realm without copying the
+underlying [=media resource=].
+
 AudioData Interface {#audiodata-interface}
 ---------------------------------------------
 
@@ -2357,26 +2378,23 @@ dictionary AudioDataInit {
 
 ### Transfer and Serialization ###{#audiodata-transfer-serialization}
 
-NOTE: Transferring an {{AudioData}} moves its {{AudioData/[[resource
-    reference]]}} to the destination object, and "closes" the original source
-    object. Serializing an {{AudioData}} creates a "clone" of the source object,
-    resulting in two objects that refrence the same [=media resource=].
-
-: The {{AudioData}} [=transfer steps=], with |value| and |dataHolder|, are:
-:: 1. If |value|'s {{platform object/[[Detached]]}} is `true`, throw an
+: The {{AudioData}} [=transfer steps=] (with |value| and |dataHolder|) are:
+:: 1. If |value|'s {{platform object/[[Detached]]}} is `true`, throw a
         {{DataCloneError}} {{DOMException}}.
     2. For all {{AudioData}} internal slots in |value|, assign the value of
         each internal slot to a field in |dataHolder| with the same name as the
         internal slot.
     3. Run the [=Close AudioData=] algorithm with |value|.
 
-: The {{AudioData}} [=transfer-receiving steps=], with |dataHolder| and |value|, are:
+: The {{AudioData}} [=transfer-receiving steps=] (with |dataHolder| and |value|)
+    are:
 :: 1. For all named fields in |dataHolder|, assign the value of each named
         field to the {{AudioData}} internal slot in |value| with the same name
         as the named field.
 
-: The {{AudioData}} [=serialization steps=], with |value|, |serialized|, and  |forStorage|, are:
-:: 1. If |value|'s {{platform object/[[Detached]]}} is `true`, throw an
+: The {{AudioData}} [=serialization steps=] (with |value|, |serialized|, and
+    |forStorage|) are:
+:: 1. If |value|'s {{platform object/[[Detached]]}} is `true`, throw a
         {{DataCloneError}} {{DOMException}}.
     2. If |forStorage| is `true`, throw a {{TypeError}}.
     3. Let |resource| be the [=media resource=] referenced by
@@ -2388,7 +2406,8 @@ NOTE: Transferring an {{AudioData}} moves its {{AudioData/[[resource
         each internal slot to a field in |serialized| with the same name as the
         internal slot.
 
-: The {{AudioData}} [=deserialization steps=]</dfn> (with |serialized|, and |value|) are:
+: The {{AudioData}} [=deserialization steps=] (with |serialized| and |value|)
+    are:
 :: 1. For all named fields in |serialized|, assign the value of each named
         field to the {{AudioData}} internal slot in |value| with the same name
         as the named field.
@@ -3266,26 +3285,23 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
 
 ### Transfer and Serialization ###{#videoframe-transfer-serialization}
 
-NOTE: Transferring a {{VideoFrame}} moves its {{VideoFrame/[[resource
-    reference]]}} to the destination frame, and "closes" the original source
-    frame. Serializing a {{VideoFrame}} creates a "clone" of the source frame,
-    resulting in two frames that refrence the same [=media resource=].
-
-: The {{VideoFrame}} [=transfer steps=], with |value| and |dataHolder|, are:
-:: 1. If |value|'s {{platform object/[[Detached]]}} is `true`, throw an
+: The {{VideoFrame}} [=transfer steps=] (with |value| and |dataHolder|) are:
+:: 1. If |value|'s {{platform object/[[Detached]]}} is `true`, throw a
         {{DataCloneError}} {{DOMException}}.
     2. For all {{VideoFrame}} internal slots in |value|, assign the value of
         each internal slot to a field in |dataHolder| with the same name as the
         internal slot.
     3. Run the [=Close VideoFrame=] algorithm with |value|.
 
-: The {{VideoFrame}} [=transfer-receiving steps=], with |dataHolder| and |value|, are:
+: The {{VideoFrame}} [=transfer-receiving steps=] (with |dataHolder| and
+    |value|) are:
 :: 1. For all named fields in |dataHolder|, assign the value of each named
         field to the {{VideoFrame}} internal slot in |value| with the same name
         as the named field.
 
-: The {{VideoFrame}} [=serialization steps=], with |value|, |serialized|, and  |forStorage|, are:
-:: 1. If |value|'s {{platform object/[[Detached]]}} is `true`, throw an
+: The {{VideoFrame}} [=serialization steps=] (with |value|, |serialized|, and
+    |forStorage|) are:
+:: 1. If |value|'s {{platform object/[[Detached]]}} is `true`, throw a
         {{DataCloneError}} {{DOMException}}.
     2. If |forStorage| is `true`, throw a {{TypeError}}.
     3. Let |resource| be the [=media resource=] referenced by
@@ -3297,7 +3313,8 @@ NOTE: Transferring a {{VideoFrame}} moves its {{VideoFrame/[[resource
         each internal slot to a field in |serialized| with the same name as the
         internal slot.
 
-: The {{VideoFrame}} [=deserialization steps=]</dfn> (with |serialized|, and |value|) are:
+: The {{VideoFrame}} [=deserialization steps=] (with |serialized| and |value|)
+    are:
 :: 1. For all named fields in |serialized|, assign the value of each named
         field to the {{VideoFrame}} internal slot in |value| with the same name
         as the named field.
