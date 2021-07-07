@@ -1733,11 +1733,12 @@ VideoEncoderConfig{#video-encoder-config}
 <xmp class='idl'>
 dictionary VideoEncoderConfig {
   required DOMString codec;
-  [EnforceRange] unsigned long long bitrate;
   [EnforceRange] required unsigned long width;
   [EnforceRange] required unsigned long height;
   [EnforceRange] unsigned long displayWidth;
   [EnforceRange] unsigned long displayHeight;
+  [EnforceRange] unsigned long long bitrate;
+  [EnforceRange] double framerate;
   HardwareAcceleration hardwareAcceleration = "allow";
   DOMString scalabilityMode;
   BitrateMode bitrateMode = "variable";
@@ -1761,9 +1762,6 @@ To check if a {{VideoEncoderConfig}} is a <dfn>valid VideoEncoderConfig</dfn>,
 <dl>
   <dt><dfn dict-member for=VideoEncoderConfig>codec</dfn></dt>
   <dd>Contains a <a>codec string</a> describing the codec.</dd>
-
-  <dt><dfn dict-member for=VideoEncoderConfig>bitrate</dfn></dt>
-  <dd>The average bitrate of the encoded video given in units of bits per second.</dd>
 
   <dt><dfn dict-member for=VideoEncoderConfig>width</dfn></dt>
   <dd>
@@ -1810,6 +1808,20 @@ To check if a {{VideoEncoderConfig}} is a <dfn>valid VideoEncoderConfig</dfn>,
 </div>
 
 <dl>
+  <dt><dfn dict-member for=VideoEncoderConfig>bitrate</dfn></dt>
+  <dd>
+    The average bitrate of the encoded video given in units of bits per second.
+  </dd>
+
+  <dt><dfn dict-member for=VideoEncoderConfig>framerate</dfn></dt>
+  <dd>
+    The expected frame rate in frames per second, if known. This value, along
+    with the frame {{VideoFrame/timestamp}} should be used by the video encoder
+    to calculate the optimal size of each encoded frame. Additionally, the value
+    should be considered a target deadline for outputting encoding chunks when
+    {{VideoEncoderConfig/latencyMode}} is set to {{LatencyMode/realtime}}.
+  </dd>
+
   <dt><dfn dict-member for=VideoEncoderConfig>hardwareAcceleration</dfn></dt>
   <dd>
     Configures hardware acceleration for this codec. See
@@ -1922,6 +1934,8 @@ enum LatencyMode {
     * User agents may increase encoding latency to improve quality.
     * User agents must not drop frames to achieve the target bitrate and/or
         framerate.
+    * {{VideoEncoderConfig/framerate}} should not be used as a target deadline
+        for emitting encoded chunks.
 
 : <dfn enum-value for=LatencyMode>realtime</dfn>
 :: Indicates that the user agent should optimize for low latency. In this
@@ -1929,6 +1943,8 @@ enum LatencyMode {
     * User agents may sacrifice quality to improve latency.
     * User agents may drop frames to achieve the target bitrate and/or
         framerate.
+    * {{VideoEncoderConfig/framerate}} should be used as a target deadline for
+        emitting encoded chunks.
 
 Configuration Equivalence{#config-equivalence}
 ----------------------------------------------
