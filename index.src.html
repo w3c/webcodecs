@@ -1741,6 +1741,7 @@ dictionary VideoEncoderConfig {
   HardwareAcceleration hardwareAcceleration = "allow";
   DOMString scalabilityMode;
   BitrateMode bitrateMode = "variable";
+  LatencyMode latencyMode = "quality";
 };
 </xmp>
 
@@ -1828,6 +1829,11 @@ To check if a {{VideoEncoderConfig}} is a <dfn>valid VideoEncoderConfig</dfn>,
     NOTE: The precise degree of bitrate fluctuation in either mode is
         implementation defined.
   </dd>
+
+  <dt><dfn dict-member for=VideoEncoderConfig>latencyMode</dfn></dt>
+  <dd>
+    Configures latency related behaviors for this codec. See {{LatencyMode}}.
+  </dd>
 </dl>
 
 Hardware Acceleration{#hardware-acceleration}
@@ -1900,6 +1906,29 @@ specialized hardware.
     the codec configuration.
   </dd>
 </dl>
+
+Latency Mode{#latency-mode}
+---------------------------
+<xmp class='idl'>
+enum LatencyMode {
+  "quality",
+  "realtime"
+};
+</xmp>
+
+: <dfn enum-value for=LatencyMode>quality</dfn>
+:: Indicates that the user agent should optimize for encoding quality. In
+    this mode:
+    * User agents may increase encoding latency to improve quality.
+    * User agents must not drop frames to achieve the target bitrate and/or
+        framerate.
+
+: <dfn enum-value for=LatencyMode>realtime</dfn>
+:: Indicates that the user agent should optimize for low latency. In this
+    mode:
+    * User agents may sacrifice quality to improve latency.
+    * User agents may drop frames to achieve the target bitrate and/or
+        framerate.
 
 Configuration Equivalence{#config-equivalence}
 ----------------------------------------------
