@@ -2300,8 +2300,8 @@ dictionary AudioDataInit {
             |options|.{{AudioDataCopyToOptions/planeIndex}} is greater than `0`,
             throw a {{RangeError}}.
         2. Otherwise, if |format| describes a [=planar=] {{AudioSampleFormat}}
-            and if |options|.{{AudioDataCopyToOptions/planeIndex}} is equal or
-            greater to {{AudioData/[[number of channels]]}}, throw a
+            and if |options|.{{AudioDataCopyToOptions/planeIndex}} is greater or
+            equal to {{AudioData/[[number of channels]]}}, throw a
             {{RangeError}}.
     6. Let |resource| be the [=media resource=] referenced by
         {{AudioData/[[resource reference]]}}.
@@ -2370,7 +2370,7 @@ dictionary AudioDataInit {
 
 : To check if a {{AudioDataInit}} is a
     <dfn>valid AudioDataInit</dfn>, run these steps:
-:: 1. If {{AudioDataInit/sampleRate}} = `0`, return `false`.
+:: 1. If {{AudioDataInit/sampleRate}} less than or equal to `0`, return `false`.
     2. If {{AudioDataInit/numberOfFrames}} = `0`, return `false`.
     3. If {{AudioDataInit/numberOfChannels}} = `0`, return `false`.
     4. Verify {{AudioDataInit/data}} has enough data by running the following
@@ -2387,8 +2387,8 @@ dictionary AudioDataInit {
     5. Return `true`.
 
 <div class='note'>
-Note: We assume that {{AudioDataInit}}'s {{AudioDataInit/data}}'s memory layout
-    matches the expectations of the [=planar=] or [=interleaved=]
+Note: It's expected that {{AudioDataInit}}'s {{AudioDataInit/data}}'s memory
+    layout matches the expectations of the [=planar=] or [=interleaved=]
     {{AudioDataInit/format}}. There is no real way to verify whether the samples
     conform to their {{AudioSampleFormat}}.
 </div>
@@ -2506,11 +2506,11 @@ in different buffers, themselves arranged in an order described in the section
 Note: The [[WEBAUDIO|Web Audio API]] currently uses {{FLTP}} exclusively.
 
 <div class='note'>
-Note: The following diagram exmplifies the memory layout of [=planar=] versus
+Note: The following diagram exemplifies the memory layout of [=planar=] versus
     [=interleaved=] {{AudioSampleFormat}}s
 
 <img alt="Graphical representation the memory layout of interleaved and planar
-    formats" src="images/planar-interleaved-layout.png" width="735" height="455">
+    formats" src="images/planar-interleaved-layout.svg" width="735" height="455">
 </div>
 
 ### Magnitude of the audio samples ### {#audio-samples-magnitude}
