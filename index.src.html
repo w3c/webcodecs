@@ -3122,9 +3122,9 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
 
         1. Let |plane| be the Plane identified by |planeIndex| as defined by
             {{VideoFrame/[[format]]}}.
-        2. Let |sampleWidth| be the horizontal pixel size of each subsample
-            for |plane|.
-        3. Let |sampleHeight| be the vertical pixel size of each subsample
+        2. Let |sampleWidth| be the horizontal [=sub-sampling factor=] of each
+            subsample for |plane|.
+        3. Let |sampleHeight| be the vertical [=sub-sampling factor=] of each subsample
             for |plane|.
         4. If |sourceRect|.{{VideoFrameRect/left}} and
             |sourceRect|.{{VideoFrameRect/width}} are not both multiples of
@@ -3149,10 +3149,10 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
         1. Let |plane| be the Plane identified by |planeIndex| as defined by
             {{VideoFrame/[[format]]}}.
         2. Let |sampleBytes| be the number of bytes per sample for |plane|.
-        3. Let |sampleWidth| be the horizontal pixel size of each subsample
-            for |plane|.
-        4. Let |sampleHeight| be the vertical pixel size of each subsample
-            for |plane|.
+        3. Let |sampleWidth| be the horizontal [=sub-sampling factor=] of each
+            subsample for |plane|.
+        4. Let |sampleHeight| be the vertical [=sub-sampling factor=] of each
+            subsample for |plane|.
         5. Let |sampleWidthBytes| be the product of multiplying |sampleWidth| by
             |sampleBytes|.
         6. Let |computedLayout| be a new [=computed plane layout=].
@@ -3342,6 +3342,21 @@ enum PixelFormat {
 };
 </xmp>
 
+<dfn lt="sub-sampling|sub-sampled">Sub-sampling</dfn> is a technique
+where a single sample contains information for multiple pixels in the final
+image. [=Sub-sampling=] can be horizontal, vertical or both, and has a <dfn
+lt="sub-sampling factor|factor">factor</dfn>, that is the number of final pixels
+in the image that are derived from a [=sub-sampled=] sample.
+
+<div class=example>
+  If a {{VideoFrame}} is in {{I420}} format, then the very first
+  component of the second plane (the U plane) corresponds to four pixels, that are
+  the pixels in the top-left angle of the image. Consequently, the first
+  component of the second row corresponds to the four pixels below those initial
+  four top-left pixels. The [=sub-sampling factor=] is 2 in both the horizontal
+  and vertical direction.
+</div>
+
 <dl>
   <dt><dfn enum-value for=PixelFormat>I420</dfn></dt>
   <dd>
@@ -3349,8 +3364,8 @@ enum PixelFormat {
     planes of Chroma, denoted Y, U and V, and present in this order. It is also
     often refered to as Planar YUV 4:2:0.
 
-    The U an V planes are sub-sampled horizontaly and vertically by a factor of
-    2 compared to the Y planes.
+    The U an V planes are [=sub-sampled=] horizontaly and vertically by a
+    [=factor=] of 2 compared to the Y plane.
 
     Each sample in this format is 8 bits.
 
@@ -3376,8 +3391,8 @@ enum PixelFormat {
     present in this order. It is also often refered to as Planar YUV 4:2:0 with
     an alpha channel.
 
-    The U an V planes are sub-sampled horizontaly and vertically by a factor of
-    2 compared to the Y and Alpha planes.
+    The U an V planes are [=sub-sampled=] horizontaly and vertically by a
+    [=factor=] of 2 compared to the Y and Alpha planes.
 
     Each sample in this format is 8 bits.
 
@@ -3402,8 +3417,8 @@ enum PixelFormat {
     planes of Chroma, denoted Y, U and V, and present in this order. It is also
     often refered to as Planar YUV 4:2:2.
 
-    The U an V planes are sub-sampled horizontaly by a factor of 2 compared to
-    the Y planes.
+    The U an V planes are [=sub-sampled=] horizontaly by a [=factor=] of 2
+    compared to the Y plane, and not [=sub-sampled=] vertically.
 
     Each sample in this format is 8 bits.
 
@@ -3443,8 +3458,8 @@ enum PixelFormat {
     another plane for the two Chroma components. The two planes are present in
     this order, and are refered to as respectively the Y plane and the UV plane.
 
-    The U an V components are sub-sampled horizontaly and vertically by a factor
-    of 2 compared to the components in the Y planes.
+    The U an V components are [=sub-sampled=] horizontaly and vertically by a
+    [=factor=] of 2 compared to the components in the Y planes.
 
     Each sample in this format is 8 bits.
 
