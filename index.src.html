@@ -2564,8 +2564,8 @@ interface VideoFrame {
   readonly attribute PixelFormat format;
   readonly attribute unsigned long codedWidth;
   readonly attribute unsigned long codedHeight;
-  readonly attribute VideoFrameRect codedRect;
-  readonly attribute VideoFrameRect visibleRect;
+  readonly attribute DOMRectReadOnly? codedRect;
+  readonly attribute DOMRectReadOnly? visibleRect;
   readonly attribute unsigned long displayWidth;
   readonly attribute unsigned long displayHeight;
   readonly attribute unsigned long long? duration;  // microseconds
@@ -2588,7 +2588,7 @@ dictionary VideoFramePlaneInit {
   required PixelFormat format;
   [EnforceRange] required unsigned long codedWidth;
   [EnforceRange] required unsigned long codedHeight;
-  VideoFrameRect visibleRect;
+  DOMRectInit visibleRect;
   [EnforceRange] unsigned long displayWidth;
   [EnforceRange] unsigned long displayHeight;
   [EnforceRange] unsigned long long duration;  // microseconds
@@ -2659,7 +2659,8 @@ dictionary PlaneInit {
   VideoFrame(image, init)
 </dfn>
 1. [=Canvas/Check the usability of the image argument=]. If this throws an
-    exception or returns <var ignore=''>bad</var>, then throw an  {{InvalidStateError}} {{DOMException}}.
+    exception or returns <var ignore=''>bad</var>, then throw an
+    {{InvalidStateError}} {{DOMException}}.
 2. If the [=origin/origin=] of |image|'s image data is not [=same origin=]
     with the [=webappapis/entry settings object=]'s
     [=origin/origin=], then throw a {{SecurityError}}
@@ -2781,12 +2782,14 @@ dictionary PlaneInit {
         respectively.
 
     10. If |init|.{{VideoFramePlaneInit/visibleRect}} [=map/exists=]:
-        1. Assign
-            {{VideoFramePlaneInit/visibleRect}}.{{VideoFrameRect/width}} to
-            {{VideoFrame/[[visible width]]}}.
-        2. Assign
-            {{VideoFramePlaneInit/visibleRect}}.{{VideoFrameRect/height}} to
-            {{VideoFrame/[[visible height]]}}.
+        1. Let |truncatedVisibleWidth| be the value of
+            {{VideoFramePlaneInit/visibleRect}}.{{DOMRectInit/width}} after
+            truncating.
+        1. Assign |truncatedVisibleWidth| to {{VideoFrame/[[visible width]]}}.
+        3. Let |truncatedVisibleHeight| be the value of
+            {{VideoFramePlaneInit/visibleRect}}.{{DOMRectInit/height}} after
+            truncating.
+        2. Assign |truncatedVisibleHeight| to {{VideoFrame/[[visible height]]}}.
     11. Otherwise:
         1. Assign {{VideoFrame/[[coded width]]}} to
             {{VideoFrame/[[visible width]]}}.
@@ -2826,31 +2829,34 @@ dictionary PlaneInit {
     {{VideoFrame/[[coded height]]}}.
 
 : <dfn attribute for=VideoFrame>codedRect</dfn>
-:: A {{VideoFrameRect}} with width and height matching {{VideoFrame/codedWidth}}
-    and {{VideoFrame/codedHeight}} and origin always at (0,0). Offered for
-    convenience for use with {{VideoFrame/allocationSize()}} and
-    {{VideoFrame/copyTo()}}.
+:: A {{DOMRectReadOnly}} with {{DOMRectReadOnly/width}} and
+    {{DOMRectReadOnly/height}} matching {{VideoFrame/codedWidth}} and
+    {{VideoFrame/codedHeight}} and {{DOMRectReadOnly/x}} and
+    {{DOMRectReadOnly/y}} at (0,0). Offered for convenience for use with
+    {{VideoFrame/allocationSize()}} and {{VideoFrame/copyTo()}}.
 
     The {{VideoFrame/codedRect}} getter steps are:
-    1. Let |rect| be a new {{VideoFrameRect}}, initialized as follows:
-        1. Assign `0` to {{VideoFrameRect/left}} and {{VideoFrameRect/top}}.
+    1. If {{VideoFrame/[[detached]]}} is `true`, return `null`.
+    2. Let |rect| be a new {{DOMRectReadOnly}}, initialized as follows:
+        1. Assign `0` to {{DOMRectReadOnly/x}} and {{DOMRectReadOnly/y}}.
         2. Assign {{VideoFrame/[[coded width]]}} and
-            {{VideoFrame/[[coded height]]}} to {{VideoFrameRect/width}} and
-            {{VideoFrameRect/height}} respectively.
-    2. Return |rect|.
+            {{VideoFrame/[[coded height]]}} to {{DOMRectReadOnly/width}} and
+            {{DOMRectReadOnly/height}} respectively.
+    3. Return |rect|.
 
 : <dfn attribute for=VideoFrame>visibleRect</dfn>
-:: A {{VideoFrameRect}} describing the visible rectangle of pixels for this
+:: A {{DOMRectReadOnly}} describing the visible rectangle of pixels for this
     {{VideoFrame}}.
 
     The {{VideoFrame/visibleRect}} getter steps are:
-    1. Let |rect| be a new {{VideoFrameRect}}, initialized as follows:
+    1. If {{VideoFrame/[[detached]]}} is `true`, return `null`.
+    2. Let |rect| be a new {{DOMRectReadOnly}}, initialized as follows:
         1. Assign {{VideoFrame/[[visible left]]}},
             {{VideoFrame/[[visible top]]}}, {{VideoFrame/[[visible width]]}},
-            and {{VideoFrame/[[visible height]]}} to {{VideoFrameRect/left}},
-            {{VideoFrameRect/top}}, {{VideoFrameRect/width}}, and
-            {{VideoFrameRect/height}} respectively.
-    2. Return |rect|.
+            and {{VideoFrame/[[visible height]]}} to {{DOMRectReadOnly/x}},
+            {{DOMRectReadOnly/y}}, {{DOMRectReadOnly/width}}, and
+            {{DOMRectReadOnly/height}} respectively.
+    3. Return |rect|.
 
 : <dfn attribute for=VideoFrame>displayWidth</dfn>
 :: Width of the VideoFrame when displayed after applying aspect ratio
@@ -3021,7 +3027,7 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
           |displayHeight| to {{VideoFrame/[[coded width]]}},
           {{VideoFrame/[[coded height]]}}, {{VideoFrame/[[visible left]]}},
           {{VideoFrame/[[visible top]]}}, {{VideoFrame/[[visible width]]}},
-          and {{VideoFrame/[[visible height]]}} respectively..
+          and {{VideoFrame/[[visible height]]}} respectively.
       10. Assign |duration| and |timestamp| to {{VideoFrame/[[duration]]}} and
           {{VideoFrame/[[timestamp]]}} respectively.
   2. Return |frame|.
@@ -3030,14 +3036,14 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
     <dfn>valid VideoFramePlaneInit</dfn>, run these steps:
 :: 1. If {{VideoFramePlaneInit/codedWidth}} = 0 or
         {{VideoFramePlaneInit/codedHeight}} = 0,return `false`.
-    2. If {{VideoFramePlaneInit/visibleRect}}.{{VideoFrameRect/width}} = 0
-        or {{VideoFramePlaneInit/visibleRect}}.{{VideoFrameRect/height}} =
+    2. If {{VideoFramePlaneInit/visibleRect}}.{{DOMRectInit/width}} = 0
+        or {{VideoFramePlaneInit/visibleRect}}.{{DOMRectInit/height}} =
         0, return `false`.
-    3. If {{VideoFramePlaneInit/visibleRect}}.{{VideoFrameRect/top}} +
-        {{VideoFramePlaneInit/visibleRect}}.{{VideoFrameRect/height}} >=
+    3. If {{VideoFramePlaneInit/visibleRect}}.{{DOMRectInit/y}} +
+        {{VideoFramePlaneInit/visibleRect}}.{{DOMRectInit/height}} >=
         {{VideoFramePlaneInit/codedHeight}}, return `false`.
-    4. If {{VideoFramePlaneInit/visibleRect}}.{{VideoFrameRect/left}} +
-        {{VideoFramePlaneInit/visibleRect}}.{{VideoFrameRect/width}} >=
+    4. If {{VideoFramePlaneInit/visibleRect}}.{{DOMRectInit/x}} +
+        {{VideoFramePlaneInit/visibleRect}}.{{DOMRectInit/width}} >=
         {{VideoFramePlaneInit/codedWidth}}, return `false`.
     5. If {{VideoFramePlaneInit/displayWidth}} = 0 or
         {{VideoFramePlaneInit/displayHeight}} = 0, return `false`.
@@ -3103,13 +3109,13 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
         {{VideoFrame/visibleRect}}.
     2. If {{VideoFrameCopyToOptions/rect}} [=map/exists=] in |options|:
         1. Let |optRect| be {{VideoFrameCopyToOptions/rect}}:
-        2. If either of |optRect|.{{VideoFrameRect/width}} or
-            {{VideoFrameRect/height}} is `0`, return a {{TypeError}}.
-        3. If the sum of |optRect|.{{VideoFrameRect/left}} and
-            |optRect|.{{VideoFrameRect/width}} is greater than
+        2. If either of |optRect|.{{DOMRectInit/width}} or
+            {{DOMRectInit/height}} is `0`, return a {{TypeError}}.
+        3. If the sum of |optRect|.{{DOMRectInit/x}} and
+            |optRect|.{{DOMRectInit/width}} is greater than
             {{VideoFrame/[[coded width]]}}, return a {{TypeError}}.
-        4. If the sum of |optRect|.{{VideoFrameRect/top}} and
-            |optRect|.{{VideoFrameRect/height}} is greater than
+        4. If the sum of |optRect|.{{DOMRectInit/y}} and
+            |optRect|.{{DOMRectInit/height}} is greater than
             {{VideoFrame/[[coded height]]}}, return a {{TypeError}}.
         5. Assign |optRect| to |sourceRect|.
     3. Let |planeIndex| be `0`.
@@ -3126,11 +3132,11 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
             for |plane|.
         3. Let |sampleHeight| be the vertical pixel size of each subsample
             for |plane|.
-        4. If |sourceRect|.{{VideoFrameRect/left}} and
-            |sourceRect|.{{VideoFrameRect/width}} are not both multiples of
+        4. If |sourceRect|.{{DOMRectReadOnly/x}} and
+            |sourceRect|.{{DOMRectReadOnly/width}} are not both multiples of
             |sampleWidth|, throw a {{TypeError}}.
-        5. If |sourceRect|.{{VideoFrameRect/top}} and
-            |sourceRect|.{{VideoFrameRect/height}} are not both multiples of
+        5. If |sourceRect|.{{DOMRectReadOnly/y}} and
+            |sourceRect|.{{DOMRectReadOnly/height}} are not both multiples of
             |sampleHeight|, throw a {{TypeError}}.
         6. Increment |planeIndex| by `1`
     6. Return |sourceRect|.
@@ -3158,16 +3164,16 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
         6. Let |computedLayout| be a new [=computed plane layout=].
         7. Set |computedLayout|'s [=computed plane layout/sourceTop=] to the
             result of the integer division of
-            |parsedRect|.{{VideoFrameRect/top}} by |sampleHeight|.
+            truncated |parsedRect|.{{DOMRectInit/y}} by |sampleHeight|.
         8. Set |computedLayout|'s [=computed plane layout/sourceHeight=] to the
             result of the integer division of
-            |parsedRect|.{{VideoFrameRect/height}} by |sampleHeight|
+            truncated |parsedRect|.{{DOMRectInit/height}} by |sampleHeight|
         9. Set |computedLayout|'s [=computed plane layout/sourceLeftBytes=] to
             the result of the integer division of
-            |parsedRect|.{{VideoFrameRect/left}} by |sampleWidthBytes|.
+            truncated |parsedRect|.{{DOMRectInit/x}} by |sampleWidthBytes|.
         10. Set |computedLayout|'s [=computed plane layout/sourceWidthBytes=] to
             the result of the integer division of
-            |parsedRect|.{{VideoFrameRect/width}} by |sampleWidthBytes|.
+            truncated |parsedRect|.{{DOMRectInit/width}} by |sampleWidthBytes|.
         11. If {{VideoFrameCopyToOptions/layout}} [=map/exists=]:
             1. Let |planeLayout| be the {{PlaneLayout}} in
                 {{VideoFrameCopyToOptions/layout}} at position |planeIndex|.
@@ -3228,12 +3234,12 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
 
 VideoFrame CopyTo() Options {#videoframe-copyto-options}
 ------------------------------------------------------------
-Options to specify which {{VideoFrameRect}} to copy and the offset and
-stride of planes in the destination buffer.
+Options to specify a rectangle of pixels to copy and the offset and stride of
+planes in the destination buffer.
 
 <xmp class='idl'>
 dictionary VideoFrameCopyToOptions {
-  VideoFrameRect rect;
+  DOMRectInit rect;
   sequence<PlaneLayout> layout;
 };
 </xmp>
@@ -3248,7 +3254,7 @@ will enforce the following requirements:
 </div>
 
 : <dfn dict-member for=VideoFrameCopyToOptions>rect</dfn>
-:: The {{VideoFrameRect}} describing the rectangle of pixels to copy from the
+:: A {{DOMRectInit}} describing the rectangle of pixels to copy from the
     {{VideoFrame}}. If unspecified, the {{VideoFrame/visibleRect}} will be used.
 
     NOTE: The coded rectangle can be specified by passing {{VideoFrame}}'s
@@ -3260,35 +3266,17 @@ will enforce the following requirements:
     {{BufferSource}}. If unspecified, the planes will be tightly packed. It is
     invalid to specify planes that overlap.
 
-VideoFrame Rectangle (Rect) {#videoframe-rect}
-----------------------------------------------
-A {{VideoFrameRect}} is a dictionary specifying the position and dimensions of
-a rectangle of pixels within a {{VideoFrame}}. {{VideoFrameRect}} is used with
+DOMRects in VideoFrame {#videoframe-domrect}
+--------------------------------------------
+The {{VideoFrame}} interfaces uses {{DOMRect}}s to specify the position and
+dimensions for a rectangle of pixels. {{DOMRectInit}} is used with
 {{VideoFrame/copyTo()}} and {{VideoFrame/allocationSize()}} to describe the
 dimensions of the source rectangle. {{VideoFrame}} defines
 {{VideoFrame/codedRect}} and {{VideoFrame/visibleRect}} for convenient copying
- of the coded size and visible region respectively.
+of the coded size and visible region respectively.
 
-<xmp class='idl'>
-dictionary VideoFrameRect {
-  [EnforceRange] required unsigned long left;
-  [EnforceRange] required unsigned long top;
-  [EnforceRange] required unsigned long width;
-  [EnforceRange] required unsigned long height;
-};
-</xmp>
-
-: <dfn dict-member for=VideoFrameRect>left</dfn>
-:: The left offset in pixels for this {{VideoFrameRect}}.
-
-: <dfn dict-member for=VideoFrameRect>top</dfn>
-:: The top offset in pixels for this {{VideoFrameRect}}.
-
-: <dfn dict-member for=VideoFrameRect>width</dfn>
-:: The width in pixels for this {{VideoFrameRect}}.
-
-: <dfn dict-member for=VideoFrameRect>height</dfn>
-:: The height in pixels for this {{VideoFrameRect}}.
+NOTE: VideoFrame pixels are only addressable by integer numbers. All floating
+    point values provided to {{DOMRectInit}} will be truncated.
 
 Plane Layout{#plane-layout}
 ---------------------------
