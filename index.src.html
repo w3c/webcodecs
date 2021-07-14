@@ -309,9 +309,9 @@ Methods {#audiodecoder-methods}
     [=Enqueues a control message=] to configure the audio decoder for decoding
     chunks as described by |config|.
 
-    NOTE: This method will trigger a {{NotSupportedError}} if the user agent
+    NOTE: This method will trigger a {{NotSupportedError}} if the User Agent
         does not support |config|. Authors should first check support by calling
-        {{AudioDecoder/isConfigSupported()}} with |config|. User agents are not
+        {{AudioDecoder/isConfigSupported()}} with |config|. User Agents are not
         required to support any particular codec type or configuration.
 
     When invoked, run these steps:
@@ -418,10 +418,10 @@ Methods {#audiodecoder-methods}
   <dt><dfn method for=AudioDecoder>isConfigSupported(config)</dfn></dt>
   <dd>
     Returns a promise indicating whether the provided |config| is supported by
-    the user agent.
+    the User Agent.
 
     NOTE: The returned {{AudioDecoderSupport}} {{AudioDecoderSupport/config}}
-        will contain only the dictionary members that user agent recognized.
+        will contain only the dictionary members that User Agent recognized.
         Unrecognized dictionary members will be ignored. Authors may detect
         unrecognized dictionary members by comparing
         {{AudioDecoderSupport/config}} to their provided |config|.
@@ -452,7 +452,7 @@ Algorithms {#audiodecoder-algorithms}
     Run these steps:
     1. For each |output| in |outputs|:
         1. Let |data| be an {{AudioData}}, initialized as follows:
-            1. Assign `false` to {{AudioData/[[detached]]}}.
+            1. Assign `false` to {{platform object/[[Detached]]}}.
             2. Let |resource| be the [=media resource=] described by |output|.
             3. Let |resourceReference| be a reference to |resource|.
             4. Assign |resourceReference| to
@@ -576,9 +576,9 @@ Methods {#videodecoder-methods}
     [=Enqueues a control message=] to configure the video decoder for decoding
     chunks as described by |config|.
 
-    NOTE: This method will trigger a {{NotSupportedError}} if the user agent
+    NOTE: This method will trigger a {{NotSupportedError}} if the User Agent
         does not support |config|. Authors should first check support by calling
-        {{VideoDecoder/isConfigSupported()}} with |config|. User agents are not
+        {{VideoDecoder/isConfigSupported()}} with |config|. User Agents are not
         required to support any particular codec type or configuration.
 
     When invoked, run these steps:
@@ -691,10 +691,10 @@ Methods {#videodecoder-methods}
   <dt><dfn method for=VideoDecoder>isConfigSupported(config)</dfn></dt>
   <dd>
     Returns a promise indicating whether the provided |config| is supported by
-    the user agent.
+    the User Agent.
 
     NOTE: The returned {{VideoDecoderSupport}} {{VideoDecoderSupport/config}}
-        will contain only the dictionary members that user agent recognized.
+        will contain only the dictionary members that User Agent recognized.
         Unrecognized dictionary members will be ignored. Authors may detect
         unrecognized dictionary members by comparing
         {{VideoDecoderSupport/config}} to their provided |config|.
@@ -861,9 +861,9 @@ Methods {#audioencoder-methods}
     [=Enqueues a control message=] to configure the audio encoder for
     decoding chunks as described by |config|.
 
-    NOTE: This method will trigger a {{NotSupportedError}} if the user agent
+    NOTE: This method will trigger a {{NotSupportedError}} if the User Agent
         does not support |config|. Authors should first check support by calling
-        {{AudioEncoder/isConfigSupported()}} with |config|. User agents are not
+        {{AudioEncoder/isConfigSupported()}} with |config|. User Agents are not
         required to support any particular codec type or configuration.
 
     When invoked, run these steps:
@@ -890,7 +890,7 @@ Methods {#audioencoder-methods}
     [=Enqueues a control message=] to encode the given |data|.
 
     When invoked, run these steps:
-    1. If the value of |data|'s {{AudioData/[[detached]]}} internal slot is
+    1. If the value of |data|'s {{platform object/[[Detached]]}} internal slot is
         `true`, throw a {{TypeError}}.
     2. If {{AudioEncoder/[[state]]}} is not `"configured"`, throw an
         {{InvalidStateError}}.
@@ -962,10 +962,10 @@ Methods {#audioencoder-methods}
   <dt><dfn method for=AudioEncoder>isConfigSupported(config)</dfn></dt>
   <dd>
     Returns a promise indicating whether the provided |config| is supported by
-    the user agent.
+    the User Agent.
 
     NOTE: The returned {{AudioEncoderSupport}} {{AudioEncoderSupport/config}}
-        will contain only the dictionary members that user agent recognized.
+        will contain only the dictionary members that User Agent recognized.
         Unrecognized dictionary members will be ignored. Authors may detect
         unrecognized dictionary members by comparing
         {{AudioEncoderSupport/config}} to their provided |config|.
@@ -1020,7 +1020,7 @@ Algorithms {#audioencoder-algorithms}
                 |outputConfig|.{{AudioDecoderConfig/numberOfChannels}}.
             4. Assign |outputConfig|.{{AudioDecoderConfig/description}} with a
                 sequence of codec specific bytes as determined by the
-                {{AudioEncoder/[[codec implementation]]}}. The user agent must
+                {{AudioEncoder/[[codec implementation]]}}. The User Agent must
                 ensure that the provided description could be used to
                 correctly decode output.
 
@@ -1177,9 +1177,9 @@ Methods {#videoencoder-methods}
     [=Enqueues a control message=] to configure the video encoder for
     decoding chunks as described by |config|.
 
-    NOTE: This method will trigger a {{NotSupportedError}} if the user agent
+    NOTE: This method will trigger a {{NotSupportedError}} if the User Agent
         does not support |config|. Authors should first check support by calling
-        {{VideoEncoder/isConfigSupported()}} with |config|. User agents are not
+        {{VideoEncoder/isConfigSupported()}} with |config|. User Agents are not
         required to support any particular codec type or configuration.
 
     When invoked, run these steps:
@@ -1206,7 +1206,7 @@ Methods {#videoencoder-methods}
     [=Enqueues a control message=] to encode the given |frame|.
 
     When invoked, run these steps:
-    1. If the value of |frame|'s {{VideoFrame/[[detached]]}} internal slot is
+    1. If the value of |frame|'s {{platform object/[[Detached]]}} internal slot is
         `true`, throw a {{TypeError}}.
     2. If {{VideoEncoder/[[state]]}} is not `"configured"`, throw an
         {{InvalidStateError}}.
@@ -1279,10 +1279,10 @@ Methods {#videoencoder-methods}
   <dt><dfn method for=VideoEncoder>isConfigSupported(config)</dfn></dt>
   <dd>
     Returns a promise indicating whether the provided |config| is supported by
-    the user agent.
+    the User Agent.
 
     NOTE: The returned {{VideoEncoderSupport}} {{VideoEncoderSupport/config}}
-        will contain only the dictionary members that user agent recognized.
+        will contain only the dictionary members that User Agent recognized.
         Unrecognized dictionary members will be ignored. Authors may detect
         unrecognized dictionary members by comparing
         {{VideoEncoderSupport/config}} to their provided |config|.
@@ -1341,7 +1341,7 @@ Algorithms {#videoencoder-algorithms}
             5. Assign `encoderConfig.displayHeight` to
                 `outputConfig.displayHeight`.
             6. Assign the remaining keys of `outputConfig` as determined by
-                {{VideoEncoder/[[codec implementation]]}}. The user agent
+                {{VideoEncoder/[[codec implementation]]}}. The User Agent
                 must ensure that the configuration is completely described
                 such that |outputConfig| could be used to correctly decode
                 |output|.
@@ -1431,7 +1431,7 @@ Configurations{#configurations}
 <dfn>Check Configuration Support</dfn> (with |config|) {#config-support}
 ------------------------------------------------------------------------
 Run these steps:
-1. If the user agent can provide a <a>codec</a> to support all entries of the
+1. If the User Agent can provide a <a>codec</a> to support all entries of the
     |config|, including applicable default values for keys that are not
     included, return `true`.
 
@@ -1441,7 +1441,7 @@ Run these steps:
 
     NOTE: Support for a given configuration may change dynamically if the
         hardware is altered (e.g. external GPU unplugged) or if required
-        hardware resources are exhausted. User agents should describe support on
+        hardware resources are exhausted. User Agents should describe support on
         a best-effort basis given the resources that are available at the time
         of the query.
 
@@ -1450,7 +1450,7 @@ Run these steps:
 <dfn>Clone Configuration</dfn> (with |config|) {#clone-config}
 --------------------------------------------------------------
 
-NOTE: This algorithm will copy only the dictionary members that the user agent
+NOTE: This algorithm will copy only the dictionary members that the User Agent
     recognizes as part of the dictionary type.
 
 Run these steps:
@@ -1479,11 +1479,11 @@ dictionary AudioDecoderSupport {
   <dt><dfn dict-member for=AudioDecoderSupport>supported</dfn></dt>
   <dd>
     A boolean indicating the whether the corresponding
-    {{AudioDecoderSupport/config}} is supported by the user agent.
+    {{AudioDecoderSupport/config}} is supported by the User Agent.
   </dd>
   <dt><dfn dict-member for=AudioDecoderSupport>config</dfn></dt>
   <dd>
-    An {{AudioDecoderConfig}} used by the user agent in determining the value of
+    An {{AudioDecoderConfig}} used by the User Agent in determining the value of
     {{AudioDecoderSupport/supported}}.
   </dd>
 </dl>
@@ -1500,11 +1500,11 @@ dictionary VideoDecoderSupport {
   <dt><dfn dict-member for=VideoDecoderSupport>supported</dfn></dt>
   <dd>
     A boolean indicating the whether the corresponding
-    {{VideoDecoderSupport/config}} is supported by the user agent.
+    {{VideoDecoderSupport/config}} is supported by the User Agent.
   </dd>
   <dt><dfn dict-member for=VideoDecoderSupport>config</dfn></dt>
   <dd>
-    A {{VideoDecoderConfig}} used by the user agent in determining the value of
+    A {{VideoDecoderConfig}} used by the User Agent in determining the value of
     {{VideoDecoderSupport/supported}}.
   </dd>
 </dl>
@@ -1521,11 +1521,11 @@ dictionary AudioEncoderSupport {
   <dt><dfn dict-member for=AudioEncoderSupport>supported</dfn></dt>
   <dd>
     A boolean indicating the whether the corresponding
-    {{AudioEncoderSupport/config}} is supported by the user agent.
+    {{AudioEncoderSupport/config}} is supported by the User Agent.
   </dd>
   <dt><dfn dict-member for=AudioEncoderSupport>config</dfn></dt>
   <dd>
-    An {{AudioEncoderConfig}} used by the user agent in determining the value of
+    An {{AudioEncoderConfig}} used by the User Agent in determining the value of
     {{AudioEncoderSupport/supported}}.
   </dd>
 </dl>
@@ -1542,11 +1542,11 @@ dictionary VideoEncoderSupport {
   <dt><dfn dict-member for=VideoEncoderSupport>supported</dfn></dt>
   <dd>
     A boolean indicating the whether the corresponding
-    {{VideoEncoderSupport/config}} is supported by the user agent.
+    {{VideoEncoderSupport/config}} is supported by the User Agent.
   </dd>
   <dt><dfn dict-member for=VideoEncoderSupport>config</dfn></dt>
   <dd>
-    A {{VideoEncoderConfig}} used by the user agent in determining the value of
+    A {{VideoEncoderConfig}} used by the User Agent in determining the value of
     {{VideoEncoderSupport/supported}}.
   </dd>
 </dl>
@@ -1741,6 +1741,7 @@ dictionary VideoEncoderConfig {
   HardwareAcceleration hardwareAcceleration = "allow";
   DOMString scalabilityMode;
   BitrateMode bitrateMode = "variable";
+  LatencyMode latencyMode = "quality";
 };
 </xmp>
 
@@ -1828,6 +1829,11 @@ To check if a {{VideoEncoderConfig}} is a <dfn>valid VideoEncoderConfig</dfn>,
     NOTE: The precise degree of bitrate fluctuation in either mode is
         implementation defined.
   </dd>
+
+  <dt><dfn dict-member for=VideoEncoderConfig>latencyMode</dfn></dt>
+  <dd>
+    Configures latency related behaviors for this codec. See {{LatencyMode}}.
+  </dd>
 </dl>
 
 Hardware Acceleration{#hardware-acceleration}
@@ -1845,7 +1851,7 @@ specialized hardware.
 
 <div class='note'>
   NOTE: Most authors will be best served by using the default of
-  {{HardwareAcceleration/allow}}. This gives the user agent flexibility to
+  {{HardwareAcceleration/allow}}. This gives the User Agent flexibility to
   optimize based on its knowledge of the system and configuration. A common
   strategy will be to prioritize hardware acceleration at higher resolutions
   with a fallback to software codecs if hardware acceleration fails.
@@ -1880,12 +1886,12 @@ specialized hardware.
 <dl>
   <dt><dfn enum-value for=HardwareAcceleration>allow</dfn></dt>
   <dd>
-    Indicates that the user agent may use hardware acceleration if it is
+    Indicates that the User Agent may use hardware acceleration if it is
     available and compatible with other aspects of the codec configuration.
   </dd>
   <dt><dfn enum-value for=HardwareAcceleration>deny</dfn></dt>
   <dd>
-    Indicates that the user agent must not use hardware acceleration.
+    Indicates that the User Agent must not use hardware acceleration.
 
     NOTE: This will cause the configuration to be unsupported on platforms where
     an unaccelerated codec is unavailable or is incompatible with other aspects
@@ -1893,13 +1899,36 @@ specialized hardware.
   </dd>
   <dt><dfn enum-value for=HardwareAcceleration>require</dfn></dt>
   <dd>
-    Indicates that the user agent must use hardware acceleration.
+    Indicates that the User Agent must use hardware acceleration.
 
     NOTE: This will cause the configuration to be unsupported on platforms where
     an accelerated codec is unavailable or is incompatible with other aspects of
     the codec configuration.
   </dd>
 </dl>
+
+Latency Mode{#latency-mode}
+---------------------------
+<xmp class='idl'>
+enum LatencyMode {
+  "quality",
+  "realtime"
+};
+</xmp>
+
+: <dfn enum-value for=LatencyMode>quality</dfn>
+:: Indicates that the User Agent should optimize for encoding quality. In
+    this mode:
+    * User Agents may increase encoding latency to improve quality.
+    * User Agents must not drop frames to achieve the target
+        {{VideoEncoderConfig/bitrate}}.
+
+: <dfn enum-value for=LatencyMode>realtime</dfn>
+:: Indicates that the User Agent should optimize for low latency. In this
+    mode:
+    * User Agents may sacrifice quality to improve latency.
+    * User Agents may drop frames to achieve the target
+        {{VideoEncoderConfig/bitrate}}.
 
 Configuration Equivalence{#config-equivalence}
 ----------------------------------------------
@@ -1920,7 +1949,7 @@ dictionary VideoEncoderEncodeOptions {
   <dt><dfn dict-member for=VideoEncoderEncodeOptions>keyFrame</dfn></dt>
   <dd>
     A value of `true` indicates that the given frame MUST be encoded as a key
-    frame. A value of `false` indicates that the user agent has flexibility to
+    frame. A value of `false` indicates that the User Agent has flexibility to
     decide whether the frame will be encoded as a [=key frame=].
   </dd>
 </dl>
@@ -2146,15 +2175,36 @@ A [=media resource=] must remain alive at least as long as it continues to be
 referenced by a `[[resource reference]]`.
 
 NOTE: When a [=media resource=] is no longer referenced by a
-    `[[resource reference]]`, the resource may be destroyed. User agents are
+    `[[resource reference]]`, the resource may be destroyed. User Agents are
     encouraged to destroy such resources quickly to reduce memory pressure and
     facilitate resource reuse.
+
+### Transfer and Serialization ### {#raw-media-serialization-and-transfer}
+
+This section is non-normative.
+
+{{AudioData}} and {{VideoFrame}} are both [=transferable objects|transferable=]
+and [=serializable objects|serializable=] objects. Their transfer and
+serialization steps are defined in [[#audiodata-transfer-serialization]] and
+[[#videoframe-transfer-serialization]] respectively.
+
+Transferring an {{AudioData}} or {{VideoFrame}} moves its `[[resource
+reference]]` to the destination object and closes (as in {{AudioData/close()}})
+the source object. Authors may use this facility
+to move an {{AudioData}} or {{VideoFrame}} between realms without copying the
+underlying [=media resource=].
+
+Serializing an {{AudioData}} or {{VideoFrame}} effectively clones (as in
+{{VideoFrame/clone()}}) the source object, resulting in two objects that
+reference the same [=media resource=]. Authors may use this facility to clone
+an {{AudioData}} or {{VideoFrame}} to another realm without copying the
+underlying [=media resource=].
 
 AudioData Interface {#audiodata-interface}
 ---------------------------------------------
 
 <xmp class='idl'>
-[Exposed=(Window,DedicatedWorker)]
+[Exposed=(Window,DedicatedWorker), Serializable, Transferable]
 interface AudioData {
   constructor(AudioDataInit init);
 
@@ -2182,9 +2232,6 @@ dictionary AudioDataInit {
 </xmp>
 
 ### Internal Slots ###{#audiodata-internal-slots}
-: <dfn attribute for=AudioData>\[[detached]]</dfn>
-:: Boolean indicating whether {{AudioData/close()}} was invoked on this
-    {{AudioData}}.
 
 : <dfn attribute for=AudioData>[[resource reference]]</dfn>
 :: A reference to a [=media resource=] that stores the audio sample data for
@@ -2210,7 +2257,7 @@ dictionary AudioDataInit {
   AudioData(init)
 </dfn>
 1. Let |frame| be a new {{AudioData}} object, initialized as follows:
-    1. Assign `false` to {{AudioData/[[detached]]}}.
+    1. Assign `false` to {{platform object/[[Detached]]}}.
     2. Assign |init|.{{AudioDataInit/format}} to
         {{AudioData/[[format]]}}.
     3. Assign |init|.{{AudioDataInit/sampleRate}} to
@@ -2286,7 +2333,7 @@ dictionary AudioDataInit {
     destination buffer.
 
     When invoked, run these steps:
-    1. If the value of |frame|'s {{AudioData/[[detached]]}} internal slot is
+    1. If the value of |frame|'s {{platform object/[[Detached]]}} internal slot is
         `true`, throw an {{InvalidStateError}} {{DOMException}}.
     2. Let |copyElementCount| be the result of running the
         [=Compute Copy Element Count=] algorithm with |options|.
@@ -2306,7 +2353,7 @@ dictionary AudioDataInit {
 :: Creates a new AudioData with a reference to the same [=media resource=].
 
     When invoked, run these steps:
-    1. If the value of |frame|'s {{AudioData/[[detached]]}} internal slot is
+    1. If the value of |frame|'s {{platform object/[[Detached]]}} internal slot is
         `true`, throw an {{InvalidStateError}} {{DOMException}}.
     2. Return the result of running the [=Clone AudioData=] algorithm with
         [=this=].
@@ -2315,9 +2362,7 @@ dictionary AudioDataInit {
 :: Clears all state and releases the reference to the [=media resource=].
     Close is final.
 
-    When invoked, run these steps:
-    1. Assign `true` to the {{AudioData/[[detached]]}} internal slot.
-    2. Assign `null` to {{AudioData/[[resource reference]]}}.
+    When invoked, run the [=Close AudioData=] algorithm with [=this=].
 
 ### Algorithms ### {#audiodata-algorithms}
 
@@ -2347,13 +2392,54 @@ dictionary AudioDataInit {
             {{AudioData/[[resource reference]]}}.
         2. Let |reference| be a new reference to |resource|.
         3. Assign |reference| to {{AudioData/[[resource reference]]}}.
-        4. Assign the values of |data|'s {{AudioData/[[detached]]}},
+        4. Assign the values of |data|'s {{platform object/[[Detached]]}},
             {{AudioData/[[format]]}}, {{AudioData/[[sample rate]]}},
             {{AudioData/[[number of frames]]}},
             {{AudioData/[[number of channels]]}}, and
             {{AudioData/[[timestamp]]}} slots to the corresponding slots in
             |clone|.
     2. Return |clone|.
+
+: <dfn>Close AudioData</dfn> (with |data|)
+:: Run these steps:
+        1. Assign `true` to |data|'s {{platform object/[[Detached]]}} internal slot.
+        2. Assign `null` to |data|'s {{AudioData/[[resource reference]]}}.
+
+### Transfer and Serialization ###{#audiodata-transfer-serialization}
+
+: The {{AudioData}} [=transfer steps=] (with |value| and |dataHolder|) are:
+:: 1. If |value|'s {{platform object/[[Detached]]}} is `true`, throw a
+        {{DataCloneError}} {{DOMException}}.
+    2. For all {{AudioData}} internal slots in |value|, assign the value of
+        each internal slot to a field in |dataHolder| with the same name as the
+        internal slot.
+    3. Run the [=Close AudioData=] algorithm with |value|.
+
+: The {{AudioData}} [=transfer-receiving steps=] (with |dataHolder| and |value|)
+    are:
+:: 1. For all named fields in |dataHolder|, assign the value of each named
+        field to the {{AudioData}} internal slot in |value| with the same name
+        as the named field.
+
+: The {{AudioData}} [=serialization steps=] (with |value|, |serialized|, and
+    |forStorage|) are:
+:: 1. If |value|'s {{platform object/[[Detached]]}} is `true`, throw a
+        {{DataCloneError}} {{DOMException}}.
+    2. If |forStorage| is `true`, throw a {{TypeError}}.
+    3. Let |resource| be the [=media resource=] referenced by
+            |value|'s {{AudioData/[[resource reference]]}}.
+    4. Let |newReference| be a new reference to |resource|.
+    5. Assign |newReference| to |serialized|.[[resource reference]].
+    6. For all remaining {{AudioData}} internal slots (excluding
+        {{AudioData/[[resource reference]]}}) in |value|, assign the value of
+        each internal slot to a field in |serialized| with the same name as the
+        internal slot.
+
+: The {{AudioData}} [=deserialization steps=] (with |serialized| and |value|)
+    are:
+:: 1. For all named fields in |serialized|, assign the value of each named
+        field to the {{AudioData}} internal slot in |value| with the same name
+        as the named field.
 
 ### AudioDataCopyToOptions ### {#audiodata-copy-to-options}
 
@@ -2555,7 +2641,7 @@ NOTE: {{VideoFrame}} is a {{CanvasImageSource}}. A {{VideoFrame}} may be
     {{CanvasDrawImage}}'s {{CanvasDrawImage/drawImage()}}.
 
 <xmp class='idl'>
-[Exposed=(Window,DedicatedWorker)]
+[Exposed=(Window,DedicatedWorker), Serializable, Transferable]
 interface VideoFrame {
   constructor(CanvasImageSource image, optional VideoFrameInit init = {});
   constructor(sequence<PlaneInit> planes,
@@ -2603,10 +2689,6 @@ dictionary PlaneInit {
 </xmp>
 
 ### Internal Slots ###{#videoframe-internal-slots}
-
-: <dfn attribute for=VideoFrame>\[[detached]]</dfn>
-:: A boolean indicating whether {{destroy()}} was invoked and underlying
-    resources have been released.
 
 : <dfn attribute for=VideoFrame>[[resource reference]]</dfn>
 :: A reference to the [=media resource=] that stores the pixel data for
@@ -2735,7 +2817,7 @@ dictionary PlaneInit {
         {{PixelFormat}} and reference them in the steps above. See
         [#165](https://github.com/w3c/webcodecs/issues/165).
 
-    NOTE: The user agent may choose to allocate resource with a larger coded
+    NOTE: The User Agent may choose to allocate resource with a larger coded
       size and plane strides to improve memory alignment. Increases will be
       reflected by {{VideoFrame/codedWidth}} and {{VideoFrame/codedHeight}}.
 
@@ -2756,7 +2838,7 @@ dictionary PlaneInit {
                 the byte positioned at |dataOffset| and stopping after
                 {{PlaneInit/stride}} bytes have been copied.
 
-                NOTE: The user agent may use {{VideoFramePlaneInit/visibleRect}}
+                NOTE: The User Agent may use {{VideoFramePlaneInit/visibleRect}}
                     to copy only the visible rectangle. It may also reposition
                     the visible rectangle within |resource|. The final position
                     will be reflected by {{VideoFrame/visibleRect}}.
@@ -2911,7 +2993,7 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
     to be used with {{VideoFrame/copyTo()}} with the given options.
 
     When invoked, run these steps:
-    1. If {{VideoFrame/[[detached]]}} is `true`, return `0`.
+    1. If {{platform object/[[Detached]]}} is `true`, return `0`.
     2. If {{VideoFrame/[[format]]}} is `""`, throw a {{NotSupportedError}}
         {{DOMException}}.
     3. Let |parsedOptions| be the result of running the [=Parse
@@ -2929,7 +3011,7 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
         were returned.
 
     When invoked, run these steps:
-    1. If {{VideoFrame/[[detached]]}} is `true`, return `0`.
+    1. If {{platform object/[[Detached]]}} is `true`, return `0`.
     2. If {{VideoFrame/[[format]]}} is `""`, throw a {{NotSupportedError}}
         {{DOMException}}.
     3. Let |parsedOptions| be the result of running the [=Parse
@@ -2981,7 +3063,7 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
     [=media resource=].
 
     When invoked, run these steps:
-    1. If the value of |frame|’s {{VideoFrame/[[detached]]}} internal slot is
+    1. If the value of |frame|’s {{platform object/[[Detached]]}} internal slot is
         `true`, throw an {{InvalidStateError}} {{DOMException}}.
     2. Return the result of running the [=Clone VideoFrame=] algorithm with
         [=this=].
@@ -2990,22 +3072,12 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
 :: Clears all state and releases the reference to the [=media resource=].
     Close is final.
 
-    When invoked, run these steps:
-    1. Assign `null` to {{VideoFrame/[[resource reference]]}}.
-    2. Assign `true` to {{VideoFrame/[[detached]]}}.
-    3. Assign `""` to {{VideoFrame/format}}.
-    4. Assign `0` to {{VideoFrame/[[coded width]]}},
-        {{VideoFrame/[[coded height]]}}, {{VideoFrame/[[visible left]]}},
-        {{VideoFrame/[[visible top]]}}, {{VideoFrame/[[visible width]]}},
-        {{VideoFrame/[[visible height]]}}, {{VideoFrame/[[display width]]}},
-        and {{VideoFrame/[[display height]]}}.
-    5. Assign `null` to {{VideoFrame/[[duration]]}} and
-        {{VideoFrame/[[timestamp]]}}.
+    When invoked, run the [=Close VideoFrame=] algorithm with [=this=].
 
 ### Algorithms ###{#videoframe-algorithms}
   <dfn>Create a VideoFrame</dfn> (with |output|, |timestamp|, |duration|, |displayAspectWidth|, and |displayAspectHeight|)
   1. Let |frame| be a new {{VideoFrame}}, constructed as follows:
-      1. Assign `false` to {{VideoFrame/[[detached]]}}.
+      1. Assign `false` to {{platform object/[[Detached]]}}.
       2. Let |resource| be the [=media resource=] described by |output|.
       3. Let |resourceReference| be a reference to |resource|.
       4. Assign |resourceReference| to {{VideoFrame/[[resource reference]]}}.
@@ -3088,13 +3160,27 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
 
 : <dfn>Clone VideoFrame</dfn> (with |frame|)
 :: 1. Let |clone| be a new {{VideoFrame}} initialized as follows:
-        1. Assign |frame|.{{VideoFrame/[[resource reference]]}} to
+        1. Let |resource| be the [=media resource=] referenced by |frame|’s
+            [[resource reference]].
+        2. Let |newReference| be a new reference to |resource|.
+        3. Assign |newReference| to |clone|'s
             {{VideoFrame/[[resource reference]]}}.
-        2. Assign |frame|.{{VideoFrame/format}} to {{VideoFrame/format}}.
-        3. Assign all remaining attributes of |frame| (
-            {{VideoFrame/codedWidth}}, {{VideoFrame/codedHeight}}, etc.) to
-            those of the same name in |clone|.
+        4. Assign all remaining internal slots of |frame| (excluding
+            {{VideoFrame/[[resource reference]]}}) to those of the same name
+            in |clone|.
     2. Return |clone|.
+
+: <dfn>Close VideoFrame</dfn> (with |frame|)
+:: 1. Assign `null` to |frame|'s {{VideoFrame/[[resource reference]]}}.
+    2. Assign `true` to |frame|'s {{platform object/[[Detached]]}}.
+    3. Assign `""` to |frame|'s {{VideoFrame/format}}.
+    4. Assign `0` to |frame|'s {{VideoFrame/[[coded width]]}},
+        {{VideoFrame/[[coded height]]}}, {{VideoFrame/[[visible left]]}},
+        {{VideoFrame/[[visible top]]}}, {{VideoFrame/[[visible width]]}},
+        {{VideoFrame/[[visible height]]}}, {{VideoFrame/[[display width]]}},
+        and {{VideoFrame/[[display height]]}}.
+    5. Assign `null` to |frame|'s {{VideoFrame/[[duration]]}} and
+        {{VideoFrame/[[timestamp]]}}.
 
 : <dfn for=VideoFrame>Parse VideoFrameCopyToOptions</dfn> (with |options|)
 :: 1. Let |parsedRect| be the result of running the [=VideoFrame/Parse CopyTo
@@ -3232,6 +3318,43 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
             [=parsed copyto options/allocationSize=].
     9. Return |parsedOptions|.
 
+### Transfer and Serialization ###{#videoframe-transfer-serialization}
+
+: The {{VideoFrame}} [=transfer steps=] (with |value| and |dataHolder|) are:
+:: 1. If |value|'s {{platform object/[[Detached]]}} is `true`, throw a
+        {{DataCloneError}} {{DOMException}}.
+    2. For all {{VideoFrame}} internal slots in |value|, assign the value of
+        each internal slot to a field in |dataHolder| with the same name as the
+        internal slot.
+    3. Run the [=Close VideoFrame=] algorithm with |value|.
+
+: The {{VideoFrame}} [=transfer-receiving steps=] (with |dataHolder| and
+    |value|) are:
+:: 1. For all named fields in |dataHolder|, assign the value of each named
+        field to the {{VideoFrame}} internal slot in |value| with the same name
+        as the named field.
+
+: The {{VideoFrame}} [=serialization steps=] (with |value|, |serialized|, and
+    |forStorage|) are:
+:: 1. If |value|'s {{platform object/[[Detached]]}} is `true`, throw a
+        {{DataCloneError}} {{DOMException}}.
+    2. If |forStorage| is `true`, throw a {{TypeError}}.
+    3. Let |resource| be the [=media resource=] referenced by
+            |value|'s {{VideoFrame/[[resource reference]]}}.
+    4. Let |newReference| be a new reference to |resource|.
+    5. Assign |newReference| to |serialized|.[[resource reference]].
+    6. For all remaining {{VideoFrame}} internal slots (excluding
+        {{VideoFrame/[[resource reference]]}}) in |value|, assign the value of
+        each internal slot to a field in |serialized| with the same name as the
+        internal slot.
+
+: The {{VideoFrame}} [=deserialization steps=] (with |serialized| and |value|)
+    are:
+:: 1. For all named fields in |serialized|, assign the value of each named
+        field to the {{VideoFrame}} internal slot in |value| with the same name
+        as the named field.
+
+
 VideoFrame CopyTo() Options {#videoframe-copyto-options}
 ------------------------------------------------------------
 Options to specify a rectangle of pixels to copy and the offset and stride of
@@ -3286,7 +3409,7 @@ A {{PlaneLayout}} is a dictionary specifying the offset and stride of a
 specify how the plane is laid out in the destination {{BufferSource}}}.
 Alternatively, callers can inspect {{VideoFrame/copyTo()}}'s returned sequence
 of {{PlaneLayout}}s to learn the the offset and stride for planes as decided by
-the user agent.
+the User Agent.
 
 <xmp class='idl'>
 dictionary PlaneLayout {
@@ -3419,9 +3542,9 @@ interface ImageDecoder {
     ImageDecoder(init)
     </dfn>
 :: NOTE: Calling {{ImageDecoder/decode()}} on the constructed {{ImageDecoder}}
-    will trigger a {{NotSupportedError}} if the user agent does not support
+    will trigger a {{NotSupportedError}} if the User Agent does not support
     |type|. Authors should first check support by calling
-    {{ImageDecoder/isTypeSupported()}} with |type|. User agents are not
+    {{ImageDecoder/isTypeSupported()}} with |type|. User Agents are not
     required to support any particular type.
 
     When invoked, run these steps:
@@ -3526,7 +3649,7 @@ interface ImageDecoder {
     steps:
     1. Wait for {{ImageDecoder/[[tracks established]]}} to become `true`.
     2. If |options|.{{ImageDecodeOptions/completeFramesOnly}} is `false` and
-        the image is a [=Progressive Image=] for which the user agent supports
+        the image is a [=Progressive Image=] for which the User Agent supports
         progressive decoding, run the [=Decode Progressive Frame=] algorithm with |options|.{{ImageDecodeOptions/frameIndex}} and |promise|.
     3. Otherwise, run the [=Decode Complete Frame=] algorithm with
         |options|.{{ImageDecodeOptions/frameIndex}} and |promise|.
@@ -3546,7 +3669,7 @@ interface ImageDecoder {
 
 : <dfn method for=ImageDecoder>isTypeSupported(type)</dfn>
 :: Returns a promise indicating whether the provided config is supported by the
-    user agent.
+    User Agent.
 
     When invoked, run these steps:
     1. If |type| is not a [=valid image MIME type=], return a {{Promise}}
@@ -3827,7 +3950,7 @@ interface ImageDecoder {
             {{EncodingError}} {{DOMException}}.
 
 : <dfn for=ImageDecoder>Check Type Support</dfn> (with |type|)
-:: 1. If the user agent can provide a codec to support decoding |type|, return
+:: 1. If the User Agent can provide a codec to support decoding |type|, return
         `true`.
     2. Otherwise, return `false`.
 
@@ -3942,7 +4065,7 @@ dictionary ImageDecodeOptions {
     previous call, until finally the full-detail image is produced.
 
     If {{ImageDecodeOptions/completeFramesOnly}} is assigned `true`, or if the
-    image is not a [=Progressive Image=], or if the user agent does not support
+    image is not a [=Progressive Image=], or if the User Agent does not support
     progressive decoding for the given image type, calls to
     {{ImageDecoder/decode()}} will only resolve once the full detail image is
     decoded.
@@ -4157,9 +4280,9 @@ are provided and direct access to invoke the codec control methods. This also
 affords attackers the ability to invoke sequences of control methods that were
 not previously possible via the higher level APIs.
 
-User agents should mitigate this risk by extensively fuzzing their
+User Agents should mitigate this risk by extensively fuzzing their
 implementation with random inputs and control method invocations. Additionally,
-user agents are encouraged to isolate their underlying codecs in processes with
+User Agents are encouraged to isolate their underlying codecs in processes with
 restricted privileges (sandbox) as a barrier against successful exploits being
 able to read user data.
 
@@ -4193,7 +4316,7 @@ be used to determine when an encoder uses hardware acceleration. WebCodecs will
 expose some additional information in the form of low level codec features.
 
 A codec feature profile alone is unlikely to be uniquely identifying. Underlying
-codecs are often implemented entirely in software (be it part of the user agent
+codecs are often implemented entirely in software (be it part of the User Agent
 binary or part of the operating system), such that all users who run that
 software will have a common set of capabilities. Additionally, underlying codecs
 are often implemented with hardware acceleration, but such hardware is mass
@@ -4205,8 +4328,8 @@ profile is shared by a large group of users.
 
 Segmenting groups of users by codec feature profile still amounts to a bit of
 entropy that can be combined with other metrics to uniquely identify a user.
-User agents may partially mitigate this by returning an error whenever a site
-attempts to exhaustively probe for codec capabilities. Additionally, user agents
+User Agents may partially mitigate this by returning an error whenever a site
+attempts to exhaustively probe for codec capabilities. Additionally, User Agents
 may implement a "privacy budget", which depletes as authors use WebCodecs and
 other identifying APIs. Upon exhaustion of the privacy budget, codec
 capabilities could be reduced to a common baseline or prompt for user approval.
