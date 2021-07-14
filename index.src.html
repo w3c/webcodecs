@@ -309,9 +309,9 @@ Methods {#audiodecoder-methods}
     [=Enqueues a control message=] to configure the audio decoder for decoding
     chunks as described by |config|.
 
-    NOTE: This method will trigger a {{NotSupportedError}} if the user agent
+    NOTE: This method will trigger a {{NotSupportedError}} if the User Agent
         does not support |config|. Authors should first check support by calling
-        {{AudioDecoder/isConfigSupported()}} with |config|. User agents are not
+        {{AudioDecoder/isConfigSupported()}} with |config|. User Agents are not
         required to support any particular codec type or configuration.
 
     When invoked, run these steps:
@@ -418,10 +418,10 @@ Methods {#audiodecoder-methods}
   <dt><dfn method for=AudioDecoder>isConfigSupported(config)</dfn></dt>
   <dd>
     Returns a promise indicating whether the provided |config| is supported by
-    the user agent.
+    the User Agent.
 
     NOTE: The returned {{AudioDecoderSupport}} {{AudioDecoderSupport/config}}
-        will contain only the dictionary members that user agent recognized.
+        will contain only the dictionary members that User Agent recognized.
         Unrecognized dictionary members will be ignored. Authors may detect
         unrecognized dictionary members by comparing
         {{AudioDecoderSupport/config}} to their provided |config|.
@@ -576,9 +576,9 @@ Methods {#videodecoder-methods}
     [=Enqueues a control message=] to configure the video decoder for decoding
     chunks as described by |config|.
 
-    NOTE: This method will trigger a {{NotSupportedError}} if the user agent
+    NOTE: This method will trigger a {{NotSupportedError}} if the User Agent
         does not support |config|. Authors should first check support by calling
-        {{VideoDecoder/isConfigSupported()}} with |config|. User agents are not
+        {{VideoDecoder/isConfigSupported()}} with |config|. User Agents are not
         required to support any particular codec type or configuration.
 
     When invoked, run these steps:
@@ -691,10 +691,10 @@ Methods {#videodecoder-methods}
   <dt><dfn method for=VideoDecoder>isConfigSupported(config)</dfn></dt>
   <dd>
     Returns a promise indicating whether the provided |config| is supported by
-    the user agent.
+    the User Agent.
 
     NOTE: The returned {{VideoDecoderSupport}} {{VideoDecoderSupport/config}}
-        will contain only the dictionary members that user agent recognized.
+        will contain only the dictionary members that User Agent recognized.
         Unrecognized dictionary members will be ignored. Authors may detect
         unrecognized dictionary members by comparing
         {{VideoDecoderSupport/config}} to their provided |config|.
@@ -861,9 +861,9 @@ Methods {#audioencoder-methods}
     [=Enqueues a control message=] to configure the audio encoder for
     decoding chunks as described by |config|.
 
-    NOTE: This method will trigger a {{NotSupportedError}} if the user agent
+    NOTE: This method will trigger a {{NotSupportedError}} if the User Agent
         does not support |config|. Authors should first check support by calling
-        {{AudioEncoder/isConfigSupported()}} with |config|. User agents are not
+        {{AudioEncoder/isConfigSupported()}} with |config|. User Agents are not
         required to support any particular codec type or configuration.
 
     When invoked, run these steps:
@@ -962,10 +962,10 @@ Methods {#audioencoder-methods}
   <dt><dfn method for=AudioEncoder>isConfigSupported(config)</dfn></dt>
   <dd>
     Returns a promise indicating whether the provided |config| is supported by
-    the user agent.
+    the User Agent.
 
     NOTE: The returned {{AudioEncoderSupport}} {{AudioEncoderSupport/config}}
-        will contain only the dictionary members that user agent recognized.
+        will contain only the dictionary members that User Agent recognized.
         Unrecognized dictionary members will be ignored. Authors may detect
         unrecognized dictionary members by comparing
         {{AudioEncoderSupport/config}} to their provided |config|.
@@ -1020,7 +1020,7 @@ Algorithms {#audioencoder-algorithms}
                 |outputConfig|.{{AudioDecoderConfig/numberOfChannels}}.
             4. Assign |outputConfig|.{{AudioDecoderConfig/description}} with a
                 sequence of codec specific bytes as determined by the
-                {{AudioEncoder/[[codec implementation]]}}. The user agent must
+                {{AudioEncoder/[[codec implementation]]}}. The User Agent must
                 ensure that the provided description could be used to
                 correctly decode output.
 
@@ -1177,9 +1177,9 @@ Methods {#videoencoder-methods}
     [=Enqueues a control message=] to configure the video encoder for
     decoding chunks as described by |config|.
 
-    NOTE: This method will trigger a {{NotSupportedError}} if the user agent
+    NOTE: This method will trigger a {{NotSupportedError}} if the User Agent
         does not support |config|. Authors should first check support by calling
-        {{VideoEncoder/isConfigSupported()}} with |config|. User agents are not
+        {{VideoEncoder/isConfigSupported()}} with |config|. User Agents are not
         required to support any particular codec type or configuration.
 
     When invoked, run these steps:
@@ -1279,10 +1279,10 @@ Methods {#videoencoder-methods}
   <dt><dfn method for=VideoEncoder>isConfigSupported(config)</dfn></dt>
   <dd>
     Returns a promise indicating whether the provided |config| is supported by
-    the user agent.
+    the User Agent.
 
     NOTE: The returned {{VideoEncoderSupport}} {{VideoEncoderSupport/config}}
-        will contain only the dictionary members that user agent recognized.
+        will contain only the dictionary members that User Agent recognized.
         Unrecognized dictionary members will be ignored. Authors may detect
         unrecognized dictionary members by comparing
         {{VideoEncoderSupport/config}} to their provided |config|.
@@ -1341,7 +1341,7 @@ Algorithms {#videoencoder-algorithms}
             5. Assign `encoderConfig.displayHeight` to
                 `outputConfig.displayHeight`.
             6. Assign the remaining keys of `outputConfig` as determined by
-                {{VideoEncoder/[[codec implementation]]}}. The user agent
+                {{VideoEncoder/[[codec implementation]]}}. The User Agent
                 must ensure that the configuration is completely described
                 such that |outputConfig| could be used to correctly decode
                 |output|.
@@ -1431,7 +1431,7 @@ Configurations{#configurations}
 <dfn>Check Configuration Support</dfn> (with |config|) {#config-support}
 ------------------------------------------------------------------------
 Run these steps:
-1. If the user agent can provide a <a>codec</a> to support all entries of the
+1. If the User Agent can provide a <a>codec</a> to support all entries of the
     |config|, including applicable default values for keys that are not
     included, return `true`.
 
@@ -1441,7 +1441,7 @@ Run these steps:
 
     NOTE: Support for a given configuration may change dynamically if the
         hardware is altered (e.g. external GPU unplugged) or if required
-        hardware resources are exhausted. User agents should describe support on
+        hardware resources are exhausted. User Agents should describe support on
         a best-effort basis given the resources that are available at the time
         of the query.
 
@@ -1450,7 +1450,7 @@ Run these steps:
 <dfn>Clone Configuration</dfn> (with |config|) {#clone-config}
 --------------------------------------------------------------
 
-NOTE: This algorithm will copy only the dictionary members that the user agent
+NOTE: This algorithm will copy only the dictionary members that the User Agent
     recognizes as part of the dictionary type.
 
 Run these steps:
@@ -1479,11 +1479,11 @@ dictionary AudioDecoderSupport {
   <dt><dfn dict-member for=AudioDecoderSupport>supported</dfn></dt>
   <dd>
     A boolean indicating the whether the corresponding
-    {{AudioDecoderSupport/config}} is supported by the user agent.
+    {{AudioDecoderSupport/config}} is supported by the User Agent.
   </dd>
   <dt><dfn dict-member for=AudioDecoderSupport>config</dfn></dt>
   <dd>
-    An {{AudioDecoderConfig}} used by the user agent in determining the value of
+    An {{AudioDecoderConfig}} used by the User Agent in determining the value of
     {{AudioDecoderSupport/supported}}.
   </dd>
 </dl>
@@ -1500,11 +1500,11 @@ dictionary VideoDecoderSupport {
   <dt><dfn dict-member for=VideoDecoderSupport>supported</dfn></dt>
   <dd>
     A boolean indicating the whether the corresponding
-    {{VideoDecoderSupport/config}} is supported by the user agent.
+    {{VideoDecoderSupport/config}} is supported by the User Agent.
   </dd>
   <dt><dfn dict-member for=VideoDecoderSupport>config</dfn></dt>
   <dd>
-    A {{VideoDecoderConfig}} used by the user agent in determining the value of
+    A {{VideoDecoderConfig}} used by the User Agent in determining the value of
     {{VideoDecoderSupport/supported}}.
   </dd>
 </dl>
@@ -1521,11 +1521,11 @@ dictionary AudioEncoderSupport {
   <dt><dfn dict-member for=AudioEncoderSupport>supported</dfn></dt>
   <dd>
     A boolean indicating the whether the corresponding
-    {{AudioEncoderSupport/config}} is supported by the user agent.
+    {{AudioEncoderSupport/config}} is supported by the User Agent.
   </dd>
   <dt><dfn dict-member for=AudioEncoderSupport>config</dfn></dt>
   <dd>
-    An {{AudioEncoderConfig}} used by the user agent in determining the value of
+    An {{AudioEncoderConfig}} used by the User Agent in determining the value of
     {{AudioEncoderSupport/supported}}.
   </dd>
 </dl>
@@ -1542,11 +1542,11 @@ dictionary VideoEncoderSupport {
   <dt><dfn dict-member for=VideoEncoderSupport>supported</dfn></dt>
   <dd>
     A boolean indicating the whether the corresponding
-    {{VideoEncoderSupport/config}} is supported by the user agent.
+    {{VideoEncoderSupport/config}} is supported by the User Agent.
   </dd>
   <dt><dfn dict-member for=VideoEncoderSupport>config</dfn></dt>
   <dd>
-    A {{VideoEncoderConfig}} used by the user agent in determining the value of
+    A {{VideoEncoderConfig}} used by the User Agent in determining the value of
     {{VideoEncoderSupport/supported}}.
   </dd>
 </dl>
@@ -1851,7 +1851,7 @@ specialized hardware.
 
 <div class='note'>
   NOTE: Most authors will be best served by using the default of
-  {{HardwareAcceleration/allow}}. This gives the user agent flexibility to
+  {{HardwareAcceleration/allow}}. This gives the User Agent flexibility to
   optimize based on its knowledge of the system and configuration. A common
   strategy will be to prioritize hardware acceleration at higher resolutions
   with a fallback to software codecs if hardware acceleration fails.
@@ -1886,12 +1886,12 @@ specialized hardware.
 <dl>
   <dt><dfn enum-value for=HardwareAcceleration>allow</dfn></dt>
   <dd>
-    Indicates that the user agent may use hardware acceleration if it is
+    Indicates that the User Agent may use hardware acceleration if it is
     available and compatible with other aspects of the codec configuration.
   </dd>
   <dt><dfn enum-value for=HardwareAcceleration>deny</dfn></dt>
   <dd>
-    Indicates that the user agent must not use hardware acceleration.
+    Indicates that the User Agent must not use hardware acceleration.
 
     NOTE: This will cause the configuration to be unsupported on platforms where
     an unaccelerated codec is unavailable or is incompatible with other aspects
@@ -1899,7 +1899,7 @@ specialized hardware.
   </dd>
   <dt><dfn enum-value for=HardwareAcceleration>require</dfn></dt>
   <dd>
-    Indicates that the user agent must use hardware acceleration.
+    Indicates that the User Agent must use hardware acceleration.
 
     NOTE: This will cause the configuration to be unsupported on platforms where
     an accelerated codec is unavailable or is incompatible with other aspects of
@@ -1917,17 +1917,17 @@ enum LatencyMode {
 </xmp>
 
 : <dfn enum-value for=LatencyMode>quality</dfn>
-:: Indicates that the user agent should optimize for encoding quality. In
+:: Indicates that the User Agent should optimize for encoding quality. In
     this mode:
-    * User agents may increase encoding latency to improve quality.
-    * User agents must not drop frames to achieve the target
+    * User Agents may increase encoding latency to improve quality.
+    * User Agents must not drop frames to achieve the target
         {{VideoEncoderConfig/bitrate}}.
 
 : <dfn enum-value for=LatencyMode>realtime</dfn>
-:: Indicates that the user agent should optimize for low latency. In this
+:: Indicates that the User Agent should optimize for low latency. In this
     mode:
-    * User agents may sacrifice quality to improve latency.
-    * User agents may drop frames to achieve the target
+    * User Agents may sacrifice quality to improve latency.
+    * User Agents may drop frames to achieve the target
         {{VideoEncoderConfig/bitrate}}.
 
 Configuration Equivalence{#config-equivalence}
@@ -1949,7 +1949,7 @@ dictionary VideoEncoderEncodeOptions {
   <dt><dfn dict-member for=VideoEncoderEncodeOptions>keyFrame</dfn></dt>
   <dd>
     A value of `true` indicates that the given frame MUST be encoded as a key
-    frame. A value of `false` indicates that the user agent has flexibility to
+    frame. A value of `false` indicates that the User Agent has flexibility to
     decide whether the frame will be encoded as a [=key frame=].
   </dd>
 </dl>
@@ -2175,7 +2175,7 @@ A [=media resource=] must remain alive at least as long as it continues to be
 referenced by a `[[resource reference]]`.
 
 NOTE: When a [=media resource=] is no longer referenced by a
-    `[[resource reference]]`, the resource may be destroyed. User agents are
+    `[[resource reference]]`, the resource may be destroyed. User Agents are
     encouraged to destroy such resources quickly to reduce memory pressure and
     facilitate resource reuse.
 
@@ -2816,7 +2816,7 @@ dictionary PlaneInit {
         {{PixelFormat}} and reference them in the steps above. See
         [#165](https://github.com/w3c/webcodecs/issues/165).
 
-    NOTE: The user agent may choose to allocate resource with a larger coded
+    NOTE: The User Agent may choose to allocate resource with a larger coded
       size and plane strides to improve memory alignment. Increases will be
       reflected by {{VideoFrame/codedWidth}} and {{VideoFrame/codedHeight}}.
 
@@ -2837,7 +2837,7 @@ dictionary PlaneInit {
                 the byte positioned at |dataOffset| and stopping after
                 {{PlaneInit/stride}} bytes have been copied.
 
-                NOTE: The user agent may use {{VideoFramePlaneInit/visibleRect}}
+                NOTE: The User Agent may use {{VideoFramePlaneInit/visibleRect}}
                     to copy only the visible rectangle. It may also reposition
                     the visible rectangle within |resource|. The final position
                     will be reflected by {{VideoFrame/visibleRect}}.
@@ -3421,7 +3421,7 @@ A {{PlaneLayout}} is a dictionary specifying the offset and stride of a
 specify how the plane is laid out in the destination {{BufferSource}}}.
 Alternatively, callers can inspect {{VideoFrame/copyTo()}}'s returned sequence
 of {{PlaneLayout}}s to learn the the offset and stride for planes as decided by
-the user agent.
+the User Agent.
 
 <xmp class='idl'>
 dictionary PlaneLayout {
@@ -3554,9 +3554,9 @@ interface ImageDecoder {
     ImageDecoder(init)
     </dfn>
 :: NOTE: Calling {{ImageDecoder/decode()}} on the constructed {{ImageDecoder}}
-    will trigger a {{NotSupportedError}} if the user agent does not support
+    will trigger a {{NotSupportedError}} if the User Agent does not support
     |type|. Authors should first check support by calling
-    {{ImageDecoder/isTypeSupported()}} with |type|. User agents are not
+    {{ImageDecoder/isTypeSupported()}} with |type|. User Agents are not
     required to support any particular type.
 
     When invoked, run these steps:
@@ -3661,7 +3661,7 @@ interface ImageDecoder {
     steps:
     1. Wait for {{ImageDecoder/[[tracks established]]}} to become `true`.
     2. If |options|.{{ImageDecodeOptions/completeFramesOnly}} is `false` and
-        the image is a [=Progressive Image=] for which the user agent supports
+        the image is a [=Progressive Image=] for which the User Agent supports
         progressive decoding, run the [=Decode Progressive Frame=] algorithm with |options|.{{ImageDecodeOptions/frameIndex}} and |promise|.
     3. Otherwise, run the [=Decode Complete Frame=] algorithm with
         |options|.{{ImageDecodeOptions/frameIndex}} and |promise|.
@@ -3681,7 +3681,7 @@ interface ImageDecoder {
 
 : <dfn method for=ImageDecoder>isTypeSupported(type)</dfn>
 :: Returns a promise indicating whether the provided config is supported by the
-    user agent.
+    User Agent.
 
     When invoked, run these steps:
     1. If |type| is not a [=valid image MIME type=], return a {{Promise}}
@@ -3962,7 +3962,7 @@ interface ImageDecoder {
             {{EncodingError}} {{DOMException}}.
 
 : <dfn for=ImageDecoder>Check Type Support</dfn> (with |type|)
-:: 1. If the user agent can provide a codec to support decoding |type|, return
+:: 1. If the User Agent can provide a codec to support decoding |type|, return
         `true`.
     2. Otherwise, return `false`.
 
@@ -4077,7 +4077,7 @@ dictionary ImageDecodeOptions {
     previous call, until finally the full-detail image is produced.
 
     If {{ImageDecodeOptions/completeFramesOnly}} is assigned `true`, or if the
-    image is not a [=Progressive Image=], or if the user agent does not support
+    image is not a [=Progressive Image=], or if the User Agent does not support
     progressive decoding for the given image type, calls to
     {{ImageDecoder/decode()}} will only resolve once the full detail image is
     decoded.
@@ -4292,9 +4292,9 @@ are provided and direct access to invoke the codec control methods. This also
 affords attackers the ability to invoke sequences of control methods that were
 not previously possible via the higher level APIs.
 
-User agents should mitigate this risk by extensively fuzzing their
+User Agents should mitigate this risk by extensively fuzzing their
 implementation with random inputs and control method invocations. Additionally,
-user agents are encouraged to isolate their underlying codecs in processes with
+User Agents are encouraged to isolate their underlying codecs in processes with
 restricted privileges (sandbox) as a barrier against successful exploits being
 able to read user data.
 
@@ -4328,7 +4328,7 @@ be used to determine when an encoder uses hardware acceleration. WebCodecs will
 expose some additional information in the form of low level codec features.
 
 A codec feature profile alone is unlikely to be uniquely identifying. Underlying
-codecs are often implemented entirely in software (be it part of the user agent
+codecs are often implemented entirely in software (be it part of the User Agent
 binary or part of the operating system), such that all users who run that
 software will have a common set of capabilities. Additionally, underlying codecs
 are often implemented with hardware acceleration, but such hardware is mass
@@ -4340,8 +4340,8 @@ profile is shared by a large group of users.
 
 Segmenting groups of users by codec feature profile still amounts to a bit of
 entropy that can be combined with other metrics to uniquely identify a user.
-User agents may partially mitigate this by returning an error whenever a site
-attempts to exhaustively probe for codec capabilities. Additionally, user agents
+User Agents may partially mitigate this by returning an error whenever a site
+attempts to exhaustively probe for codec capabilities. Additionally, User Agents
 may implement a "privacy budget", which depletes as authors use WebCodecs and
 other identifying APIs. Upon exhaustion of the privacy budget, codec
 capabilities could be reduced to a common baseline or prompt for user approval.
