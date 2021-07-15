@@ -6,7 +6,7 @@
   <link href="https://www.w3.org/StyleSheets/TR/2016/W3C-ED" rel="stylesheet" type="text/css">
   <meta content="Bikeshed version bb6b91100, updated Mon Jul 12 16:52:37 2021 -0700" name="generator">
   <link href="https://www.w3.org/TR/webcodecs/" rel="canonical">
-  <meta content="f8bb63b8c12ad7d243fde9ebd3f09800d84f1608" name="document-revision">
+  <meta content="24ba038c6270a578a7d3e5e5045a1b0b98a8d98d" name="document-revision">
 <style>
 main > dl > dd {
   margin-bottom: 1em;
@@ -586,7 +586,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
   <div class="head">
    <p data-fill-with="logo"><a class="logo" href="https://www.w3.org/"> <img alt="W3C" height="48" src="https://www.w3.org/StyleSheets/TR/2016/logos/W3C" width="72"> </a> </p>
    <h1 class="p-name no-ref" id="title">WebCodecs</h1>
-   <h2 class="no-num no-toc no-ref heading settled" id="profile-and-date"><span class="content">Editor’s Draft, <time class="dt-updated" datetime="2021-07-14">14 July 2021</time></span></h2>
+   <h2 class="no-num no-toc no-ref heading settled" id="profile-and-date"><span class="content">Editor’s Draft, <time class="dt-updated" datetime="2021-07-15">15 July 2021</time></span></h2>
    <div data-fill-with="spec-metadata">
     <dl>
      <dt>This version:
@@ -3877,10 +3877,10 @@ Layout and Allocation Size</a> algorithm with <var>parsedRect</var> and <var>opt
         <li data-md>
          <p>Let <var>plane</var> be the Plane identified by <var>planeIndex</var> as defined by <code class="idl"><a data-link-type="idl" href="#dom-videoframe-format-slot" id="ref-for-dom-videoframe-format-slot①②">[[format]]</a></code>.</p>
         <li data-md>
-         <p>Let <var>sampleWidth</var> be the horizontal pixel size of each subsample
-for <var>plane</var>.</p>
+         <p>Let <var>sampleWidth</var> be the horizontal <a data-link-type="dfn" href="#sub-sampling-factor" id="ref-for-sub-sampling-factor">sub-sampling factor</a> of each
+subsample for <var>plane</var>.</p>
         <li data-md>
-         <p>Let <var>sampleHeight</var> be the vertical pixel size of each subsample
+         <p>Let <var>sampleHeight</var> be the vertical <a data-link-type="dfn" href="#sub-sampling-factor" id="ref-for-sub-sampling-factor①">sub-sampling factor</a> of each subsample
 for <var>plane</var>.</p>
         <li data-md>
          <p>If <var>sourceRect</var>.<code class="idl"><a data-link-type="idl" href="https://drafts.fxtf.org/geometry-1/#dom-domrectreadonly-x" id="ref-for-dom-domrectreadonly-x③">x</a></code> and <var>sourceRect</var>.<code class="idl"><a data-link-type="idl" href="https://drafts.fxtf.org/geometry-1/#dom-domrectreadonly-width" id="ref-for-dom-domrectreadonly-width③">width</a></code> are not both multiples of <var>sampleWidth</var>, throw a <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#exceptiondef-typeerror" id="ref-for-exceptiondef-typeerror②①">TypeError</a></code>.</p>
@@ -3916,11 +3916,11 @@ equal <var>numPlanes</var>, throw a <code class="idl"><a data-link-type="idl" hr
         <li data-md>
          <p>Let <var>sampleBytes</var> be the number of bytes per sample for <var>plane</var>.</p>
         <li data-md>
-         <p>Let <var>sampleWidth</var> be the horizontal pixel size of each subsample
-for <var>plane</var>.</p>
+         <p>Let <var>sampleWidth</var> be the horizontal <a data-link-type="dfn" href="#sub-sampling-factor" id="ref-for-sub-sampling-factor②">sub-sampling factor</a> of each
+subsample for <var>plane</var>.</p>
         <li data-md>
-         <p>Let <var>sampleHeight</var> be the vertical pixel size of each subsample
-for <var>plane</var>.</p>
+         <p>Let <var>sampleHeight</var> be the vertical <a data-link-type="dfn" href="#sub-sampling-factor" id="ref-for-sub-sampling-factor③">sub-sampling factor</a> of each
+subsample for <var>plane</var>.</p>
         <li data-md>
          <p>Let <var>sampleWidthBytes</var> be the product of multiplying <var>sampleWidth</var> by <var>sampleBytes</var>.</p>
         <li data-md>
@@ -4121,17 +4121,170 @@ a <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webid
    </dl>
    <h3 class="heading settled" data-level="9.8" id="pixel-format"><span class="secno">9.8. </span><span class="content">Pixel Format</span><a class="self-link" href="#pixel-format"></a></h3>
     Pixel formats describe the arrangement of bytes in each plane as well as the
-number and order of the planes. 
-   <p class="note" role="note"><span>NOTE:</span> This section needs work. We expect to add more pixel formats and offer
-    much more verbose definitions. For now, please see <a href="http://www.fourcc.org/pixel-format/yuv-i420/"> http://www.fourcc.org/pixel-format/yuv-i420/</a> for a more complete
-    description.</p>
+number and order of the planes. Each format is described in its own sub-section. 
 <pre class="idl highlight def"><c- b>enum</c-> <dfn class="dfn-paneled idl-code" data-dfn-type="enum" data-export id="enumdef-pixelformat"><code><c- g>PixelFormat</c-></code></dfn> {
-  <a class="idl-code" data-link-type="enum-value" href="#dom-pixelformat-i420" id="ref-for-dom-pixelformat-i420"><c- s>"I420"</c-></a>
+  // 4:2:0 Y, U, V
+  <a class="idl-code" data-link-type="enum-value" href="#dom-pixelformat-i420" id="ref-for-dom-pixelformat-i420"><c- s>"I420"</c-></a>,
+  // 4:2:0 Y, U, V, A
+  <a class="idl-code" data-link-type="enum-value" href="#dom-pixelformat-i420a" id="ref-for-dom-pixelformat-i420a"><c- s>"I420A"</c-></a>,
+  // 4:2:2 Y, U, V
+  <a class="idl-code" data-link-type="enum-value" href="#dom-pixelformat-i422" id="ref-for-dom-pixelformat-i422"><c- s>"I422"</c-></a>,
+  // 4:4:4 Y, U, V
+  <a class="idl-code" data-link-type="enum-value" href="#dom-pixelformat-i444" id="ref-for-dom-pixelformat-i444"><c- s>"I444"</c-></a>,
+  // 4:2:0 Y, UV
+  <a class="idl-code" data-link-type="enum-value" href="#dom-pixelformat-nv12" id="ref-for-dom-pixelformat-nv12"><c- s>"NV12"</c-></a>,
+  // 32bpp RGBA
+  <a class="idl-code" data-link-type="enum-value" href="#dom-pixelformat-rgba" id="ref-for-dom-pixelformat-rgba"><c- s>"RGBA"</c-></a>,
+  // 32bpp RGBX (opaque)
+  <a class="idl-code" data-link-type="enum-value" href="#dom-pixelformat-rgbx" id="ref-for-dom-pixelformat-rgbx"><c- s>"RGBX"</c-></a>,
+  // 32bpp BGRA
+  <a class="idl-code" data-link-type="enum-value" href="#dom-pixelformat-bgra" id="ref-for-dom-pixelformat-bgra"><c- s>"BGRA"</c-></a>,
+  // 32bpp BGRX (opaque)
+  <a class="idl-code" data-link-type="enum-value" href="#dom-pixelformat-bgrx" id="ref-for-dom-pixelformat-bgrx"><c- s>"BGRX"</c-></a>,
 };
 </pre>
+   <p><dfn class="dfn-paneled" data-dfn-type="dfn" data-lt="sub-sampling|sub-sampled" data-noexport id="sub-sampling">Sub-sampling</dfn> is a technique
+where a single sample contains information for multiple pixels in the final
+image. <a data-link-type="dfn" href="#sub-sampling" id="ref-for-sub-sampling">Sub-sampling</a> can be horizontal, vertical or both, and has a <dfn class="dfn-paneled" data-dfn-type="dfn" data-lt="sub-sampling factor|factor" data-noexport id="sub-sampling-factor">factor</dfn>, that is the number of final pixels
+in the image that are derived from a <a data-link-type="dfn" href="#sub-sampling" id="ref-for-sub-sampling①">sub-sampled</a> sample.</p>
+   <div class="example" id="example-33b7b945"><a class="self-link" href="#example-33b7b945"></a> If a <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe⑤④">VideoFrame</a></code> is in <code class="idl"><a data-link-type="idl" href="#dom-pixelformat-i420" id="ref-for-dom-pixelformat-i420①">I420</a></code> format, then the very first
+  component of the second plane (the U plane) corresponds to four pixels, that are
+  the pixels in the top-left angle of the image. Consequently, the first
+  component of the second row corresponds to the four pixels below those initial
+  four top-left pixels. The <a data-link-type="dfn" href="#sub-sampling-factor" id="ref-for-sub-sampling-factor④">sub-sampling factor</a> is 2 in both the horizontal
+  and vertical direction. </div>
    <dl>
     <dt><dfn class="dfn-paneled idl-code" data-dfn-for="PixelFormat" data-dfn-type="enum-value" data-export data-lt="&quot;I420&quot;|I420" id="dom-pixelformat-i420"><code>I420</code></dfn>
-    <dd> Planar 4:2:0 YUV. 
+    <dd>
+      This format is composed of three distinct planes, one plane of Luma and two
+    planes of Chroma, denoted Y, U and V, and present in this order. It is also
+    often refered to as Planar YUV 4:2:0. 
+     <p>The U an V planes are <a data-link-type="dfn" href="#sub-sampling" id="ref-for-sub-sampling②">sub-sampled</a> horizontaly and vertically by a <a data-link-type="dfn" href="#sub-sampling-factor" id="ref-for-sub-sampling-factor⑤">factor</a> of 2 compared to the Y plane.</p>
+     <p>Each sample in this format is 8 bits.</p>
+     <p>There are <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedwidth" id="ref-for-dom-videoframe-codedwidth⑥">codedWidth</a></code> * <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedheight" id="ref-for-dom-videoframe-codedheight⑥">codedHeight</a></code> samples
+    (and therefore bytes) in the Y plane, arranged starting at the top left in
+    the image, in <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedheight" id="ref-for-dom-videoframe-codedheight⑦">codedHeight</a></code> lines of <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedwidth" id="ref-for-dom-videoframe-codedwidth⑦">codedWidth</a></code> samples.</p>
+     <p>There is <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedwidth" id="ref-for-dom-videoframe-codedwidth⑧">codedWidth</a></code> * <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedheight" id="ref-for-dom-videoframe-codedheight⑧">codedHeight</a></code> / 4 samples
+    (and therefore bytes) in the two U and V planes, arranged starting at the
+    top left in the image, in <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedheight" id="ref-for-dom-videoframe-codedheight⑨">codedHeight</a></code> / 2 lines of <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedwidth" id="ref-for-dom-videoframe-codedwidth⑨">codedWidth</a></code> / 2 samples.</p>
+     <p>The <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedwidth" id="ref-for-dom-videoframe-codedwidth①⓪">codedWidth</a></code> and <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedheight" id="ref-for-dom-videoframe-codedheight①⓪">codedHeight</a></code> MUST be even.
+    Similarly, the visible rectangle (<code class="idl"><a data-link-type="idl" href="#dom-videoframe-displaywidth" id="ref-for-dom-videoframe-displaywidth⑤">displayWidth</a></code> and <code class="idl"><a data-link-type="idl" href="#dom-videoframe-displayheight" id="ref-for-dom-videoframe-displayheight⑤">displayHeight</a></code>) MUST be even.</p>
+    <dt><dfn class="dfn-paneled idl-code" data-dfn-for="PixelFormat" data-dfn-type="enum-value" data-export data-lt="&quot;I420A&quot;|I420A" id="dom-pixelformat-i420a"><code>I420A</code></dfn>
+    <dd>
+     <p>This format is composed of four distinct planes, one plane of Luma, two
+    planes of Chroma, denoted Y, U and V, and one place of alpha values, all
+    present in this order. It is also often refered to as Planar YUV 4:2:0 with
+    an alpha channel.</p>
+     <p>The U an V planes are <a data-link-type="dfn" href="#sub-sampling" id="ref-for-sub-sampling③">sub-sampled</a> horizontaly and vertically by a <a data-link-type="dfn" href="#sub-sampling-factor" id="ref-for-sub-sampling-factor⑥">factor</a> of 2 compared to the Y and Alpha planes.</p>
+     <p>Each sample in this format is 8 bits.</p>
+     <p>There are <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedwidth" id="ref-for-dom-videoframe-codedwidth①①">codedWidth</a></code> * <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedheight" id="ref-for-dom-videoframe-codedheight①①">codedHeight</a></code> samples (and
+    therefore bytes) in the Y and alpha plane, arranged starting at the top left
+    in the image, in <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedheight" id="ref-for-dom-videoframe-codedheight①②">codedHeight</a></code> lines of <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedwidth" id="ref-for-dom-videoframe-codedwidth①②">codedWidth</a></code> samples.</p>
+     <p>There are <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedwidth" id="ref-for-dom-videoframe-codedwidth①③">codedWidth</a></code> * <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedheight" id="ref-for-dom-videoframe-codedheight①③">codedHeight</a></code> / 4 samples
+    (and therefore bytes) in the two U and V planes, arranged starting at the
+    top left in the image, in <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedheight" id="ref-for-dom-videoframe-codedheight①④">codedHeight</a></code> / 2 lines of <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedwidth" id="ref-for-dom-videoframe-codedwidth①④">codedWidth</a></code> / 2 samples.</p>
+     <p>The <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedwidth" id="ref-for-dom-videoframe-codedwidth①⑤">codedWidth</a></code> and <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedheight" id="ref-for-dom-videoframe-codedheight①⑤">codedHeight</a></code> MUST be even.
+    Similarly, the visible rectangle (<code class="idl"><a data-link-type="idl" href="#dom-videoframe-displaywidth" id="ref-for-dom-videoframe-displaywidth⑥">displayWidth</a></code> and <code class="idl"><a data-link-type="idl" href="#dom-videoframe-displayheight" id="ref-for-dom-videoframe-displayheight⑥">displayHeight</a></code>) MUST be even.</p>
+    <dt><dfn class="dfn-paneled idl-code" data-dfn-for="PixelFormat" data-dfn-type="enum-value" data-export data-lt="&quot;I422&quot;|I422" id="dom-pixelformat-i422"><code>I422</code></dfn>
+    <dd>
+     <p>This format is composed of three distinct planes, one plane of Luma and two
+    planes of Chroma, denoted Y, U and V, and present in this order. It is also
+    often refered to as Planar YUV 4:2:2.</p>
+     <p>The U an V planes are <a data-link-type="dfn" href="#sub-sampling" id="ref-for-sub-sampling④">sub-sampled</a> horizontaly by a <a data-link-type="dfn" href="#sub-sampling-factor" id="ref-for-sub-sampling-factor⑦">factor</a> of 2
+    compared to the Y plane, and not <a data-link-type="dfn" href="#sub-sampling" id="ref-for-sub-sampling⑤">sub-sampled</a> vertically.</p>
+     <p>Each sample in this format is 8 bits.</p>
+     <p>There are <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedwidth" id="ref-for-dom-videoframe-codedwidth①⑥">codedWidth</a></code> * <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedheight" id="ref-for-dom-videoframe-codedheight①⑥">codedHeight</a></code> samples (and
+    therefore bytes) in the Y plane, arranged starting at the top left in the
+    image, in <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedheight" id="ref-for-dom-videoframe-codedheight①⑦">codedHeight</a></code> lines of <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedwidth" id="ref-for-dom-videoframe-codedwidth①⑦">codedWidth</a></code> samples.</p>
+     <p>There are <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedwidth" id="ref-for-dom-videoframe-codedwidth①⑧">codedWidth</a></code> * <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedheight" id="ref-for-dom-videoframe-codedheight①⑧">codedHeight</a></code> / 2 samples
+    (and therefore bytes) in the two U and V planes, arranged starting at the
+    top left in the image, in <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedheight" id="ref-for-dom-videoframe-codedheight①⑨">codedHeight</a></code> / 2 lines of <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedwidth" id="ref-for-dom-videoframe-codedwidth①⑨">codedWidth</a></code> samples.</p>
+     <p>The <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedheight" id="ref-for-dom-videoframe-codedheight②⓪">codedHeight</a></code> MUST be even.  Similarly, the crop
+    coordinates (<code class="idl"><a data-link-type="idl" href="#dom-videoframe-displaywidth" id="ref-for-dom-videoframe-displaywidth⑦">displayWidth</a></code> and <code class="idl"><a data-link-type="idl" href="#dom-videoframe-displayheight" id="ref-for-dom-videoframe-displayheight⑦">displayHeight</a></code>)
+    MUST be even.</p>
+    <dt><dfn class="dfn-paneled idl-code" data-dfn-for="PixelFormat" data-dfn-type="enum-value" data-export data-lt="&quot;I444&quot;|I444" id="dom-pixelformat-i444"><code>I444</code></dfn>
+    <dd>
+     <p>This format is composed of three distinct planes, one plane of Luma and two
+    planes of Chroma, denoted Y, U and V, and present in this order. It is also
+    often refered to as Planar YUV 4:4:4.</p>
+     <p>Each sample in this format is 8 bits. This format does not use <a data-link-type="dfn" href="#sub-sampling" id="ref-for-sub-sampling⑥">sub-sampling</a>.</p>
+     <p>There are <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedwidth" id="ref-for-dom-videoframe-codedwidth②⓪">codedWidth</a></code> * <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedheight" id="ref-for-dom-videoframe-codedheight②①">codedHeight</a></code> samples (and
+    therefore bytes) in all three planes, arranged starting at the top left in the
+    image, in <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedheight" id="ref-for-dom-videoframe-codedheight②②">codedHeight</a></code> lines of <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedwidth" id="ref-for-dom-videoframe-codedwidth②①">codedWidth</a></code> samples.</p>
+    <dt><dfn class="dfn-paneled idl-code" data-dfn-for="PixelFormat" data-dfn-type="enum-value" data-export data-lt="&quot;NV12&quot;|NV12" id="dom-pixelformat-nv12"><code>NV12</code></dfn>
+    <dd>
+     <p>This format is composed of two distinct planes, one plane of Luma and then
+    another plane for the two Chroma components. The two planes are present in
+    this order, and are refered to as respectively the Y plane and the UV plane.</p>
+     <p>The U an V components are <a data-link-type="dfn" href="#sub-sampling" id="ref-for-sub-sampling⑦">sub-sampled</a> horizontaly and vertically by a <a data-link-type="dfn" href="#sub-sampling-factor" id="ref-for-sub-sampling-factor⑧">factor</a> of 2 compared to the components in the Y planes.</p>
+     <p>Each sample in this format is 8 bits.</p>
+     <p>There are <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedwidth" id="ref-for-dom-videoframe-codedwidth②②">codedWidth</a></code> * <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedheight" id="ref-for-dom-videoframe-codedheight②③">codedHeight</a></code> samples (and
+    therefore bytes) in the Y plane, arranged starting at the top left in the
+    image, in <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedheight" id="ref-for-dom-videoframe-codedheight②④">codedHeight</a></code> lines of <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedwidth" id="ref-for-dom-videoframe-codedwidth②③">codedWidth</a></code> samples.</p>
+     <p>The UV planes is composed of interleaved U and V values, in <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedwidth" id="ref-for-dom-videoframe-codedwidth②④">codedWidth</a></code> * <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedheight" id="ref-for-dom-videoframe-codedheight②⑤">codedHeight</a></code> / 4 elements (of two
+    bytes each), arranged starting at the top left in the image, in <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedheight" id="ref-for-dom-videoframe-codedheight②⑥">codedHeight</a></code> / 2 lines of <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedwidth" id="ref-for-dom-videoframe-codedwidth②⑤">codedWidth</a></code> / 2
+    elements. Each element is composed of a two Chroma values, the U and V
+    value, in this order.</p>
+     <p>The <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedwidth" id="ref-for-dom-videoframe-codedwidth②⑥">codedWidth</a></code> and <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedheight" id="ref-for-dom-videoframe-codedheight②⑦">codedHeight</a></code> MUST be even.
+    Similarly, the visible rectangle (<code class="idl"><a data-link-type="idl" href="#dom-videoframe-displaywidth" id="ref-for-dom-videoframe-displaywidth⑧">displayWidth</a></code> and <code class="idl"><a data-link-type="idl" href="#dom-videoframe-displayheight" id="ref-for-dom-videoframe-displayheight⑧">displayHeight</a></code>) MUST be even.</p>
+     <div class="example" id="example-d29bffdc">
+      <a class="self-link" href="#example-d29bffdc"></a> An image in the NV12 pixel format that is 16 pixels wide and 9 pixels tall
+    will be arranged like so in memory: 
+<pre>        YYYYYYYYYYYYYY
+        YYYYYYYYYYYYYY
+        YYYYYYYYYYYYYY
+        YYYYYYYYYYYYYY
+        YYYYYYYYYYYYYY
+        YYYYYYYYYYYYYY
+        YYYYYYYYYYYYYY
+        YYYYYYYYYYYYYY
+        YYYYYYYYYYYYYY
+        UVUVUVUVUVUVUV
+        UVUVUVUVUVUVUV
+        UVUVUVUVUVUVUV
+        UVUVUVUVUVUVUV
+        UVUVUVUVUVUVUV
+        UVUVUVUVUVUVUV
+        UVUVUVUVUVUVUV
+        UVUVUVUVUVUVUV
+        UVUVUVUVUVUVUV
+</pre>
+      <p>All samples being linear in memory.</p>
+     </div>
+    <dt><dfn class="dfn-paneled idl-code" data-dfn-for="PixelFormat" data-dfn-type="enum-value" data-export data-lt="&quot;RGBA&quot;|RGBA" id="dom-pixelformat-rgba"><code>RGBA</code></dfn>
+    <dd>
+     <p>This format is composed of a single plane, that encodes four components:
+    Red, Green, Blue, and an alpha value, present in this order.</p>
+     <p>Each sample in this format is 8 bits, and each pixel is therefore 32 bits.</p>
+     <p>There are <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedwidth" id="ref-for-dom-videoframe-codedwidth②⑦">codedWidth</a></code> * <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedheight" id="ref-for-dom-videoframe-codedheight②⑧">codedHeight</a></code> * 4 samples
+    (and therefore bytes) in the single plane, arranged starting at the top
+    left in the image, in <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedheight" id="ref-for-dom-videoframe-codedheight②⑨">codedHeight</a></code> lines of <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedwidth" id="ref-for-dom-videoframe-codedwidth②⑧">codedWidth</a></code> samples.</p>
+    <dt><dfn class="dfn-paneled idl-code" data-dfn-for="PixelFormat" data-dfn-type="enum-value" data-export data-lt="&quot;RGBX&quot;|RGBX" id="dom-pixelformat-rgbx"><code>RGBX</code></dfn>
+    <dd>
+     <p>This format is composed of a single plane, that encodes four components:
+    Red, Green, Blue, and a padding value, present in this order.</p>
+     <p>Each sample in this format is 8 bits. The fourth element in each pixel is to
+    be ignored, the image is always fully opaque.</p>
+     <p>There are <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedwidth" id="ref-for-dom-videoframe-codedwidth②⑨">codedWidth</a></code> * <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedheight" id="ref-for-dom-videoframe-codedheight③⓪">codedHeight</a></code> * 4 samples
+    (and therefore bytes) in the single plane, arranged starting at the top left
+    in the image, in <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedheight" id="ref-for-dom-videoframe-codedheight③①">codedHeight</a></code> lines of <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedwidth" id="ref-for-dom-videoframe-codedwidth③⓪">codedWidth</a></code> samples.</p>
+    <dt><dfn class="dfn-paneled idl-code" data-dfn-for="PixelFormat" data-dfn-type="enum-value" data-export data-lt="&quot;BGRA&quot;|BGRA" id="dom-pixelformat-bgra"><code>BGRA</code></dfn>
+    <dd>
+     <p>This format is composed of a single plane, that encodes four components:
+    Blue, Green, Red, and an alpha value, present in this order.</p>
+     <p>Each sample in this format is 8 bits.</p>
+     <p>There are <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedwidth" id="ref-for-dom-videoframe-codedwidth③①">codedWidth</a></code> * <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedheight" id="ref-for-dom-videoframe-codedheight③②">codedHeight</a></code> * 4 samples
+    (and therefore bytes) in the single plane, arranged starting at the top left
+    in the image, in <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedheight" id="ref-for-dom-videoframe-codedheight③③">codedHeight</a></code> lines of <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedwidth" id="ref-for-dom-videoframe-codedwidth③②">codedWidth</a></code> samples.</p>
+    <dt><dfn class="dfn-paneled idl-code" data-dfn-for="PixelFormat" data-dfn-type="enum-value" data-export data-lt="&quot;BGRX&quot;|BGRX" id="dom-pixelformat-bgrx"><code>BGRX</code></dfn>
+    <dd>
+     <p>This format is composed of a single plane, that encodes four components:
+    Blue, Green, Red, and a padding value, present in this order.</p>
+     <p>Each sample in this format is 8 bits. The fourth element in each pixel is to
+    be ignored, the image is always fully opaque.</p>
+     <p>There are <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedwidth" id="ref-for-dom-videoframe-codedwidth③③">codedWidth</a></code> * <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedheight" id="ref-for-dom-videoframe-codedheight③④">codedHeight</a></code> * 4 samples
+    (and therefore bytes) in the single plane, arranged starting at the top left
+    in the image, in <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedheight" id="ref-for-dom-videoframe-codedheight③⑤">codedHeight</a></code> lines of <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedwidth" id="ref-for-dom-videoframe-codedwidth③④">codedWidth</a></code> samples.</p>
    </dl>
    <h2 class="heading settled" data-level="10" id="image-decoding"><span class="secno">10. </span><span class="content">Image Decoding</span><a class="self-link" href="#image-decoding"></a></h2>
    <h3 class="heading settled" data-level="10.1" id="image-decoding-background"><span class="secno">10.1. </span><span class="content">Background</span><a class="self-link" href="#image-decoding-background"></a></h3>
@@ -4140,7 +4293,7 @@ number and order of the planes.
 corresponding file format. Hence image decoders often perform both duties of
 unpacking (demuxing) as well as decoding the encoded image data. The WebCodecs <code class="idl"><a data-link-type="idl" href="#imagedecoder" id="ref-for-imagedecoder">ImageDecoder</a></code> follows this pattern, which motivates an interface design that
 is notably different from that of <code class="idl"><a data-link-type="idl" href="#videodecoder" id="ref-for-videodecoder②">VideoDecoder</a></code> and <code class="idl"><a data-link-type="idl" href="#audiodecoder" id="ref-for-audiodecoder②">AudioDecoder</a></code>.</p>
-   <p>In spite of these differences, <code class="idl"><a data-link-type="idl" href="#imagedecoder" id="ref-for-imagedecoder①">ImageDecoder</a></code> uses the same <a data-link-type="dfn" href="#codec-processing-model" id="ref-for-codec-processing-model">codec processing model</a> as the other codec interfaces. Additionally, <code class="idl"><a data-link-type="idl" href="#imagedecoder" id="ref-for-imagedecoder②">ImageDecoder</a></code> uses the <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe⑤④">VideoFrame</a></code> interface to describe decoded outputs.</p>
+   <p>In spite of these differences, <code class="idl"><a data-link-type="idl" href="#imagedecoder" id="ref-for-imagedecoder①">ImageDecoder</a></code> uses the same <a data-link-type="dfn" href="#codec-processing-model" id="ref-for-codec-processing-model">codec processing model</a> as the other codec interfaces. Additionally, <code class="idl"><a data-link-type="idl" href="#imagedecoder" id="ref-for-imagedecoder②">ImageDecoder</a></code> uses the <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe⑤⑤">VideoFrame</a></code> interface to describe decoded outputs.</p>
    <h3 class="heading settled" data-level="10.2" id="imagedecoder-interface"><span class="secno">10.2. </span><span class="content">ImageDecoder Interface</span><a class="self-link" href="#imagedecoder-interface"></a></h3>
 <pre class="idl highlight def">[<a class="idl-code" data-link-type="extended-attribute" href="https://heycam.github.io/webidl/#Exposed" id="ref-for-Exposed⑧"><c- g>Exposed</c-></a>=(<c- n>Window</c->,<c- n>DedicatedWorker</c->)]
 <c- b>interface</c-> <dfn class="dfn-paneled idl-code" data-dfn-type="interface" data-export id="imagedecoder"><code><c- g>ImageDecoder</c-></code></dfn> {
@@ -4197,7 +4350,7 @@ and can no longer be used.</p>
     <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="ImageDecoder" data-dfn-type="attribute" data-export id="dom-imagedecoder-progressive-frame-generations-slot"><code>[[progressive frame generations]]</code></dfn>
     <dd data-md>
      <p>A mapping of frame indices to <a data-link-type="dfn" href="#progressive-image-frame-generation" id="ref-for-progressive-image-frame-generation">Progressive Image Frame Generations</a>. The
-values represent the Progressive Image Frame Generation for the <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe⑤⑤">VideoFrame</a></code> which was most recently output by a call to <code class="idl"><a data-link-type="idl" href="#dom-imagedecoder-decode" id="ref-for-dom-imagedecoder-decode①">decode()</a></code> with the given frame index.</p>
+values represent the Progressive Image Frame Generation for the <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe⑤⑥">VideoFrame</a></code> which was most recently output by a call to <code class="idl"><a data-link-type="idl" href="#dom-imagedecoder-decode" id="ref-for-dom-imagedecoder-decode①">decode()</a></code> with the given frame index.</p>
    </dl>
    <h4 class="heading settled" data-level="10.2.2" id="imagedecoder-constructor"><span class="secno">10.2.2. </span><span class="content">Constructor</span><a class="self-link" href="#imagedecoder-constructor"></a></h4>
    <dl>
@@ -4879,13 +5032,13 @@ decoded.</p>
    </dl>
    <h3 class="heading settled" data-level="10.5" id="imagedecoderesult-interface"><span class="secno">10.5. </span><span class="content">ImageDecodeResult Interface</span><a class="self-link" href="#imagedecoderesult-interface"></a></h3>
 <pre class="idl highlight def"><c- b>dictionary</c-> <dfn class="dfn-paneled idl-code" data-dfn-type="dictionary" data-export id="dictdef-imagedecoderesult"><code><c- g>ImageDecodeResult</c-></code></dfn> {
-  <c- b>required</c-> <a data-link-type="idl-name" href="#videoframe" id="ref-for-videoframe⑤⑥"><c- n>VideoFrame</c-></a> <a class="idl-code" data-link-type="dict-member" data-type="VideoFrame " href="#dom-imagedecoderesult-image" id="ref-for-dom-imagedecoderesult-image③"><c- g>image</c-></a>;
+  <c- b>required</c-> <a data-link-type="idl-name" href="#videoframe" id="ref-for-videoframe⑤⑦"><c- n>VideoFrame</c-></a> <a class="idl-code" data-link-type="dict-member" data-type="VideoFrame " href="#dom-imagedecoderesult-image" id="ref-for-dom-imagedecoderesult-image③"><c- g>image</c-></a>;
   <c- b>required</c-> <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-boolean" id="ref-for-idl-boolean①⑧"><c- b>boolean</c-></a> <a class="idl-code" data-link-type="dict-member" data-type="boolean " href="#dom-imagedecoderesult-complete" id="ref-for-dom-imagedecoderesult-complete④"><c- g>complete</c-></a>;
 };
 
 </pre>
    <dl>
-    <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="ImageDecodeResult" data-dfn-type="dict-member" data-export id="dom-imagedecoderesult-image"><code>image</code></dfn>, <span> of type <a data-link-type="idl-name" href="#videoframe" id="ref-for-videoframe⑤⑦">VideoFrame</a></span>
+    <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="ImageDecodeResult" data-dfn-type="dict-member" data-export id="dom-imagedecoderesult-image"><code>image</code></dfn>, <span> of type <a data-link-type="idl-name" href="#videoframe" id="ref-for-videoframe⑤⑧">VideoFrame</a></span>
     <dd data-md>
      <p>The decoded image.</p>
     <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="ImageDecodeResult" data-dfn-type="dict-member" data-export id="dom-imagedecoderesult-complete"><code>complete</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#idl-boolean" id="ref-for-idl-boolean①⑨">boolean</a></span>
@@ -5149,6 +5302,10 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
    <li><a href="#dictdef-audioencodersupport">AudioEncoderSupport</a><span>, in §7.3.3</span>
    <li><a href="#enumdef-audiosampleformat">AudioSampleFormat</a><span>, in §9.3</span>
    <li><a href="#audio-sample-type">audio sample type</a><span>, in §9.3</span>
+   <li><a href="#dom-pixelformat-bgra">"BGRA"</a><span>, in §9.8</span>
+   <li><a href="#dom-pixelformat-bgra">BGRA</a><span>, in §9.8</span>
+   <li><a href="#dom-pixelformat-bgrx">"BGRX"</a><span>, in §9.8</span>
+   <li><a href="#dom-pixelformat-bgrx">BGRX</a><span>, in §9.8</span>
    <li><a href="#bias-value">bias value</a><span>, in §9.3.2</span>
    <li>
     bitrate
@@ -5448,6 +5605,7 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
      <li><a href="#dom-videoencoder-error-callback-slot">attribute for VideoEncoder</a><span>, in §6.1</span>
     </ul>
    <li><a href="#imagedecoder-establish-tracks">Establish Tracks</a><span>, in §10.2.5</span>
+   <li><a href="#sub-sampling-factor">factor</a><span>, in §9.8</span>
    <li><a href="#imagedecoder-fatally-reject-bad-data">Fatally Reject Bad Data</a><span>, in §10.2.5</span>
    <li><a href="#imagedecoder-fetch-stream-data-loop">Fetch Stream Data Loop</a><span>, in §10.2.5</span>
    <li><a href="#dom-audiosampleformat-flt">"FLT"</a><span>, in §9.3</span>
@@ -5498,6 +5656,12 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
    <li><a href="#dom-videoencoderconfig-height">height</a><span>, in §7.8</span>
    <li><a href="#dom-pixelformat-i420">"I420"</a><span>, in §9.8</span>
    <li><a href="#dom-pixelformat-i420">I420</a><span>, in §9.8</span>
+   <li><a href="#dom-pixelformat-i420a">"I420A"</a><span>, in §9.8</span>
+   <li><a href="#dom-pixelformat-i420a">I420A</a><span>, in §9.8</span>
+   <li><a href="#dom-pixelformat-i422">"I422"</a><span>, in §9.8</span>
+   <li><a href="#dom-pixelformat-i422">I422</a><span>, in §9.8</span>
+   <li><a href="#dom-pixelformat-i444">"I444"</a><span>, in §9.8</span>
+   <li><a href="#dom-pixelformat-i444">I444</a><span>, in §9.8</span>
    <li><a href="#dom-imagedecoderesult-image">image</a><span>, in §10.5</span>
    <li><a href="#typedefdef-imagebuffersource">ImageBufferSource</a><span>, in §10.3</span>
    <li><a href="#dictdef-imagedecodeoptions">ImageDecodeOptions</a><span>, in §10.4</span>
@@ -5572,6 +5736,8 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
      <li><a href="#dom-audiodata-numberofframes">attribute for AudioData</a><span>, in §9.2.3</span>
      <li><a href="#dom-audiodatainit-numberofframes">dict-member for AudioDataInit</a><span>, in §9.2</span>
     </ul>
+   <li><a href="#dom-pixelformat-nv12">"NV12"</a><span>, in §9.8</span>
+   <li><a href="#dom-pixelformat-nv12">NV12</a><span>, in §9.8</span>
    <li>
     offset
     <ul>
@@ -5657,6 +5823,10 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
      <li><a href="#dom-audiodata-resource-reference-slot">attribute for AudioData</a><span>, in §9.2.1</span>
      <li><a href="#dom-videoframe-resource-reference-slot">attribute for VideoFrame</a><span>, in §9.4.1</span>
     </ul>
+   <li><a href="#dom-pixelformat-rgba">"RGBA"</a><span>, in §9.8</span>
+   <li><a href="#dom-pixelformat-rgba">RGBA</a><span>, in §9.8</span>
+   <li><a href="#dom-pixelformat-rgbx">"RGBX"</a><span>, in §9.8</span>
+   <li><a href="#dom-pixelformat-rgbx">RGBX</a><span>, in §9.8</span>
    <li><a href="#running-a-control-message">running a control message</a><span>, in §2.2</span>
    <li><a href="#dom-audiosampleformat-s16">"S16"</a><span>, in §9.3</span>
    <li><a href="#dom-audiosampleformat-s16">S16</a><span>, in §9.3</span>
@@ -5712,6 +5882,9 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
      <li><a href="#dom-planeinit-stride">dict-member for PlaneInit</a><span>, in §9.4</span>
      <li><a href="#dom-planelayout-stride">dict-member for PlaneLayout</a><span>, in §9.7</span>
     </ul>
+   <li><a href="#sub-sampling">sub-sampled</a><span>, in §9.8</span>
+   <li><a href="#sub-sampling">sub-sampling</a><span>, in §9.8</span>
+   <li><a href="#sub-sampling-factor">sub-sampling factor</a><span>, in §9.8</span>
    <li>
     supported
     <ul>
@@ -7254,7 +7427,24 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
 };
 
 <c- b>enum</c-> <a href="#enumdef-pixelformat"><code><c- g>PixelFormat</c-></code></a> {
-  <a class="idl-code" data-link-type="enum-value" href="#dom-pixelformat-i420"><c- s>"I420"</c-></a>
+  // 4:2:0 Y, U, V
+  <a class="idl-code" data-link-type="enum-value" href="#dom-pixelformat-i420"><c- s>"I420"</c-></a>,
+  // 4:2:0 Y, U, V, A
+  <a class="idl-code" data-link-type="enum-value" href="#dom-pixelformat-i420a"><c- s>"I420A"</c-></a>,
+  // 4:2:2 Y, U, V
+  <a class="idl-code" data-link-type="enum-value" href="#dom-pixelformat-i422"><c- s>"I422"</c-></a>,
+  // 4:4:4 Y, U, V
+  <a class="idl-code" data-link-type="enum-value" href="#dom-pixelformat-i444"><c- s>"I444"</c-></a>,
+  // 4:2:0 Y, UV
+  <a class="idl-code" data-link-type="enum-value" href="#dom-pixelformat-nv12"><c- s>"NV12"</c-></a>,
+  // 32bpp RGBA
+  <a class="idl-code" data-link-type="enum-value" href="#dom-pixelformat-rgba"><c- s>"RGBA"</c-></a>,
+  // 32bpp RGBX (opaque)
+  <a class="idl-code" data-link-type="enum-value" href="#dom-pixelformat-rgbx"><c- s>"RGBX"</c-></a>,
+  // 32bpp BGRA
+  <a class="idl-code" data-link-type="enum-value" href="#dom-pixelformat-bgra"><c- s>"BGRA"</c-></a>,
+  // 32bpp BGRX (opaque)
+  <a class="idl-code" data-link-type="enum-value" href="#dom-pixelformat-bgrx"><c- s>"BGRX"</c-></a>,
 };
 
 [<a class="idl-code" data-link-type="extended-attribute" href="https://heycam.github.io/webidl/#Exposed"><c- g>Exposed</c-></a>=(<c- n>Window</c->,<c- n>DedicatedWorker</c->)]
@@ -9289,9 +9479,10 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
     <li><a href="#ref-for-videoframe④⑦">9.5. VideoFrame CopyTo() Options</a> <a href="#ref-for-videoframe④⑧">(2)</a> <a href="#ref-for-videoframe④⑨">(3)</a>
     <li><a href="#ref-for-videoframe⑤⓪">9.6. DOMRects in VideoFrame</a> <a href="#ref-for-videoframe⑤①">(2)</a>
     <li><a href="#ref-for-videoframe⑤②">9.7. Plane Layout</a> <a href="#ref-for-videoframe⑤③">(2)</a>
-    <li><a href="#ref-for-videoframe⑤④">10.1. Background</a>
-    <li><a href="#ref-for-videoframe⑤⑤">10.2.1. Internal Slots</a>
-    <li><a href="#ref-for-videoframe⑤⑥">10.5. ImageDecodeResult Interface</a> <a href="#ref-for-videoframe⑤⑦">(2)</a>
+    <li><a href="#ref-for-videoframe⑤④">9.8. Pixel Format</a>
+    <li><a href="#ref-for-videoframe⑤⑤">10.1. Background</a>
+    <li><a href="#ref-for-videoframe⑤⑥">10.2.1. Internal Slots</a>
+    <li><a href="#ref-for-videoframe⑤⑦">10.5. ImageDecodeResult Interface</a> <a href="#ref-for-videoframe⑤⑧">(2)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dictdef-videoframeinit">
@@ -9528,6 +9719,7 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
     <li><a href="#ref-for-dom-videoframe-codedwidth①">9.4.2. Constructors</a>
     <li><a href="#ref-for-dom-videoframe-codedwidth②">9.4.3. Attributes</a> <a href="#ref-for-dom-videoframe-codedwidth③">(2)</a>
     <li><a href="#ref-for-dom-videoframe-codedwidth④">9.4.6. Algorithms</a> <a href="#ref-for-dom-videoframe-codedwidth⑤">(2)</a>
+    <li><a href="#ref-for-dom-videoframe-codedwidth⑥">9.8. Pixel Format</a> <a href="#ref-for-dom-videoframe-codedwidth⑦">(2)</a> <a href="#ref-for-dom-videoframe-codedwidth⑧">(3)</a> <a href="#ref-for-dom-videoframe-codedwidth⑨">(4)</a> <a href="#ref-for-dom-videoframe-codedwidth①⓪">(5)</a> <a href="#ref-for-dom-videoframe-codedwidth①①">(6)</a> <a href="#ref-for-dom-videoframe-codedwidth①②">(7)</a> <a href="#ref-for-dom-videoframe-codedwidth①③">(8)</a> <a href="#ref-for-dom-videoframe-codedwidth①④">(9)</a> <a href="#ref-for-dom-videoframe-codedwidth①⑤">(10)</a> <a href="#ref-for-dom-videoframe-codedwidth①⑥">(11)</a> <a href="#ref-for-dom-videoframe-codedwidth①⑦">(12)</a> <a href="#ref-for-dom-videoframe-codedwidth①⑧">(13)</a> <a href="#ref-for-dom-videoframe-codedwidth①⑨">(14)</a> <a href="#ref-for-dom-videoframe-codedwidth②⓪">(15)</a> <a href="#ref-for-dom-videoframe-codedwidth②①">(16)</a> <a href="#ref-for-dom-videoframe-codedwidth②②">(17)</a> <a href="#ref-for-dom-videoframe-codedwidth②③">(18)</a> <a href="#ref-for-dom-videoframe-codedwidth②④">(19)</a> <a href="#ref-for-dom-videoframe-codedwidth②⑤">(20)</a> <a href="#ref-for-dom-videoframe-codedwidth②⑥">(21)</a> <a href="#ref-for-dom-videoframe-codedwidth②⑦">(22)</a> <a href="#ref-for-dom-videoframe-codedwidth②⑧">(23)</a> <a href="#ref-for-dom-videoframe-codedwidth②⑨">(24)</a> <a href="#ref-for-dom-videoframe-codedwidth③⓪">(25)</a> <a href="#ref-for-dom-videoframe-codedwidth③①">(26)</a> <a href="#ref-for-dom-videoframe-codedwidth③②">(27)</a> <a href="#ref-for-dom-videoframe-codedwidth③③">(28)</a> <a href="#ref-for-dom-videoframe-codedwidth③④">(29)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dom-videoframe-codedheight">
@@ -9537,6 +9729,7 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
     <li><a href="#ref-for-dom-videoframe-codedheight①">9.4.2. Constructors</a>
     <li><a href="#ref-for-dom-videoframe-codedheight②">9.4.3. Attributes</a> <a href="#ref-for-dom-videoframe-codedheight③">(2)</a>
     <li><a href="#ref-for-dom-videoframe-codedheight④">9.4.6. Algorithms</a> <a href="#ref-for-dom-videoframe-codedheight⑤">(2)</a>
+    <li><a href="#ref-for-dom-videoframe-codedheight⑥">9.8. Pixel Format</a> <a href="#ref-for-dom-videoframe-codedheight⑦">(2)</a> <a href="#ref-for-dom-videoframe-codedheight⑧">(3)</a> <a href="#ref-for-dom-videoframe-codedheight⑨">(4)</a> <a href="#ref-for-dom-videoframe-codedheight①⓪">(5)</a> <a href="#ref-for-dom-videoframe-codedheight①①">(6)</a> <a href="#ref-for-dom-videoframe-codedheight①②">(7)</a> <a href="#ref-for-dom-videoframe-codedheight①③">(8)</a> <a href="#ref-for-dom-videoframe-codedheight①④">(9)</a> <a href="#ref-for-dom-videoframe-codedheight①⑤">(10)</a> <a href="#ref-for-dom-videoframe-codedheight①⑥">(11)</a> <a href="#ref-for-dom-videoframe-codedheight①⑦">(12)</a> <a href="#ref-for-dom-videoframe-codedheight①⑧">(13)</a> <a href="#ref-for-dom-videoframe-codedheight①⑨">(14)</a> <a href="#ref-for-dom-videoframe-codedheight②⓪">(15)</a> <a href="#ref-for-dom-videoframe-codedheight②①">(16)</a> <a href="#ref-for-dom-videoframe-codedheight②②">(17)</a> <a href="#ref-for-dom-videoframe-codedheight②③">(18)</a> <a href="#ref-for-dom-videoframe-codedheight②④">(19)</a> <a href="#ref-for-dom-videoframe-codedheight②⑤">(20)</a> <a href="#ref-for-dom-videoframe-codedheight②⑥">(21)</a> <a href="#ref-for-dom-videoframe-codedheight②⑦">(22)</a> <a href="#ref-for-dom-videoframe-codedheight②⑧">(23)</a> <a href="#ref-for-dom-videoframe-codedheight②⑨">(24)</a> <a href="#ref-for-dom-videoframe-codedheight③⓪">(25)</a> <a href="#ref-for-dom-videoframe-codedheight③①">(26)</a> <a href="#ref-for-dom-videoframe-codedheight③②">(27)</a> <a href="#ref-for-dom-videoframe-codedheight③③">(28)</a> <a href="#ref-for-dom-videoframe-codedheight③④">(29)</a> <a href="#ref-for-dom-videoframe-codedheight③⑤">(30)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dom-videoframe-codedrect">
@@ -9566,6 +9759,7 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
     <li><a href="#ref-for-dom-videoframe-displaywidth①">9.4. VideoFrame Interface</a>
     <li><a href="#ref-for-dom-videoframe-displaywidth②">9.4.3. Attributes</a>
     <li><a href="#ref-for-dom-videoframe-displaywidth③">9.4.6. Algorithms</a> <a href="#ref-for-dom-videoframe-displaywidth④">(2)</a>
+    <li><a href="#ref-for-dom-videoframe-displaywidth⑤">9.8. Pixel Format</a> <a href="#ref-for-dom-videoframe-displaywidth⑥">(2)</a> <a href="#ref-for-dom-videoframe-displaywidth⑦">(3)</a> <a href="#ref-for-dom-videoframe-displaywidth⑧">(4)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dom-videoframe-displayheight">
@@ -9575,6 +9769,7 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
     <li><a href="#ref-for-dom-videoframe-displayheight①">9.4. VideoFrame Interface</a>
     <li><a href="#ref-for-dom-videoframe-displayheight②">9.4.3. Attributes</a>
     <li><a href="#ref-for-dom-videoframe-displayheight③">9.4.6. Algorithms</a> <a href="#ref-for-dom-videoframe-displayheight④">(2)</a>
+    <li><a href="#ref-for-dom-videoframe-displayheight⑤">9.8. Pixel Format</a> <a href="#ref-for-dom-videoframe-displayheight⑥">(2)</a> <a href="#ref-for-dom-videoframe-displayheight⑦">(3)</a> <a href="#ref-for-dom-videoframe-displayheight⑧">(4)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dom-videoframe-timestamp">
@@ -9810,10 +10005,71 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
     <li><a href="#ref-for-enumdef-pixelformat⑤">9.4.6. Algorithms</a> <a href="#ref-for-enumdef-pixelformat⑥">(2)</a> <a href="#ref-for-enumdef-pixelformat⑦">(3)</a>
    </ul>
   </aside>
+  <aside class="dfn-panel" data-for="sub-sampling">
+   <b><a href="#sub-sampling">#sub-sampling</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-sub-sampling">9.8. Pixel Format</a> <a href="#ref-for-sub-sampling①">(2)</a> <a href="#ref-for-sub-sampling②">(3)</a> <a href="#ref-for-sub-sampling③">(4)</a> <a href="#ref-for-sub-sampling④">(5)</a> <a href="#ref-for-sub-sampling⑤">(6)</a> <a href="#ref-for-sub-sampling⑥">(7)</a> <a href="#ref-for-sub-sampling⑦">(8)</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="sub-sampling-factor">
+   <b><a href="#sub-sampling-factor">#sub-sampling-factor</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-sub-sampling-factor">9.4.6. Algorithms</a> <a href="#ref-for-sub-sampling-factor①">(2)</a> <a href="#ref-for-sub-sampling-factor②">(3)</a> <a href="#ref-for-sub-sampling-factor③">(4)</a>
+    <li><a href="#ref-for-sub-sampling-factor④">9.8. Pixel Format</a> <a href="#ref-for-sub-sampling-factor⑤">(2)</a> <a href="#ref-for-sub-sampling-factor⑥">(3)</a> <a href="#ref-for-sub-sampling-factor⑦">(4)</a> <a href="#ref-for-sub-sampling-factor⑧">(5)</a>
+   </ul>
+  </aside>
   <aside class="dfn-panel" data-for="dom-pixelformat-i420">
    <b><a href="#dom-pixelformat-i420">#dom-pixelformat-i420</a></b><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-dom-pixelformat-i420">9.8. Pixel Format</a>
+    <li><a href="#ref-for-dom-pixelformat-i420">9.8. Pixel Format</a> <a href="#ref-for-dom-pixelformat-i420①">(2)</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="dom-pixelformat-i420a">
+   <b><a href="#dom-pixelformat-i420a">#dom-pixelformat-i420a</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-dom-pixelformat-i420a">9.8. Pixel Format</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="dom-pixelformat-i422">
+   <b><a href="#dom-pixelformat-i422">#dom-pixelformat-i422</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-dom-pixelformat-i422">9.8. Pixel Format</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="dom-pixelformat-i444">
+   <b><a href="#dom-pixelformat-i444">#dom-pixelformat-i444</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-dom-pixelformat-i444">9.8. Pixel Format</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="dom-pixelformat-nv12">
+   <b><a href="#dom-pixelformat-nv12">#dom-pixelformat-nv12</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-dom-pixelformat-nv12">9.8. Pixel Format</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="dom-pixelformat-rgba">
+   <b><a href="#dom-pixelformat-rgba">#dom-pixelformat-rgba</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-dom-pixelformat-rgba">9.8. Pixel Format</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="dom-pixelformat-rgbx">
+   <b><a href="#dom-pixelformat-rgbx">#dom-pixelformat-rgbx</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-dom-pixelformat-rgbx">9.8. Pixel Format</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="dom-pixelformat-bgra">
+   <b><a href="#dom-pixelformat-bgra">#dom-pixelformat-bgra</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-dom-pixelformat-bgra">9.8. Pixel Format</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="dom-pixelformat-bgrx">
+   <b><a href="#dom-pixelformat-bgrx">#dom-pixelformat-bgrx</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-dom-pixelformat-bgrx">9.8. Pixel Format</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="imagedecoder">
