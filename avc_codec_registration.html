@@ -6,7 +6,7 @@
   <link href="https://www.w3.org/StyleSheets/TR/2016/W3C-ED" rel="stylesheet" type="text/css">
   <meta content="Bikeshed version bb6b91100, updated Mon Jul 12 16:52:37 2021 -0700" name="generator">
   <link href="https://www.w3.org/TR/webcodecs-avc-codec-registration/" rel="canonical">
-  <meta content="2cbb1e287a76baa1ccde7befaa10c051e10bfbf8" name="document-revision">
+  <meta content="02d54e954f65cc5cb3cdf38e82cb4bcbb2d14c57" name="document-revision">
 <style>/* style-autolinks */
 
 .css.css, .property.property, .descriptor.descriptor {
@@ -596,8 +596,9 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
    <p>This registration is entered into the <a data-link-type="biblio" href="#biblio-webcodecs-codec-registry">[webcodecs-codec-registry]</a>.
 
     It describes, for AVC (H.264), the (1) fully qualified codec strings, (2)
-    the <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webcodecs/#dom-videodecoderconfig-description" id="ref-for-dom-videodecoderconfig-description">VideoDecoderConfig.description</a></code> bytes, and (3) the
-    codec-specific extensions to the <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webcodecs/#dictdef-videoencoderconfig" id="ref-for-dictdef-videoencoderconfig">VideoEncoderConfig</a></code>.</p>
+    the <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webcodecs/#dom-videodecoderconfig-description" id="ref-for-dom-videodecoderconfig-description">VideoDecoderConfig.description</a></code> bytes, (3) the codec-specific
+    extensions to <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webcodecs/#dictdef-videoencoderconfig" id="ref-for-dictdef-videoencoderconfig">VideoEncoderConfig</a></code>, (4) the <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webcodecs/#encodedvideochunk" id="ref-for-encodedvideochunk">EncodedVideoChunk</a></code> <a data-link-type="dfn" href="https://w3c.github.io/webcodecs/#dom-encodedvideochunk-internal-data-slot" id="ref-for-dom-encodedvideochunk-internal-data-slot">[[internal data]]</a> bytes, and (5)
+    the meaning of <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webcodecs/#encodedvideochunk" id="ref-for-encodedvideochunk①">EncodedVideoChunk</a></code> <a data-link-type="dfn" href="https://w3c.github.io/webcodecs/#dom-encodedvideochunk-type-slot" id="ref-for-dom-encodedvideochunk-type-slot">[[type]]</a>.</p>
    <p>The registration is not intended to include any information on whether a
 
     codec format is encumbered by intellectual property claims. Implementers and
@@ -633,7 +634,9 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
       <li><a href="#avc-encoder-config"><span class="secno">3.1</span> <span class="content">AvcEncoderConfig</span></a>
       <li><a href="#avc-bitstream-format"><span class="secno">3.2</span> <span class="content">AvcBitstreamFormat</span></a>
      </ol>
-    <li><a href="#privacy-and-security-considerations"><span class="secno">4</span> <span class="content">Privacy and Security Considerations</span></a>
+    <li><a href="#encodedvideochunk-data"><span class="secno">4</span> <span class="content">EncodedVideoChunk data</span></a>
+    <li><a href="#encodedvideochunk-type"><span class="secno">5</span> <span class="content">EncodedVideoChunk type</span></a>
+    <li><a href="#privacy-and-security-considerations"><span class="secno">6</span> <span class="content">Privacy and Security Considerations</span></a>
     <li>
      <a href="#index"><span class="secno"></span> <span class="content">Index</span></a>
      <ol class="toc">
@@ -651,21 +654,19 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
   </nav>
   <main>
    <h2 class="heading settled" data-level="1" id="fully-qualified-codec-strings"><span class="secno">1. </span><span class="content">Fully qualified codec strings</span><a class="self-link" href="#fully-qualified-codec-strings"></a></h2>
-   <p>The codec string must begin with the prefix "avc1.", and contain a suffix of 6
-characters as described in Section 3.4 of <a data-link-type="biblio" href="#biblio-rfc6381">[rfc6381]</a>.</p>
+   <p>The codec string begins with the prefix "avc1.", with a suffix of 6 characters
+as described in Section 3.4 of <a data-link-type="biblio" href="#biblio-rfc6381">[rfc6381]</a>.</p>
    <p class="note" role="note"><span>NOTE:</span> The common "avc3." prefix is intentionally not included. This prefix does
   not signal a material difference to decoder inputs, so it is omitted for
   simplification. For the purposes of this registration, authors should simply
   map "avc3." to "avc1.".</p>
    <h2 class="heading settled" data-level="2" id="videodecoderconfig-description"><span class="secno">2. </span><span class="content">VideoDecoderConfig description</span><a class="self-link" href="#videodecoderconfig-description"></a></h2>
-   <p>A <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webcodecs/#dom-videodecoderconfig-description" id="ref-for-dom-videodecoderconfig-description①">VideoDecoderConfig.description</a></code> may or may not be required by the
-AVC codec depending on the bitstream format of the AVC content to be decoded.</p>
-   <p>If the <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webcodecs/#dom-videodecoderconfig-description" id="ref-for-dom-videodecoderconfig-description②">VideoDecoderConfig.description</a></code> includes an <code>AVCDecoderConfigurationRecord</code>, as defined by <a data-link-type="biblio" href="#biblio-iso14496-15">[iso14496-15]</a>, section
-5.3.3.1, it will be assumed that the bitstream is in "avc" format.</p>
+   <p>If the <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webcodecs/#dom-videodecoderconfig-description" id="ref-for-dom-videodecoderconfig-description①">VideoDecoderConfig.description</a></code> is present, it is assumed to be an <code>AVCDecoderConfigurationRecord</code>, as defined by <a data-link-type="biblio" href="#biblio-iso14496-15">[iso14496-15]</a>, section
+5.3.3.1, and the bitstream is assumed to be in <code class="idl"><a data-link-type="idl" href="#dom-avcbitstreamformat-avc" id="ref-for-dom-avcbitstreamformat-avc">avc</a></code> format.</p>
    <p class="note" role="note"><span>NOTE:</span> This format is commonly used in .MP4 files, where the player generally
     has random access to the media data.</p>
-   <p>If the <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webcodecs/#dom-videodecoderconfig-description" id="ref-for-dom-videodecoderconfig-description③">VideoDecoderConfig.description</a></code> is not provided, it will be
-assumed that the bitstream is in “annexb” format.</p>
+   <p>If the <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webcodecs/#dom-videodecoderconfig-description" id="ref-for-dom-videodecoderconfig-description②">VideoDecoderConfig.description</a></code> is not present, the bitstream is
+assumed to be in <code class="idl"><a data-link-type="idl" href="#dom-avcbitstreamformat-annexb" id="ref-for-dom-avcbitstreamformat-annexb">annexb</a></code> format.</p>
    <p class="note" role="note"><span>NOTE:</span> "annexb" format is described in greater detail by <a data-link-type="biblio" href="#biblio-itu-t-rec-h264">[ITU-T-REC-H.264]</a>,
     Annex B. This format is commonly used in live-streaming applications, where
     including the SPS and PPS data periodically allows users to easily start
@@ -688,12 +689,12 @@ assumed that the bitstream is in “annexb” format.</p>
 </pre>
    <dl>
     <dt><dfn class="dfn-paneled idl-code" data-dfn-for="AvcEncoderConfig" data-dfn-type="dict-member" data-export id="dom-avcencoderconfig-format"><code>format</code></dfn>, <span> of type <a data-link-type="idl-name" href="#enumdef-avcbitstreamformat" id="ref-for-enumdef-avcbitstreamformat①">AvcBitstreamFormat</a>, defaulting to <code>"avc"</code></span>
-    <dd> Configures the format of output <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webcodecs/#encodedvideochunk" id="ref-for-encodedvideochunk">EncodedVideoChunk</a></code>s. See <code class="idl"><a data-link-type="idl" href="#enumdef-avcbitstreamformat" id="ref-for-enumdef-avcbitstreamformat②">AvcBitstreamFormat</a></code>. 
+    <dd> Configures the format of output <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webcodecs/#encodedvideochunk" id="ref-for-encodedvideochunk②">EncodedVideoChunk</a></code>s. See <code class="idl"><a data-link-type="idl" href="#enumdef-avcbitstreamformat" id="ref-for-enumdef-avcbitstreamformat②">AvcBitstreamFormat</a></code>. 
    </dl>
    <h3 class="heading settled" data-level="3.2" id="avc-bitstream-format"><span class="secno">3.2. </span><span class="content">AvcBitstreamFormat</span><a class="self-link" href="#avc-bitstream-format"></a></h3>
 <pre class="idl highlight def"><c- b>enum</c-> <dfn class="dfn-paneled idl-code" data-dfn-type="enum" data-export id="enumdef-avcbitstreamformat"><code><c- g>AvcBitstreamFormat</c-></code></dfn> {
-  <a class="idl-code" data-link-type="enum-value" href="#dom-avcbitstreamformat-annexb" id="ref-for-dom-avcbitstreamformat-annexb"><c- s>"annexb"</c-></a>,
-  <a class="idl-code" data-link-type="enum-value" href="#dom-avcbitstreamformat-avc" id="ref-for-dom-avcbitstreamformat-avc"><c- s>"avc"</c-></a>,
+  <a class="idl-code" data-link-type="enum-value" href="#dom-avcbitstreamformat-annexb" id="ref-for-dom-avcbitstreamformat-annexb①"><c- s>"annexb"</c-></a>,
+  <a class="idl-code" data-link-type="enum-value" href="#dom-avcbitstreamformat-avc" id="ref-for-dom-avcbitstreamformat-avc①"><c- s>"avc"</c-></a>,
 };
 
 </pre>
@@ -712,12 +713,32 @@ the bitstream.</p>
     <dt><dfn class="dfn-paneled idl-code" data-dfn-for="AvcBitstreamFormat" data-dfn-type="enum-value" data-export data-lt="&quot;avc&quot;|avc" id="dom-avcbitstreamformat-avc"><code>avc</code></dfn>
     <dd>
       SPS and PPS data are not included in the bitstream and are instead emitted
-    via the <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webcodecs/#videoencoder" id="ref-for-videoencoder">VideoEncoder</a></code> [[output callback]] as the <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webcodecs/#dom-videodecoderconfig-description" id="ref-for-dom-videodecoderconfig-description④">VideoDecoderConfig.description</a></code> of the <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webcodecs/#dictdef-videodecoderconfig" id="ref-for-dictdef-videodecoderconfig">VideoDecoderConfig</a></code>. <var>output_config</var>. 
+    via the <a data-link-type="dfn" href="https://w3c.github.io/webcodecs/#dom-videoencoder-output-callback-slot" id="ref-for-dom-videoencoder-output-callback-slot">[[output callback]]</a> as the <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webcodecs/#dom-videodecoderconfig-description" id="ref-for-dom-videodecoderconfig-description③">VideoDecoderConfig.description</a></code> of the <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webcodecs/#dom-encodedvideochunkmetadata-decoderconfig" id="ref-for-dom-encodedvideochunkmetadata-decoderconfig">EncodedVideoChunkMetadata.decoderConfig</a></code>. 
      <p class="note" role="note"><span>NOTE:</span> This format is described in greater detail by <a data-link-type="biblio" href="#biblio-iso14496-15">[iso14496-15]</a>,
         section 5.3.3.1. This format is commonly used in .MP4 files, where the
         player generally has random access to the media data.</p>
    </dl>
-   <h2 class="heading settled" data-level="4" id="privacy-and-security-considerations"><span class="secno">4. </span><span class="content">Privacy and Security Considerations</span><a class="self-link" href="#privacy-and-security-considerations"></a></h2>
+   <h2 class="heading settled" data-level="4" id="encodedvideochunk-data"><span class="secno">4. </span><span class="content">EncodedVideoChunk data</span><a class="self-link" href="#encodedvideochunk-data"></a></h2>
+   <p><code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webcodecs/#encodedvideochunk" id="ref-for-encodedvideochunk③">EncodedVideoChunk</a></code> <a data-link-type="dfn" href="https://w3c.github.io/webcodecs/#dom-encodedvideochunk-internal-data-slot" id="ref-for-dom-encodedvideochunk-internal-data-slot①">[[internal data]]</a> is expected to be
+an access unit as defined in <a data-link-type="biblio" href="#biblio-itu-t-rec-h264">[ITU-T-REC-H.264]</a> section 7.4.1.2.</p>
+   <p class="note" role="note"><span>NOTE:</span> An access unit contains exactly one primary coded picture.</p>
+   <p>If the bitstream is in <code class="idl"><a data-link-type="idl" href="#dom-avcbitstreamformat-avc" id="ref-for-dom-avcbitstreamformat-avc②">avc</a></code> format, <a data-link-type="dfn" href="https://w3c.github.io/webcodecs/#dom-encodedvideochunk-internal-data-slot" id="ref-for-dom-encodedvideochunk-internal-data-slot②">[[internal data]]</a> is assumed to be in canonical format, as
+defined in <a data-link-type="biblio" href="#biblio-iso14496-15">[iso14496-15]</a> section 5.3.2.</p>
+   <p>If the bitstream is in <code class="idl"><a data-link-type="idl" href="#dom-avcbitstreamformat-annexb" id="ref-for-dom-avcbitstreamformat-annexb②">annexb</a></code> format, <a data-link-type="dfn" href="https://w3c.github.io/webcodecs/#dom-encodedvideochunk-internal-data-slot" id="ref-for-dom-encodedvideochunk-internal-data-slot③">[[internal data]]</a> is assumed to be in in Annex B format,
+as defined in <a data-link-type="biblio" href="#biblio-itu-t-rec-h264">[ITU-T-REC-H.264]</a> Annex B.</p>
+   <p class="note" role="note"><span>NOTE:</span> Since <a data-link-type="dfn" href="https://w3c.github.io/webcodecs/#dom-encodedvideochunk-internal-data-slot" id="ref-for-dom-encodedvideochunk-internal-data-slot④">[[internal data]]</a> is inherently byte-aligned,
+    implementations are not required to recover byte-alignment.</p>
+   <h2 class="heading settled" data-level="5" id="encodedvideochunk-type"><span class="secno">5. </span><span class="content">EncodedVideoChunk type</span><a class="self-link" href="#encodedvideochunk-type"></a></h2>
+   <p>If an <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webcodecs/#encodedvideochunk" id="ref-for-encodedvideochunk④">EncodedVideoChunk</a></code>'s <a data-link-type="dfn" href="https://w3c.github.io/webcodecs/#dom-encodedvideochunk-type-slot" id="ref-for-dom-encodedvideochunk-type-slot①">[[type]]</a> is <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webcodecs/#dom-encodedvideochunktype-key" id="ref-for-dom-encodedvideochunktype-key">key</a></code>, and the bitstream is in <code class="idl"><a data-link-type="idl" href="#dom-avcbitstreamformat-avc" id="ref-for-dom-avcbitstreamformat-avc③">avc</a></code> format, then the <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webcodecs/#encodedvideochunk" id="ref-for-encodedvideochunk⑤">EncodedVideoChunk</a></code> is expected to
+contain a primary coded picture that is an instantaneous decoding refresh (IDR)
+picture.</p>
+   <p class="note" role="note"><span>NOTE:</span> If the bitstream is in <code class="idl"><a data-link-type="idl" href="#dom-avcbitstreamformat-avc" id="ref-for-dom-avcbitstreamformat-avc④">avc</a></code> format, parameter sets
+    necessary for decoding are included in <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webcodecs/#dom-videodecoderconfig-description" id="ref-for-dom-videodecoderconfig-description④">VideoDecoderConfig.description</a></code>.</p>
+   <p>If an <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webcodecs/#encodedvideochunk" id="ref-for-encodedvideochunk⑥">EncodedVideoChunk</a></code>'s <a data-link-type="dfn" href="https://w3c.github.io/webcodecs/#dom-encodedvideochunk-type-slot" id="ref-for-dom-encodedvideochunk-type-slot②">[[type]]</a> is <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webcodecs/#dom-encodedvideochunktype-key" id="ref-for-dom-encodedvideochunktype-key①">key</a></code>, and the bitstream is in <code class="idl"><a data-link-type="idl" href="#dom-avcbitstreamformat-annexb" id="ref-for-dom-avcbitstreamformat-annexb③">annexb</a></code> format, then the <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webcodecs/#encodedvideochunk" id="ref-for-encodedvideochunk⑦">EncodedVideoChunk</a></code> is expected
+to contain both a primary coded picture that is an instantaneous decoding
+refresh (IDR) picture, and all parameter sets necessary to decode all video data
+NAL units in the <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webcodecs/#encodedvideochunk" id="ref-for-encodedvideochunk⑧">EncodedVideoChunk</a></code>.</p>
+   <h2 class="heading settled" data-level="6" id="privacy-and-security-considerations"><span class="secno">6. </span><span class="content">Privacy and Security Considerations</span><a class="self-link" href="#privacy-and-security-considerations"></a></h2>
    <p>Please refer to the <a href="https://www.w3.org/TR/webcodecs/#privacy-considerations">Privacy Considerations</a> and <a href="https://www.w3.org/TR/webcodecs/#security-considerations">Security Considerations</a> sections in <a data-link-type="biblio" href="#biblio-webcodecs">[WEBCODECS]</a>.</p>
    <p id="back-to-top" role="navigation"><a href="#toc"><abbr title="Back to Top">↑</abbr></a></p>
 <script src="https://www.w3.org/scripts/TR/2016/fixup.js"></script>
@@ -741,27 +762,25 @@ the bitstream.</p>
   <aside class="dfn-panel" data-for="term-for-encodedvideochunk">
    <a href="https://w3c.github.io/webcodecs/#encodedvideochunk">https://w3c.github.io/webcodecs/#encodedvideochunk</a><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-encodedvideochunk">3.1. AvcEncoderConfig</a>
+    <li><a href="#ref-for-encodedvideochunk">Unnumbered Section</a> <a href="#ref-for-encodedvideochunk①">(2)</a>
+    <li><a href="#ref-for-encodedvideochunk②">3.1. AvcEncoderConfig</a>
+    <li><a href="#ref-for-encodedvideochunk③">4. EncodedVideoChunk data</a>
+    <li><a href="#ref-for-encodedvideochunk④">5. EncodedVideoChunk type</a> <a href="#ref-for-encodedvideochunk⑤">(2)</a> <a href="#ref-for-encodedvideochunk⑥">(3)</a> <a href="#ref-for-encodedvideochunk⑦">(4)</a> <a href="#ref-for-encodedvideochunk⑧">(5)</a>
    </ul>
   </aside>
-  <aside class="dfn-panel" data-for="term-for-dictdef-videodecoderconfig">
-   <a href="https://w3c.github.io/webcodecs/#dictdef-videodecoderconfig">https://w3c.github.io/webcodecs/#dictdef-videodecoderconfig</a><b>Referenced in:</b>
+  <aside class="dfn-panel" data-for="term-for-dom-encodedvideochunkmetadata-decoderconfig">
+   <a href="https://w3c.github.io/webcodecs/#dom-encodedvideochunkmetadata-decoderconfig">https://w3c.github.io/webcodecs/#dom-encodedvideochunkmetadata-decoderconfig</a><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-dictdef-videodecoderconfig">3.2. AvcBitstreamFormat</a>
+    <li><a href="#ref-for-dom-encodedvideochunkmetadata-decoderconfig">3.2. AvcBitstreamFormat</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-dom-videodecoderconfig-description">
    <a href="https://w3c.github.io/webcodecs/#dom-videodecoderconfig-description">https://w3c.github.io/webcodecs/#dom-videodecoderconfig-description</a><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-dom-videodecoderconfig-description">Unnumbered Section</a>
-    <li><a href="#ref-for-dom-videodecoderconfig-description①">2. VideoDecoderConfig description</a> <a href="#ref-for-dom-videodecoderconfig-description②">(2)</a> <a href="#ref-for-dom-videodecoderconfig-description③">(3)</a>
-    <li><a href="#ref-for-dom-videodecoderconfig-description④">3.2. AvcBitstreamFormat</a>
-   </ul>
-  </aside>
-  <aside class="dfn-panel" data-for="term-for-videoencoder">
-   <a href="https://w3c.github.io/webcodecs/#videoencoder">https://w3c.github.io/webcodecs/#videoencoder</a><b>Referenced in:</b>
-   <ul>
-    <li><a href="#ref-for-videoencoder">3.2. AvcBitstreamFormat</a>
+    <li><a href="#ref-for-dom-videodecoderconfig-description①">2. VideoDecoderConfig description</a> <a href="#ref-for-dom-videodecoderconfig-description②">(2)</a>
+    <li><a href="#ref-for-dom-videodecoderconfig-description③">3.2. AvcBitstreamFormat</a>
+    <li><a href="#ref-for-dom-videodecoderconfig-description④">5. EncodedVideoChunk type</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-dictdef-videoencoderconfig">
@@ -771,16 +790,45 @@ the bitstream.</p>
     <li><a href="#ref-for-dictdef-videoencoderconfig①">3. VideoEncoderConfig extensions</a>
    </ul>
   </aside>
+  <aside class="dfn-panel" data-for="term-for-dom-encodedvideochunk-internal-data-slot">
+   <a href="https://w3c.github.io/webcodecs/#dom-encodedvideochunk-internal-data-slot">https://w3c.github.io/webcodecs/#dom-encodedvideochunk-internal-data-slot</a><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-dom-encodedvideochunk-internal-data-slot">Unnumbered Section</a>
+    <li><a href="#ref-for-dom-encodedvideochunk-internal-data-slot①">4. EncodedVideoChunk data</a> <a href="#ref-for-dom-encodedvideochunk-internal-data-slot②">(2)</a> <a href="#ref-for-dom-encodedvideochunk-internal-data-slot③">(3)</a> <a href="#ref-for-dom-encodedvideochunk-internal-data-slot④">(4)</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="term-for-dom-videoencoder-output-callback-slot">
+   <a href="https://w3c.github.io/webcodecs/#dom-videoencoder-output-callback-slot">https://w3c.github.io/webcodecs/#dom-videoencoder-output-callback-slot</a><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-dom-videoencoder-output-callback-slot">3.2. AvcBitstreamFormat</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="term-for-dom-encodedvideochunk-type-slot">
+   <a href="https://w3c.github.io/webcodecs/#dom-encodedvideochunk-type-slot">https://w3c.github.io/webcodecs/#dom-encodedvideochunk-type-slot</a><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-dom-encodedvideochunk-type-slot">Unnumbered Section</a>
+    <li><a href="#ref-for-dom-encodedvideochunk-type-slot①">5. EncodedVideoChunk type</a> <a href="#ref-for-dom-encodedvideochunk-type-slot②">(2)</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="term-for-dom-encodedvideochunktype-key">
+   <a href="https://w3c.github.io/webcodecs/#dom-encodedvideochunktype-key">https://w3c.github.io/webcodecs/#dom-encodedvideochunktype-key</a><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-dom-encodedvideochunktype-key">5. EncodedVideoChunk type</a> <a href="#ref-for-dom-encodedvideochunktype-key①">(2)</a>
+   </ul>
+  </aside>
   <h3 class="no-num no-ref heading settled" id="index-defined-elsewhere"><span class="content">Terms defined by reference</span><a class="self-link" href="#index-defined-elsewhere"></a></h3>
   <ul class="index">
    <li>
     <a data-link-type="biblio">[WEBCODECS]</a> defines the following terms:
     <ul>
      <li><span class="dfn-paneled" id="term-for-encodedvideochunk">EncodedVideoChunk</span>
-     <li><span class="dfn-paneled" id="term-for-dictdef-videodecoderconfig">VideoDecoderConfig</span>
+     <li><span class="dfn-paneled" id="term-for-dom-encodedvideochunkmetadata-decoderconfig">EncodedVideoChunkMetadata.decoderConfig</span>
      <li><span class="dfn-paneled" id="term-for-dom-videodecoderconfig-description">VideoDecoderConfig.description</span>
-     <li><span class="dfn-paneled" id="term-for-videoencoder">VideoEncoder</span>
      <li><span class="dfn-paneled" id="term-for-dictdef-videoencoderconfig">VideoEncoderConfig</span>
+     <li><span class="dfn-paneled" id="term-for-dom-encodedvideochunk-internal-data-slot">[[internal data]]</span>
+     <li><span class="dfn-paneled" id="term-for-dom-videoencoder-output-callback-slot">[[output callback]]</span>
+     <li><span class="dfn-paneled" id="term-for-dom-encodedvideochunk-type-slot">[[type]]</span>
+     <li><span class="dfn-paneled" id="term-for-dom-encodedvideochunktype-key">key</span>
     </ul>
   </ul>
   <h2 class="no-num no-ref heading settled" id="references"><span class="content">References</span><a class="self-link" href="#references"></a></h2>
@@ -846,13 +894,19 @@ the bitstream.</p>
   <aside class="dfn-panel" data-for="dom-avcbitstreamformat-annexb">
    <b><a href="#dom-avcbitstreamformat-annexb">#dom-avcbitstreamformat-annexb</a></b><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-dom-avcbitstreamformat-annexb">3.2. AvcBitstreamFormat</a>
+    <li><a href="#ref-for-dom-avcbitstreamformat-annexb">2. VideoDecoderConfig description</a>
+    <li><a href="#ref-for-dom-avcbitstreamformat-annexb①">3.2. AvcBitstreamFormat</a>
+    <li><a href="#ref-for-dom-avcbitstreamformat-annexb②">4. EncodedVideoChunk data</a>
+    <li><a href="#ref-for-dom-avcbitstreamformat-annexb③">5. EncodedVideoChunk type</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dom-avcbitstreamformat-avc">
    <b><a href="#dom-avcbitstreamformat-avc">#dom-avcbitstreamformat-avc</a></b><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-dom-avcbitstreamformat-avc">3.2. AvcBitstreamFormat</a>
+    <li><a href="#ref-for-dom-avcbitstreamformat-avc">2. VideoDecoderConfig description</a>
+    <li><a href="#ref-for-dom-avcbitstreamformat-avc①">3.2. AvcBitstreamFormat</a>
+    <li><a href="#ref-for-dom-avcbitstreamformat-avc②">4. EncodedVideoChunk data</a>
+    <li><a href="#ref-for-dom-avcbitstreamformat-avc③">5. EncodedVideoChunk type</a> <a href="#ref-for-dom-avcbitstreamformat-avc④">(2)</a>
    </ul>
   </aside>
 <script>/* script-dfn-panel */
