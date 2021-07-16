@@ -2644,8 +2644,7 @@ NOTE: {{VideoFrame}} is a {{CanvasImageSource}}. A {{VideoFrame}} may be
 [Exposed=(Window,DedicatedWorker), Serializable, Transferable]
 interface VideoFrame {
   constructor(CanvasImageSource image, optional VideoFrameInit init = {});
-  constructor(sequence<PlaneInit> planes,
-              VideoFramePlaneInit init);
+  constructor([AllowShared] BufferSource data, VideoFrameBufferInit init);
 
   readonly attribute PixelFormat format;
   readonly attribute unsigned long codedWidth;
@@ -2670,21 +2669,22 @@ dictionary VideoFrameInit {
   long long timestamp;          // microseconds
 };
 
-dictionary VideoFramePlaneInit {
+dictionary VideoFrameBufferInit {
   required PixelFormat format;
-  [EnforceRange] required unsigned long codedWidth;
-  [EnforceRange] required unsigned long codedHeight;
+  required [EnforceRange] unsigned long codedWidth;
+  required [EnforceRange] unsigned long codedHeight;
+  required [EnforceRange] long long timestamp;  // microseconds
+  [EnforceRange] unsigned long long duration;  // microseconds
+
+  // Default layout is tightly-packed.
+  sequence<PlaneLayout> layout;
+
+  // Default visible rect is coded size positioned at (0,0)
   DOMRectInit visibleRect;
+
+  // Default display dimensions match visibleRect.
   [EnforceRange] unsigned long displayWidth;
   [EnforceRange] unsigned long displayHeight;
-  [EnforceRange] unsigned long long duration;  // microseconds
-  [EnforceRange] long long timestamp;          // microseconds
-};
-
-dictionary PlaneInit {
-  required BufferSource data;
-  [EnforceRange] required unsigned long stride;
-  [EnforceRange] unsigned long offset = 0;
 };
 </xmp>
 
@@ -2798,95 +2798,84 @@ dictionary PlaneInit {
 6. Return |frame|.
 
 
-<dfn constructor for=VideoFrame title="VideoFrame(planes, init)">
-  VideoFrame(planes, init)
+<dfn constructor for=VideoFrame title="VideoFrame(data, init)">
+  VideoFrame(data, init)
 </dfn>
-1. If |init| is not a [=valid VideoFramePlaneInit=], throw a
-    {{TypeError}}.
-2. If |planes| is incompatible with the given {{VideoFramePlaneInit/format}}
-    (e.g. wrong number of planes), throw a {{TypeError}}.
-
-    ISSUE: The spec should list additional format specific validation steps (
-        e.g. number and order of planes, acceptable sizing, etc...). See
-        [#165](https://github.com/w3c/webcodecs/issues/165).
-
-3. Let |resource| be a new [=media resource=] allocated in accordance with
-    |init|.
-
-    ISSUE: The spec should define explicit rules for each
-        {{PixelFormat}} and reference them in the steps above. See
-        [#165](https://github.com/w3c/webcodecs/issues/165).
+1. If |init| is not a [=valid VideoFrameBufferInit=], throw a {{TypeError}}.
+2. Let |defaultRect| be «[ "x:" → `0`, "y" → `0`,
+    "width" → |init|.{{VideoFrameBufferInit/codedWidth}}, "height" →
+        |init|.{{VideoFrameBufferInit/codedWidth}} ]».
+3. Let |overrideRect| be `undefined`.
+4. If |init|.{{VideoFrameBufferInit/visibleRect}} [=map/exists=], assign its
+    value to overrideRect.
+4. Let |parsedRect| be the result of running the [=VideoFrame/Parse Visible
+        Rect=] algorithm with |defaultRect|, |overrideRect|,
+        |init|.{{VideoFrameBufferInit/codedWidth}},
+        |init|.{{VideoFrameBufferInit/codedHeight}},
+        |init|.{{VideoFrameBufferInit/format}}.
+5. If |parsedRect| is an exception, return |parsedRect|.
+6. Let |optLayout| be `undefined`.
+7. If |options|.{{VideoFrameBufferInit/layout}} [=map/exists=], assign its value
+    to |optLayout|.
+8. Let |combinedLayout| be the result of running the [=VideoFrame/Compute
+    Layout and Allocation Size=] algorithm with |parsedRect|,
+    |init|.{{VideoFrameBufferInit/format}}, and |optLayout|.
+9. If |combinedLayout| is an excpetion, throw |combinedLayout|.
+10. If `data.byteLength` is less than |combinedLayout|’s
+    [=combined buffer layout/allocationSize=], throw a {{TypeError}}.
+11. Let |resource| be a new [=media resource=] containing a copy |data|. Use
+        {{VideoFrameBufferInit/visibleRect}} and {{VideoFrameBufferInit/layout}}
+        to determine where in |data| the pixels for each plane reside.
 
     NOTE: The User Agent may choose to allocate resource with a larger coded
-      size and plane strides to improve memory alignment. Increases will be
-      reflected by {{VideoFrame/codedWidth}} and {{VideoFrame/codedHeight}}.
+        size and plane strides to improve memory alignment. Increases will be
+        reflected by {{VideoFrame/codedWidth}} and {{VideoFrame/codedHeight}}.
+        Additionally, the User Agent may use
+        {{VideoFrameBufferInit/visibleRect}} to copy only the visible rectangle.
+        It may also reposition the visible rectangle within |resource|. The
+        final position will be reflected by {{VideoFrame/visibleRect}}.
 
-4. Let |resourceReference| be a reference to |resource|.
-5. Let |frame| be a new {{VideoFrame}} object initialized as follows:
-    1. Assign |resourceReference| to
-            {{VideoFrame/[[resource reference]]}}.
-    2. Assign {{VideoFramePlaneInit/format}} to {{VideoFrame/[[format]]}}.
-    3. For each |planeInit| in |planes|:
-        1. Let |rows| be the number of sample rows for the Plane coresponding
-            to |planeInit| as defined by {{VideoFrame/[[format]]}}.
-        2. Let |dataOffset| be `0`.
-        3. If {{PlaneInit/offset}} [=map/exists=], assign {{PlaneInit/offset}}
-            to |dataOffset|.
-        4. Let |row| be `0`.
-        5. While |row| is less than |rows|:
-            1. Copy bytes from {{PlaneInit/data}} to |resource|, starting with
-                the byte positioned at |dataOffset| and stopping after
-                {{PlaneInit/stride}} bytes have been copied.
+12. Let |resourceCodedWidth| be the coded width of |resource|.
+13. Let |resourceCodedHeight| be the coded height of |resource|.
+14. Let |resourceVisibleLeft| be the left offset for the visible rectangle of
+    |resource|.
+15. Let |resourceVisibleTop| be the top offset for the visible rectangle of
+    |resource|.
 
-                NOTE: The User Agent may use {{VideoFramePlaneInit/visibleRect}}
-                    to copy only the visible rectangle. It may also reposition
-                    the visible rectangle within |resource|. The final position
-                    will be reflected by {{VideoFrame/visibleRect}}.
+    ISSUE: The spec should provide definitions (and possibly diagrams) for
+        coded size, visible rectangle, and display size. See
+        [#166](https://github.com/w3c/webcodecs/issues/166).
 
-            2. Increment |dataOffset| by {{PlaneInit/stride}}.
-            3. Increment |row| by `1`.
-
-    4. Let |resourceCodedWidth| be the coded width of |resource|.
-    5. Let |resourceCodedHeight| be the coded height of |resource|.
-    6. Let |resourceVisibleLeft| be the left offset for the visible rectangle of
-        |resource|.
-    7. Let |resourceVisibleTop| be the top offset for the visible rectangle of
-        |resource|.
-
-        ISSUE: The spec should provide definitions (and possibly diagrams) for
-            coded size, visible rectangle, and display size. See
-            [#166](https://github.com/w3c/webcodecs/issues/166).
-
-    8. Assign |resourceCodedWidth|, |resourceCodedHeight|,
+16. Let |frame| be a new {{VideoFrame}} object initialized as follows:
+    1. Assign |resourceCodedWidth|, |resourceCodedHeight|,
         |resourceVisibleLeft|, and |resourceVisibleTop| to
         {{VideoFrame/[[coded width]]}}, {{VideoFrame/[[coded height]]}},
         {{VideoFrame/[[visible left]]}}, and {{VideoFrame/[[visible top]]}}
         respectively.
-
-    10. If |init|.{{VideoFramePlaneInit/visibleRect}} [=map/exists=]:
+    2. If |init|.{{VideoFrameBufferInit/visibleRect}} [=map/exists=]:
         1. Let |truncatedVisibleWidth| be the value of
-            {{VideoFramePlaneInit/visibleRect}}.{{DOMRectInit/width}} after
+            {{VideoFrameBufferInit/visibleRect}}.{{DOMRectInit/width}} after
             truncating.
         1. Assign |truncatedVisibleWidth| to {{VideoFrame/[[visible width]]}}.
         3. Let |truncatedVisibleHeight| be the value of
-            {{VideoFramePlaneInit/visibleRect}}.{{DOMRectInit/height}} after
+            {{VideoFrameBufferInit/visibleRect}}.{{DOMRectInit/height}} after
             truncating.
         2. Assign |truncatedVisibleHeight| to {{VideoFrame/[[visible height]]}}.
-    11. Otherwise:
+    3. Otherwise:
         1. Assign {{VideoFrame/[[coded width]]}} to
             {{VideoFrame/[[visible width]]}}.
         2. Assign {{VideoFrame/[[coded height]]}} to
             {{VideoFrame/[[visible height]]}}.
-    12. If |init|.{{VideoFramePlaneInit/displayWidth}} [=map/exists=], assign
+    4. If |init|.{{VideoFrameBufferInit/displayWidth}} [=map/exists=], assign
         it to {{VideoFrame/[[display width]]}}. Otherwise, assign
         {{VideoFrame/[[visible width]]}} to {{VideoFrame/[[display width]]}}.
-    13. If |init|.{{VideoFramePlaneInit/displayHeight}} [=map/exists=], assign
+    5. If |init|.{{VideoFrameBufferInit/displayHeight}} [=map/exists=], assign
         it to {{VideoFrame/[[display height]]}}. Otherwise, assign
         {{VideoFrame/[[visible height]]}} to {{VideoFrame/[[display height]]}}.
-    14. Assign |init|'s {{VideoFramePlaneInit/timestamp}} and
-        {{VideoFramePlaneInit/duration}} to {{VideoFrame/[[timestamp]]}} and
+    6. Assign |init|'s {{VideoFrameBufferInit/timestamp}} and
+        {{VideoFrameBufferInit/duration}} to {{VideoFrame/[[timestamp]]}} and
         {{VideoFrame/[[duration]]}} respectively.
-6. Return |frame|.
+17. Return |frame|.
 
 ### Attributes ###{#videoframe-attributes}
 : <dfn attribute for=VideoFrame>format</dfn>
@@ -2969,10 +2958,10 @@ dictionary PlaneInit {
     {{VideoFrame/[[duration]]}}.
 
 ### Internal Structures ###{#videoframe-internal-structures}
-A <dfn>parsed copyto options</dfn> is a [=struct=] that consists of:
-  * A <dfn for="parsed copyto options">allocationSize</dfn> (an {{unsigned
+A <dfn>combined buffer layout</dfn> is a [=struct=] that consists of:
+  * A <dfn for="combined buffer layout">allocationSize</dfn> (an {{unsigned
     long}})
-  * A <dfn for="parsed copyto options">computedLayouts</dfn> (a [=list=] of
+  * A <dfn for="combined buffer layout">computedLayouts</dfn> (a [=list=] of
     [=computed plane layout=] structs).
 
 A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
@@ -2996,10 +2985,10 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
     1. If {{platform object/[[Detached]]}} is `true`, return `0`.
     2. If {{VideoFrame/[[format]]}} is `""`, throw a {{NotSupportedError}}
         {{DOMException}}.
-    3. Let |parsedOptions| be the result of running the [=Parse
+    3. Let |combinedLayout| be the result of running the [=Parse
         VideoFrameCopyToOptions=] algorithm with |options|.
-    4. If |parsedOptions| is an excpetion, throw |parsedOptions|.
-    5. Return |parsedOptions|' [=parsed copyto options/allocationSize=]
+    4. If |combinedLayout| is an excpetion, throw |combinedLayout|.
+    5. Return |combinedLayout|'s [=combined buffer layout/allocationSize=].
 
 : <dfn method for=VideoFrame>copyTo(|destination|, |options|)</dfn>
 :: Asynchronously copies the planes of this frame into |destination| according
@@ -3014,12 +3003,12 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
     1. If {{platform object/[[Detached]]}} is `true`, return `0`.
     2. If {{VideoFrame/[[format]]}} is `""`, throw a {{NotSupportedError}}
         {{DOMException}}.
-    3. Let |parsedOptions| be the result of running the [=Parse
+    3. Let |combinedLayout| be the result of running the [=Parse
         VideoFrameCopyToOptions=] algorithm with |options|.
-    4. If |parsedOptions| is an exception, return a promise rejected with
-        |parsedOptions|.
-    5. If `destionation.byteLength` is less than |parsedOptions|' [=parsed
-        copyto options/allocationSize=], return a promise rejected with a
+    4. If |combinedLayout| is an exception, return a promise rejected with
+        |combinedLayout|.
+    5. If `destionation.byteLength` is less than |combinedLayout|'s [=combined
+        buffer layout/allocationSize=], return a promise rejected with a
         {{TypeError}}.
     6. Let |p| be a new {{Promise}}.
     7. Let |copyStepsQueue| be the result of starting a new [=parallel queue=].
@@ -3029,17 +3018,17 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
         2. Let |numPlanes| be the number of planes as defined by
             {{VideoFrame/[[format]]}}.
         3. Let |planeIndex| be `0`.
-        4. While |planeIndex| is less than |parsedOptions|' |numPlanes|:
+        4. While |planeIndex| is less than |combinedLayout|'s |numPlanes|:
             1. Let |sourceStride| be the stride of the plane in |resource| as
                 identified by |planeIndex|.
             2. Let |computedLayout| be the [=computed plane layout=] in
-                |parsedOptions|' [=parsed copyto options/computedLayouts=] at the
-                position of |planeIndex|
+                |combinedLayout|'s [=combined buffer layout/computedLayouts=] at
+                the position of |planeIndex|
             3. Let |sourceOffset| be the product of multiplying
                 |computedLayout|'s [=computed plane layout/sourceTop=] by
                 |sourceStride|
-            4. Add |computedLayout|'s [=computed plane layout/sourceLeftBytes=] to
-                sourceOffset.
+            4. Add |computedLayout|'s [=computed plane layout/sourceLeftBytes=]
+                to sourceOffset.
             5. Let |destinationOffset| be |computedLayout|'s
                 [=computed plane layout/destinationOffset=].
             6. Let |rowBytes| be |computedLayout|'s
@@ -3104,22 +3093,24 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
           {{VideoFrame/[[timestamp]]}} respectively.
   2. Return |frame|.
 
-: To check if a {{VideoFramePlaneInit}} is a
-    <dfn>valid VideoFramePlaneInit</dfn>, run these steps:
-:: 1. If {{VideoFramePlaneInit/codedWidth}} = 0 or
-        {{VideoFramePlaneInit/codedHeight}} = 0,return `false`.
-    2. If {{VideoFramePlaneInit/visibleRect}}.{{DOMRectInit/width}} = 0
-        or {{VideoFramePlaneInit/visibleRect}}.{{DOMRectInit/height}} =
+: To check if a {{VideoFrameBufferInit}} is a
+    <dfn>valid VideoFrameBufferInit</dfn>, run these steps:
+:: 1. If {{VideoFrameBufferInit/codedWidth}} = 0 or
+        {{VideoFrameBufferInit/codedHeight}} = 0,return `false`.
+     2. If {{VideoFrameBufferInit/visibleRect}}.{{DOMRectInit/width}} = 0
+        or {{VideoFrameBufferInit/visibleRect}}.{{DOMRectInit/height}} =
         0, return `false`.
-    3. If {{VideoFramePlaneInit/visibleRect}}.{{DOMRectInit/y}} +
-        {{VideoFramePlaneInit/visibleRect}}.{{DOMRectInit/height}} >=
-        {{VideoFramePlaneInit/codedHeight}}, return `false`.
-    4. If {{VideoFramePlaneInit/visibleRect}}.{{DOMRectInit/x}} +
-        {{VideoFramePlaneInit/visibleRect}}.{{DOMRectInit/width}} >=
-        {{VideoFramePlaneInit/codedWidth}}, return `false`.
-    5. If {{VideoFramePlaneInit/displayWidth}} = 0 or
-        {{VideoFramePlaneInit/displayHeight}} = 0, return `false`.
-    6. Return `true`.
+    3. If {{VideoFrameBufferInit/visibleRect}}.{{DOMRectInit/y}} +
+        {{VideoFrameBufferInit/visibleRect}}.{{DOMRectInit/height}} >=
+        {{VideoFrameBufferInit/codedHeight}}, return `false`.
+    4. If {{VideoFrameBufferInit/visibleRect}}.{{DOMRectInit/x}} +
+        {{VideoFrameBufferInit/visibleRect}}.{{DOMRectInit/width}} >=
+        {{VideoFrameBufferInit/codedWidth}}, return `false`.
+    5. If only one of {{VideoFrameBufferInit/displayWidth}} or
+        {{VideoFrameBufferInit/displayHeight}} [=map/exists=], return `false`.
+    6. If {{VideoFrameBufferInit/displayWidth}} = 0 or
+        {{VideoFrameBufferInit/displayHeight}} = 0, return `false`.
+    7. Return `true`.
 
 : <dfn for=VideoFrame>Initialize Frame From Other Frame</dfn> (with |init|,
     |frame|, and |otherFrame|)
@@ -3151,7 +3142,7 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
         {{VideoFrame/codedWidth}}, {{VideoFrame/displayWidth}}.
     5. Assign |height| to the following attributes of |frame|:
         {{VideoFrame/codedHeight}}, {{VideoFrame/displayHeight}}.
-    6. Assign «[ "left:" → `0`, "top" → `0`, "width" → |width|, "height" →
+    6. Assign «[ "x:" → `0`, "y" → `0`, "width" → |width|, "height" →
         |height| ]» to |frame|.{{VideoFrame/visibleRect}}.
     7. Assign `init`.{{VideoFrameInit/duration}} to
         |frame|.{{VideoFrame/duration}}.
@@ -3183,37 +3174,45 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
         {{VideoFrame/[[timestamp]]}}.
 
 : <dfn for=VideoFrame>Parse VideoFrameCopyToOptions</dfn> (with |options|)
-:: 1. Let |parsedRect| be the result of running the [=VideoFrame/Parse CopyTo
-        Rect=] with |options|.
-    2. If |parsedRect| is an exception, return |parsedRect|.
-    3. Let |parsedOptions| be the result of running the [=VideoFrame/Compute
-        Layout and Allocation Size=] algorithm with |parsedRect| and |options|.
-    6. Return |parsedOptions|.
-
-: <dfn for=VideoFrame>Parse CopyTo Rect</dfn> (with |options|)
-:: 1. Let |sourceRect| be the be the result of performing the getter steps for
+::  1. Let |defaultRect| be the result of performing the getter steps for
         {{VideoFrame/visibleRect}}.
-    2. If {{VideoFrameCopyToOptions/rect}} [=map/exists=] in |options|:
-        1. Let |optRect| be {{VideoFrameCopyToOptions/rect}}:
-        2. If either of |optRect|.{{DOMRectInit/width}} or
+    2. Let |overrideRect| be `undefined`.
+    3. If |options|.{{VideoFrameCopyToOptions/rect}} [=map/exists=], assign its
+        value to |overrideRect|.
+    4. Let |parsedRect| be the result of running the [=VideoFrame/Parse Visible
+        Rect=] algorithm with |defaultRect|, |overrideRect|,
+        {{VideoFrame/[[coded width]]}}, {{VideoFrame/[[coded height]]}}, and
+        {{VideoFrame/[[format]]}}.
+    5. If |parsedRect| is an exception, return |parsedRect|.
+    6. Let |optLayout| be `undefined`.
+    7. If |options|.{{VideoFrameCopyToOptions/layout}} [=map/exists=], assign
+        its value to |optLayout|.
+    8. Let |combinedLayout| be the result of running the [=VideoFrame/Compute
+        Layout and Allocation Size=] algorithm with |parsedRect|,
+        {{VideoFrame/[[format]]}}, and |optLayout|.
+    9. Return |combinedLayout|.
+
+: <dfn for=VideoFrame>Parse Visible Rect</dfn> (with |defaultRect|, |overrideRect|, |codedWidth|, |codedHeight|, and |format|)
+:: 1. Let |sourceRect| be |defaultRect|
+    2. If |overrideRect| is not `undefined`:
+        1. If either of |overrideRect|.{{DOMRectInit/width}} or
             {{DOMRectInit/height}} is `0`, return a {{TypeError}}.
-        3. If the sum of |optRect|.{{DOMRectInit/x}} and
-            |optRect|.{{DOMRectInit/width}} is greater than
+        2. If the sum of |overrideRect|.{{DOMRectInit/x}} and
+            |overrideRect|.{{DOMRectInit/width}} is greater than
             {{VideoFrame/[[coded width]]}}, return a {{TypeError}}.
-        4. If the sum of |optRect|.{{DOMRectInit/y}} and
-            |optRect|.{{DOMRectInit/height}} is greater than
+        3. If the sum of |overrideRect|.{{DOMRectInit/y}} and
+            |overrideRect|.{{DOMRectInit/height}} is greater than
             {{VideoFrame/[[coded height]]}}, return a {{TypeError}}.
-        5. Assign |optRect| to |sourceRect|.
+        4. Assign |overrideRect| to |sourceRect|.
     3. Let |planeIndex| be `0`.
-    4. Let |numPlanes| be the number of planes as defined by
-        {{VideoFrame/[[format]]}}
+    4. Let |numPlanes| be the number of planes as defined by |format|.
     5. While |planeIndex| is less than |numPlanes|:
 
-        NOTE: The following steps validate |rect| is sample-aligned for this
-            frame's {{VideoFrame/[[format]]}}.
+        NOTE: The following steps validate |rect| is sample-aligned for the
+            given |format|.
 
         1. Let |plane| be the Plane identified by |planeIndex| as defined by
-            {{VideoFrame/[[format]]}}.
+            |format|.
         2. Let |sampleWidth| be the horizontal [=sub-sampling factor=] of each
             subsample for |plane|.
         3. Let |sampleHeight| be the vertical [=sub-sampling factor=] of each subsample
@@ -3228,18 +3227,17 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
     6. Return |sourceRect|.
 
 : <dfn for=VideoFrame>Compute Layout and Allocation Size</dfn> (with
-    |parsedRect| and |options|)
-:: 1. Let |numPlanes| be the number of planes as defined by
-        {{VideoFrame/[[format]]}}
-    2. If {{VideoFrameCopyToOptions/layout}} [=map/exists=] its size does not
-        equal |numPlanes|, throw a {{TypeError}}.
+    |parsedRect|, |format|, and |layout|)
+:: 1. Let |numPlanes| be the number of planes as defined by |format|.
+    2. If |layout| is not `undefined` and its length does not equal |numPlanes|,
+         throw a {{TypeError}}.
     3. Let |minAllocationSize| be `0`.
     4. Let |computedLayouts| be a new [=list=].
     5. Let |endOffsets| be a new [=list=].
     6. Let |planeIndex| be `0`.
     7. While |planeIndex| < |numPlanes|:
         1. Let |plane| be the Plane identified by |planeIndex| as defined by
-            {{VideoFrame/[[format]]}}.
+            |format|.
         2. Let |sampleBytes| be the number of bytes per sample for |plane|.
         3. Let |sampleWidth| be the horizontal [=sub-sampling factor=] of each
             subsample for |plane|.
@@ -3260,9 +3258,9 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
         10. Set |computedLayout|'s [=computed plane layout/sourceWidthBytes=] to
             the result of the integer division of
             truncated |parsedRect|.{{DOMRectInit/width}} by |sampleWidthBytes|.
-        11. If {{VideoFrameCopyToOptions/layout}} [=map/exists=]:
-            1. Let |planeLayout| be the {{PlaneLayout}} in
-                {{VideoFrameCopyToOptions/layout}} at position |planeIndex|.
+        11. If |layout| is not `undefined`:
+            1. Let |planeLayout| be the {{PlaneLayout}} in |layout| at position
+                |planeIndex|.
             2. If |planeLayout|.{{PlaneLayout/stride}} is less than
                 |computedLayout|'s [=computed plane layout/sourceWidthBytes=],
                 return a {{TypeError}}.
@@ -3310,13 +3308,13 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
             4. Increment |earlierPlaneIndex| by `1`.
         20. Append |computedLayout| to |computedLayouts|.
         21. Increment |planeIndex| by `1`.
-    8. Let |parsedOptions| be a new [=parsed copyto options=], initialized as
+    8. Let |combinedLayout| be a new [=combined buffer layout=], initialized as
         follows:
         1. Assign |computedLayouts| to
-            [=parsed copyto options/computedLayouts=].
+            [=combined buffer layout/computedLayouts=].
         2. Assign |minAllocationSize| to
-            [=parsed copyto options/allocationSize=].
-    9. Return |parsedOptions|.
+            [=combined buffer layout/allocationSize=].
+    9. Return |combinedLayout|.
 
 ### Transfer and Serialization ###{#videoframe-transfer-serialization}
 
