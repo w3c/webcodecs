@@ -1631,6 +1631,9 @@ dictionary VideoDecoderConfig {
   [EnforceRange] unsigned long displayAspectWidth;
   [EnforceRange] unsigned long displayAspectHeight;
   HardwareAcceleration hardwareAcceleration = "allow";
+
+  // Hint about the color space of the content.
+  VideoColorSpaceInit colorSpace;
 };
 </xmp>
 
@@ -1755,6 +1758,9 @@ dictionary VideoEncoderConfig {
   DOMString scalabilityMode;
   BitrateMode bitrateMode = "variable";
   LatencyMode latencyMode = "quality";
+
+  // Color space for metadata (in-band or output VideoDecoderConfig).
+  VideoColorSpaceInit colorSpace;
 };
 </xmp>
 
@@ -2768,6 +2774,10 @@ interface VideoFrame {
   readonly attribute unsigned long displayHeight;
   readonly attribute unsigned long long? duration;  // microseconds
   readonly attribute long long? timestamp;          // microseconds
+
+  // Color space of the data produced by copyTo().
+  readonly attribute VideoColorSpace? colorSpace;
+
   unsigned long allocationSize(
       optional VideoFrameCopyToOptions options = {});
   Promise<sequence<PlaneLayout>> copyTo(
