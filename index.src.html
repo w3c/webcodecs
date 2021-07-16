@@ -2223,7 +2223,7 @@ interface AudioData {
 
 dictionary AudioDataInit {
   required AudioSampleFormat format;
-  [EnforceRange] required float sampleRate;
+  required float sampleRate;
   [EnforceRange] required unsigned long numberOfFrames;
   [EnforceRange] required unsigned long numberOfChannels;
   [EnforceRange] required long long timestamp;  // microseconds
@@ -2256,7 +2256,8 @@ dictionary AudioDataInit {
 <dfn constructor for=AudioData title="AudioData(init)">
   AudioData(init)
 </dfn>
-1. Let |frame| be a new {{AudioData}} object, initialized as follows:
+1. If |init| is not a [=valid AudioDataInit=], throw a {{TypeError}}.
+2. Let |frame| be a new {{AudioData}} object, initialized as follows:
     1. Assign `false` to {{platform object/[[Detached]]}}.
     2. Assign |init|.{{AudioDataInit/format}} to
         {{AudioData/[[format]]}}.
@@ -2272,7 +2273,7 @@ dictionary AudioDataInit {
         |init|.{{AudioDataInit/data}}.
     8. Let |resourceReference| be a reference to |resource|.
     9. Assign |resourceReference| to {{AudioData/[[resource reference]]}}.
-2. Return |frame|.
+3. Return |frame|.
 
 ### Attributes ###{#audiodata-attributes}
 
@@ -2341,11 +2342,19 @@ dictionary AudioDataInit {
         the {{AudioData/[[format]]}}.
     4. If the product of multiplying |bytesPerSample| by |copyElementCount| is
         greater than `destination.byteLength`, throw a {{RangeError}}.
-    5. Let |resource| be the [=media resource=] referenced by
+    5. Let |format| be the value of {{AudioData/[[format]]}}.
+        1. If |format| describes an [=interleaved=] {{AudioSampleFormat}} and
+            |options|.{{AudioDataCopyToOptions/planeIndex}} is greater than `0`,
+            throw a {{RangeError}}.
+        2. Otherwise, if |format| describes a [=planar=] {{AudioSampleFormat}}
+            and if |options|.{{AudioDataCopyToOptions/planeIndex}} is greater or
+            equal to {{AudioData/[[number of channels]]}}, throw a
+            {{RangeError}}.
+    6. Let |resource| be the [=media resource=] referenced by
         {{AudioData/[[resource reference]]}}.
-    6. Let |planeFrames| be the region of |resource| corresponding to
+    7. Let |planeFrames| be the region of |resource| corresponding to
         |options|.{{AudioDataCopyToOptions/planeIndex}}.
-    7. Copy elements of |planeFrames| into |destination|, starting with the
+    8. Copy elements of |planeFrames| into |destination|, starting with the
         [=frame=] positioned at |options|.{{AudioDataCopyToOptions/frameOffset}}
         and stopping after |copyElementCount| samples have been copied.
 
@@ -2380,7 +2389,7 @@ dictionary AudioDataInit {
         2. Otherwise, assign |options|.{{AudioDataCopyToOptions/frameCount}}
             to |copyFrameCount|.
     5. Let |elementCount| be |copyFrameCount|.
-    6. If {{AudioData/[[format]]}} describes an interleaved
+    6. If {{AudioData/[[format]]}} describes an [=interleaved=]
         {{AudioSampleFormat}}, mutliply |elementCount| by
         {{AudioData/[[number of channels]]}}
     7. return |elementCount|.
@@ -2400,10 +2409,40 @@ dictionary AudioDataInit {
             |clone|.
     2. Return |clone|.
 
+
 : <dfn>Close AudioData</dfn> (with |data|)
 :: Run these steps:
-        1. Assign `true` to |data|'s {{platform object/[[Detached]]}} internal slot.
-        2. Assign `null` to |data|'s {{AudioData/[[resource reference]]}}.
+    1. Assign `true` to |data|'s {{platform object/[[Detached]]}} internal slot.
+    2. Assign `null` to |data|'s {{AudioData/[[resource reference]]}}.
+    3. Assign `0` to |data|'s {{AudioData/[[sample rate]]}}.
+    4. Assign `0` to |data|'s {{AudioData/[[number of frames]]}}.
+    5. Assign `0` to |data|'s {{AudioData/[[number of channels]]}}.
+    6. Assign `""` to |data|'s {{AudioData/[[format]]}}.
+
+: To check if a {{AudioDataInit}} is a 
+    <dfn>valid AudioDataInit</dfn>, run these steps:
+:: 1. If {{AudioDataInit/sampleRate}} less than or equal to `0`, return `false`.
+    2. If {{AudioDataInit/numberOfFrames}} = `0`, return `false`.
+    3. If {{AudioDataInit/numberOfChannels}} = `0`, return `false`.
+    4. Verify {{AudioDataInit/data}} has enough data by running the following
+        steps:
+        1. Let |totalSamples| be the product of multiplying
+            {{AudioDataInit/numberOfFrames}} by
+            {{AudioDataInit/numberOfChannels}}.
+        2. Let |bytesPerSample| be the number of bytes per sample, as defined by
+            the {{AudioDataInit/format}}.
+        3. Let |totalSize| be the product of multiplying |bytesPerSample| with
+            |totalSamples|.
+        4. Let |dataSize| be the size in bytes of {{AudioDataInit/data}}.
+        5. If |dataSize| is less than |totalSize|, return false.
+    5. Return `true`.
+
+<div class='note'>
+Note: It's expected that {{AudioDataInit}}'s {{AudioDataInit/data}}'s memory
+    layout matches the expectations of the [=planar=] or [=interleaved=]
+    {{AudioDataInit/format}}. There is no real way to verify whether the samples
+    conform to their {{AudioSampleFormat}}.
+</div>
 
 ### Transfer and Serialization ###{#audiodata-transfer-serialization}
 
@@ -2445,9 +2484,9 @@ dictionary AudioDataInit {
 
 <xmp class='idl'>
 dictionary AudioDataCopyToOptions {
-  required unsigned long planeIndex;
-  unsigned long frameOffset = 0;
-  unsigned long frameCount;
+  [EnforceRange] required unsigned long planeIndex;
+  [EnforceRange] unsigned long frameOffset = 0;
+  [EnforceRange] unsigned long frameCount;
 };
 </xmp>
 
@@ -2552,6 +2591,14 @@ in different buffers, themselves arranged in an order described in the section
 {{AudioData/[[number of frames]]}} elements.
 
 Note: The [[WEBAUDIO|Web Audio API]] currently uses {{FLTP}} exclusively.
+
+<div class='note'>
+Note: The following diagram exemplifies the memory layout of [=planar=] versus
+    [=interleaved=] {{AudioSampleFormat}}s
+
+<img alt="Graphical representation the memory layout of interleaved and planar
+    formats" src="images/planar-interleaved-layout.svg" width="735" height="455">
+</div>
 
 ### Magnitude of the audio samples ### {#audio-samples-magnitude}
 
