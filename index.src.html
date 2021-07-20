@@ -460,8 +460,10 @@ Algorithms {#audiodecoder-algorithms}
             5. Let |timestamp| be the {{EncodedAudioChunk/[[timestamp]]}} of the
                 {{EncodedAudioChunk}} associated with |output|.
             6. Assign |timestamp| to {{AudioData/[[timestamp]]}}.
-            7. Assign values to {{AudioData/[[format]]}},
-                {{AudioData/[[sample rate]]}},
+            7. If |output| uses a recognized {{AudioSampleFormat}}, assign that
+                format to {{AudioData/[[format]]}}. Otherwise, assign `null` to
+                {{AudioData/[[format]]}}.
+            8. Assign values to {{AudioData/[[sample rate]]}},
                 {{AudioData/[[number of frames]]}}, and
                 {{AudioData/[[number of channels]]}} as determined by |output|.
         3. Invoke {{AudioDecoder/[[output callback]]}} with |data|.
@@ -2208,7 +2210,7 @@ AudioData Interface {#audiodata-interface}
 interface AudioData {
   constructor(AudioDataInit init);
 
-  readonly attribute AudioSampleFormat format;
+  readonly attribute AudioSampleFormat? format;
   readonly attribute float sampleRate;
   readonly attribute unsigned long numberOfFrames;
   readonly attribute unsigned long numberOfChannels;
@@ -2238,7 +2240,9 @@ dictionary AudioDataInit {
     this {{AudioData}}.
 
 : <dfn attribute for=AudioData>\[[format]]</dfn>
-:: The {{AudioSampleFormat}} used by this {{AudioData}}.
+:: The {{AudioSampleFormat}} used by this {{AudioData}}. Will be `null` whenever
+    the underlying format does not map to an {{AudioSampleFormat}} or when
+    {{platform object/[[Detached]]}} is `true`.
 
 : <dfn attribute for=AudioData>[[sample rate]]</dfn>
 :: The sample-rate, in Hz, for this {{AudioData}}.
@@ -2277,7 +2281,9 @@ dictionary AudioDataInit {
 ### Attributes ###{#audiodata-attributes}
 
 : <dfn attribute for=AudioData>format</dfn>
-:: The {{AudioSampleFormat}} used by this {{AudioData}}.
+:: The {{AudioSampleFormat}} used by this {{AudioData}}. Will be `null` whenever
+    the underlying format does not map to a {{AudioSampleFormat}} or when
+    {{platform object/[[Detached]]}} is `true`.
 
     The {{AudioData/format}} getter steps are to return
     {{AudioData/[[format]]}}.
@@ -2402,8 +2408,9 @@ dictionary AudioDataInit {
 
 : <dfn>Close AudioData</dfn> (with |data|)
 :: Run these steps:
-        1. Assign `true` to |data|'s {{platform object/[[Detached]]}} internal slot.
-        2. Assign `null` to |data|'s {{AudioData/[[resource reference]]}}.
+    1. Assign `true` to |data|'s {{platform object/[[Detached]]}} internal slot.
+    2. Assign `null` to |data|'s {{AudioData/[[resource reference]]}} and
+        {{AudioData/[[format]]}}.
 
 ### Transfer and Serialization ###{#audiodata-transfer-serialization}
 
@@ -2695,9 +2702,9 @@ dictionary PlaneInit {
     this frame.
 
 : <dfn attribute for=VideoFrame>\[[format]]</dfn>
-:: A {{VideoPixelFormat}} describing the pixel format of the {{VideoFrame}}. May
-    be `null` in scenarios where the underlying format does not map to a
-    {{VideoPixelFormat}}.
+:: A {{VideoPixelFormat}} describing the pixel format of the {{VideoFrame}}.
+    Will be `null` whenever the underlying format does not map to a
+    {{VideoPixelFormat}} or when {{platform object/[[Detached]]}} is `true`.
 
 : <dfn attribute for=VideoFrame>[[coded width]]</dfn>
 :: Width of the {{VideoFrame}} in pixels, potentionally including non-visible
@@ -2893,8 +2900,9 @@ dictionary PlaneInit {
 ### Attributes ###{#videoframe-attributes}
 : <dfn attribute for=VideoFrame>format</dfn>
 :: Describes the arrangement of bytes in each plane as well as the number and
-    order of the planes.  May be `null` in scenarios where the underlying format
-    does not map to a {{VideoPixelFormat}}.
+    order of the planes. Will be `null` whenever the underlying format does not
+    map to a {{VideoPixelFormat}} or when {{platform object/[[Detached]]}} is
+    `true`.
 
     The {{VideoFrame/format}} getter steps are to return
     {{VideoFrame/[[format]]}}.
