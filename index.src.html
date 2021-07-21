@@ -2419,7 +2419,7 @@ dictionary AudioDataInit {
     5. Assign `0` to |data|'s {{AudioData/[[number of channels]]}}.
     6. Assign `""` to |data|'s {{AudioData/[[format]]}}.
 
-: To check if a {{AudioDataInit}} is a 
+: To check if a {{AudioDataInit}} is a
     <dfn>valid AudioDataInit</dfn>, run these steps:
 :: 1. If {{AudioDataInit/sampleRate}} less than or equal to `0`, return `false`.
     2. If {{AudioDataInit/numberOfFrames}} = `0`, return `false`.
@@ -2647,8 +2647,11 @@ An audio buffer comprised only of values equal to the [=bias value=] is silent.
 
 Note: There is no data type that can hold 24 bits of information conveniently,
 but audio content using 24-bit samples is common, so 32-bits integers are
-commonly used to hold 24-bit content. It is recommended to left-shift 24-bit
-content by `8`, to convert the data to {{s32}} or {{s32-planar}}.
+commonly used to hold 24-bit content.
+
+{{AudioDecoder}}s decoding 24-bit audio chunks MUST convert their output to
+{{s32}} or {{s32-planar}}, by left-shifting the decoded samples by `8` before
+exposing them as {{AudioData}}.
 
 ### Audio channel ordering ### {#audio-channel-ordering}
 
