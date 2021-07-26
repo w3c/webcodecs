@@ -1365,7 +1365,11 @@ Algorithms {#videoencoder-algorithms}
                 |svc|.{{SvcOutputMetadata/temporalLayerId}}.
             4. Assign |svc| to
                 |chunkMetadata|.{{EncodedVideoChunkMetadata/svc}}.
-        8. Invoke {{VideoEncoder/[[output callback]]}} with |chunk| and
+        8. If |encoderConfig|.{{VideoEncoderConfig/alpha}} is set to `"keep"`:
+            1. Let |alphaSideData| be the encoded alpha data in |output|.
+            2. Assign |alphaSideData| to
+                |chunkMetadata|.{{EncodedVideoChunkMetadata/alphaSideData}}.
+        9. Invoke {{VideoEncoder/[[output callback]]}} with |chunk| and
             |chunkMetadata|.
   </dd>
   <dt><dfn>Reset VideoEncoder</dfn> (with |exception|)</dt>
@@ -1405,6 +1409,7 @@ The following metadata dictionary is emitted by the
 dictionary EncodedVideoChunkMetadata {
   VideoDecoderConfig decoderConfig;
   SvcOutputMetadata svc;
+  BufferSource alphaSideData;
 };
 
 dictionary SvcOutputMetadata {
@@ -1419,6 +1424,10 @@ dictionary SvcOutputMetadata {
 : <dfn dict-member for=EncodedVideoChunkMetadata>svc</dfn>
 :: A collection of metadata describing this {{EncodedVideoChunk}} with respect
     to the configured {{VideoEncoderConfig/scalabilityMode}}.
+
+: <dfn dict-member for=EncodedVideoChunkMetadata>alphaSideData</dfn>
+:: A {{BufferSource}} that contains the {{EncodedVideoChunk}}'s extra alpha
+    channel data.
 
 : <dfn dict-member for=SvcOutputMetadata>temporalLayerId</dfn>
 :: A number that identifies the [=temporal layer=] for the associated
@@ -1740,6 +1749,7 @@ dictionary VideoEncoderConfig {
   [EnforceRange] unsigned long long bitrate;
   [EnforceRange] double framerate;
   HardwareAcceleration hardwareAcceleration = "allow";
+  AlphaOption alpha = "discard";
   DOMString scalabilityMode;
   BitrateMode bitrateMode = "variable";
   LatencyMode latencyMode = "quality";
@@ -1827,6 +1837,14 @@ To check if a {{VideoEncoderConfig}} is a <dfn>valid VideoEncoderConfig</dfn>,
   <dd>
     Configures hardware acceleration for this codec. See
     {{HardwareAcceleration}}.
+  </dd>
+
+<dt><dfn dict-member for=VideoEncoderConfig>alpha</dfn></dt>
+  <dd>
+    Whether the alpha component of the {{VideoFrame}} inputs should be kept
+    or discarded prior to encoding. If {{VideoEncoderConfig/alpha}} is
+    equal to {{AlphaOption/discard}}, alpha data is always discarded, regardless
+    of a {{VideoFrame}}'s {{VideoFrame/[[format]]}}.
   </dd>
 
   <dt><dfn dict-member for=VideoEncoderConfig>scalabilityMode</dfn></dt>
@@ -1917,6 +1935,31 @@ specialized hardware.
     NOTE: This will cause the configuration to be unsupported on platforms where
     an accelerated codec is unavailable or is incompatible with other aspects of
     the codec configuration.
+  </dd>
+</dl>
+
+Alpha Option{#alpha-option}
+---------------------------
+<xmp class='idl'>
+enum AlphaOption {
+  "keep",
+  "discard",
+};
+</xmp>
+
+Describes how the user agent should behave when dealing with alpha channels, for
+a variety of different operations.
+
+<dl>
+  <dt><dfn enum-value for=AlphaOption>keep</dfn></dt>
+  <dd>
+    Indicates that the user agent should preserve alpha channel data for
+    {{VideoFrame}}s, if it is present.
+  </dd>
+  <dt><dfn enum-value for=AlphaOption>discard</dfn></dt>
+  <dd>
+    Indicates that the user agent should ignore or remove {{VideoFrame}}'s alpha
+    channel data.
   </dd>
 </dl>
 
@@ -2436,7 +2479,7 @@ dictionary AudioDataInit {
     5. Assign `0` to |data|'s {{AudioData/[[number of channels]]}}.
     6. Assign `""` to |data|'s {{AudioData/[[format]]}}.
 
-: To check if a {{AudioDataInit}} is a 
+: To check if a {{AudioDataInit}} is a
     <dfn>valid AudioDataInit</dfn>, run these steps:
 :: 1. If {{AudioDataInit/sampleRate}} less than or equal to `0`, return `false`.
     2. If {{AudioDataInit/numberOfFrames}} = `0`, return `false`.
@@ -2732,6 +2775,7 @@ interface VideoFrame {
 dictionary VideoFrameInit {
   unsigned long long duration;  // microseconds
   long long timestamp;          // microseconds
+  AlphaOption alpha = "keep";
 };
 
 dictionary VideoFramePlaneInit {
@@ -3192,9 +3236,9 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
     2. Assign a new reference for |resource| to |frame|'s
         {{VideoFrame/[[resource reference]]}}.
     3. Assign the following attributes from |otherFrame| to |frame|:
-        {{VideoFrame/format}}, {{VideoFrame/codedWidth}},
-        {{VideoFrame/codedHeight}}, {{VideoFrame/visibleRect}},
-        {{VideoFrame/displayWidth}}, {{VideoFrame/displayHeight}}.
+        {{VideoFrame/codedWidth}}, {{VideoFrame/codedHeight}},
+        {{VideoFrame/visibleRect}}, {{VideoFrame/displayWidth}},
+        {{VideoFrame/displayHeight}}.
     4. If {{VideoFrameInit/duration}} [=map/exists=] in |init|, assign it to
         |frame|.{{VideoFrame/duration}}. Otherwise, assign
         |otherFrame|.{{VideoFrame/duration}} to
@@ -3203,23 +3247,31 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
         |frame|.{{VideoFrame/timestamp}}. Otherwise, assign
         |otherFrame|.{{VideoFrame/timestamp}} to
         |frame|.{{VideoFrame/timestamp}}.
+    7. If |init|.{{VideoFrameInit/alpha}} is {{AlphaOption/discard}},
+        assign |otherFrame|.{{VideoFrame/format}}'s
+        [=equivalent opaque format=] to |frame|.{{VideoFrame/[[format]]}}.
+    8. Otherwise, assign |otherFrame|.{{VideoFrame/format}} to
+        |frame|.{{VideoFrame/[[format]]}}.
 
 : <dfn for=VideoFrame>Initialize Frame With Resource and Size</dfn> (with
     |init|,  |frame|, |resource|, |width| and |height|)
 :: 1. Assign a new reference for |resource| to |frame|'s
         {{VideoFrame/[[resource reference]]}}.
-    2. If |resource| uses a recognized {{PixelFormat}}, assign the
-        {{PixelFormat}} of |resource| to {{VideoFrame/[[format]]}}.
-    3. Otherwise, assign `""` to {{VideoFrame/[[format]]}}.
-    4. Assign |width| to the following attributes of |frame|:
+    2. Let |format| be `""`.
+    3. If |resource| uses a recognized {{PixelFormat}}, assign the
+        {{PixelFormat}} of |resource| to |format|.
+    4. If |init|.{{VideoFrameInit/alpha}} is {{AlphaOption/discard}}, assign
+        |format|'s [=equivalent opaque format=] to |format|.
+    5. Assign |format| to {{VideoFrame/[[format]]}}
+    6. Assign |width| to the following attributes of |frame|:
         {{VideoFrame/codedWidth}}, {{VideoFrame/displayWidth}}.
-    5. Assign |height| to the following attributes of |frame|:
+    7. Assign |height| to the following attributes of |frame|:
         {{VideoFrame/codedHeight}}, {{VideoFrame/displayHeight}}.
-    6. Assign «[ "left:" → `0`, "top" → `0`, "width" → |width|, "height" →
+    8. Assign «[ "left:" → `0`, "top" → `0`, "width" → |width|, "height" →
         |height| ]» to |frame|.{{VideoFrame/visibleRect}}.
-    7. Assign `init`.{{VideoFrameInit/duration}} to
+    9. Assign `init`.{{VideoFrameInit/duration}} to
         |frame|.{{VideoFrame/duration}}.
-    8. Assign `init`.{{VideoFrameInit/timestamp}} to
+    10. Assign `init`.{{VideoFrameInit/timestamp}} to
         |frame|.{{VideoFrame/timestamp}}.
 
 : <dfn>Clone VideoFrame</dfn> (with |frame|)
@@ -3532,6 +3584,11 @@ in the image that are derived from a [=sub-sampled=] sample.
   and vertical direction.
 </div>
 
+If a {{PixelFormat}} has an alpha component, the format's
+<dfn>equivalent opaque format</dfn> is the same {{PixelFormat}}, without an
+alpha component. If a {{PixelFormat}} does not have an alpha component, it is
+its own [=equivalent opaque format=].
+
 <dl>
   <dt><dfn enum-value for=PixelFormat>I420</dfn></dt>
   <dd>
@@ -3584,6 +3641,8 @@ in the image that are derived from a [=sub-sampled=] sample.
     The {{VideoFrame/codedWidth}} and {{VideoFrame/codedHeight}} MUST be even.
     Similarly, the visible rectangle ({{VideoFrame/displayWidth}} and
     {{VideoFrame/displayHeight}}) MUST be even.
+
+    {{I420A}}'s [=equivalent opaque format=] is {{I420}}.
   </dd>
   <dt><dfn enum-value for=PixelFormat>I422</dfn></dt>
   <dd>
@@ -3694,6 +3753,8 @@ in the image that are derived from a [=sub-sampled=] sample.
     (and therefore bytes) in the single plane, arranged starting at the top
     left in the image, in {{VideoFrame/codedHeight}} lines of
     {{VideoFrame/codedWidth}} samples.
+
+    {{RGBA}}'s [=equivalent opaque format=] is {{RGBX}}.
   </dd>
   <dt><dfn enum-value for=PixelFormat>RGBX</dfn></dt>
   <dd>
@@ -3721,6 +3782,8 @@ in the image that are derived from a [=sub-sampled=] sample.
     (and therefore bytes) in the single plane, arranged starting at the top left
     in the image, in {{VideoFrame/codedHeight}} lines of
     {{VideoFrame/codedWidth}} samples.
+
+    {{BGRA}}'s [=equivalent opaque format=] is {{BGRX}}.
   </dd>
   <dt><dfn enum-value for=PixelFormat>BGRX</dfn></dt>
   <dd>
