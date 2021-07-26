@@ -2923,7 +2923,7 @@ dictionary VideoFrameBufferInit {
         |init|.{{VideoFrameBufferInit/codedWidth}} ]».
 3. Let |overrideRect| be `undefined`.
 4. If |init|.{{VideoFrameBufferInit/visibleRect}} [=map/exists=], assign its
-    value to overrideRect.
+    value to |overrideRect|.
 4. Let |parsedRect| be the result of running the [=VideoFrame/Parse Visible
         Rect=] algorithm with |defaultRect|, |overrideRect|,
         |init|.{{VideoFrameBufferInit/codedWidth}},
@@ -2936,14 +2936,14 @@ dictionary VideoFrameBufferInit {
 8. Let |combinedLayout| be the result of running the [=VideoFrame/Compute
     Layout and Allocation Size=] algorithm with |parsedRect|,
     |init|.{{VideoFrameBufferInit/format}}, and |optLayout|.
-9. If |combinedLayout| is an excpetion, throw |combinedLayout|.
+9. If |combinedLayout| is an exception, throw |combinedLayout|.
 10. If `data.byteLength` is less than |combinedLayout|’s
     [=combined buffer layout/allocationSize=], throw a {{TypeError}}.
 11. Let |resource| be a new [=media resource=] containing a copy |data|. Use
         {{VideoFrameBufferInit/visibleRect}} and {{VideoFrameBufferInit/layout}}
         to determine where in |data| the pixels for each plane reside.
 
-    NOTE: The User Agent may choose to allocate resource with a larger coded
+        The User Agent may choose to allocate |resource| with a larger coded
         size and plane strides to improve memory alignment. Increases will be
         reflected by {{VideoFrame/codedWidth}} and {{VideoFrame/codedHeight}}.
         Additionally, the User Agent may use
@@ -3105,7 +3105,7 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
         {{DOMException}}.
     3. Let |combinedLayout| be the result of running the [=Parse
         VideoFrameCopyToOptions=] algorithm with |options|.
-    4. If |combinedLayout| is an excpetion, throw |combinedLayout|.
+    4. If |combinedLayout| is an exception, throw |combinedLayout|.
     5. Return |combinedLayout|'s [=combined buffer layout/allocationSize=].
 
 : <dfn method for=VideoFrame>copyTo(|destination|, |options|)</dfn>
