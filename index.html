@@ -6,7 +6,7 @@
   <link href="https://www.w3.org/StyleSheets/TR/2016/W3C-ED" rel="stylesheet" type="text/css">
   <meta content="Bikeshed version 59d067506, updated Fri Jul 23 15:43:29 2021 -0700" name="generator">
   <link href="https://www.w3.org/TR/webcodecs/" rel="canonical">
-  <meta content="9a6e94b14dba87fdf165608359bbcd4368cc4f81" name="document-revision">
+  <meta content="9128f0d574772a8d77c775a746f12e75504e33e8" name="document-revision">
 <style>
 main > dl > dd {
   margin-bottom: 1em;
@@ -1166,7 +1166,10 @@ the <a data-link-type="dfn" href="#check-configuration-support" id="ref-for-chec
           <li data-md>
            <p>Assign <var>timestamp</var> to <code class="idl"><a data-link-type="idl" href="#dom-audiodata-timestamp-slot" id="ref-for-dom-audiodata-timestamp-slot">[[timestamp]]</a></code>.</p>
           <li data-md>
-           <p>Assign values to <code class="idl"><a data-link-type="idl" href="#dom-audiodata-format-slot" id="ref-for-dom-audiodata-format-slot">[[format]]</a></code>, <code class="idl"><a data-link-type="idl" href="#dom-audiodata-sample-rate-slot" id="ref-for-dom-audiodata-sample-rate-slot">[[sample rate]]</a></code>, <code class="idl"><a data-link-type="idl" href="#dom-audiodata-number-of-frames-slot" id="ref-for-dom-audiodata-number-of-frames-slot">[[number of frames]]</a></code>, and <code class="idl"><a data-link-type="idl" href="#dom-audiodata-number-of-channels-slot" id="ref-for-dom-audiodata-number-of-channels-slot">[[number of channels]]</a></code> as determined by <var>output</var>.</p>
+           <p>If <var>output</var> uses a recognized <code class="idl"><a data-link-type="idl" href="#enumdef-audiosampleformat" id="ref-for-enumdef-audiosampleformat">AudioSampleFormat</a></code>, assign that
+format to <code class="idl"><a data-link-type="idl" href="#dom-audiodata-format-slot" id="ref-for-dom-audiodata-format-slot">[[format]]</a></code>. Otherwise, assign <code>null</code> to <code class="idl"><a data-link-type="idl" href="#dom-audiodata-format-slot" id="ref-for-dom-audiodata-format-slot①">[[format]]</a></code>.</p>
+          <li data-md>
+           <p>Assign values to <code class="idl"><a data-link-type="idl" href="#dom-audiodata-sample-rate-slot" id="ref-for-dom-audiodata-sample-rate-slot">[[sample rate]]</a></code>, <code class="idl"><a data-link-type="idl" href="#dom-audiodata-number-of-frames-slot" id="ref-for-dom-audiodata-number-of-frames-slot">[[number of frames]]</a></code>, and <code class="idl"><a data-link-type="idl" href="#dom-audiodata-number-of-channels-slot" id="ref-for-dom-audiodata-number-of-channels-slot">[[number of channels]]</a></code> as determined by <var>output</var>.</p>
          </ol>
         <li data-md>
          <p>Invoke <code class="idl"><a data-link-type="idl" href="#dom-audiodecoder-output-callback-slot" id="ref-for-dom-audiodecoder-output-callback-slot①">[[output callback]]</a></code> with <var>data</var>.</p>
@@ -2868,7 +2871,7 @@ underlying <a data-link-type="dfn" href="#media-resource" id="ref-for-media-reso
 <c- b>interface</c-> <dfn class="dfn-paneled idl-code" data-dfn-type="interface" data-export id="audiodata"><code><c- g>AudioData</c-></code></dfn> {
   <a class="idl-code" data-link-type="constructor" href="#dom-audiodata-audiodata" id="ref-for-dom-audiodata-audiodata"><c- g>constructor</c-></a>(<a data-link-type="idl-name" href="#dictdef-audiodatainit" id="ref-for-dictdef-audiodatainit"><c- n>AudioDataInit</c-></a> <dfn class="idl-code" data-dfn-for="AudioData/AudioData(init), AudioData/constructor(init)" data-dfn-type="argument" data-export id="dom-audiodata-audiodata-init-init"><code><c- g>init</c-></code><a class="self-link" href="#dom-audiodata-audiodata-init-init"></a></dfn>);
 
-  <c- b>readonly</c-> <c- b>attribute</c-> <a data-link-type="idl-name" href="#enumdef-audiosampleformat" id="ref-for-enumdef-audiosampleformat"><c- n>AudioSampleFormat</c-></a> <a class="idl-code" data-link-type="attribute" data-readonly data-type="AudioSampleFormat" href="#dom-audiodata-format" id="ref-for-dom-audiodata-format"><c- g>format</c-></a>;
+  <c- b>readonly</c-> <c- b>attribute</c-> <a data-link-type="idl-name" href="#enumdef-audiosampleformat" id="ref-for-enumdef-audiosampleformat①"><c- n>AudioSampleFormat</c-></a>? <a class="idl-code" data-link-type="attribute" data-readonly data-type="AudioSampleFormat?" href="#dom-audiodata-format" id="ref-for-dom-audiodata-format"><c- g>format</c-></a>;
   <c- b>readonly</c-> <c- b>attribute</c-> <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-float" id="ref-for-idl-float"><c- b>float</c-></a> <a class="idl-code" data-link-type="attribute" data-readonly data-type="float" href="#dom-audiodata-samplerate" id="ref-for-dom-audiodata-samplerate"><c- g>sampleRate</c-></a>;
   <c- b>readonly</c-> <c- b>attribute</c-> <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-unsigned-long" id="ref-for-idl-unsigned-long③②"><c- b>unsigned</c-> <c- b>long</c-></a> <a class="idl-code" data-link-type="attribute" data-readonly data-type="unsigned long" href="#dom-audiodata-numberofframes" id="ref-for-dom-audiodata-numberofframes"><c- g>numberOfFrames</c-></a>;
   <c- b>readonly</c-> <c- b>attribute</c-> <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-unsigned-long" id="ref-for-idl-unsigned-long③③"><c- b>unsigned</c-> <c- b>long</c-></a> <a class="idl-code" data-link-type="attribute" data-readonly data-type="unsigned long" href="#dom-audiodata-numberofchannels" id="ref-for-dom-audiodata-numberofchannels"><c- g>numberOfChannels</c-></a>;
@@ -2882,7 +2885,7 @@ underlying <a data-link-type="dfn" href="#media-resource" id="ref-for-media-reso
 };
 
 <c- b>dictionary</c-> <dfn class="dfn-paneled idl-code" data-dfn-type="dictionary" data-export id="dictdef-audiodatainit"><code><c- g>AudioDataInit</c-></code></dfn> {
-  <c- b>required</c-> <a data-link-type="idl-name" href="#enumdef-audiosampleformat" id="ref-for-enumdef-audiosampleformat①"><c- n>AudioSampleFormat</c-></a> <dfn class="dfn-paneled idl-code" data-dfn-for="AudioDataInit" data-dfn-type="dict-member" data-export data-type="AudioSampleFormat " id="dom-audiodatainit-format"><code><c- g>format</c-></code></dfn>;
+  <c- b>required</c-> <a data-link-type="idl-name" href="#enumdef-audiosampleformat" id="ref-for-enumdef-audiosampleformat②"><c- n>AudioSampleFormat</c-></a> <dfn class="dfn-paneled idl-code" data-dfn-for="AudioDataInit" data-dfn-type="dict-member" data-export data-type="AudioSampleFormat " id="dom-audiodatainit-format"><code><c- g>format</c-></code></dfn>;
   <c- b>required</c-> <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-float" id="ref-for-idl-float①"><c- b>float</c-></a> <dfn class="dfn-paneled idl-code" data-dfn-for="AudioDataInit" data-dfn-type="dict-member" data-export data-type="float " id="dom-audiodatainit-samplerate"><code><c- g>sampleRate</c-></code></dfn>;
   [<a class="idl-code" data-link-type="extended-attribute" href="https://heycam.github.io/webidl/#EnforceRange" id="ref-for-EnforceRange①⑧"><c- g>EnforceRange</c-></a>] <c- b>required</c-> <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-unsigned-long" id="ref-for-idl-unsigned-long③⑤"><c- b>unsigned</c-> <c- b>long</c-></a> <dfn class="dfn-paneled idl-code" data-dfn-for="AudioDataInit" data-dfn-type="dict-member" data-export data-type="unsigned long " id="dom-audiodatainit-numberofframes"><code><c- g>numberOfFrames</c-></code></dfn>;
   [<a class="idl-code" data-link-type="extended-attribute" href="https://heycam.github.io/webidl/#EnforceRange" id="ref-for-EnforceRange①⑨"><c- g>EnforceRange</c-></a>] <c- b>required</c-> <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-unsigned-long" id="ref-for-idl-unsigned-long③⑥"><c- b>unsigned</c-> <c- b>long</c-></a> <dfn class="dfn-paneled idl-code" data-dfn-for="AudioDataInit" data-dfn-type="dict-member" data-export data-type="unsigned long " id="dom-audiodatainit-numberofchannels"><code><c- g>numberOfChannels</c-></code></dfn>;
@@ -2898,7 +2901,8 @@ underlying <a data-link-type="dfn" href="#media-resource" id="ref-for-media-reso
 this <code class="idl"><a data-link-type="idl" href="#audiodata" id="ref-for-audiodata①④">AudioData</a></code>.</p>
     <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="AudioData" data-dfn-type="attribute" data-export id="dom-audiodata-format-slot"><code>[[format]]</code></dfn>
     <dd data-md>
-     <p>The <code class="idl"><a data-link-type="idl" href="#enumdef-audiosampleformat" id="ref-for-enumdef-audiosampleformat②">AudioSampleFormat</a></code> used by this <code class="idl"><a data-link-type="idl" href="#audiodata" id="ref-for-audiodata①⑤">AudioData</a></code>.</p>
+     <p>The <code class="idl"><a data-link-type="idl" href="#enumdef-audiosampleformat" id="ref-for-enumdef-audiosampleformat③">AudioSampleFormat</a></code> used by this <code class="idl"><a data-link-type="idl" href="#audiodata" id="ref-for-audiodata①⑤">AudioData</a></code>. Will be <code>null</code> whenever
+the underlying format does not map to an <code class="idl"><a data-link-type="idl" href="#enumdef-audiosampleformat" id="ref-for-enumdef-audiosampleformat④">AudioSampleFormat</a></code> or when <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/structured-data.html#detached" id="ref-for-detached③">[[Detached]]</a></code> is <code>true</code>.</p>
     <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="AudioData" data-dfn-type="attribute" data-export id="dom-audiodata-sample-rate-slot"><code>[[sample rate]]</code></dfn>
     <dd data-md>
      <p>The sample-rate, in Hz, for this <code class="idl"><a data-link-type="idl" href="#audiodata" id="ref-for-audiodata①⑥">AudioData</a></code>.</p>
@@ -2921,9 +2925,9 @@ this <code class="idl"><a data-link-type="idl" href="#audiodata" id="ref-for-aud
      <p>Let <var>frame</var> be a new <code class="idl"><a data-link-type="idl" href="#audiodata" id="ref-for-audiodata②⓪">AudioData</a></code> object, initialized as follows:</p>
      <ol>
       <li data-md>
-       <p>Assign <code>false</code> to <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/structured-data.html#detached" id="ref-for-detached③">[[Detached]]</a></code>.</p>
+       <p>Assign <code>false</code> to <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/structured-data.html#detached" id="ref-for-detached④">[[Detached]]</a></code>.</p>
       <li data-md>
-       <p>Assign <var>init</var>.<code class="idl"><a data-link-type="idl" href="#dom-audiodatainit-format" id="ref-for-dom-audiodatainit-format">format</a></code> to <code class="idl"><a data-link-type="idl" href="#dom-audiodata-format-slot" id="ref-for-dom-audiodata-format-slot①">[[format]]</a></code>.</p>
+       <p>Assign <var>init</var>.<code class="idl"><a data-link-type="idl" href="#dom-audiodatainit-format" id="ref-for-dom-audiodatainit-format">format</a></code> to <code class="idl"><a data-link-type="idl" href="#dom-audiodata-format-slot" id="ref-for-dom-audiodata-format-slot②">[[format]]</a></code>.</p>
       <li data-md>
        <p>Assign <var>init</var>.<code class="idl"><a data-link-type="idl" href="#dom-audiodatainit-samplerate" id="ref-for-dom-audiodatainit-samplerate">sampleRate</a></code> to <code class="idl"><a data-link-type="idl" href="#dom-audiodata-sample-rate-slot" id="ref-for-dom-audiodata-sample-rate-slot①">[[sample rate]]</a></code>.</p>
       <li data-md>
@@ -2944,10 +2948,11 @@ this <code class="idl"><a data-link-type="idl" href="#audiodata" id="ref-for-aud
    </ol>
    <h4 class="heading settled" data-level="9.2.3" id="audiodata-attributes"><span class="secno">9.2.3. </span><span class="content">Attributes</span><a class="self-link" href="#audiodata-attributes"></a></h4>
    <dl>
-    <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="AudioData" data-dfn-type="attribute" data-export id="dom-audiodata-format"><code>format</code></dfn>, <span> of type <a data-link-type="idl-name" href="#enumdef-audiosampleformat" id="ref-for-enumdef-audiosampleformat③">AudioSampleFormat</a>, readonly</span>
+    <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="AudioData" data-dfn-type="attribute" data-export id="dom-audiodata-format"><code>format</code></dfn>, <span> of type <a data-link-type="idl-name" href="#enumdef-audiosampleformat" id="ref-for-enumdef-audiosampleformat⑤">AudioSampleFormat</a>, readonly, nullable</span>
     <dd data-md>
-     <p>The <code class="idl"><a data-link-type="idl" href="#enumdef-audiosampleformat" id="ref-for-enumdef-audiosampleformat④">AudioSampleFormat</a></code> used by this <code class="idl"><a data-link-type="idl" href="#audiodata" id="ref-for-audiodata②①">AudioData</a></code>.</p>
-     <p>The <code class="idl"><a data-link-type="idl" href="#dom-audiodata-format" id="ref-for-dom-audiodata-format①">format</a></code> getter steps are to return <code class="idl"><a data-link-type="idl" href="#dom-audiodata-format-slot" id="ref-for-dom-audiodata-format-slot②">[[format]]</a></code>.</p>
+     <p>The <code class="idl"><a data-link-type="idl" href="#enumdef-audiosampleformat" id="ref-for-enumdef-audiosampleformat⑥">AudioSampleFormat</a></code> used by this <code class="idl"><a data-link-type="idl" href="#audiodata" id="ref-for-audiodata②①">AudioData</a></code>. Will be <code>null</code> whenever
+the underlying format does not map to a <code class="idl"><a data-link-type="idl" href="#enumdef-audiosampleformat" id="ref-for-enumdef-audiosampleformat⑦">AudioSampleFormat</a></code> or when <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/structured-data.html#detached" id="ref-for-detached⑤">[[Detached]]</a></code> is <code>true</code>.</p>
+     <p>The <code class="idl"><a data-link-type="idl" href="#dom-audiodata-format" id="ref-for-dom-audiodata-format①">format</a></code> getter steps are to return <code class="idl"><a data-link-type="idl" href="#dom-audiodata-format-slot" id="ref-for-dom-audiodata-format-slot③">[[format]]</a></code>.</p>
     <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="AudioData" data-dfn-type="attribute" data-export id="dom-audiodata-samplerate"><code>sampleRate</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#idl-float" id="ref-for-idl-float②">float</a>, readonly</span>
     <dd data-md>
      <p>The sample-rate, in Hz, for this <code class="idl"><a data-link-type="idl" href="#audiodata" id="ref-for-audiodata②②">AudioData</a></code>.</p>
@@ -2988,7 +2993,7 @@ this <code class="idl"><a data-link-type="idl" href="#audiodata" id="ref-for-aud
        <p>Let <var>copyElementCount</var> be the result of running the <a data-link-type="dfn" href="#compute-copy-element-count" id="ref-for-compute-copy-element-count">Compute Copy Element Count</a> algorithm with <var>options</var>.</p>
       <li data-md>
        <p>Let <var>bytesPerSample</var> be the number of bytes per sample, as defined by
-the <code class="idl"><a data-link-type="idl" href="#dom-audiodata-format-slot" id="ref-for-dom-audiodata-format-slot③">[[format]]</a></code>.</p>
+the <code class="idl"><a data-link-type="idl" href="#dom-audiodata-format-slot" id="ref-for-dom-audiodata-format-slot④">[[format]]</a></code>.</p>
       <li data-md>
        <p>Return the product of multiplying <var>bytesPerSample</var> by <var>copyElementCount</var>.</p>
      </ol>
@@ -2999,23 +3004,23 @@ destination buffer.</p>
      <p>When invoked, run these steps:</p>
      <ol>
       <li data-md>
-       <p>If the value of <var>frame</var>’s <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/structured-data.html#detached" id="ref-for-detached④">[[Detached]]</a></code> internal slot is <code>true</code>, throw an <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#invalidstateerror" id="ref-for-invalidstateerror①⑥">InvalidStateError</a></code> <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-DOMException" id="ref-for-idl-DOMException①⑦">DOMException</a></code>.</p>
+       <p>If the value of <var>frame</var>’s <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/structured-data.html#detached" id="ref-for-detached⑥">[[Detached]]</a></code> internal slot is <code>true</code>, throw an <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#invalidstateerror" id="ref-for-invalidstateerror①⑥">InvalidStateError</a></code> <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-DOMException" id="ref-for-idl-DOMException①⑦">DOMException</a></code>.</p>
       <li data-md>
        <p>Let <var>copyElementCount</var> be the result of running the <a data-link-type="dfn" href="#compute-copy-element-count" id="ref-for-compute-copy-element-count①">Compute Copy Element Count</a> algorithm with <var>options</var>.</p>
       <li data-md>
        <p>Let <var>bytesPerSample</var> be the number of bytes per sample, as defined by
-the <code class="idl"><a data-link-type="idl" href="#dom-audiodata-format-slot" id="ref-for-dom-audiodata-format-slot④">[[format]]</a></code>.</p>
+the <code class="idl"><a data-link-type="idl" href="#dom-audiodata-format-slot" id="ref-for-dom-audiodata-format-slot⑤">[[format]]</a></code>.</p>
       <li data-md>
        <p>If the product of multiplying <var>bytesPerSample</var> by <var>copyElementCount</var> is
 greater than <code>destination.byteLength</code>, throw a <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#exceptiondef-rangeerror" id="ref-for-exceptiondef-rangeerror">RangeError</a></code>.</p>
       <li data-md>
-       <p>Let <var>format</var> be the value of <code class="idl"><a data-link-type="idl" href="#dom-audiodata-format-slot" id="ref-for-dom-audiodata-format-slot⑤">[[format]]</a></code>.</p>
+       <p>Let <var>format</var> be the value of <code class="idl"><a data-link-type="idl" href="#dom-audiodata-format-slot" id="ref-for-dom-audiodata-format-slot⑥">[[format]]</a></code>.</p>
        <ol>
         <li data-md>
-         <p>If <var>format</var> describes an <a data-link-type="dfn" href="#interleaved" id="ref-for-interleaved">interleaved</a> <code class="idl"><a data-link-type="idl" href="#enumdef-audiosampleformat" id="ref-for-enumdef-audiosampleformat⑤">AudioSampleFormat</a></code> and <var>options</var>.<code class="idl"><a data-link-type="idl" href="#dom-audiodatacopytooptions-planeindex" id="ref-for-dom-audiodatacopytooptions-planeindex">planeIndex</a></code> is greater than <code>0</code>,
+         <p>If <var>format</var> describes an <a data-link-type="dfn" href="#interleaved" id="ref-for-interleaved">interleaved</a> <code class="idl"><a data-link-type="idl" href="#enumdef-audiosampleformat" id="ref-for-enumdef-audiosampleformat⑧">AudioSampleFormat</a></code> and <var>options</var>.<code class="idl"><a data-link-type="idl" href="#dom-audiodatacopytooptions-planeindex" id="ref-for-dom-audiodatacopytooptions-planeindex">planeIndex</a></code> is greater than <code>0</code>,
 throw a <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#exceptiondef-rangeerror" id="ref-for-exceptiondef-rangeerror①">RangeError</a></code>.</p>
         <li data-md>
-         <p>Otherwise, if <var>format</var> describes a <a data-link-type="dfn" href="#planar" id="ref-for-planar">planar</a> <code class="idl"><a data-link-type="idl" href="#enumdef-audiosampleformat" id="ref-for-enumdef-audiosampleformat⑥">AudioSampleFormat</a></code> and if <var>options</var>.<code class="idl"><a data-link-type="idl" href="#dom-audiodatacopytooptions-planeindex" id="ref-for-dom-audiodatacopytooptions-planeindex①">planeIndex</a></code> is greater or
+         <p>Otherwise, if <var>format</var> describes a <a data-link-type="dfn" href="#planar" id="ref-for-planar">planar</a> <code class="idl"><a data-link-type="idl" href="#enumdef-audiosampleformat" id="ref-for-enumdef-audiosampleformat⑨">AudioSampleFormat</a></code> and if <var>options</var>.<code class="idl"><a data-link-type="idl" href="#dom-audiodatacopytooptions-planeindex" id="ref-for-dom-audiodatacopytooptions-planeindex①">planeIndex</a></code> is greater or
 equal to <code class="idl"><a data-link-type="idl" href="#dom-audiodata-number-of-channels-slot" id="ref-for-dom-audiodata-number-of-channels-slot③">[[number of channels]]</a></code>, throw a <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#exceptiondef-rangeerror" id="ref-for-exceptiondef-rangeerror②">RangeError</a></code>.</p>
        </ol>
       <li data-md>
@@ -3031,7 +3036,7 @@ equal to <code class="idl"><a data-link-type="idl" href="#dom-audiodata-number-o
      <p>When invoked, run these steps:</p>
      <ol>
       <li data-md>
-       <p>If the value of <var>frame</var>’s <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/structured-data.html#detached" id="ref-for-detached⑤">[[Detached]]</a></code> internal slot is <code>true</code>, throw an <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#invalidstateerror" id="ref-for-invalidstateerror①⑦">InvalidStateError</a></code> <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-DOMException" id="ref-for-idl-DOMException①⑧">DOMException</a></code>.</p>
+       <p>If the value of <var>frame</var>’s <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/structured-data.html#detached" id="ref-for-detached⑦">[[Detached]]</a></code> internal slot is <code>true</code>, throw an <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#invalidstateerror" id="ref-for-invalidstateerror①⑦">InvalidStateError</a></code> <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-DOMException" id="ref-for-idl-DOMException①⑧">DOMException</a></code>.</p>
       <li data-md>
        <p>Return the result of running the <a data-link-type="dfn" href="#clone-audiodata" id="ref-for-clone-audiodata①">Clone AudioData</a> algorithm with <a data-link-type="dfn" href="https://heycam.github.io/webidl/#this" id="ref-for-this">this</a>.</p>
      </ol>
@@ -3065,7 +3070,7 @@ equal to <var>frameCount</var>, throw a <code class="idl"><a data-link-type="idl
       <li data-md>
        <p>Let <var>elementCount</var> be <var>copyFrameCount</var>.</p>
       <li data-md>
-       <p>If <code class="idl"><a data-link-type="idl" href="#dom-audiodata-format-slot" id="ref-for-dom-audiodata-format-slot⑥">[[format]]</a></code> describes an <a data-link-type="dfn" href="#interleaved" id="ref-for-interleaved①">interleaved</a> <code class="idl"><a data-link-type="idl" href="#enumdef-audiosampleformat" id="ref-for-enumdef-audiosampleformat⑦">AudioSampleFormat</a></code>, mutliply <var>elementCount</var> by <code class="idl"><a data-link-type="idl" href="#dom-audiodata-number-of-channels-slot" id="ref-for-dom-audiodata-number-of-channels-slot④">[[number of channels]]</a></code></p>
+       <p>If <code class="idl"><a data-link-type="idl" href="#dom-audiodata-format-slot" id="ref-for-dom-audiodata-format-slot⑦">[[format]]</a></code> describes an <a data-link-type="dfn" href="#interleaved" id="ref-for-interleaved①">interleaved</a> <code class="idl"><a data-link-type="idl" href="#enumdef-audiosampleformat" id="ref-for-enumdef-audiosampleformat①⓪">AudioSampleFormat</a></code>, mutliply <var>elementCount</var> by <code class="idl"><a data-link-type="idl" href="#dom-audiodata-number-of-channels-slot" id="ref-for-dom-audiodata-number-of-channels-slot④">[[number of channels]]</a></code></p>
       <li data-md>
        <p>return <var>elementCount</var>.</p>
      </ol>
@@ -3083,7 +3088,7 @@ equal to <var>frameCount</var>, throw a <code class="idl"><a data-link-type="idl
         <li data-md>
          <p>Assign <var>reference</var> to <code class="idl"><a data-link-type="idl" href="#dom-audiodata-resource-reference-slot" id="ref-for-dom-audiodata-resource-reference-slot⑤">[[resource reference]]</a></code>.</p>
         <li data-md>
-         <p>Assign the values of <var>data</var>’s <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/structured-data.html#detached" id="ref-for-detached⑥">[[Detached]]</a></code>, <code class="idl"><a data-link-type="idl" href="#dom-audiodata-format-slot" id="ref-for-dom-audiodata-format-slot⑦">[[format]]</a></code>, <code class="idl"><a data-link-type="idl" href="#dom-audiodata-sample-rate-slot" id="ref-for-dom-audiodata-sample-rate-slot④">[[sample rate]]</a></code>, <code class="idl"><a data-link-type="idl" href="#dom-audiodata-number-of-frames-slot" id="ref-for-dom-audiodata-number-of-frames-slot④">[[number of frames]]</a></code>, <code class="idl"><a data-link-type="idl" href="#dom-audiodata-number-of-channels-slot" id="ref-for-dom-audiodata-number-of-channels-slot⑤">[[number of channels]]</a></code>, and <code class="idl"><a data-link-type="idl" href="#dom-audiodata-timestamp-slot" id="ref-for-dom-audiodata-timestamp-slot③">[[timestamp]]</a></code> slots to the corresponding slots in <var>clone</var>.</p>
+         <p>Assign the values of <var>data</var>’s <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/structured-data.html#detached" id="ref-for-detached⑧">[[Detached]]</a></code>, <code class="idl"><a data-link-type="idl" href="#dom-audiodata-format-slot" id="ref-for-dom-audiodata-format-slot⑧">[[format]]</a></code>, <code class="idl"><a data-link-type="idl" href="#dom-audiodata-sample-rate-slot" id="ref-for-dom-audiodata-sample-rate-slot④">[[sample rate]]</a></code>, <code class="idl"><a data-link-type="idl" href="#dom-audiodata-number-of-frames-slot" id="ref-for-dom-audiodata-number-of-frames-slot④">[[number of frames]]</a></code>, <code class="idl"><a data-link-type="idl" href="#dom-audiodata-number-of-channels-slot" id="ref-for-dom-audiodata-number-of-channels-slot⑤">[[number of channels]]</a></code>, and <code class="idl"><a data-link-type="idl" href="#dom-audiodata-timestamp-slot" id="ref-for-dom-audiodata-timestamp-slot③">[[timestamp]]</a></code> slots to the corresponding slots in <var>clone</var>.</p>
        </ol>
       <li data-md>
        <p>Return <var>clone</var>.</p>
@@ -3093,7 +3098,7 @@ equal to <var>frameCount</var>, throw a <code class="idl"><a data-link-type="idl
      <p>Run these steps:</p>
      <ol>
       <li data-md>
-       <p>Assign <code>true</code> to <var>data</var>’s <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/structured-data.html#detached" id="ref-for-detached⑦">[[Detached]]</a></code> internal slot.</p>
+       <p>Assign <code>true</code> to <var>data</var>’s <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/structured-data.html#detached" id="ref-for-detached⑨">[[Detached]]</a></code> internal slot.</p>
       <li data-md>
        <p>Assign <code>null</code> to <var>data</var>’s <code class="idl"><a data-link-type="idl" href="#dom-audiodata-resource-reference-slot" id="ref-for-dom-audiodata-resource-reference-slot⑥">[[resource reference]]</a></code>.</p>
       <li data-md>
@@ -3103,7 +3108,7 @@ equal to <var>frameCount</var>, throw a <code class="idl"><a data-link-type="idl
       <li data-md>
        <p>Assign <code>0</code> to <var>data</var>’s <code class="idl"><a data-link-type="idl" href="#dom-audiodata-number-of-channels-slot" id="ref-for-dom-audiodata-number-of-channels-slot⑥">[[number of channels]]</a></code>.</p>
       <li data-md>
-       <p>Assign <code>""</code> to <var>data</var>’s <code class="idl"><a data-link-type="idl" href="#dom-audiodata-format-slot" id="ref-for-dom-audiodata-format-slot⑧">[[format]]</a></code>.</p>
+       <p>Assign <code>null</code> to <var>data</var>’s <code class="idl"><a data-link-type="idl" href="#dom-audiodata-format-slot" id="ref-for-dom-audiodata-format-slot⑨">[[format]]</a></code>.</p>
      </ol>
     <dt data-md>To check if a <code class="idl"><a data-link-type="idl" href="#dictdef-audiodatainit" id="ref-for-dictdef-audiodatainit①">AudioDataInit</a></code> is a <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="valid-audiodatainit">valid AudioDataInit</dfn>, run these steps:
     <dd data-md>
@@ -3136,14 +3141,14 @@ the <code class="idl"><a data-link-type="idl" href="#dom-audiodatainit-format" i
    </dl>
    <div class="note" role="note"> Note: It’s expected that <code class="idl"><a data-link-type="idl" href="#dictdef-audiodatainit" id="ref-for-dictdef-audiodatainit②">AudioDataInit</a></code>'s <code class="idl"><a data-link-type="idl" href="#dom-audiodatainit-data" id="ref-for-dom-audiodatainit-data③">data</a></code>'s memory
     layout matches the expectations of the <a data-link-type="dfn" href="#planar" id="ref-for-planar①">planar</a> or <a data-link-type="dfn" href="#interleaved" id="ref-for-interleaved②">interleaved</a> <code class="idl"><a data-link-type="idl" href="#dom-audiodatainit-format" id="ref-for-dom-audiodatainit-format②">format</a></code>. There is no real way to verify whether the samples
-    conform to their <code class="idl"><a data-link-type="idl" href="#enumdef-audiosampleformat" id="ref-for-enumdef-audiosampleformat⑧">AudioSampleFormat</a></code>. </div>
+    conform to their <code class="idl"><a data-link-type="idl" href="#enumdef-audiosampleformat" id="ref-for-enumdef-audiosampleformat①①">AudioSampleFormat</a></code>. </div>
    <h4 class="heading settled" data-level="9.2.6" id="audiodata-transfer-serialization"><span class="secno">9.2.6. </span><span class="content">Transfer and Serialization</span><a class="self-link" href="#audiodata-transfer-serialization"></a></h4>
    <dl>
     <dt data-md>The <code class="idl"><a data-link-type="idl" href="#audiodata" id="ref-for-audiodata②⑨">AudioData</a></code> <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/structured-data.html#transfer-steps" id="ref-for-transfer-steps">transfer steps</a> (with <var>value</var> and <var>dataHolder</var>) are:
     <dd data-md>
      <ol>
       <li data-md>
-       <p>If <var>value</var>’s <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/structured-data.html#detached" id="ref-for-detached⑧">[[Detached]]</a></code> is <code>true</code>, throw a <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#datacloneerror" id="ref-for-datacloneerror">DataCloneError</a></code> <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-DOMException" id="ref-for-idl-DOMException①⑨">DOMException</a></code>.</p>
+       <p>If <var>value</var>’s <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/structured-data.html#detached" id="ref-for-detached①⓪">[[Detached]]</a></code> is <code>true</code>, throw a <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#datacloneerror" id="ref-for-datacloneerror">DataCloneError</a></code> <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-DOMException" id="ref-for-idl-DOMException①⑨">DOMException</a></code>.</p>
       <li data-md>
        <p>For all <code class="idl"><a data-link-type="idl" href="#audiodata" id="ref-for-audiodata③⓪">AudioData</a></code> internal slots in <var>value</var>, assign the value of
 each internal slot to a field in <var>dataHolder</var> with the same name as the
@@ -3164,7 +3169,7 @@ as the named field.</p>
     <dd data-md>
      <ol>
       <li data-md>
-       <p>If <var>value</var>’s <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/structured-data.html#detached" id="ref-for-detached⑨">[[Detached]]</a></code> is <code>true</code>, throw a <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#datacloneerror" id="ref-for-datacloneerror①">DataCloneError</a></code> <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-DOMException" id="ref-for-idl-DOMException②⓪">DOMException</a></code>.</p>
+       <p>If <var>value</var>’s <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/structured-data.html#detached" id="ref-for-detached①①">[[Detached]]</a></code> is <code>true</code>, throw a <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#datacloneerror" id="ref-for-datacloneerror①">DataCloneError</a></code> <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-DOMException" id="ref-for-idl-DOMException②⓪">DOMException</a></code>.</p>
       <li data-md>
        <p>If <var>forStorage</var> is <code>true</code>, throw a <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#exceptiondef-typeerror" id="ref-for-exceptiondef-typeerror①③">TypeError</a></code>.</p>
       <li data-md>
@@ -3273,14 +3278,14 @@ also uses Linear PCM.</p>
      <p><a href="https://heycam.github.io/webidl/#idl-float">32-bit float</a> <a data-link-type="dfn" href="#sample" id="ref-for-sample①⓪">samples</a> with <a data-link-type="dfn" href="#planar" id="ref-for-planar⑧">planar</a> <a href="#audio-buffer-arrangement">channel arrangement</a>.</p>
    </dl>
    <h4 class="heading settled" data-level="9.3.1" id="audio-buffer-arrangement"><span class="secno">9.3.1. </span><span class="content">Arrangement of audio buffer</span><a class="self-link" href="#audio-buffer-arrangement"></a></h4>
-   <p>When an <code class="idl"><a data-link-type="idl" href="#audiodata" id="ref-for-audiodata③⑦">AudioData</a></code> has an <code class="idl"><a data-link-type="idl" href="#enumdef-audiosampleformat" id="ref-for-enumdef-audiosampleformat⑨">AudioSampleFormat</a></code> that is <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="interleaved">interleaved</dfn>, the audio samples from different channels are laid out
+   <p>When an <code class="idl"><a data-link-type="idl" href="#audiodata" id="ref-for-audiodata③⑦">AudioData</a></code> has an <code class="idl"><a data-link-type="idl" href="#enumdef-audiosampleformat" id="ref-for-enumdef-audiosampleformat①②">AudioSampleFormat</a></code> that is <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="interleaved">interleaved</dfn>, the audio samples from different channels are laid out
 consecutively in the same buffer, in the order described in the section <a href="#audio-channel-ordering">§ 9.3.3 Audio channel ordering</a>. The <code class="idl"><a data-link-type="idl" href="#audiodata" id="ref-for-audiodata③⑧">AudioData</a></code> has a single plane, that contains a
 number of elements therefore equal to <code class="idl"><a data-link-type="idl" href="#dom-audiodata-number-of-frames-slot" id="ref-for-dom-audiodata-number-of-frames-slot⑥">[[number of frames]]</a></code> * <code class="idl"><a data-link-type="idl" href="#dom-audiodata-number-of-channels-slot" id="ref-for-dom-audiodata-number-of-channels-slot⑦">[[number of channels]]</a></code>.</p>
-   <p>When an <code class="idl"><a data-link-type="idl" href="#audiodata" id="ref-for-audiodata③⑨">AudioData</a></code> has an <code class="idl"><a data-link-type="idl" href="#enumdef-audiosampleformat" id="ref-for-enumdef-audiosampleformat①⓪">AudioSampleFormat</a></code> that is <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="planar">planar</dfn>, the audio samples from different channels are laid out
+   <p>When an <code class="idl"><a data-link-type="idl" href="#audiodata" id="ref-for-audiodata③⑨">AudioData</a></code> has an <code class="idl"><a data-link-type="idl" href="#enumdef-audiosampleformat" id="ref-for-enumdef-audiosampleformat①③">AudioSampleFormat</a></code> that is <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="planar">planar</dfn>, the audio samples from different channels are laid out
 in different buffers, themselves arranged in an order described in the section <a href="#audio-channel-ordering">§ 9.3.3 Audio channel ordering</a>. The <code class="idl"><a data-link-type="idl" href="#audiodata" id="ref-for-audiodata④⓪">AudioData</a></code> has a number of planes equal to the <code class="idl"><a data-link-type="idl" href="#audiodata" id="ref-for-audiodata④①">AudioData</a></code>'s <code class="idl"><a data-link-type="idl" href="#dom-audiodata-number-of-channels-slot" id="ref-for-dom-audiodata-number-of-channels-slot⑧">[[number of channels]]</a></code>. Each plane contains <code class="idl"><a data-link-type="idl" href="#dom-audiodata-number-of-frames-slot" id="ref-for-dom-audiodata-number-of-frames-slot⑦">[[number of frames]]</a></code> elements.</p>
    <p class="note" role="note"><span>Note:</span> The <a data-link-type="biblio" href="#biblio-webaudio">Web Audio API</a> currently uses <code class="idl"><a data-link-type="idl" href="#dom-audiosampleformat-fltp" id="ref-for-dom-audiosampleformat-fltp①">FLTP</a></code> exclusively.</p>
    <div class="note" role="note">
-     Note: The following diagram exemplifies the memory layout of <a data-link-type="dfn" href="#planar" id="ref-for-planar⑨">planar</a> versus <a data-link-type="dfn" href="#interleaved" id="ref-for-interleaved①⓪">interleaved</a> <code class="idl"><a data-link-type="idl" href="#enumdef-audiosampleformat" id="ref-for-enumdef-audiosampleformat①①">AudioSampleFormat</a></code>s 
+     Note: The following diagram exemplifies the memory layout of <a data-link-type="dfn" href="#planar" id="ref-for-planar⑨">planar</a> versus <a data-link-type="dfn" href="#interleaved" id="ref-for-interleaved①⓪">interleaved</a> <code class="idl"><a data-link-type="idl" href="#enumdef-audiosampleformat" id="ref-for-enumdef-audiosampleformat①④">AudioSampleFormat</a></code>s 
     <p><img alt="Graphical representation the memory layout of interleaved and planar
     formats" height="455" src="images/planar-interleaved-layout.svg" width="735"></p>
    </div>
@@ -3351,7 +3356,7 @@ channel attributed to a particular channel index.</p>
   <a class="idl-code" data-link-type="constructor" href="#dom-videoframe-videoframe-planes-init" id="ref-for-dom-videoframe-videoframe-planes-init"><c- g>constructor</c-></a>(<a data-link-type="dfn" href="https://heycam.github.io/webidl/#idl-sequence" id="ref-for-idl-sequence"><c- b>sequence</c-></a>&lt;<a data-link-type="idl-name" href="#dictdef-planeinit" id="ref-for-dictdef-planeinit"><c- n>PlaneInit</c-></a>> <dfn class="idl-code" data-dfn-for="VideoFrame/VideoFrame(planes, init), VideoFrame/constructor(planes, init)" data-dfn-type="argument" data-export id="dom-videoframe-videoframe-planes-init-planes"><code><c- g>planes</c-></code><a class="self-link" href="#dom-videoframe-videoframe-planes-init-planes"></a></dfn>,
               <a data-link-type="idl-name" href="#dictdef-videoframeplaneinit" id="ref-for-dictdef-videoframeplaneinit"><c- n>VideoFramePlaneInit</c-></a> <dfn class="idl-code" data-dfn-for="VideoFrame/VideoFrame(planes, init), VideoFrame/constructor(planes, init)" data-dfn-type="argument" data-export id="dom-videoframe-videoframe-planes-init-init"><code><c- g>init</c-></code><a class="self-link" href="#dom-videoframe-videoframe-planes-init-init"></a></dfn>);
 
-  <c- b>readonly</c-> <c- b>attribute</c-> <a data-link-type="idl-name" href="#enumdef-pixelformat" id="ref-for-enumdef-pixelformat"><c- n>PixelFormat</c-></a> <a class="idl-code" data-link-type="attribute" data-readonly data-type="PixelFormat" href="#dom-videoframe-format" id="ref-for-dom-videoframe-format"><c- g>format</c-></a>;
+  <c- b>readonly</c-> <c- b>attribute</c-> <a data-link-type="idl-name" href="#enumdef-videopixelformat" id="ref-for-enumdef-videopixelformat"><c- n>VideoPixelFormat</c-></a>? <a class="idl-code" data-link-type="attribute" data-readonly data-type="VideoPixelFormat?" href="#dom-videoframe-format" id="ref-for-dom-videoframe-format"><c- g>format</c-></a>;
   <c- b>readonly</c-> <c- b>attribute</c-> <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-unsigned-long" id="ref-for-idl-unsigned-long④⑤"><c- b>unsigned</c-> <c- b>long</c-></a> <a class="idl-code" data-link-type="attribute" data-readonly data-type="unsigned long" href="#dom-videoframe-codedwidth" id="ref-for-dom-videoframe-codedwidth"><c- g>codedWidth</c-></a>;
   <c- b>readonly</c-> <c- b>attribute</c-> <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-unsigned-long" id="ref-for-idl-unsigned-long④⑥"><c- b>unsigned</c-> <c- b>long</c-></a> <a class="idl-code" data-link-type="attribute" data-readonly data-type="unsigned long" href="#dom-videoframe-codedheight" id="ref-for-dom-videoframe-codedheight"><c- g>codedHeight</c-></a>;
   <c- b>readonly</c-> <c- b>attribute</c-> <a data-link-type="idl-name" href="https://drafts.fxtf.org/geometry-1/#domrectreadonly" id="ref-for-domrectreadonly"><c- n>DOMRectReadOnly</c-></a>? <a class="idl-code" data-link-type="attribute" data-readonly data-type="DOMRectReadOnly?" href="#dom-videoframe-codedrect" id="ref-for-dom-videoframe-codedrect"><c- g>codedRect</c-></a>;
@@ -3376,7 +3381,7 @@ channel attributed to a particular channel index.</p>
 };
 
 <c- b>dictionary</c-> <dfn class="dfn-paneled idl-code" data-dfn-type="dictionary" data-export id="dictdef-videoframeplaneinit"><code><c- g>VideoFramePlaneInit</c-></code></dfn> {
-  <c- b>required</c-> <a data-link-type="idl-name" href="#enumdef-pixelformat" id="ref-for-enumdef-pixelformat①"><c- n>PixelFormat</c-></a> <dfn class="dfn-paneled idl-code" data-dfn-for="VideoFramePlaneInit" data-dfn-type="dict-member" data-export data-type="PixelFormat " id="dom-videoframeplaneinit-format"><code><c- g>format</c-></code></dfn>;
+  <c- b>required</c-> <a data-link-type="idl-name" href="#enumdef-videopixelformat" id="ref-for-enumdef-videopixelformat①"><c- n>VideoPixelFormat</c-></a> <dfn class="dfn-paneled idl-code" data-dfn-for="VideoFramePlaneInit" data-dfn-type="dict-member" data-export data-type="VideoPixelFormat " id="dom-videoframeplaneinit-format"><code><c- g>format</c-></code></dfn>;
   [<a class="idl-code" data-link-type="extended-attribute" href="https://heycam.github.io/webidl/#EnforceRange" id="ref-for-EnforceRange②④"><c- g>EnforceRange</c-></a>] <c- b>required</c-> <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-unsigned-long" id="ref-for-idl-unsigned-long⑤⓪"><c- b>unsigned</c-> <c- b>long</c-></a> <dfn class="dfn-paneled idl-code" data-dfn-for="VideoFramePlaneInit" data-dfn-type="dict-member" data-export data-type="unsigned long " id="dom-videoframeplaneinit-codedwidth"><code><c- g>codedWidth</c-></code></dfn>;
   [<a class="idl-code" data-link-type="extended-attribute" href="https://heycam.github.io/webidl/#EnforceRange" id="ref-for-EnforceRange②⑤"><c- g>EnforceRange</c-></a>] <c- b>required</c-> <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-unsigned-long" id="ref-for-idl-unsigned-long⑤①"><c- b>unsigned</c-> <c- b>long</c-></a> <dfn class="dfn-paneled idl-code" data-dfn-for="VideoFramePlaneInit" data-dfn-type="dict-member" data-export data-type="unsigned long " id="dom-videoframeplaneinit-codedheight"><code><c- g>codedHeight</c-></code></dfn>;
   <a data-link-type="idl-name" href="https://drafts.fxtf.org/geometry-1/#dictdef-domrectinit" id="ref-for-dictdef-domrectinit"><c- n>DOMRectInit</c-></a> <dfn class="dfn-paneled idl-code" data-dfn-for="VideoFramePlaneInit" data-dfn-type="dict-member" data-export data-type="DOMRectInit " id="dom-videoframeplaneinit-visiblerect"><code><c- g>visibleRect</c-></code></dfn>;
@@ -3400,7 +3405,8 @@ channel attributed to a particular channel index.</p>
 this frame.</p>
     <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="VideoFrame" data-dfn-type="attribute" data-export id="dom-videoframe-format-slot"><code>[[format]]</code></dfn>
     <dd data-md>
-     <p>A <code class="idl"><a data-link-type="idl" href="#enumdef-pixelformat" id="ref-for-enumdef-pixelformat②">PixelFormat</a></code> describing the pixel format of the <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe②⑤">VideoFrame</a></code>.</p>
+     <p>A <code class="idl"><a data-link-type="idl" href="#enumdef-videopixelformat" id="ref-for-enumdef-videopixelformat②">VideoPixelFormat</a></code> describing the pixel format of the <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe②⑤">VideoFrame</a></code>.
+Will be <code>null</code> whenever the underlying format does not map to a <code class="idl"><a data-link-type="idl" href="#enumdef-videopixelformat" id="ref-for-enumdef-videopixelformat③">VideoPixelFormat</a></code> or when <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/structured-data.html#detached" id="ref-for-detached①②">[[Detached]]</a></code> is <code>true</code>.</p>
     <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="VideoFrame" data-dfn-type="attribute" data-export id="dom-videoframe-coded-width-slot"><code>[[coded width]]</code></dfn>
     <dd data-md>
      <p>Width of the <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe②⑥">VideoFrame</a></code> in pixels, potentionally including non-visible
@@ -3522,7 +3528,7 @@ with <var>init</var>, <var>frame</var>, and <var>image</var>.</p>
     e.g. number and order of planes, acceptable sizing, etc...). See <a href="https://github.com/w3c/webcodecs/issues/165">#165</a>.</p>
     <li data-md>
      <p>Let <var>resource</var> be a new <a data-link-type="dfn" href="#media-resource" id="ref-for-media-resource②①">media resource</a> allocated in accordance with <var>init</var>.</p>
-     <p class="issue" id="issue-ed2f363d"><a class="self-link" href="#issue-ed2f363d"></a> The spec should define explicit rules for each <code class="idl"><a data-link-type="idl" href="#enumdef-pixelformat" id="ref-for-enumdef-pixelformat③">PixelFormat</a></code> and reference them in the steps above. See <a href="https://github.com/w3c/webcodecs/issues/165">#165</a>.</p>
+     <p class="issue" id="issue-fcd1d323"><a class="self-link" href="#issue-fcd1d323"></a> The spec should define explicit rules for each <code class="idl"><a data-link-type="idl" href="#enumdef-videopixelformat" id="ref-for-enumdef-videopixelformat④">VideoPixelFormat</a></code> and reference them in the steps above. See <a href="https://github.com/w3c/webcodecs/issues/165">#165</a>.</p>
      <p class="note" role="note"><span>NOTE:</span> The User Agent may choose to allocate resource with a larger coded
   size and plane strides to improve memory alignment. Increases will be
   reflected by <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedwidth" id="ref-for-dom-videoframe-codedwidth①">codedWidth</a></code> and <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedheight" id="ref-for-dom-videoframe-codedheight①">codedHeight</a></code>.</p>
@@ -3610,10 +3616,11 @@ it to <code class="idl"><a data-link-type="idl" href="#dom-videoframe-display-he
    </ol>
    <h4 class="heading settled" data-level="9.4.3" id="videoframe-attributes"><span class="secno">9.4.3. </span><span class="content">Attributes</span><a class="self-link" href="#videoframe-attributes"></a></h4>
    <dl>
-    <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="VideoFrame" data-dfn-type="attribute" data-export id="dom-videoframe-format"><code>format</code></dfn>, <span> of type <a data-link-type="idl-name" href="#enumdef-pixelformat" id="ref-for-enumdef-pixelformat④">PixelFormat</a>, readonly</span>
+    <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="VideoFrame" data-dfn-type="attribute" data-export id="dom-videoframe-format"><code>format</code></dfn>, <span> of type <a data-link-type="idl-name" href="#enumdef-videopixelformat" id="ref-for-enumdef-videopixelformat⑤">VideoPixelFormat</a>, readonly, nullable</span>
     <dd data-md>
      <p>Describes the arrangement of bytes in each plane as well as the number and
-order of the planes.</p>
+order of the planes. Will be <code>null</code> whenever the underlying format does not
+map to a <code class="idl"><a data-link-type="idl" href="#enumdef-videopixelformat" id="ref-for-enumdef-videopixelformat⑥">VideoPixelFormat</a></code> or when <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/structured-data.html#detached" id="ref-for-detached①③">[[Detached]]</a></code> is <code>true</code>.</p>
      <p>The <code class="idl"><a data-link-type="idl" href="#dom-videoframe-format" id="ref-for-dom-videoframe-format①">format</a></code> getter steps are to return <code class="idl"><a data-link-type="idl" href="#dom-videoframe-format-slot" id="ref-for-dom-videoframe-format-slot③">[[format]]</a></code>.</p>
     <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="VideoFrame" data-dfn-type="attribute" data-export id="dom-videoframe-codedwidth"><code>codedWidth</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#idl-unsigned-long" id="ref-for-idl-unsigned-long⑤⑥">unsigned long</a>, readonly</span>
     <dd data-md>
@@ -3631,7 +3638,7 @@ padding, and prior to considering potential ratio adjustments.</p>
      <p>The <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedrect" id="ref-for-dom-videoframe-codedrect①">codedRect</a></code> getter steps are:</p>
      <ol>
       <li data-md>
-       <p>If <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/structured-data.html#detached" id="ref-for-detached①⓪">[[Detached]]</a></code> is <code>true</code>, return <code>null</code>.</p>
+       <p>If <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/structured-data.html#detached" id="ref-for-detached①④">[[Detached]]</a></code> is <code>true</code>, return <code>null</code>.</p>
       <li data-md>
        <p>Let <var>rect</var> be a new <code class="idl"><a data-link-type="idl" href="https://drafts.fxtf.org/geometry-1/#domrectreadonly" id="ref-for-domrectreadonly④">DOMRectReadOnly</a></code>, initialized as follows:</p>
        <ol>
@@ -3649,7 +3656,7 @@ padding, and prior to considering potential ratio adjustments.</p>
      <p>The <code class="idl"><a data-link-type="idl" href="#dom-videoframe-visiblerect" id="ref-for-dom-videoframe-visiblerect②">visibleRect</a></code> getter steps are:</p>
      <ol>
       <li data-md>
-       <p>If <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/structured-data.html#detached" id="ref-for-detached①①">[[Detached]]</a></code> is <code>true</code>, return <code>null</code>.</p>
+       <p>If <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/structured-data.html#detached" id="ref-for-detached①⑤">[[Detached]]</a></code> is <code>true</code>, return <code>null</code>.</p>
       <li data-md>
        <p>Let <var>rect</var> be a new <code class="idl"><a data-link-type="idl" href="https://drafts.fxtf.org/geometry-1/#domrectreadonly" id="ref-for-domrectreadonly⑦">DOMRectReadOnly</a></code>, initialized as follows:</p>
        <ol>
@@ -3713,9 +3720,9 @@ long</a></code>)</p>
      <p>When invoked, run these steps:</p>
      <ol>
       <li data-md>
-       <p>If <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/structured-data.html#detached" id="ref-for-detached①②">[[Detached]]</a></code> is <code>true</code>, return <code>0</code>.</p>
+       <p>If <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/structured-data.html#detached" id="ref-for-detached①⑥">[[Detached]]</a></code> is <code>true</code>, return <code>0</code>.</p>
       <li data-md>
-       <p>If <code class="idl"><a data-link-type="idl" href="#dom-videoframe-format-slot" id="ref-for-dom-videoframe-format-slot④">[[format]]</a></code> is <code>""</code>, throw a <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#notsupportederror" id="ref-for-notsupportederror⑧">NotSupportedError</a></code> <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-DOMException" id="ref-for-idl-DOMException②⑤">DOMException</a></code>.</p>
+       <p>If <code class="idl"><a data-link-type="idl" href="#dom-videoframe-format-slot" id="ref-for-dom-videoframe-format-slot④">[[format]]</a></code> is <code>null</code>, throw a <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#notsupportederror" id="ref-for-notsupportederror⑧">NotSupportedError</a></code> <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-DOMException" id="ref-for-idl-DOMException②⑤">DOMException</a></code>.</p>
       <li data-md>
        <p>Let <var>parsedOptions</var> be the result of running the <a data-link-type="dfn" href="#videoframe-parse-videoframecopytooptions" id="ref-for-videoframe-parse-videoframecopytooptions">Parse
 VideoFrameCopyToOptions</a> algorithm with <var>options</var>.</p>
@@ -3733,9 +3740,9 @@ to <var>options</var>. The format of the data is the same as this <code class="i
      <p>When invoked, run these steps:</p>
      <ol>
       <li data-md>
-       <p>If <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/structured-data.html#detached" id="ref-for-detached①③">[[Detached]]</a></code> is <code>true</code>, return <code>0</code>.</p>
+       <p>If <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/structured-data.html#detached" id="ref-for-detached①⑦">[[Detached]]</a></code> is <code>true</code>, return <code>0</code>.</p>
       <li data-md>
-       <p>If <code class="idl"><a data-link-type="idl" href="#dom-videoframe-format-slot" id="ref-for-dom-videoframe-format-slot⑤">[[format]]</a></code> is <code>""</code>, throw a <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#notsupportederror" id="ref-for-notsupportederror⑨">NotSupportedError</a></code> <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-DOMException" id="ref-for-idl-DOMException②⑥">DOMException</a></code>.</p>
+       <p>If <code class="idl"><a data-link-type="idl" href="#dom-videoframe-format-slot" id="ref-for-dom-videoframe-format-slot⑤">[[format]]</a></code> is <code>null</code>, throw a <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#notsupportederror" id="ref-for-notsupportederror⑨">NotSupportedError</a></code> <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-DOMException" id="ref-for-idl-DOMException②⑥">DOMException</a></code>.</p>
       <li data-md>
        <p>Let <var>parsedOptions</var> be the result of running the <a data-link-type="dfn" href="#videoframe-parse-videoframecopytooptions" id="ref-for-videoframe-parse-videoframecopytooptions①">Parse
 VideoFrameCopyToOptions</a> algorithm with <var>options</var>.</p>
@@ -3804,7 +3811,7 @@ sourceOffset.</p>
      <p>When invoked, run these steps:</p>
      <ol>
       <li data-md>
-       <p>If the value of <var>frame</var>’s <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/structured-data.html#detached" id="ref-for-detached①④">[[Detached]]</a></code> internal slot is <code>true</code>, throw an <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#invalidstateerror" id="ref-for-invalidstateerror②①">InvalidStateError</a></code> <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-DOMException" id="ref-for-idl-DOMException②⑦">DOMException</a></code>.</p>
+       <p>If the value of <var>frame</var>’s <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/structured-data.html#detached" id="ref-for-detached①⑧">[[Detached]]</a></code> internal slot is <code>true</code>, throw an <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#invalidstateerror" id="ref-for-invalidstateerror②①">InvalidStateError</a></code> <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-DOMException" id="ref-for-idl-DOMException②⑦">DOMException</a></code>.</p>
       <li data-md>
        <p>Return the result of running the <a data-link-type="dfn" href="#clone-videoframe" id="ref-for-clone-videoframe①">Clone VideoFrame</a> algorithm with <a data-link-type="dfn" href="https://heycam.github.io/webidl/#this" id="ref-for-this②">this</a>.</p>
      </ol>
@@ -3821,7 +3828,7 @@ Close is final.</p>
      <p>Let <var>frame</var> be a new <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe④①">VideoFrame</a></code>, constructed as follows:</p>
      <ol>
       <li data-md>
-       <p>Assign <code>false</code> to <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/structured-data.html#detached" id="ref-for-detached①⑤">[[Detached]]</a></code>.</p>
+       <p>Assign <code>false</code> to <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/structured-data.html#detached" id="ref-for-detached①⑨">[[Detached]]</a></code>.</p>
       <li data-md>
        <p>Let <var>resource</var> be the <a data-link-type="dfn" href="#media-resource" id="ref-for-media-resource②⑤">media resource</a> described by <var>output</var>.</p>
       <li data-md>
@@ -3829,7 +3836,7 @@ Close is final.</p>
       <li data-md>
        <p>Assign <var>resourceReference</var> to <code class="idl"><a data-link-type="idl" href="#dom-videoframe-resource-reference-slot" id="ref-for-dom-videoframe-resource-reference-slot②">[[resource reference]]</a></code>.</p>
       <li data-md>
-       <p>If <var>output</var> uses a recognized <code class="idl"><a data-link-type="idl" href="#enumdef-pixelformat" id="ref-for-enumdef-pixelformat⑤">PixelFormat</a></code>, assign that format to <code class="idl"><a data-link-type="idl" href="#dom-videoframe-format-slot" id="ref-for-dom-videoframe-format-slot⑦">[[format]]</a></code>. Otherwise, assign <code>""</code> to <code class="idl"><a data-link-type="idl" href="#dom-videoframe-format-slot" id="ref-for-dom-videoframe-format-slot⑧">[[format]]</a></code>.</p>
+       <p>If <var>output</var> uses a recognized <code class="idl"><a data-link-type="idl" href="#enumdef-videopixelformat" id="ref-for-enumdef-videopixelformat⑦">VideoPixelFormat</a></code>, assign that format to <code class="idl"><a data-link-type="idl" href="#dom-videoframe-format-slot" id="ref-for-dom-videoframe-format-slot⑦">[[format]]</a></code>. Otherwise, assign <code>null</code> to <code class="idl"><a data-link-type="idl" href="#dom-videoframe-format-slot" id="ref-for-dom-videoframe-format-slot⑧">[[format]]</a></code>.</p>
       <li data-md>
        <p>Let <var>codedWidth</var> and <var>codedHeight</var> be the coded width and height of the <var>output</var> in pixels.</p>
       <li data-md>
@@ -3893,9 +3900,9 @@ assign <var>otherFrame</var>.<code class="idl"><a data-link-type="idl" href="#do
       <li data-md>
        <p>Assign a new reference for <var>resource</var> to <var>frame</var>’s <code class="idl"><a data-link-type="idl" href="#dom-videoframe-resource-reference-slot" id="ref-for-dom-videoframe-resource-reference-slot⑤">[[resource reference]]</a></code>.</p>
       <li data-md>
-       <p>Let <var>format</var> be <code>""</code>.</p>
+       <p>Let <var>format</var> be <code>null</code>.</p>
       <li data-md>
-       <p>If <var>resource</var> uses a recognized <code class="idl"><a data-link-type="idl" href="#enumdef-pixelformat" id="ref-for-enumdef-pixelformat⑥">PixelFormat</a></code>, assign the <code class="idl"><a data-link-type="idl" href="#enumdef-pixelformat" id="ref-for-enumdef-pixelformat⑦">PixelFormat</a></code> of <var>resource</var> to <var>format</var>.</p>
+       <p>If <var>resource</var> uses a recognized <code class="idl"><a data-link-type="idl" href="#enumdef-videopixelformat" id="ref-for-enumdef-videopixelformat⑧">VideoPixelFormat</a></code>, assign the <code class="idl"><a data-link-type="idl" href="#enumdef-videopixelformat" id="ref-for-enumdef-videopixelformat⑨">VideoPixelFormat</a></code> of <var>resource</var> to <var>format</var>.</p>
       <li data-md>
        <p>If <var>init</var>.<code class="idl"><a data-link-type="idl" href="#dom-videoframeinit-alpha" id="ref-for-dom-videoframeinit-alpha①">alpha</a></code> is <code class="idl"><a data-link-type="idl" href="#dom-alphaoption-discard" id="ref-for-dom-alphaoption-discard③">discard</a></code>, assign <var>format</var>’s <a data-link-type="dfn" href="#equivalent-opaque-format" id="ref-for-equivalent-opaque-format①">equivalent opaque format</a> to <var>format</var>.</p>
       <li data-md>
@@ -3937,9 +3944,9 @@ in <var>clone</var>.</p>
       <li data-md>
        <p>Assign <code>null</code> to <var>frame</var>’s <code class="idl"><a data-link-type="idl" href="#dom-videoframe-resource-reference-slot" id="ref-for-dom-videoframe-resource-reference-slot⑧">[[resource reference]]</a></code>.</p>
       <li data-md>
-       <p>Assign <code>true</code> to <var>frame</var>’s <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/structured-data.html#detached" id="ref-for-detached①⑥">[[Detached]]</a></code>.</p>
+       <p>Assign <code>true</code> to <var>frame</var>’s <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/structured-data.html#detached" id="ref-for-detached②⓪">[[Detached]]</a></code>.</p>
       <li data-md>
-       <p>Assign <code>""</code> to <var>frame</var>’s <code class="idl"><a data-link-type="idl" href="#dom-videoframe-format" id="ref-for-dom-videoframe-format⑤">format</a></code>.</p>
+       <p>Assign <code>null</code> to <var>frame</var>’s <code class="idl"><a data-link-type="idl" href="#dom-videoframe-format" id="ref-for-dom-videoframe-format⑤">format</a></code>.</p>
       <li data-md>
        <p>Assign <code>0</code> to <var>frame</var>’s <code class="idl"><a data-link-type="idl" href="#dom-videoframe-coded-width-slot" id="ref-for-dom-videoframe-coded-width-slot⑤">[[coded width]]</a></code>, <code class="idl"><a data-link-type="idl" href="#dom-videoframe-coded-height-slot" id="ref-for-dom-videoframe-coded-height-slot⑤">[[coded height]]</a></code>, <code class="idl"><a data-link-type="idl" href="#dom-videoframe-visible-left-slot" id="ref-for-dom-videoframe-visible-left-slot④">[[visible left]]</a></code>, <code class="idl"><a data-link-type="idl" href="#dom-videoframe-visible-top-slot" id="ref-for-dom-videoframe-visible-top-slot④">[[visible top]]</a></code>, <code class="idl"><a data-link-type="idl" href="#dom-videoframe-visible-width-slot" id="ref-for-dom-videoframe-visible-width-slot⑥">[[visible width]]</a></code>, <code class="idl"><a data-link-type="idl" href="#dom-videoframe-visible-height-slot" id="ref-for-dom-videoframe-visible-height-slot⑥">[[visible height]]</a></code>, <code class="idl"><a data-link-type="idl" href="#dom-videoframe-display-width-slot" id="ref-for-dom-videoframe-display-width-slot③">[[display width]]</a></code>,
 and <code class="idl"><a data-link-type="idl" href="#dom-videoframe-display-height-slot" id="ref-for-dom-videoframe-display-height-slot③">[[display height]]</a></code>.</p>
@@ -4133,7 +4140,7 @@ follows:</p>
     <dd data-md>
      <ol>
       <li data-md>
-       <p>If <var>value</var>’s <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/structured-data.html#detached" id="ref-for-detached①⑦">[[Detached]]</a></code> is <code>true</code>, throw a <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#datacloneerror" id="ref-for-datacloneerror②">DataCloneError</a></code> <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-DOMException" id="ref-for-idl-DOMException②⑧">DOMException</a></code>.</p>
+       <p>If <var>value</var>’s <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/structured-data.html#detached" id="ref-for-detached②①">[[Detached]]</a></code> is <code>true</code>, throw a <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#datacloneerror" id="ref-for-datacloneerror②">DataCloneError</a></code> <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-DOMException" id="ref-for-idl-DOMException②⑧">DOMException</a></code>.</p>
       <li data-md>
        <p>For all <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe④④">VideoFrame</a></code> internal slots in <var>value</var>, assign the value of
 each internal slot to a field in <var>dataHolder</var> with the same name as the
@@ -4153,7 +4160,7 @@ as the named field.</p>
     <dd data-md>
      <ol>
       <li data-md>
-       <p>If <var>value</var>’s <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/structured-data.html#detached" id="ref-for-detached①⑧">[[Detached]]</a></code> is <code>true</code>, throw a <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#datacloneerror" id="ref-for-datacloneerror③">DataCloneError</a></code> <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-DOMException" id="ref-for-idl-DOMException②⑨">DOMException</a></code>.</p>
+       <p>If <var>value</var>’s <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/structured-data.html#detached" id="ref-for-detached②②">[[Detached]]</a></code> is <code>true</code>, throw a <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#datacloneerror" id="ref-for-datacloneerror③">DataCloneError</a></code> <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-DOMException" id="ref-for-idl-DOMException②⑨">DOMException</a></code>.</p>
       <li data-md>
        <p>If <var>forStorage</var> is <code>true</code>, throw a <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#exceptiondef-typeerror" id="ref-for-exceptiondef-typeerror②⑧">TypeError</a></code>.</p>
       <li data-md>
@@ -4236,42 +4243,42 @@ a <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webid
    <h3 class="heading settled" data-level="9.8" id="pixel-format"><span class="secno">9.8. </span><span class="content">Pixel Format</span><a class="self-link" href="#pixel-format"></a></h3>
     Pixel formats describe the arrangement of bytes in each plane as well as the
 number and order of the planes. Each format is described in its own sub-section. 
-<pre class="idl highlight def"><c- b>enum</c-> <dfn class="dfn-paneled idl-code" data-dfn-type="enum" data-export id="enumdef-pixelformat"><code><c- g>PixelFormat</c-></code></dfn> {
+<pre class="idl highlight def"><c- b>enum</c-> <dfn class="dfn-paneled idl-code" data-dfn-type="enum" data-export id="enumdef-videopixelformat"><code><c- g>VideoPixelFormat</c-></code></dfn> {
   // 4:2:0 Y, U, V
-  <a class="idl-code" data-link-type="enum-value" href="#dom-pixelformat-i420" id="ref-for-dom-pixelformat-i420"><c- s>"I420"</c-></a>,
+  <a class="idl-code" data-link-type="enum-value" href="#dom-videopixelformat-i420" id="ref-for-dom-videopixelformat-i420"><c- s>"I420"</c-></a>,
   // 4:2:0 Y, U, V, A
-  <a class="idl-code" data-link-type="enum-value" href="#dom-pixelformat-i420a" id="ref-for-dom-pixelformat-i420a"><c- s>"I420A"</c-></a>,
+  <a class="idl-code" data-link-type="enum-value" href="#dom-videopixelformat-i420a" id="ref-for-dom-videopixelformat-i420a"><c- s>"I420A"</c-></a>,
   // 4:2:2 Y, U, V
-  <a class="idl-code" data-link-type="enum-value" href="#dom-pixelformat-i422" id="ref-for-dom-pixelformat-i422"><c- s>"I422"</c-></a>,
+  <a class="idl-code" data-link-type="enum-value" href="#dom-videopixelformat-i422" id="ref-for-dom-videopixelformat-i422"><c- s>"I422"</c-></a>,
   // 4:4:4 Y, U, V
-  <a class="idl-code" data-link-type="enum-value" href="#dom-pixelformat-i444" id="ref-for-dom-pixelformat-i444"><c- s>"I444"</c-></a>,
+  <a class="idl-code" data-link-type="enum-value" href="#dom-videopixelformat-i444" id="ref-for-dom-videopixelformat-i444"><c- s>"I444"</c-></a>,
   // 4:2:0 Y, UV
-  <a class="idl-code" data-link-type="enum-value" href="#dom-pixelformat-nv12" id="ref-for-dom-pixelformat-nv12"><c- s>"NV12"</c-></a>,
+  <a class="idl-code" data-link-type="enum-value" href="#dom-videopixelformat-nv12" id="ref-for-dom-videopixelformat-nv12"><c- s>"NV12"</c-></a>,
   // 32bpp RGBA
-  <a class="idl-code" data-link-type="enum-value" href="#dom-pixelformat-rgba" id="ref-for-dom-pixelformat-rgba"><c- s>"RGBA"</c-></a>,
+  <a class="idl-code" data-link-type="enum-value" href="#dom-videopixelformat-rgba" id="ref-for-dom-videopixelformat-rgba"><c- s>"RGBA"</c-></a>,
   // 32bpp RGBX (opaque)
-  <a class="idl-code" data-link-type="enum-value" href="#dom-pixelformat-rgbx" id="ref-for-dom-pixelformat-rgbx"><c- s>"RGBX"</c-></a>,
+  <a class="idl-code" data-link-type="enum-value" href="#dom-videopixelformat-rgbx" id="ref-for-dom-videopixelformat-rgbx"><c- s>"RGBX"</c-></a>,
   // 32bpp BGRA
-  <a class="idl-code" data-link-type="enum-value" href="#dom-pixelformat-bgra" id="ref-for-dom-pixelformat-bgra"><c- s>"BGRA"</c-></a>,
+  <a class="idl-code" data-link-type="enum-value" href="#dom-videopixelformat-bgra" id="ref-for-dom-videopixelformat-bgra"><c- s>"BGRA"</c-></a>,
   // 32bpp BGRX (opaque)
-  <a class="idl-code" data-link-type="enum-value" href="#dom-pixelformat-bgrx" id="ref-for-dom-pixelformat-bgrx"><c- s>"BGRX"</c-></a>,
+  <a class="idl-code" data-link-type="enum-value" href="#dom-videopixelformat-bgrx" id="ref-for-dom-videopixelformat-bgrx"><c- s>"BGRX"</c-></a>,
 };
 </pre>
    <p><dfn class="dfn-paneled" data-dfn-type="dfn" data-lt="sub-sampling|sub-sampled" data-noexport id="sub-sampling">Sub-sampling</dfn> is a technique
 where a single sample contains information for multiple pixels in the final
 image. <a data-link-type="dfn" href="#sub-sampling" id="ref-for-sub-sampling">Sub-sampling</a> can be horizontal, vertical or both, and has a <dfn class="dfn-paneled" data-dfn-type="dfn" data-lt="sub-sampling factor|factor" data-noexport id="sub-sampling-factor">factor</dfn>, that is the number of final pixels
 in the image that are derived from a <a data-link-type="dfn" href="#sub-sampling" id="ref-for-sub-sampling①">sub-sampled</a> sample.</p>
-   <div class="example" id="example-33b7b945"><a class="self-link" href="#example-33b7b945"></a> If a <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe⑤⑧">VideoFrame</a></code> is in <code class="idl"><a data-link-type="idl" href="#dom-pixelformat-i420" id="ref-for-dom-pixelformat-i420①">I420</a></code> format, then the very first
+   <div class="example" id="example-33b7b945"><a class="self-link" href="#example-33b7b945"></a> If a <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe⑤⑧">VideoFrame</a></code> is in <code class="idl"><a data-link-type="idl" href="#dom-videopixelformat-i420" id="ref-for-dom-videopixelformat-i420①">I420</a></code> format, then the very first
   component of the second plane (the U plane) corresponds to four pixels, that are
   the pixels in the top-left angle of the image. Consequently, the first
   component of the second row corresponds to the four pixels below those initial
   four top-left pixels. The <a data-link-type="dfn" href="#sub-sampling-factor" id="ref-for-sub-sampling-factor④">sub-sampling factor</a> is 2 in both the horizontal
   and vertical direction. </div>
-   <p>If a <code class="idl"><a data-link-type="idl" href="#enumdef-pixelformat" id="ref-for-enumdef-pixelformat⑧">PixelFormat</a></code> has an alpha component, the format’s <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="equivalent-opaque-format">equivalent opaque format</dfn> is the same <code class="idl"><a data-link-type="idl" href="#enumdef-pixelformat" id="ref-for-enumdef-pixelformat⑨">PixelFormat</a></code>, without an
-alpha component. If a <code class="idl"><a data-link-type="idl" href="#enumdef-pixelformat" id="ref-for-enumdef-pixelformat①⓪">PixelFormat</a></code> does not have an alpha component, it is
-its own <a data-link-type="dfn" href="#equivalent-opaque-format" id="ref-for-equivalent-opaque-format②">equivalent opaque format</a>.</p>
+   <p>If a <code class="idl"><a data-link-type="idl" href="#enumdef-videopixelformat" id="ref-for-enumdef-videopixelformat①⓪">VideoPixelFormat</a></code> has an alpha component, the format’s <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="equivalent-opaque-format">equivalent opaque format</dfn> is the same <code class="idl"><a data-link-type="idl" href="#enumdef-videopixelformat" id="ref-for-enumdef-videopixelformat①①">VideoPixelFormat</a></code>, without an
+alpha component. If a <code class="idl"><a data-link-type="idl" href="#enumdef-videopixelformat" id="ref-for-enumdef-videopixelformat①②">VideoPixelFormat</a></code> does not have an alpha component, it
+is its own <a data-link-type="dfn" href="#equivalent-opaque-format" id="ref-for-equivalent-opaque-format②">equivalent opaque format</a>.</p>
    <dl>
-    <dt><dfn class="dfn-paneled idl-code" data-dfn-for="PixelFormat" data-dfn-type="enum-value" data-export data-lt="&quot;I420&quot;|I420" id="dom-pixelformat-i420"><code>I420</code></dfn>
+    <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoPixelFormat" data-dfn-type="enum-value" data-export data-lt="&quot;I420&quot;|I420" id="dom-videopixelformat-i420"><code>I420</code></dfn>
     <dd>
       This format is composed of three distinct planes, one plane of Luma and two
     planes of Chroma, denoted Y, U and V, and present in this order. It is also
@@ -4286,7 +4293,7 @@ its own <a data-link-type="dfn" href="#equivalent-opaque-format" id="ref-for-equ
     top left in the image, in <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedheight" id="ref-for-dom-videoframe-codedheight⑨">codedHeight</a></code> / 2 lines of <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedwidth" id="ref-for-dom-videoframe-codedwidth⑨">codedWidth</a></code> / 2 samples.</p>
      <p>The <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedwidth" id="ref-for-dom-videoframe-codedwidth①⓪">codedWidth</a></code> and <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedheight" id="ref-for-dom-videoframe-codedheight①⓪">codedHeight</a></code> MUST be even.
     Similarly, the visible rectangle (<code class="idl"><a data-link-type="idl" href="#dom-videoframe-displaywidth" id="ref-for-dom-videoframe-displaywidth⑤">displayWidth</a></code> and <code class="idl"><a data-link-type="idl" href="#dom-videoframe-displayheight" id="ref-for-dom-videoframe-displayheight⑤">displayHeight</a></code>) MUST be even.</p>
-    <dt><dfn class="dfn-paneled idl-code" data-dfn-for="PixelFormat" data-dfn-type="enum-value" data-export data-lt="&quot;I420A&quot;|I420A" id="dom-pixelformat-i420a"><code>I420A</code></dfn>
+    <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoPixelFormat" data-dfn-type="enum-value" data-export data-lt="&quot;I420A&quot;|I420A" id="dom-videopixelformat-i420a"><code>I420A</code></dfn>
     <dd>
      <p>This format is composed of four distinct planes, one plane of Luma, two
     planes of Chroma, denoted Y, U and V, and one place of alpha values, all
@@ -4302,8 +4309,8 @@ its own <a data-link-type="dfn" href="#equivalent-opaque-format" id="ref-for-equ
     top left in the image, in <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedheight" id="ref-for-dom-videoframe-codedheight①④">codedHeight</a></code> / 2 lines of <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedwidth" id="ref-for-dom-videoframe-codedwidth①④">codedWidth</a></code> / 2 samples.</p>
      <p>The <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedwidth" id="ref-for-dom-videoframe-codedwidth①⑤">codedWidth</a></code> and <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedheight" id="ref-for-dom-videoframe-codedheight①⑤">codedHeight</a></code> MUST be even.
     Similarly, the visible rectangle (<code class="idl"><a data-link-type="idl" href="#dom-videoframe-displaywidth" id="ref-for-dom-videoframe-displaywidth⑥">displayWidth</a></code> and <code class="idl"><a data-link-type="idl" href="#dom-videoframe-displayheight" id="ref-for-dom-videoframe-displayheight⑥">displayHeight</a></code>) MUST be even.</p>
-     <p><code class="idl"><a data-link-type="idl" href="#dom-pixelformat-i420a" id="ref-for-dom-pixelformat-i420a①">I420A</a></code>'s <a data-link-type="dfn" href="#equivalent-opaque-format" id="ref-for-equivalent-opaque-format③">equivalent opaque format</a> is <code class="idl"><a data-link-type="idl" href="#dom-pixelformat-i420" id="ref-for-dom-pixelformat-i420②">I420</a></code>.</p>
-    <dt><dfn class="dfn-paneled idl-code" data-dfn-for="PixelFormat" data-dfn-type="enum-value" data-export data-lt="&quot;I422&quot;|I422" id="dom-pixelformat-i422"><code>I422</code></dfn>
+     <p><code class="idl"><a data-link-type="idl" href="#dom-videopixelformat-i420a" id="ref-for-dom-videopixelformat-i420a①">I420A</a></code>'s <a data-link-type="dfn" href="#equivalent-opaque-format" id="ref-for-equivalent-opaque-format③">equivalent opaque format</a> is <code class="idl"><a data-link-type="idl" href="#dom-videopixelformat-i420" id="ref-for-dom-videopixelformat-i420②">I420</a></code>.</p>
+    <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoPixelFormat" data-dfn-type="enum-value" data-export data-lt="&quot;I422&quot;|I422" id="dom-videopixelformat-i422"><code>I422</code></dfn>
     <dd>
      <p>This format is composed of three distinct planes, one plane of Luma and two
     planes of Chroma, denoted Y, U and V, and present in this order. It is also
@@ -4320,7 +4327,7 @@ its own <a data-link-type="dfn" href="#equivalent-opaque-format" id="ref-for-equ
      <p>The <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedheight" id="ref-for-dom-videoframe-codedheight②⓪">codedHeight</a></code> MUST be even.  Similarly, the crop
     coordinates (<code class="idl"><a data-link-type="idl" href="#dom-videoframe-displaywidth" id="ref-for-dom-videoframe-displaywidth⑦">displayWidth</a></code> and <code class="idl"><a data-link-type="idl" href="#dom-videoframe-displayheight" id="ref-for-dom-videoframe-displayheight⑦">displayHeight</a></code>)
     MUST be even.</p>
-    <dt><dfn class="dfn-paneled idl-code" data-dfn-for="PixelFormat" data-dfn-type="enum-value" data-export data-lt="&quot;I444&quot;|I444" id="dom-pixelformat-i444"><code>I444</code></dfn>
+    <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoPixelFormat" data-dfn-type="enum-value" data-export data-lt="&quot;I444&quot;|I444" id="dom-videopixelformat-i444"><code>I444</code></dfn>
     <dd>
      <p>This format is composed of three distinct planes, one plane of Luma and two
     planes of Chroma, denoted Y, U and V, and present in this order. It is also
@@ -4329,7 +4336,7 @@ its own <a data-link-type="dfn" href="#equivalent-opaque-format" id="ref-for-equ
      <p>There are <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedwidth" id="ref-for-dom-videoframe-codedwidth②⓪">codedWidth</a></code> * <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedheight" id="ref-for-dom-videoframe-codedheight②①">codedHeight</a></code> samples (and
     therefore bytes) in all three planes, arranged starting at the top left in the
     image, in <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedheight" id="ref-for-dom-videoframe-codedheight②②">codedHeight</a></code> lines of <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedwidth" id="ref-for-dom-videoframe-codedwidth②①">codedWidth</a></code> samples.</p>
-    <dt><dfn class="dfn-paneled idl-code" data-dfn-for="PixelFormat" data-dfn-type="enum-value" data-export data-lt="&quot;NV12&quot;|NV12" id="dom-pixelformat-nv12"><code>NV12</code></dfn>
+    <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoPixelFormat" data-dfn-type="enum-value" data-export data-lt="&quot;NV12&quot;|NV12" id="dom-videopixelformat-nv12"><code>NV12</code></dfn>
     <dd>
      <p>This format is composed of two distinct planes, one plane of Luma and then
     another plane for the two Chroma components. The two planes are present in
@@ -4369,7 +4376,7 @@ its own <a data-link-type="dfn" href="#equivalent-opaque-format" id="ref-for-equ
 </pre>
       <p>All samples being linear in memory.</p>
      </div>
-    <dt><dfn class="dfn-paneled idl-code" data-dfn-for="PixelFormat" data-dfn-type="enum-value" data-export data-lt="&quot;RGBA&quot;|RGBA" id="dom-pixelformat-rgba"><code>RGBA</code></dfn>
+    <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoPixelFormat" data-dfn-type="enum-value" data-export data-lt="&quot;RGBA&quot;|RGBA" id="dom-videopixelformat-rgba"><code>RGBA</code></dfn>
     <dd>
      <p>This format is composed of a single plane, that encodes four components:
     Red, Green, Blue, and an alpha value, present in this order.</p>
@@ -4377,8 +4384,8 @@ its own <a data-link-type="dfn" href="#equivalent-opaque-format" id="ref-for-equ
      <p>There are <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedwidth" id="ref-for-dom-videoframe-codedwidth②⑦">codedWidth</a></code> * <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedheight" id="ref-for-dom-videoframe-codedheight②⑧">codedHeight</a></code> * 4 samples
     (and therefore bytes) in the single plane, arranged starting at the top
     left in the image, in <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedheight" id="ref-for-dom-videoframe-codedheight②⑨">codedHeight</a></code> lines of <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedwidth" id="ref-for-dom-videoframe-codedwidth②⑧">codedWidth</a></code> samples.</p>
-     <p><code class="idl"><a data-link-type="idl" href="#dom-pixelformat-rgba" id="ref-for-dom-pixelformat-rgba①">RGBA</a></code>'s <a data-link-type="dfn" href="#equivalent-opaque-format" id="ref-for-equivalent-opaque-format④">equivalent opaque format</a> is <code class="idl"><a data-link-type="idl" href="#dom-pixelformat-rgbx" id="ref-for-dom-pixelformat-rgbx①">RGBX</a></code>.</p>
-    <dt><dfn class="dfn-paneled idl-code" data-dfn-for="PixelFormat" data-dfn-type="enum-value" data-export data-lt="&quot;RGBX&quot;|RGBX" id="dom-pixelformat-rgbx"><code>RGBX</code></dfn>
+     <p><code class="idl"><a data-link-type="idl" href="#dom-videopixelformat-rgba" id="ref-for-dom-videopixelformat-rgba①">RGBA</a></code>'s <a data-link-type="dfn" href="#equivalent-opaque-format" id="ref-for-equivalent-opaque-format④">equivalent opaque format</a> is <code class="idl"><a data-link-type="idl" href="#dom-videopixelformat-rgbx" id="ref-for-dom-videopixelformat-rgbx①">RGBX</a></code>.</p>
+    <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoPixelFormat" data-dfn-type="enum-value" data-export data-lt="&quot;RGBX&quot;|RGBX" id="dom-videopixelformat-rgbx"><code>RGBX</code></dfn>
     <dd>
      <p>This format is composed of a single plane, that encodes four components:
     Red, Green, Blue, and a padding value, present in this order.</p>
@@ -4387,7 +4394,7 @@ its own <a data-link-type="dfn" href="#equivalent-opaque-format" id="ref-for-equ
      <p>There are <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedwidth" id="ref-for-dom-videoframe-codedwidth②⑨">codedWidth</a></code> * <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedheight" id="ref-for-dom-videoframe-codedheight③⓪">codedHeight</a></code> * 4 samples
     (and therefore bytes) in the single plane, arranged starting at the top left
     in the image, in <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedheight" id="ref-for-dom-videoframe-codedheight③①">codedHeight</a></code> lines of <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedwidth" id="ref-for-dom-videoframe-codedwidth③⓪">codedWidth</a></code> samples.</p>
-    <dt><dfn class="dfn-paneled idl-code" data-dfn-for="PixelFormat" data-dfn-type="enum-value" data-export data-lt="&quot;BGRA&quot;|BGRA" id="dom-pixelformat-bgra"><code>BGRA</code></dfn>
+    <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoPixelFormat" data-dfn-type="enum-value" data-export data-lt="&quot;BGRA&quot;|BGRA" id="dom-videopixelformat-bgra"><code>BGRA</code></dfn>
     <dd>
      <p>This format is composed of a single plane, that encodes four components:
     Blue, Green, Red, and an alpha value, present in this order.</p>
@@ -4395,8 +4402,8 @@ its own <a data-link-type="dfn" href="#equivalent-opaque-format" id="ref-for-equ
      <p>There are <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedwidth" id="ref-for-dom-videoframe-codedwidth③①">codedWidth</a></code> * <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedheight" id="ref-for-dom-videoframe-codedheight③②">codedHeight</a></code> * 4 samples
     (and therefore bytes) in the single plane, arranged starting at the top left
     in the image, in <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedheight" id="ref-for-dom-videoframe-codedheight③③">codedHeight</a></code> lines of <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedwidth" id="ref-for-dom-videoframe-codedwidth③②">codedWidth</a></code> samples.</p>
-     <p><code class="idl"><a data-link-type="idl" href="#dom-pixelformat-bgra" id="ref-for-dom-pixelformat-bgra①">BGRA</a></code>'s <a data-link-type="dfn" href="#equivalent-opaque-format" id="ref-for-equivalent-opaque-format⑤">equivalent opaque format</a> is <code class="idl"><a data-link-type="idl" href="#dom-pixelformat-bgrx" id="ref-for-dom-pixelformat-bgrx①">BGRX</a></code>.</p>
-    <dt><dfn class="dfn-paneled idl-code" data-dfn-for="PixelFormat" data-dfn-type="enum-value" data-export data-lt="&quot;BGRX&quot;|BGRX" id="dom-pixelformat-bgrx"><code>BGRX</code></dfn>
+     <p><code class="idl"><a data-link-type="idl" href="#dom-videopixelformat-bgra" id="ref-for-dom-videopixelformat-bgra①">BGRA</a></code>'s <a data-link-type="dfn" href="#equivalent-opaque-format" id="ref-for-equivalent-opaque-format⑤">equivalent opaque format</a> is <code class="idl"><a data-link-type="idl" href="#dom-videopixelformat-bgrx" id="ref-for-dom-videopixelformat-bgrx①">BGRX</a></code>.</p>
+    <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoPixelFormat" data-dfn-type="enum-value" data-export data-lt="&quot;BGRX&quot;|BGRX" id="dom-videopixelformat-bgrx"><code>BGRX</code></dfn>
     <dd>
      <p>This format is composed of a single plane, that encodes four components:
     Blue, Green, Red, and a padding value, present in this order.</p>
@@ -5430,10 +5437,10 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
    <li><a href="#dictdef-audioencodersupport">AudioEncoderSupport</a><span>, in §7.3.3</span>
    <li><a href="#enumdef-audiosampleformat">AudioSampleFormat</a><span>, in §9.3</span>
    <li><a href="#audio-sample-type">audio sample type</a><span>, in §9.3</span>
-   <li><a href="#dom-pixelformat-bgra">"BGRA"</a><span>, in §9.8</span>
-   <li><a href="#dom-pixelformat-bgra">BGRA</a><span>, in §9.8</span>
-   <li><a href="#dom-pixelformat-bgrx">"BGRX"</a><span>, in §9.8</span>
-   <li><a href="#dom-pixelformat-bgrx">BGRX</a><span>, in §9.8</span>
+   <li><a href="#dom-videopixelformat-bgra">"BGRA"</a><span>, in §9.8</span>
+   <li><a href="#dom-videopixelformat-bgra">BGRA</a><span>, in §9.8</span>
+   <li><a href="#dom-videopixelformat-bgrx">"BGRX"</a><span>, in §9.8</span>
+   <li><a href="#dom-videopixelformat-bgrx">BGRX</a><span>, in §9.8</span>
    <li><a href="#bias-value">bias value</a><span>, in §9.3.2</span>
    <li>
     bitrate
@@ -5786,14 +5793,14 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
      <li><a href="#dom-videoencoderconfig-hardwareacceleration">dict-member for VideoEncoderConfig</a><span>, in §7.8</span>
     </ul>
    <li><a href="#dom-videoencoderconfig-height">height</a><span>, in §7.8</span>
-   <li><a href="#dom-pixelformat-i420">"I420"</a><span>, in §9.8</span>
-   <li><a href="#dom-pixelformat-i420">I420</a><span>, in §9.8</span>
-   <li><a href="#dom-pixelformat-i420a">"I420A"</a><span>, in §9.8</span>
-   <li><a href="#dom-pixelformat-i420a">I420A</a><span>, in §9.8</span>
-   <li><a href="#dom-pixelformat-i422">"I422"</a><span>, in §9.8</span>
-   <li><a href="#dom-pixelformat-i422">I422</a><span>, in §9.8</span>
-   <li><a href="#dom-pixelformat-i444">"I444"</a><span>, in §9.8</span>
-   <li><a href="#dom-pixelformat-i444">I444</a><span>, in §9.8</span>
+   <li><a href="#dom-videopixelformat-i420">"I420"</a><span>, in §9.8</span>
+   <li><a href="#dom-videopixelformat-i420">I420</a><span>, in §9.8</span>
+   <li><a href="#dom-videopixelformat-i420a">"I420A"</a><span>, in §9.8</span>
+   <li><a href="#dom-videopixelformat-i420a">I420A</a><span>, in §9.8</span>
+   <li><a href="#dom-videopixelformat-i422">"I422"</a><span>, in §9.8</span>
+   <li><a href="#dom-videopixelformat-i422">I422</a><span>, in §9.8</span>
+   <li><a href="#dom-videopixelformat-i444">"I444"</a><span>, in §9.8</span>
+   <li><a href="#dom-videopixelformat-i444">I444</a><span>, in §9.8</span>
    <li><a href="#dom-imagedecoderesult-image">image</a><span>, in §10.5</span>
    <li><a href="#typedefdef-imagebuffersource">ImageBufferSource</a><span>, in §10.3</span>
    <li><a href="#dictdef-imagedecodeoptions">ImageDecodeOptions</a><span>, in §10.4</span>
@@ -5870,8 +5877,8 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
      <li><a href="#dom-audiodata-numberofframes">attribute for AudioData</a><span>, in §9.2.3</span>
      <li><a href="#dom-audiodatainit-numberofframes">dict-member for AudioDataInit</a><span>, in §9.2</span>
     </ul>
-   <li><a href="#dom-pixelformat-nv12">"NV12"</a><span>, in §9.8</span>
-   <li><a href="#dom-pixelformat-nv12">NV12</a><span>, in §9.8</span>
+   <li><a href="#dom-videopixelformat-nv12">"NV12"</a><span>, in §9.8</span>
+   <li><a href="#dom-videopixelformat-nv12">NV12</a><span>, in §9.8</span>
    <li>
     offset
     <ul>
@@ -5911,7 +5918,6 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
      <li><a href="#dom-videodecoder-pending-flush-promises-slot">attribute for VideoDecoder</a><span>, in §4.1</span>
      <li><a href="#dom-videoencoder-pending-flush-promises-slot">attribute for VideoEncoder</a><span>, in §6.1</span>
     </ul>
-   <li><a href="#enumdef-pixelformat">PixelFormat</a><span>, in §9.8</span>
    <li><a href="#planar">planar</a><span>, in §9.3.1</span>
    <li><a href="#dom-audiodatacopytooptions-planeindex">planeIndex</a><span>, in §9.2.7</span>
    <li><a href="#dictdef-planeinit">PlaneInit</a><span>, in §9.4</span>
@@ -5957,10 +5963,10 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
      <li><a href="#dom-audiodata-resource-reference-slot">attribute for AudioData</a><span>, in §9.2.1</span>
      <li><a href="#dom-videoframe-resource-reference-slot">attribute for VideoFrame</a><span>, in §9.4.1</span>
     </ul>
-   <li><a href="#dom-pixelformat-rgba">"RGBA"</a><span>, in §9.8</span>
-   <li><a href="#dom-pixelformat-rgba">RGBA</a><span>, in §9.8</span>
-   <li><a href="#dom-pixelformat-rgbx">"RGBX"</a><span>, in §9.8</span>
-   <li><a href="#dom-pixelformat-rgbx">RGBX</a><span>, in §9.8</span>
+   <li><a href="#dom-videopixelformat-rgba">"RGBA"</a><span>, in §9.8</span>
+   <li><a href="#dom-videopixelformat-rgba">RGBA</a><span>, in §9.8</span>
+   <li><a href="#dom-videopixelformat-rgbx">"RGBX"</a><span>, in §9.8</span>
+   <li><a href="#dom-videopixelformat-rgbx">RGBX</a><span>, in §9.8</span>
    <li><a href="#running-a-control-message">running a control message</a><span>, in §2.2</span>
    <li><a href="#dom-audiosampleformat-s16">"S16"</a><span>, in §9.3</span>
    <li><a href="#dom-audiosampleformat-s16">S16</a><span>, in §9.3</span>
@@ -6108,6 +6114,7 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
    <li><a href="#callbackdef-videoframeoutputcallback">VideoFrameOutputCallback</a><span>, in §4</span>
    <li><a href="#dictdef-videoframeplaneinit">VideoFramePlaneInit</a><span>, in §9.4</span>
    <li><a href="#dom-videoframe-videoframe-planes-init">VideoFrame(planes, init)</a><span>, in §9.4.2</span>
+   <li><a href="#enumdef-videopixelformat">VideoPixelFormat</a><span>, in §9.8</span>
    <li><a href="#dom-videoframe-visible-height-slot">[[visible height]]</a><span>, in §9.4.1</span>
    <li><a href="#dom-videoframe-visible-left-slot">[[visible left]]</a><span>, in §9.4.1</span>
    <li>
@@ -6293,14 +6300,17 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
     <li><a href="#ref-for-detached">3.5. Algorithms</a>
     <li><a href="#ref-for-detached①">5.4. Methods</a>
     <li><a href="#ref-for-detached②">6.4. Methods</a>
-    <li><a href="#ref-for-detached③">9.2.2. Constructors</a>
-    <li><a href="#ref-for-detached④">9.2.4. Methods</a> <a href="#ref-for-detached⑤">(2)</a>
-    <li><a href="#ref-for-detached⑥">9.2.5. Algorithms</a> <a href="#ref-for-detached⑦">(2)</a>
-    <li><a href="#ref-for-detached⑧">9.2.6. Transfer and Serialization</a> <a href="#ref-for-detached⑨">(2)</a>
-    <li><a href="#ref-for-detached①⓪">9.4.3. Attributes</a> <a href="#ref-for-detached①①">(2)</a>
-    <li><a href="#ref-for-detached①②">9.4.5. Methods</a> <a href="#ref-for-detached①③">(2)</a> <a href="#ref-for-detached①④">(3)</a>
-    <li><a href="#ref-for-detached①⑤">9.4.6. Algorithms</a> <a href="#ref-for-detached①⑥">(2)</a>
-    <li><a href="#ref-for-detached①⑦">9.4.7. Transfer and Serialization</a> <a href="#ref-for-detached①⑧">(2)</a>
+    <li><a href="#ref-for-detached③">9.2.1. Internal Slots</a>
+    <li><a href="#ref-for-detached④">9.2.2. Constructors</a>
+    <li><a href="#ref-for-detached⑤">9.2.3. Attributes</a>
+    <li><a href="#ref-for-detached⑥">9.2.4. Methods</a> <a href="#ref-for-detached⑦">(2)</a>
+    <li><a href="#ref-for-detached⑧">9.2.5. Algorithms</a> <a href="#ref-for-detached⑨">(2)</a>
+    <li><a href="#ref-for-detached①⓪">9.2.6. Transfer and Serialization</a> <a href="#ref-for-detached①①">(2)</a>
+    <li><a href="#ref-for-detached①②">9.4.1. Internal Slots</a>
+    <li><a href="#ref-for-detached①③">9.4.3. Attributes</a> <a href="#ref-for-detached①④">(2)</a> <a href="#ref-for-detached①⑤">(3)</a>
+    <li><a href="#ref-for-detached①⑥">9.4.5. Methods</a> <a href="#ref-for-detached①⑦">(2)</a> <a href="#ref-for-detached①⑧">(3)</a>
+    <li><a href="#ref-for-detached①⑨">9.4.6. Algorithms</a> <a href="#ref-for-detached②⓪">(2)</a>
+    <li><a href="#ref-for-detached②①">9.4.7. Transfer and Serialization</a> <a href="#ref-for-detached②②">(2)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-concept-imagebitmap-bitmap-data">
@@ -7482,7 +7492,7 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
 <c- b>interface</c-> <a href="#audiodata"><code><c- g>AudioData</c-></code></a> {
   <a class="idl-code" data-link-type="constructor" href="#dom-audiodata-audiodata"><c- g>constructor</c-></a>(<a data-link-type="idl-name" href="#dictdef-audiodatainit"><c- n>AudioDataInit</c-></a> <a href="#dom-audiodata-audiodata-init-init"><code><c- g>init</c-></code></a>);
 
-  <c- b>readonly</c-> <c- b>attribute</c-> <a data-link-type="idl-name" href="#enumdef-audiosampleformat"><c- n>AudioSampleFormat</c-></a> <a class="idl-code" data-link-type="attribute" data-readonly data-type="AudioSampleFormat" href="#dom-audiodata-format"><c- g>format</c-></a>;
+  <c- b>readonly</c-> <c- b>attribute</c-> <a data-link-type="idl-name" href="#enumdef-audiosampleformat"><c- n>AudioSampleFormat</c-></a>? <a class="idl-code" data-link-type="attribute" data-readonly data-type="AudioSampleFormat?" href="#dom-audiodata-format"><c- g>format</c-></a>;
   <c- b>readonly</c-> <c- b>attribute</c-> <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-float"><c- b>float</c-></a> <a class="idl-code" data-link-type="attribute" data-readonly data-type="float" href="#dom-audiodata-samplerate"><c- g>sampleRate</c-></a>;
   <c- b>readonly</c-> <c- b>attribute</c-> <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-unsigned-long"><c- b>unsigned</c-> <c- b>long</c-></a> <a class="idl-code" data-link-type="attribute" data-readonly data-type="unsigned long" href="#dom-audiodata-numberofframes"><c- g>numberOfFrames</c-></a>;
   <c- b>readonly</c-> <c- b>attribute</c-> <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-unsigned-long"><c- b>unsigned</c-> <c- b>long</c-></a> <a class="idl-code" data-link-type="attribute" data-readonly data-type="unsigned long" href="#dom-audiodata-numberofchannels"><c- g>numberOfChannels</c-></a>;
@@ -7529,7 +7539,7 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
   <a class="idl-code" data-link-type="constructor" href="#dom-videoframe-videoframe-planes-init"><c- g>constructor</c-></a>(<a data-link-type="dfn" href="https://heycam.github.io/webidl/#idl-sequence"><c- b>sequence</c-></a>&lt;<a data-link-type="idl-name" href="#dictdef-planeinit"><c- n>PlaneInit</c-></a>> <a href="#dom-videoframe-videoframe-planes-init-planes"><code><c- g>planes</c-></code></a>,
               <a data-link-type="idl-name" href="#dictdef-videoframeplaneinit"><c- n>VideoFramePlaneInit</c-></a> <a href="#dom-videoframe-videoframe-planes-init-init"><code><c- g>init</c-></code></a>);
 
-  <c- b>readonly</c-> <c- b>attribute</c-> <a data-link-type="idl-name" href="#enumdef-pixelformat"><c- n>PixelFormat</c-></a> <a class="idl-code" data-link-type="attribute" data-readonly data-type="PixelFormat" href="#dom-videoframe-format"><c- g>format</c-></a>;
+  <c- b>readonly</c-> <c- b>attribute</c-> <a data-link-type="idl-name" href="#enumdef-videopixelformat"><c- n>VideoPixelFormat</c-></a>? <a class="idl-code" data-link-type="attribute" data-readonly data-type="VideoPixelFormat?" href="#dom-videoframe-format"><c- g>format</c-></a>;
   <c- b>readonly</c-> <c- b>attribute</c-> <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-unsigned-long"><c- b>unsigned</c-> <c- b>long</c-></a> <a class="idl-code" data-link-type="attribute" data-readonly data-type="unsigned long" href="#dom-videoframe-codedwidth"><c- g>codedWidth</c-></a>;
   <c- b>readonly</c-> <c- b>attribute</c-> <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-unsigned-long"><c- b>unsigned</c-> <c- b>long</c-></a> <a class="idl-code" data-link-type="attribute" data-readonly data-type="unsigned long" href="#dom-videoframe-codedheight"><c- g>codedHeight</c-></a>;
   <c- b>readonly</c-> <c- b>attribute</c-> <a data-link-type="idl-name" href="https://drafts.fxtf.org/geometry-1/#domrectreadonly"><c- n>DOMRectReadOnly</c-></a>? <a class="idl-code" data-link-type="attribute" data-readonly data-type="DOMRectReadOnly?" href="#dom-videoframe-codedrect"><c- g>codedRect</c-></a>;
@@ -7554,7 +7564,7 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
 };
 
 <c- b>dictionary</c-> <a href="#dictdef-videoframeplaneinit"><code><c- g>VideoFramePlaneInit</c-></code></a> {
-  <c- b>required</c-> <a data-link-type="idl-name" href="#enumdef-pixelformat"><c- n>PixelFormat</c-></a> <a data-type="PixelFormat " href="#dom-videoframeplaneinit-format"><code><c- g>format</c-></code></a>;
+  <c- b>required</c-> <a data-link-type="idl-name" href="#enumdef-videopixelformat"><c- n>VideoPixelFormat</c-></a> <a data-type="VideoPixelFormat " href="#dom-videoframeplaneinit-format"><code><c- g>format</c-></code></a>;
   [<a class="idl-code" data-link-type="extended-attribute" href="https://heycam.github.io/webidl/#EnforceRange"><c- g>EnforceRange</c-></a>] <c- b>required</c-> <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-unsigned-long"><c- b>unsigned</c-> <c- b>long</c-></a> <a data-type="unsigned long " href="#dom-videoframeplaneinit-codedwidth"><code><c- g>codedWidth</c-></code></a>;
   [<a class="idl-code" data-link-type="extended-attribute" href="https://heycam.github.io/webidl/#EnforceRange"><c- g>EnforceRange</c-></a>] <c- b>required</c-> <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-unsigned-long"><c- b>unsigned</c-> <c- b>long</c-></a> <a data-type="unsigned long " href="#dom-videoframeplaneinit-codedheight"><code><c- g>codedHeight</c-></code></a>;
   <a data-link-type="idl-name" href="https://drafts.fxtf.org/geometry-1/#dictdef-domrectinit"><c- n>DOMRectInit</c-></a> <a data-type="DOMRectInit " href="#dom-videoframeplaneinit-visiblerect"><code><c- g>visibleRect</c-></code></a>;
@@ -7580,25 +7590,25 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
   [<a class="idl-code" data-link-type="extended-attribute" href="https://heycam.github.io/webidl/#EnforceRange"><c- g>EnforceRange</c-></a>] <c- b>required</c-> <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-unsigned-long"><c- b>unsigned</c-> <c- b>long</c-></a> <a class="idl-code" data-link-type="dict-member" data-type="unsigned long " href="#dom-planelayout-stride"><c- g>stride</c-></a>;
 };
 
-<c- b>enum</c-> <a href="#enumdef-pixelformat"><code><c- g>PixelFormat</c-></code></a> {
+<c- b>enum</c-> <a href="#enumdef-videopixelformat"><code><c- g>VideoPixelFormat</c-></code></a> {
   // 4:2:0 Y, U, V
-  <a class="idl-code" data-link-type="enum-value" href="#dom-pixelformat-i420"><c- s>"I420"</c-></a>,
+  <a class="idl-code" data-link-type="enum-value" href="#dom-videopixelformat-i420"><c- s>"I420"</c-></a>,
   // 4:2:0 Y, U, V, A
-  <a class="idl-code" data-link-type="enum-value" href="#dom-pixelformat-i420a"><c- s>"I420A"</c-></a>,
+  <a class="idl-code" data-link-type="enum-value" href="#dom-videopixelformat-i420a"><c- s>"I420A"</c-></a>,
   // 4:2:2 Y, U, V
-  <a class="idl-code" data-link-type="enum-value" href="#dom-pixelformat-i422"><c- s>"I422"</c-></a>,
+  <a class="idl-code" data-link-type="enum-value" href="#dom-videopixelformat-i422"><c- s>"I422"</c-></a>,
   // 4:4:4 Y, U, V
-  <a class="idl-code" data-link-type="enum-value" href="#dom-pixelformat-i444"><c- s>"I444"</c-></a>,
+  <a class="idl-code" data-link-type="enum-value" href="#dom-videopixelformat-i444"><c- s>"I444"</c-></a>,
   // 4:2:0 Y, UV
-  <a class="idl-code" data-link-type="enum-value" href="#dom-pixelformat-nv12"><c- s>"NV12"</c-></a>,
+  <a class="idl-code" data-link-type="enum-value" href="#dom-videopixelformat-nv12"><c- s>"NV12"</c-></a>,
   // 32bpp RGBA
-  <a class="idl-code" data-link-type="enum-value" href="#dom-pixelformat-rgba"><c- s>"RGBA"</c-></a>,
+  <a class="idl-code" data-link-type="enum-value" href="#dom-videopixelformat-rgba"><c- s>"RGBA"</c-></a>,
   // 32bpp RGBX (opaque)
-  <a class="idl-code" data-link-type="enum-value" href="#dom-pixelformat-rgbx"><c- s>"RGBX"</c-></a>,
+  <a class="idl-code" data-link-type="enum-value" href="#dom-videopixelformat-rgbx"><c- s>"RGBX"</c-></a>,
   // 32bpp BGRA
-  <a class="idl-code" data-link-type="enum-value" href="#dom-pixelformat-bgra"><c- s>"BGRA"</c-></a>,
+  <a class="idl-code" data-link-type="enum-value" href="#dom-videopixelformat-bgra"><c- s>"BGRA"</c-></a>,
   // 32bpp BGRX (opaque)
-  <a class="idl-code" data-link-type="enum-value" href="#dom-pixelformat-bgrx"><c- s>"BGRX"</c-></a>,
+  <a class="idl-code" data-link-type="enum-value" href="#dom-videopixelformat-bgrx"><c- s>"BGRX"</c-></a>,
 };
 
 [<a class="idl-code" data-link-type="extended-attribute" href="https://heycam.github.io/webidl/#Exposed"><c- g>Exposed</c-></a>=(<c- n>Window</c->,<c- n>DedicatedWorker</c->)]
@@ -7667,7 +7677,7 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
   <div style="counter-reset:issue">
    <div class="issue"> The spec should list additional format specific validation steps (
     e.g. number and order of planes, acceptable sizing, etc...). See <a href="https://github.com/w3c/webcodecs/issues/165">#165</a>.<a href="#issue-6bd004c9"> ↵ </a></div>
-   <div class="issue"> The spec should define explicit rules for each <code class="idl"><a data-link-type="idl" href="#enumdef-pixelformat">PixelFormat</a></code> and reference them in the steps above. See <a href="https://github.com/w3c/webcodecs/issues/165">#165</a>.<a href="#issue-ed2f363d"> ↵ </a></div>
+   <div class="issue"> The spec should define explicit rules for each <code class="idl"><a data-link-type="idl" href="#enumdef-videopixelformat">VideoPixelFormat</a></code> and reference them in the steps above. See <a href="https://github.com/w3c/webcodecs/issues/165">#165</a>.<a href="#issue-fcd1d323"> ↵ </a></div>
    <div class="issue"> The spec should provide definitions (and possibly diagrams) for
     coded size, visible rectangle, and display size. See <a href="https://github.com/w3c/webcodecs/issues/166">#166</a>.<a href="#issue-3beeea62"> ↵ </a></div>
   </div>
@@ -9365,11 +9375,11 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
   <aside class="dfn-panel" data-for="dom-audiodata-format-slot">
    <b><a href="#dom-audiodata-format-slot">#dom-audiodata-format-slot</a></b><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-dom-audiodata-format-slot">3.5. Algorithms</a>
-    <li><a href="#ref-for-dom-audiodata-format-slot①">9.2.2. Constructors</a>
-    <li><a href="#ref-for-dom-audiodata-format-slot②">9.2.3. Attributes</a>
-    <li><a href="#ref-for-dom-audiodata-format-slot③">9.2.4. Methods</a> <a href="#ref-for-dom-audiodata-format-slot④">(2)</a> <a href="#ref-for-dom-audiodata-format-slot⑤">(3)</a>
-    <li><a href="#ref-for-dom-audiodata-format-slot⑥">9.2.5. Algorithms</a> <a href="#ref-for-dom-audiodata-format-slot⑦">(2)</a> <a href="#ref-for-dom-audiodata-format-slot⑧">(3)</a>
+    <li><a href="#ref-for-dom-audiodata-format-slot">3.5. Algorithms</a> <a href="#ref-for-dom-audiodata-format-slot①">(2)</a>
+    <li><a href="#ref-for-dom-audiodata-format-slot②">9.2.2. Constructors</a>
+    <li><a href="#ref-for-dom-audiodata-format-slot③">9.2.3. Attributes</a>
+    <li><a href="#ref-for-dom-audiodata-format-slot④">9.2.4. Methods</a> <a href="#ref-for-dom-audiodata-format-slot⑤">(2)</a> <a href="#ref-for-dom-audiodata-format-slot⑥">(3)</a>
+    <li><a href="#ref-for-dom-audiodata-format-slot⑦">9.2.5. Algorithms</a> <a href="#ref-for-dom-audiodata-format-slot⑧">(2)</a> <a href="#ref-for-dom-audiodata-format-slot⑨">(3)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dom-audiodata-sample-rate-slot">
@@ -9565,12 +9575,13 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
   <aside class="dfn-panel" data-for="enumdef-audiosampleformat">
    <b><a href="#enumdef-audiosampleformat">#enumdef-audiosampleformat</a></b><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-enumdef-audiosampleformat">9.2. AudioData Interface</a> <a href="#ref-for-enumdef-audiosampleformat①">(2)</a>
-    <li><a href="#ref-for-enumdef-audiosampleformat②">9.2.1. Internal Slots</a>
-    <li><a href="#ref-for-enumdef-audiosampleformat③">9.2.3. Attributes</a> <a href="#ref-for-enumdef-audiosampleformat④">(2)</a>
-    <li><a href="#ref-for-enumdef-audiosampleformat⑤">9.2.4. Methods</a> <a href="#ref-for-enumdef-audiosampleformat⑥">(2)</a>
-    <li><a href="#ref-for-enumdef-audiosampleformat⑦">9.2.5. Algorithms</a> <a href="#ref-for-enumdef-audiosampleformat⑧">(2)</a>
-    <li><a href="#ref-for-enumdef-audiosampleformat⑨">9.3.1. Arrangement of audio buffer</a> <a href="#ref-for-enumdef-audiosampleformat①⓪">(2)</a> <a href="#ref-for-enumdef-audiosampleformat①①">(3)</a>
+    <li><a href="#ref-for-enumdef-audiosampleformat">3.5. Algorithms</a>
+    <li><a href="#ref-for-enumdef-audiosampleformat①">9.2. AudioData Interface</a> <a href="#ref-for-enumdef-audiosampleformat②">(2)</a>
+    <li><a href="#ref-for-enumdef-audiosampleformat③">9.2.1. Internal Slots</a> <a href="#ref-for-enumdef-audiosampleformat④">(2)</a>
+    <li><a href="#ref-for-enumdef-audiosampleformat⑤">9.2.3. Attributes</a> <a href="#ref-for-enumdef-audiosampleformat⑥">(2)</a> <a href="#ref-for-enumdef-audiosampleformat⑦">(3)</a>
+    <li><a href="#ref-for-enumdef-audiosampleformat⑧">9.2.4. Methods</a> <a href="#ref-for-enumdef-audiosampleformat⑨">(2)</a>
+    <li><a href="#ref-for-enumdef-audiosampleformat①⓪">9.2.5. Algorithms</a> <a href="#ref-for-enumdef-audiosampleformat①①">(2)</a>
+    <li><a href="#ref-for-enumdef-audiosampleformat①②">9.3.1. Arrangement of audio buffer</a> <a href="#ref-for-enumdef-audiosampleformat①③">(2)</a> <a href="#ref-for-enumdef-audiosampleformat①④">(3)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dom-audiosampleformat-u8">
@@ -10221,15 +10232,15 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
     <li><a href="#ref-for-dom-planelayout-stride②">9.7. Plane Layout</a>
    </ul>
   </aside>
-  <aside class="dfn-panel" data-for="enumdef-pixelformat">
-   <b><a href="#enumdef-pixelformat">#enumdef-pixelformat</a></b><b>Referenced in:</b>
+  <aside class="dfn-panel" data-for="enumdef-videopixelformat">
+   <b><a href="#enumdef-videopixelformat">#enumdef-videopixelformat</a></b><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-enumdef-pixelformat">9.4. VideoFrame Interface</a> <a href="#ref-for-enumdef-pixelformat①">(2)</a>
-    <li><a href="#ref-for-enumdef-pixelformat②">9.4.1. Internal Slots</a>
-    <li><a href="#ref-for-enumdef-pixelformat③">9.4.2. Constructors</a>
-    <li><a href="#ref-for-enumdef-pixelformat④">9.4.3. Attributes</a>
-    <li><a href="#ref-for-enumdef-pixelformat⑤">9.4.6. Algorithms</a> <a href="#ref-for-enumdef-pixelformat⑥">(2)</a> <a href="#ref-for-enumdef-pixelformat⑦">(3)</a>
-    <li><a href="#ref-for-enumdef-pixelformat⑧">9.8. Pixel Format</a> <a href="#ref-for-enumdef-pixelformat⑨">(2)</a> <a href="#ref-for-enumdef-pixelformat①⓪">(3)</a>
+    <li><a href="#ref-for-enumdef-videopixelformat">9.4. VideoFrame Interface</a> <a href="#ref-for-enumdef-videopixelformat①">(2)</a>
+    <li><a href="#ref-for-enumdef-videopixelformat②">9.4.1. Internal Slots</a> <a href="#ref-for-enumdef-videopixelformat③">(2)</a>
+    <li><a href="#ref-for-enumdef-videopixelformat④">9.4.2. Constructors</a>
+    <li><a href="#ref-for-enumdef-videopixelformat⑤">9.4.3. Attributes</a> <a href="#ref-for-enumdef-videopixelformat⑥">(2)</a>
+    <li><a href="#ref-for-enumdef-videopixelformat⑦">9.4.6. Algorithms</a> <a href="#ref-for-enumdef-videopixelformat⑧">(2)</a> <a href="#ref-for-enumdef-videopixelformat⑨">(3)</a>
+    <li><a href="#ref-for-enumdef-videopixelformat①⓪">9.8. Pixel Format</a> <a href="#ref-for-enumdef-videopixelformat①①">(2)</a> <a href="#ref-for-enumdef-videopixelformat①②">(3)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="sub-sampling">
@@ -10252,58 +10263,58 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
     <li><a href="#ref-for-equivalent-opaque-format②">9.8. Pixel Format</a> <a href="#ref-for-equivalent-opaque-format③">(2)</a> <a href="#ref-for-equivalent-opaque-format④">(3)</a> <a href="#ref-for-equivalent-opaque-format⑤">(4)</a>
    </ul>
   </aside>
-  <aside class="dfn-panel" data-for="dom-pixelformat-i420">
-   <b><a href="#dom-pixelformat-i420">#dom-pixelformat-i420</a></b><b>Referenced in:</b>
+  <aside class="dfn-panel" data-for="dom-videopixelformat-i420">
+   <b><a href="#dom-videopixelformat-i420">#dom-videopixelformat-i420</a></b><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-dom-pixelformat-i420">9.8. Pixel Format</a> <a href="#ref-for-dom-pixelformat-i420①">(2)</a> <a href="#ref-for-dom-pixelformat-i420②">(3)</a>
+    <li><a href="#ref-for-dom-videopixelformat-i420">9.8. Pixel Format</a> <a href="#ref-for-dom-videopixelformat-i420①">(2)</a> <a href="#ref-for-dom-videopixelformat-i420②">(3)</a>
    </ul>
   </aside>
-  <aside class="dfn-panel" data-for="dom-pixelformat-i420a">
-   <b><a href="#dom-pixelformat-i420a">#dom-pixelformat-i420a</a></b><b>Referenced in:</b>
+  <aside class="dfn-panel" data-for="dom-videopixelformat-i420a">
+   <b><a href="#dom-videopixelformat-i420a">#dom-videopixelformat-i420a</a></b><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-dom-pixelformat-i420a">9.8. Pixel Format</a> <a href="#ref-for-dom-pixelformat-i420a①">(2)</a>
+    <li><a href="#ref-for-dom-videopixelformat-i420a">9.8. Pixel Format</a> <a href="#ref-for-dom-videopixelformat-i420a①">(2)</a>
    </ul>
   </aside>
-  <aside class="dfn-panel" data-for="dom-pixelformat-i422">
-   <b><a href="#dom-pixelformat-i422">#dom-pixelformat-i422</a></b><b>Referenced in:</b>
+  <aside class="dfn-panel" data-for="dom-videopixelformat-i422">
+   <b><a href="#dom-videopixelformat-i422">#dom-videopixelformat-i422</a></b><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-dom-pixelformat-i422">9.8. Pixel Format</a>
+    <li><a href="#ref-for-dom-videopixelformat-i422">9.8. Pixel Format</a>
    </ul>
   </aside>
-  <aside class="dfn-panel" data-for="dom-pixelformat-i444">
-   <b><a href="#dom-pixelformat-i444">#dom-pixelformat-i444</a></b><b>Referenced in:</b>
+  <aside class="dfn-panel" data-for="dom-videopixelformat-i444">
+   <b><a href="#dom-videopixelformat-i444">#dom-videopixelformat-i444</a></b><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-dom-pixelformat-i444">9.8. Pixel Format</a>
+    <li><a href="#ref-for-dom-videopixelformat-i444">9.8. Pixel Format</a>
    </ul>
   </aside>
-  <aside class="dfn-panel" data-for="dom-pixelformat-nv12">
-   <b><a href="#dom-pixelformat-nv12">#dom-pixelformat-nv12</a></b><b>Referenced in:</b>
+  <aside class="dfn-panel" data-for="dom-videopixelformat-nv12">
+   <b><a href="#dom-videopixelformat-nv12">#dom-videopixelformat-nv12</a></b><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-dom-pixelformat-nv12">9.8. Pixel Format</a>
+    <li><a href="#ref-for-dom-videopixelformat-nv12">9.8. Pixel Format</a>
    </ul>
   </aside>
-  <aside class="dfn-panel" data-for="dom-pixelformat-rgba">
-   <b><a href="#dom-pixelformat-rgba">#dom-pixelformat-rgba</a></b><b>Referenced in:</b>
+  <aside class="dfn-panel" data-for="dom-videopixelformat-rgba">
+   <b><a href="#dom-videopixelformat-rgba">#dom-videopixelformat-rgba</a></b><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-dom-pixelformat-rgba">9.8. Pixel Format</a> <a href="#ref-for-dom-pixelformat-rgba①">(2)</a>
+    <li><a href="#ref-for-dom-videopixelformat-rgba">9.8. Pixel Format</a> <a href="#ref-for-dom-videopixelformat-rgba①">(2)</a>
    </ul>
   </aside>
-  <aside class="dfn-panel" data-for="dom-pixelformat-rgbx">
-   <b><a href="#dom-pixelformat-rgbx">#dom-pixelformat-rgbx</a></b><b>Referenced in:</b>
+  <aside class="dfn-panel" data-for="dom-videopixelformat-rgbx">
+   <b><a href="#dom-videopixelformat-rgbx">#dom-videopixelformat-rgbx</a></b><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-dom-pixelformat-rgbx">9.8. Pixel Format</a> <a href="#ref-for-dom-pixelformat-rgbx①">(2)</a>
+    <li><a href="#ref-for-dom-videopixelformat-rgbx">9.8. Pixel Format</a> <a href="#ref-for-dom-videopixelformat-rgbx①">(2)</a>
    </ul>
   </aside>
-  <aside class="dfn-panel" data-for="dom-pixelformat-bgra">
-   <b><a href="#dom-pixelformat-bgra">#dom-pixelformat-bgra</a></b><b>Referenced in:</b>
+  <aside class="dfn-panel" data-for="dom-videopixelformat-bgra">
+   <b><a href="#dom-videopixelformat-bgra">#dom-videopixelformat-bgra</a></b><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-dom-pixelformat-bgra">9.8. Pixel Format</a> <a href="#ref-for-dom-pixelformat-bgra①">(2)</a>
+    <li><a href="#ref-for-dom-videopixelformat-bgra">9.8. Pixel Format</a> <a href="#ref-for-dom-videopixelformat-bgra①">(2)</a>
    </ul>
   </aside>
-  <aside class="dfn-panel" data-for="dom-pixelformat-bgrx">
-   <b><a href="#dom-pixelformat-bgrx">#dom-pixelformat-bgrx</a></b><b>Referenced in:</b>
+  <aside class="dfn-panel" data-for="dom-videopixelformat-bgrx">
+   <b><a href="#dom-videopixelformat-bgrx">#dom-videopixelformat-bgrx</a></b><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-dom-pixelformat-bgrx">9.8. Pixel Format</a> <a href="#ref-for-dom-pixelformat-bgrx①">(2)</a>
+    <li><a href="#ref-for-dom-videopixelformat-bgrx">9.8. Pixel Format</a> <a href="#ref-for-dom-videopixelformat-bgrx①">(2)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="imagedecoder">
