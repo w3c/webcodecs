@@ -1255,20 +1255,20 @@ Methods {#videoencoder-methods}
     5. [=Queue a control message=] to encode |frameClone|.
 
     [=Running a control message=] to encode the frame means performing these steps.
-    1. If {{VideoEncoder/[[active color space]]}} is `null`:
-        1. If |frame|.{{VideoFrame/colorSpace}} is not `null`, assign its value
-            to {{VideoEncoder/[[active color space]]}}.
-        2. ISSUE: what here? 709? Can we trust that frame.colorSpace is not null?
-    1. Attempt to use {{VideoEncoder/[[codec implementation]]}} to encode
+    1. If {{VideoEncoder/[[active color space]]}} is `null`, and
+        |frame|.{{VideoFrame/colorSpace}} is not `null`, assign
+        |frame|.{{VideoFrame/colorSpace}} to
+        {{VideoEncoder/[[active color space]]}}.
+    2. Attempt to use {{VideoEncoder/[[codec implementation]]}} to encode
         |frameClone| according to |options|.
-    2. If encoding results in an error, queue a task on the [=control thread=]
+    3. If encoding results in an error, queue a task on the [=control thread=]
         event loop to run the [=Close VideoEncoder=] algorithm with
         {{EncodingError}}.
-    3. Queue a task on the [=control thread=] event loop to decrement
+    4. Queue a task on the [=control thread=] event loop to decrement
         {{VideoEncoder/[[encodeQueueSize]]}}.
-    4. Let |encoded outputs| be a [=list=] of encoded video data outputs
+    5. Let |encoded outputs| be a [=list=] of encoded video data outputs
         emitted by {{VideoEncoder/[[codec implementation]]}}.
-    5. If |encoded outputs| is not empty, queue a task on the [=control thread=]
+    6. If |encoded outputs| is not empty, queue a task on the [=control thread=]
         event loop to run the [=Output EncodedVideoChunks=] algorithm with
         |encoded outputs|.
   </dd>
