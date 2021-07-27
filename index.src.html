@@ -2388,11 +2388,13 @@ dictionary AudioDataInit {
     |options|.
 
     When invoked, run these steps:
-    1. Let |copyElementCount| be the result of running the
+    1. If {{platform object/[[Detached]]}} is `true`, throw an
+        {{InvalidStateError}} {{DOMException}}.
+    2. Let |copyElementCount| be the result of running the
         [=Compute Copy Element Count=] algorithm with |options|.
-    2. Let |bytesPerSample| be the number of bytes per sample, as defined by
+    3. Let |bytesPerSample| be the number of bytes per sample, as defined by
         the {{AudioData/[[format]]}}.
-    3. Return the product of multiplying |bytesPerSample| by
+    4. Return the product of multiplying |bytesPerSample| by
         |copyElementCount|.
 
 : <dfn method for=AudioData>copyTo(|destination|, |options|)</dfn>
@@ -2400,8 +2402,8 @@ dictionary AudioDataInit {
     destination buffer.
 
     When invoked, run these steps:
-    1. If the value of |frame|'s {{platform object/[[Detached]]}} internal slot is
-        `true`, throw an {{InvalidStateError}} {{DOMException}}.
+    1. If {{platform object/[[Detached]]}} is `true`, throw an
+        {{InvalidStateError}} {{DOMException}}.
     2. Let |copyElementCount| be the result of running the
         [=Compute Copy Element Count=] algorithm with |options|.
     3. Let |bytesPerSample| be the number of bytes per sample, as defined by
@@ -2428,8 +2430,8 @@ dictionary AudioDataInit {
 :: Creates a new AudioData with a reference to the same [=media resource=].
 
     When invoked, run these steps:
-    1. If the value of |frame|'s {{platform object/[[Detached]]}} internal slot is
-        `true`, throw an {{InvalidStateError}} {{DOMException}}.
+    1. If {{platform object/[[Detached]]}} is `true`, throw an
+        {{InvalidStateError}} {{DOMException}}.
     2. Return the result of running the [=Clone AudioData=] algorithm with
         [=this=].
 
@@ -3100,7 +3102,8 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
     to be used with {{VideoFrame/copyTo()}} with the given options.
 
     When invoked, run these steps:
-    1. If {{platform object/[[Detached]]}} is `true`, return `0`.
+    1. If {{platform object/[[Detached]]}} is `true`, throw an
+        {{InvalidStateError}} {{DOMException}}.
     2. If {{VideoFrame/[[format]]}} is `null`, throw a {{NotSupportedError}}
         {{DOMException}}.
     3. Let |combinedLayout| be the result of running the [=Parse
@@ -3118,7 +3121,8 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
         were returned.
 
     When invoked, run these steps:
-    1. If {{platform object/[[Detached]]}} is `true`, return `0`.
+    1. If {{platform object/[[Detached]]}} is `true`, throw an
+        {{InvalidStateError}} {{DOMException}}.
     2. If {{VideoFrame/[[format]]}} is `null`, throw a {{NotSupportedError}}
         {{DOMException}}.
     3. Let |combinedLayout| be the result of running the [=Parse
