@@ -2519,13 +2519,13 @@ signal at a particular point in time in a particular channel.
 A <dfn>frame</dfn> or (sample-frame) refers to a set of values of all channels
 of a multi-channel signal, that happen at the exact same time.
 
-Note: Consequently if an audio signal is mono (has only one channel), a frame
+NOTE: Consequently if an audio signal is mono (has only one channel), a frame
 and a sample refer to the same thing.
 
 All audio [=samples=] in this specification are using linear pulse-code
 modulation (Linear PCM): quantization levels are uniform between values.
 
-Note: The Web Audio API, that is expected to be used with this specification,
+NOTE: The Web Audio API, that is expected to be used with this specification,
 also uses Linear PCM.
 
 <xmp class='idl'>
@@ -2581,10 +2581,10 @@ in different buffers, themselves arranged in an order described in the section
 {{AudioData}}'s {{AudioData/[[number of channels]]}}. Each plane contains
 {{AudioData/[[number of frames]]}} elements.
 
-Note: The [[WEBAUDIO|Web Audio API]] currently uses {{f32-planar}} exclusively.
+NOTE: The [[WEBAUDIO|Web Audio API]] currently uses {{f32-planar}} exclusively.
 
 <div class='note'>
-Note: The following diagram exemplifies the memory layout of [=planar=] versus
+NOTE: The following diagram exemplifies the memory layout of [=planar=] versus
     [=interleaved=] {{AudioSampleFormat}}s
 
 <img alt="Graphical representation the memory layout of interleaved and planar
@@ -2645,13 +2645,19 @@ An audio buffer comprised only of values equal to the [=bias value=] is silent.
 </tbody>
 </table>
 
-Note: There is no data type that can hold 24 bits of information conveniently,
+NOTE: There is no data type that can hold 24 bits of information conveniently,
 but audio content using 24-bit samples is common, so 32-bits integers are
 commonly used to hold 24-bit content.
 
-{{AudioDecoder}}s decoding 24-bit audio chunks MUST convert their output to
-{{s32}} or {{s32-planar}}, by left-shifting the decoded samples by `8` before
-exposing them as {{AudioData}}.
+{{AudioData}} containing 24-bit samples SHOULD store those samples in {{s32}} or
+{{f32}}. When samples are stored in {{s32}}, each sample MUST be left-shifted by
+`8` bits. By virtue of this process, samples outside of the valid 24-bit range
+([-8388608, +8388608]) will be clipped. To avoid clipping and ensure lossless
+transport, samples may be converted to {{f32}}.
+
+NOTE: While clipping is unavoidable in {{u8}}, {{s16}}, and {{s32}} samples due
+to their storage types, implementations SHOULD take care not to clip internally
+when handling {{f32}} samples.
 
 ### Audio channel ordering ### {#audio-channel-ordering}
 
@@ -2664,7 +2670,7 @@ When encoding, the ordering of the audio channels in the resulting
 
 In other terms, no channel reordering is performed when encoding and decoding.
 
-Note: The container either implies or specifies the channel mapping: the
+NOTE: The container either implies or specifies the channel mapping: the
 channel attributed to a particular channel index.
 
 
