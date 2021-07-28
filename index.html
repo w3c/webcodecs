@@ -6,7 +6,7 @@
   <link href="https://www.w3.org/StyleSheets/TR/2016/W3C-ED" rel="stylesheet" type="text/css">
   <meta content="Bikeshed version 59d067506, updated Fri Jul 23 15:43:29 2021 -0700" name="generator">
   <link href="https://www.w3.org/TR/webcodecs/" rel="canonical">
-  <meta content="e7ebd16ceec83b704eec3da1a7c5e1bd68cc4486" name="document-revision">
+  <meta content="03e42e70a03f514c045787fce4a20f74a8c4a0d5" name="document-revision">
 <style>
 main > dl > dd {
   margin-bottom: 1em;
@@ -2348,6 +2348,7 @@ combination of codec registrations or none at all.</p>
   [<a class="idl-code" data-link-type="extended-attribute" href="https://heycam.github.io/webidl/#EnforceRange" id="ref-for-EnforceRange④"><c- g>EnforceRange</c-></a>] <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-unsigned-long" id="ref-for-idl-unsigned-long⑧"><c- b>unsigned</c-> <c- b>long</c-></a> <a class="idl-code" data-link-type="dict-member" data-type="unsigned long " href="#dom-videodecoderconfig-displayaspectwidth" id="ref-for-dom-videodecoderconfig-displayaspectwidth①"><c- g>displayAspectWidth</c-></a>;
   [<a class="idl-code" data-link-type="extended-attribute" href="https://heycam.github.io/webidl/#EnforceRange" id="ref-for-EnforceRange⑤"><c- g>EnforceRange</c-></a>] <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-unsigned-long" id="ref-for-idl-unsigned-long⑨"><c- b>unsigned</c-> <c- b>long</c-></a> <a class="idl-code" data-link-type="dict-member" data-type="unsigned long " href="#dom-videodecoderconfig-displayaspectheight" id="ref-for-dom-videodecoderconfig-displayaspectheight①"><c- g>displayAspectHeight</c-></a>;
   <a data-link-type="idl-name" href="#enumdef-hardwareacceleration" id="ref-for-enumdef-hardwareacceleration"><c- n>HardwareAcceleration</c-></a> <a class="idl-code" data-default="&quot;allow&quot;" data-link-type="dict-member" data-type="HardwareAcceleration " href="#dom-videodecoderconfig-hardwareacceleration" id="ref-for-dom-videodecoderconfig-hardwareacceleration"><c- g>hardwareAcceleration</c-></a> = "allow";
+  <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-boolean" id="ref-for-idl-boolean⑨"><c- b>boolean</c-></a> <a class="idl-code" data-link-type="dict-member" data-type="boolean " href="#dom-videodecoderconfig-optimizeforlatency" id="ref-for-dom-videodecoderconfig-optimizeforlatency"><c- g>optimizeForLatency</c-></a>;
 };
 </pre>
    <p>To check if a <code class="idl"><a data-link-type="idl" href="#dictdef-videodecoderconfig" id="ref-for-dictdef-videodecoderconfig①②">VideoDecoderConfig</a></code> is a <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="valid-videodecoderconfig">valid VideoDecoderConfig</dfn>,
@@ -2387,11 +2388,18 @@ return <code>false</code>.</p>
     <dd> Horizontal dimension of the VideoFrame’s aspect ratio when displayed. 
     <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoDecoderConfig" data-dfn-type="dict-member" data-export id="dom-videodecoderconfig-displayaspectheight"><code>displayAspectHeight</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#idl-unsigned-long" id="ref-for-idl-unsigned-long①③">unsigned long</a></span>
     <dd> Vertical dimension of the VideoFrame’s aspect ratio when displayed. 
-    <p class="note" role="note"><span>Note:</span> <code class="idl"><a data-link-type="idl" href="#dom-videoframe-displaywidth" id="ref-for-dom-videoframe-displaywidth">displayWidth</a></code> and <code class="idl"><a data-link-type="idl" href="#dom-videoframe-displayheight" id="ref-for-dom-videoframe-displayheight">displayHeight</a></code> can both be
+    <p class="note" role="note"><span>NOTE:</span> <code class="idl"><a data-link-type="idl" href="#dom-videoframe-displaywidth" id="ref-for-dom-videoframe-displaywidth">displayWidth</a></code> and <code class="idl"><a data-link-type="idl" href="#dom-videoframe-displayheight" id="ref-for-dom-videoframe-displayheight">displayHeight</a></code> can both be
   different from <code class="idl"><a data-link-type="idl" href="#dom-videodecoderconfig-displayaspectwidth" id="ref-for-dom-videodecoderconfig-displayaspectwidth④">displayAspectWidth</a></code> and <code class="idl"><a data-link-type="idl" href="#dom-videodecoderconfig-displayaspectheight" id="ref-for-dom-videodecoderconfig-displayaspectheight④">displayAspectHeight</a></code>, but they should have identical
   ratios, after scaling is applied when <a data-link-type="dfn" href="#create-a-videoframe" id="ref-for-create-a-videoframe①">creating the video frame</a>.</p>
     <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoDecoderConfig" data-dfn-type="dict-member" data-export id="dom-videodecoderconfig-hardwareacceleration"><code>hardwareAcceleration</code></dfn>, <span> of type <a data-link-type="idl-name" href="#enumdef-hardwareacceleration" id="ref-for-enumdef-hardwareacceleration①">HardwareAcceleration</a>, defaulting to <code>"allow"</code></span>
     <dd> Configures hardware acceleration for this codec. See <code class="idl"><a data-link-type="idl" href="#enumdef-hardwareacceleration" id="ref-for-enumdef-hardwareacceleration②">HardwareAcceleration</a></code>. 
+    <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoDecoderConfig" data-dfn-type="dict-member" data-export id="dom-videodecoderconfig-optimizeforlatency"><code>optimizeForLatency</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#idl-boolean" id="ref-for-idl-boolean①⓪">boolean</a></span>
+    <dd>
+      Hint that the selected decoder SHOULD be configured to minimize the number
+    of <code class="idl"><a data-link-type="idl" href="#encodedvideochunk" id="ref-for-encodedvideochunk①②">EncodedVideoChunk</a></code>s that have to be decoded before a <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe⑦">VideoFrame</a></code> is output. 
+     <p class="note" role="note"><span>NOTE:</span> In addition to User Agent and hardware limitations, some codec
+    bitstreams may require a minimum number of inputs before any output can be
+    produced.</p>
    </dl>
    <h3 class="heading settled" data-level="7.7" id="audio-encoder-config"><span class="secno">7.7. </span><span class="content">AudioEncoderConfig</span><a class="self-link" href="#audio-encoder-config"></a></h3>
 <pre class="idl highlight def"><c- b>dictionary</c-> <dfn class="dfn-paneled idl-code" data-dfn-type="dictionary" data-export id="dictdef-audioencoderconfig"><code><c- g>AudioEncoderConfig</c-></code></dfn> {
@@ -2456,21 +2464,21 @@ run these steps:</p>
     <dd>Contains a <a data-link-type="dfn" href="#codec-string" id="ref-for-codec-string①">codec string</a> describing the codec.
     <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoEncoderConfig" data-dfn-type="dict-member" data-export id="dom-videoencoderconfig-width"><code>width</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#idl-unsigned-long" id="ref-for-idl-unsigned-long②②">unsigned long</a></span>
     <dd>
-      The encoded width of output <code class="idl"><a data-link-type="idl" href="#encodedvideochunk" id="ref-for-encodedvideochunk①②">EncodedVideoChunk</a></code>s in pixels, prior to any
+      The encoded width of output <code class="idl"><a data-link-type="idl" href="#encodedvideochunk" id="ref-for-encodedvideochunk①③">EncodedVideoChunk</a></code>s in pixels, prior to any
     display aspect ratio adjustments. 
-     <p>The encoder must scale any <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe⑦">VideoFrame</a></code> whose <code class="idl"><a data-link-type="idl" href="#dom-videoframe-visible-width-slot" id="ref-for-dom-videoframe-visible-width-slot">[[visible width]]</a></code> differs from this value.</p>
+     <p>The encoder must scale any <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe⑧">VideoFrame</a></code> whose <code class="idl"><a data-link-type="idl" href="#dom-videoframe-visible-width-slot" id="ref-for-dom-videoframe-visible-width-slot">[[visible width]]</a></code> differs from this value.</p>
     <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoEncoderConfig" data-dfn-type="dict-member" data-export id="dom-videoencoderconfig-height"><code>height</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#idl-unsigned-long" id="ref-for-idl-unsigned-long②③">unsigned long</a></span>
     <dd>
-      The encoded height of output <code class="idl"><a data-link-type="idl" href="#encodedvideochunk" id="ref-for-encodedvideochunk①③">EncodedVideoChunk</a></code>s in pixels, prior to any
+      The encoded height of output <code class="idl"><a data-link-type="idl" href="#encodedvideochunk" id="ref-for-encodedvideochunk①④">EncodedVideoChunk</a></code>s in pixels, prior to any
     display aspect ratio adjustments. 
-     <p>The encoder must scale any <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe⑧">VideoFrame</a></code> whose <code class="idl"><a data-link-type="idl" href="#dom-videoframe-visible-height-slot" id="ref-for-dom-videoframe-visible-height-slot">[[visible height]]</a></code> differs from this value.</p>
+     <p>The encoder must scale any <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe⑨">VideoFrame</a></code> whose <code class="idl"><a data-link-type="idl" href="#dom-videoframe-visible-height-slot" id="ref-for-dom-videoframe-visible-height-slot">[[visible height]]</a></code> differs from this value.</p>
    </dl>
    <dl>
     <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoEncoderConfig" data-dfn-type="dict-member" data-export id="dom-videoencoderconfig-displaywidth"><code>displayWidth</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#idl-unsigned-long" id="ref-for-idl-unsigned-long②④">unsigned long</a></span>
-    <dd> The intended display width of output <code class="idl"><a data-link-type="idl" href="#encodedvideochunk" id="ref-for-encodedvideochunk①④">EncodedVideoChunk</a></code>s in pixels.
+    <dd> The intended display width of output <code class="idl"><a data-link-type="idl" href="#encodedvideochunk" id="ref-for-encodedvideochunk①⑤">EncodedVideoChunk</a></code>s in pixels.
     Defaults to <code class="idl"><a data-link-type="idl" href="#dom-videoencoderconfig-width" id="ref-for-dom-videoencoderconfig-width②">width</a></code> if not present. 
     <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoEncoderConfig" data-dfn-type="dict-member" data-export id="dom-videoencoderconfig-displayheight"><code>displayHeight</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#idl-unsigned-long" id="ref-for-idl-unsigned-long②⑤">unsigned long</a></span>
-    <dd> The intended display height of output <code class="idl"><a data-link-type="idl" href="#encodedvideochunk" id="ref-for-encodedvideochunk①⑤">EncodedVideoChunk</a></code>s in pixels.
+    <dd> The intended display height of output <code class="idl"><a data-link-type="idl" href="#encodedvideochunk" id="ref-for-encodedvideochunk①⑥">EncodedVideoChunk</a></code>s in pixels.
     Defaults to <code class="idl"><a data-link-type="idl" href="#dom-videoencoderconfig-width" id="ref-for-dom-videoencoderconfig-width③">width</a></code> if not present. 
    </dl>
    <div class="note" role="note">
@@ -2492,10 +2500,10 @@ run these steps:</p>
     <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoEncoderConfig" data-dfn-type="dict-member" data-export id="dom-videoencoderconfig-hardwareacceleration"><code>hardwareAcceleration</code></dfn>, <span> of type <a data-link-type="idl-name" href="#enumdef-hardwareacceleration" id="ref-for-enumdef-hardwareacceleration④">HardwareAcceleration</a>, defaulting to <code>"allow"</code></span>
     <dd> Configures hardware acceleration for this codec. See <code class="idl"><a data-link-type="idl" href="#enumdef-hardwareacceleration" id="ref-for-enumdef-hardwareacceleration⑤">HardwareAcceleration</a></code>. 
     <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoEncoderConfig" data-dfn-type="dict-member" data-export id="dom-videoencoderconfig-alpha"><code>alpha</code></dfn>, <span> of type <a data-link-type="idl-name" href="#enumdef-alphaoption" id="ref-for-enumdef-alphaoption①">AlphaOption</a>, defaulting to <code>"discard"</code></span>
-    <dd> Whether the alpha component of the <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe⑨">VideoFrame</a></code> inputs should be kept
+    <dd> Whether the alpha component of the <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe①⓪">VideoFrame</a></code> inputs should be kept
     or discarded prior to encoding. If <code class="idl"><a data-link-type="idl" href="#dom-videoencoderconfig-alpha" id="ref-for-dom-videoencoderconfig-alpha②">alpha</a></code> is
     equal to <code class="idl"><a data-link-type="idl" href="#dom-alphaoption-discard" id="ref-for-dom-alphaoption-discard">discard</a></code>, alpha data is always discarded, regardless
-    of a <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe①⓪">VideoFrame</a></code>'s <code class="idl"><a data-link-type="idl" href="#dom-videoframe-format-slot" id="ref-for-dom-videoframe-format-slot">[[format]]</a></code>. 
+    of a <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe①①">VideoFrame</a></code>'s <code class="idl"><a data-link-type="idl" href="#dom-videoframe-format-slot" id="ref-for-dom-videoframe-format-slot">[[format]]</a></code>. 
     <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoEncoderConfig" data-dfn-type="dict-member" data-export id="dom-videoencoderconfig-scalabilitymode"><code>scalabilityMode</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#idl-DOMString" id="ref-for-idl-DOMString⑨">DOMString</a></span>
     <dd> An encoding <a data-link-type="dfn" href="https://w3c.github.io/webrtc-svc/#scalabilitymodes*" id="ref-for-scalabilitymodes*">scalability mode identifier</a> as defined by <a data-link-type="biblio" href="#biblio-webrtc-svc">[WebRTC-SVC]</a>. 
     <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoEncoderConfig" data-dfn-type="dict-member" data-export id="dom-videoencoderconfig-bitratemode"><code>bitrateMode</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://www.w3.org/TR/mediastream-recording/#bitratemode" id="ref-for-bitratemode①">BitrateMode</a>, defaulting to <code>"variable"</code></span>
@@ -2577,9 +2585,9 @@ specialized hardware.</p>
 a variety of different operations.</p>
    <dl>
     <dt><dfn class="dfn-paneled idl-code" data-dfn-for="AlphaOption" data-dfn-type="enum-value" data-export data-lt="&quot;keep&quot;|keep" id="dom-alphaoption-keep"><code>keep</code></dfn>
-    <dd> Indicates that the user agent should preserve alpha channel data for <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe①①">VideoFrame</a></code>s, if it is present. 
+    <dd> Indicates that the user agent should preserve alpha channel data for <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe①②">VideoFrame</a></code>s, if it is present. 
     <dt><dfn class="dfn-paneled idl-code" data-dfn-for="AlphaOption" data-dfn-type="enum-value" data-export data-lt="&quot;discard&quot;|discard" id="dom-alphaoption-discard"><code>discard</code></dfn>
-    <dd> Indicates that the user agent should ignore or remove <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe①②">VideoFrame</a></code>'s alpha
+    <dd> Indicates that the user agent should ignore or remove <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe①③">VideoFrame</a></code>'s alpha
     channel data. 
    </dl>
    <h3 class="heading settled" data-level="7.11" id="latency-mode"><span class="secno">7.11. </span><span class="content">Latency Mode</span><a class="self-link" href="#latency-mode"></a></h3>
@@ -2621,11 +2629,11 @@ emitting encoded chunks.</p>
 keys and values. For nested dictionaries, apply this definition recursively. 
    <h3 class="heading settled" data-level="7.13" id="video-encoder-options"><span class="secno">7.13. </span><span class="content">VideoEncoderEncodeOptions</span><a class="self-link" href="#video-encoder-options"></a></h3>
 <pre class="idl highlight def"><c- b>dictionary</c-> <dfn class="dfn-paneled idl-code" data-dfn-type="dictionary" data-export id="dictdef-videoencoderencodeoptions"><code><c- g>VideoEncoderEncodeOptions</c-></code></dfn> {
-  <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-boolean" id="ref-for-idl-boolean⑨"><c- b>boolean</c-></a> <a class="idl-code" data-default="false" data-link-type="dict-member" data-type="boolean " href="#dom-videoencoderencodeoptions-keyframe" id="ref-for-dom-videoencoderencodeoptions-keyframe"><c- g>keyFrame</c-></a> = <c- b>false</c->;
+  <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-boolean" id="ref-for-idl-boolean①①"><c- b>boolean</c-></a> <a class="idl-code" data-default="false" data-link-type="dict-member" data-type="boolean " href="#dom-videoencoderencodeoptions-keyframe" id="ref-for-dom-videoencoderencodeoptions-keyframe"><c- g>keyFrame</c-></a> = <c- b>false</c->;
 };
 </pre>
    <dl>
-    <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoEncoderEncodeOptions" data-dfn-type="dict-member" data-export id="dom-videoencoderencodeoptions-keyframe"><code>keyFrame</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#idl-boolean" id="ref-for-idl-boolean①⓪">boolean</a>, defaulting to <code>false</code></span>
+    <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoEncoderEncodeOptions" data-dfn-type="dict-member" data-export id="dom-videoencoderencodeoptions-keyframe"><code>keyFrame</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#idl-boolean" id="ref-for-idl-boolean①②">boolean</a>, defaulting to <code>false</code></span>
     <dd> A value of <code>true</code> indicates that the given frame MUST be encoded as a key
     frame. A value of <code>false</code> indicates that the User Agent has flexibility to
     decide whether the frame will be encoded as a <a data-link-type="dfn" href="#key-chunk" id="ref-for-key-chunk④">key frame</a>. 
@@ -2772,7 +2780,7 @@ greater than in <var>destination</var>, throw a <code class="idl"><a data-link-t
      <p>An array of bytes representing the encoded chunk data.</p>
     <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="EncodedVideoChunk" data-dfn-type="attribute" data-export id="dom-encodedvideochunk-type-slot"><code>[[type]]</code></dfn>
     <dd data-md>
-     <p>The <code class="idl"><a data-link-type="idl" href="#enumdef-encodedaudiochunktype" id="ref-for-enumdef-encodedaudiochunktype④">EncodedAudioChunkType</a></code> of this <code class="idl"><a data-link-type="idl" href="#encodedvideochunk" id="ref-for-encodedvideochunk①⑥">EncodedVideoChunk</a></code>;</p>
+     <p>The <code class="idl"><a data-link-type="idl" href="#enumdef-encodedaudiochunktype" id="ref-for-enumdef-encodedaudiochunktype④">EncodedAudioChunkType</a></code> of this <code class="idl"><a data-link-type="idl" href="#encodedvideochunk" id="ref-for-encodedvideochunk①⑦">EncodedVideoChunk</a></code>;</p>
     <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="EncodedVideoChunk" data-dfn-type="attribute" data-export id="dom-encodedvideochunk-timestamp-slot"><code>[[timestamp]]</code></dfn>
     <dd data-md>
      <p>The presentation timestamp, given in microseconds.</p>
@@ -2787,7 +2795,7 @@ greater than in <var>destination</var>, throw a <code class="idl"><a data-link-t
     <dfn class="dfn-paneled idl-code" data-dfn-for="EncodedVideoChunk" data-dfn-type="constructor" data-export data-lt="EncodedVideoChunk(init)|constructor(init)" id="dom-encodedvideochunk-encodedvideochunk" title="EncodedVideoChunk(init)"><code> EncodedVideoChunk(init) </code></dfn> 
    <ol>
     <li data-md>
-     <p>Let <var>chunk</var> be a new <code class="idl"><a data-link-type="idl" href="#encodedvideochunk" id="ref-for-encodedvideochunk①⑦">EncodedVideoChunk</a></code> object, initialized as follows</p>
+     <p>Let <var>chunk</var> be a new <code class="idl"><a data-link-type="idl" href="#encodedvideochunk" id="ref-for-encodedvideochunk①⑧">EncodedVideoChunk</a></code> object, initialized as follows</p>
      <ol>
       <li data-md>
        <p>Assign <code>init.type</code> to <code class="idl"><a data-link-type="idl" href="#dom-encodedvideochunk-type-slot" id="ref-for-dom-encodedvideochunk-type-slot">[[type]]</a></code>.</p>
@@ -2843,11 +2851,11 @@ counting (<code>clone()</code> and <code>close()</code>).</p>
     no longer needed.</p>
    <h4 class="heading settled" data-level="9.1.2" id="raw-media-memory-model-reference-counting"><span class="secno">9.1.2. </span><span class="content">Reference Counting</span><a class="self-link" href="#raw-media-memory-model-reference-counting"></a></h4>
    <p>A <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="media-resource">media resource</dfn> is storage for the actual pixel data or the audio
-sample data described by a <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe①③">VideoFrame</a></code> or <code class="idl"><a data-link-type="idl" href="#audiodata" id="ref-for-audiodata④">AudioData</a></code>.</p>
-   <p>The <code class="idl"><a data-link-type="idl" href="#audiodata" id="ref-for-audiodata⑤">AudioData</a></code> <code class="idl"><a data-link-type="idl" href="#dom-audiodata-resource-reference-slot" id="ref-for-dom-audiodata-resource-reference-slot①">[[resource reference]]</a></code> and <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe①④">VideoFrame</a></code> <code class="idl"><a data-link-type="idl" href="#dom-videoframe-resource-reference-slot" id="ref-for-dom-videoframe-resource-reference-slot">[[resource reference]]</a></code> internal slots hold a reference to a <a data-link-type="dfn" href="#media-resource" id="ref-for-media-resource③">media resource</a>.</p>
-   <p><code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe①⑤">VideoFrame</a></code>.<code class="idl"><a data-link-type="idl" href="#dom-videoframe-clone" id="ref-for-dom-videoframe-clone">clone()</a></code> and <code class="idl"><a data-link-type="idl" href="#audiodata" id="ref-for-audiodata⑥">AudioData</a></code>.<code class="idl"><a data-link-type="idl" href="#dom-audiodata-clone" id="ref-for-dom-audiodata-clone">clone()</a></code> return new objects whose <code>[[resource reference]]</code> points to the same <a data-link-type="dfn" href="#media-resource" id="ref-for-media-resource④">media resource</a> as the original
+sample data described by a <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe①④">VideoFrame</a></code> or <code class="idl"><a data-link-type="idl" href="#audiodata" id="ref-for-audiodata④">AudioData</a></code>.</p>
+   <p>The <code class="idl"><a data-link-type="idl" href="#audiodata" id="ref-for-audiodata⑤">AudioData</a></code> <code class="idl"><a data-link-type="idl" href="#dom-audiodata-resource-reference-slot" id="ref-for-dom-audiodata-resource-reference-slot①">[[resource reference]]</a></code> and <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe①⑤">VideoFrame</a></code> <code class="idl"><a data-link-type="idl" href="#dom-videoframe-resource-reference-slot" id="ref-for-dom-videoframe-resource-reference-slot">[[resource reference]]</a></code> internal slots hold a reference to a <a data-link-type="dfn" href="#media-resource" id="ref-for-media-resource③">media resource</a>.</p>
+   <p><code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe①⑥">VideoFrame</a></code>.<code class="idl"><a data-link-type="idl" href="#dom-videoframe-clone" id="ref-for-dom-videoframe-clone">clone()</a></code> and <code class="idl"><a data-link-type="idl" href="#audiodata" id="ref-for-audiodata⑥">AudioData</a></code>.<code class="idl"><a data-link-type="idl" href="#dom-audiodata-clone" id="ref-for-dom-audiodata-clone">clone()</a></code> return new objects whose <code>[[resource reference]]</code> points to the same <a data-link-type="dfn" href="#media-resource" id="ref-for-media-resource④">media resource</a> as the original
 object.</p>
-   <p><code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe①⑥">VideoFrame</a></code>.<code class="idl"><a data-link-type="idl" href="#dom-videoframe-close" id="ref-for-dom-videoframe-close①">close()</a></code> and <code class="idl"><a data-link-type="idl" href="#audiodata" id="ref-for-audiodata⑦">AudioData</a></code>.<code class="idl"><a data-link-type="idl" href="#dom-audiodata-close" id="ref-for-dom-audiodata-close">close()</a></code> will clear their [[resource reference]] slot, releasing the reference their <a data-link-type="dfn" href="#media-resource" id="ref-for-media-resource⑤">media resource</a>.</p>
+   <p><code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe①⑦">VideoFrame</a></code>.<code class="idl"><a data-link-type="idl" href="#dom-videoframe-close" id="ref-for-dom-videoframe-close①">close()</a></code> and <code class="idl"><a data-link-type="idl" href="#audiodata" id="ref-for-audiodata⑦">AudioData</a></code>.<code class="idl"><a data-link-type="idl" href="#dom-audiodata-close" id="ref-for-dom-audiodata-close">close()</a></code> will clear their [[resource reference]] slot, releasing the reference their <a data-link-type="dfn" href="#media-resource" id="ref-for-media-resource⑤">media resource</a>.</p>
    <p>A <a data-link-type="dfn" href="#media-resource" id="ref-for-media-resource⑥">media resource</a> must remain alive at least as long as it continues to be
 referenced by a <code>[[resource reference]]</code>.</p>
    <p class="note" role="note"><span>NOTE:</span> When a <a data-link-type="dfn" href="#media-resource" id="ref-for-media-resource⑦">media resource</a> is no longer referenced by a <code>[[resource reference]]</code>, the resource may be destroyed. User Agents are
@@ -2855,16 +2863,16 @@ referenced by a <code>[[resource reference]]</code>.</p>
     facilitate resource reuse.</p>
    <h4 class="heading settled" data-level="9.1.3" id="raw-media-serialization-and-transfer"><span class="secno">9.1.3. </span><span class="content">Transfer and Serialization</span><a class="self-link" href="#raw-media-serialization-and-transfer"></a></h4>
    <p>This section is non-normative.</p>
-   <p><code class="idl"><a data-link-type="idl" href="#audiodata" id="ref-for-audiodata⑧">AudioData</a></code> and <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe①⑦">VideoFrame</a></code> are both <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/structured-data.html#transferable-objects" id="ref-for-transferable-objects">transferable</a> and <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/structured-data.html#serializable-objects" id="ref-for-serializable-objects">serializable</a> objects. Their transfer and
+   <p><code class="idl"><a data-link-type="idl" href="#audiodata" id="ref-for-audiodata⑧">AudioData</a></code> and <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe①⑧">VideoFrame</a></code> are both <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/structured-data.html#transferable-objects" id="ref-for-transferable-objects">transferable</a> and <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/structured-data.html#serializable-objects" id="ref-for-serializable-objects">serializable</a> objects. Their transfer and
 serialization steps are defined in <a href="#audiodata-transfer-serialization">§ 9.2.6 Transfer and Serialization</a> and <a href="#videoframe-transfer-serialization">§ 9.4.7 Transfer and Serialization</a> respectively.</p>
-   <p>Transferring an <code class="idl"><a data-link-type="idl" href="#audiodata" id="ref-for-audiodata⑨">AudioData</a></code> or <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe①⑧">VideoFrame</a></code> moves its <code>[[resource
+   <p>Transferring an <code class="idl"><a data-link-type="idl" href="#audiodata" id="ref-for-audiodata⑨">AudioData</a></code> or <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe①⑨">VideoFrame</a></code> moves its <code>[[resource
 reference]]</code> to the destination object and closes (as in <code class="idl"><a data-link-type="idl" href="#dom-audiodata-close" id="ref-for-dom-audiodata-close①">close()</a></code>)
 the source object. Authors may use this facility
-to move an <code class="idl"><a data-link-type="idl" href="#audiodata" id="ref-for-audiodata①⓪">AudioData</a></code> or <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe①⑨">VideoFrame</a></code> between realms without copying the
+to move an <code class="idl"><a data-link-type="idl" href="#audiodata" id="ref-for-audiodata①⓪">AudioData</a></code> or <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe②⓪">VideoFrame</a></code> between realms without copying the
 underlying <a data-link-type="dfn" href="#media-resource" id="ref-for-media-resource⑧">media resource</a>.</p>
-   <p>Serializing an <code class="idl"><a data-link-type="idl" href="#audiodata" id="ref-for-audiodata①①">AudioData</a></code> or <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe②⓪">VideoFrame</a></code> effectively clones (as in <code class="idl"><a data-link-type="idl" href="#dom-videoframe-clone" id="ref-for-dom-videoframe-clone①">clone()</a></code>) the source object, resulting in two objects that
+   <p>Serializing an <code class="idl"><a data-link-type="idl" href="#audiodata" id="ref-for-audiodata①①">AudioData</a></code> or <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe②①">VideoFrame</a></code> effectively clones (as in <code class="idl"><a data-link-type="idl" href="#dom-videoframe-clone" id="ref-for-dom-videoframe-clone①">clone()</a></code>) the source object, resulting in two objects that
 reference the same <a data-link-type="dfn" href="#media-resource" id="ref-for-media-resource⑨">media resource</a>. Authors may use this facility to clone
-an <code class="idl"><a data-link-type="idl" href="#audiodata" id="ref-for-audiodata①②">AudioData</a></code> or <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe②①">VideoFrame</a></code> to another realm without copying the
+an <code class="idl"><a data-link-type="idl" href="#audiodata" id="ref-for-audiodata①②">AudioData</a></code> or <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe②②">VideoFrame</a></code> to another realm without copying the
 underlying <a data-link-type="dfn" href="#media-resource" id="ref-for-media-resource①⓪">media resource</a>.</p>
    <h3 class="heading settled" data-level="9.2" id="audiodata-interface"><span class="secno">9.2. </span><span class="content">AudioData Interface</span><a class="self-link" href="#audiodata-interface"></a></h3>
 <pre class="idl highlight def">[<a class="idl-code" data-link-type="extended-attribute" href="https://heycam.github.io/webidl/#Exposed" id="ref-for-Exposed⑥"><c- g>Exposed</c-></a>=(<c- n>Window</c->,<c- n>DedicatedWorker</c->), <a class="idl-code" data-link-type="extended-attribute" href="https://html.spec.whatwg.org/multipage/structured-data.html#serializable" id="ref-for-serializable"><c- g>Serializable</c-></a>, <a class="idl-code" data-link-type="extended-attribute" href="https://html.spec.whatwg.org/multipage/structured-data.html#transferable" id="ref-for-transferable"><c- g>Transferable</c-></a>]
@@ -3342,7 +3350,7 @@ when handling <code class="idl"><a data-link-type="idl" href="#dom-audiosamplefo
    <p class="note" role="note"><span>NOTE:</span> The container either implies or specifies the channel mapping: the
 channel attributed to a particular channel index.</p>
    <h3 class="heading settled" data-level="9.4" id="videoframe-interface"><span class="secno">9.4. </span><span class="content">VideoFrame Interface</span><a class="self-link" href="#videoframe-interface"></a></h3>
-   <p class="note" role="note"><span>NOTE:</span> <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe②②">VideoFrame</a></code> is a <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/canvas.html#canvasimagesource" id="ref-for-canvasimagesource">CanvasImageSource</a></code>. A <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe②③">VideoFrame</a></code> may be
+   <p class="note" role="note"><span>NOTE:</span> <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe②③">VideoFrame</a></code> is a <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/canvas.html#canvasimagesource" id="ref-for-canvasimagesource">CanvasImageSource</a></code>. A <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe②④">VideoFrame</a></code> may be
     passed to any method accepting a <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/canvas.html#canvasimagesource" id="ref-for-canvasimagesource①">CanvasImageSource</a></code>, including <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/canvas.html#canvasdrawimage" id="ref-for-canvasdrawimage">CanvasDrawImage</a></code>'s <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/canvas.html#dom-context-2d-drawimage" id="ref-for-dom-context-2d-drawimage">drawImage()</a></code>.</p>
 <pre class="idl highlight def">[<a class="idl-code" data-link-type="extended-attribute" href="https://heycam.github.io/webidl/#Exposed" id="ref-for-Exposed⑦"><c- g>Exposed</c-></a>=(<c- n>Window</c->,<c- n>DedicatedWorker</c->), <a class="idl-code" data-link-type="extended-attribute" href="https://html.spec.whatwg.org/multipage/structured-data.html#serializable" id="ref-for-serializable①"><c- g>Serializable</c-></a>, <a class="idl-code" data-link-type="extended-attribute" href="https://html.spec.whatwg.org/multipage/structured-data.html#transferable" id="ref-for-transferable①"><c- g>Transferable</c-></a>]
 <c- b>interface</c-> <dfn class="dfn-paneled idl-code" data-dfn-type="interface" data-export id="videoframe"><code><c- g>VideoFrame</c-></code></dfn> {
@@ -3363,7 +3371,7 @@ channel attributed to a particular channel index.</p>
   <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-promise" id="ref-for-idl-promise⑧"><c- b>Promise</c-></a>&lt;<a data-link-type="dfn" href="https://heycam.github.io/webidl/#idl-sequence" id="ref-for-idl-sequence"><c- b>sequence</c-></a>&lt;<a data-link-type="idl-name" href="#dictdef-planelayout" id="ref-for-dictdef-planelayout"><c- n>PlaneLayout</c-></a>>> <a class="idl-code" data-link-type="method" href="#dom-videoframe-copyto" id="ref-for-dom-videoframe-copyto"><c- g>copyTo</c-></a>(
       [<a class="idl-code" data-link-type="extended-attribute" href="https://heycam.github.io/webidl/#AllowShared" id="ref-for-AllowShared④"><c- g>AllowShared</c-></a>] <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#BufferSource" id="ref-for-BufferSource①④"><c- n>BufferSource</c-></a> <dfn class="idl-code" data-dfn-for="VideoFrame/copyTo(destination, options), VideoFrame/copyTo(destination)" data-dfn-type="argument" data-export id="dom-videoframe-copyto-destination-options-destination"><code><c- g>destination</c-></code><a class="self-link" href="#dom-videoframe-copyto-destination-options-destination"></a></dfn>,
       <c- b>optional</c-> <a data-link-type="idl-name" href="#dictdef-videoframecopytooptions" id="ref-for-dictdef-videoframecopytooptions①"><c- n>VideoFrameCopyToOptions</c-></a> <dfn class="idl-code" data-dfn-for="VideoFrame/copyTo(destination, options), VideoFrame/copyTo(destination)" data-dfn-type="argument" data-export id="dom-videoframe-copyto-destination-options-options"><code><c- g>options</c-></code><a class="self-link" href="#dom-videoframe-copyto-destination-options-options"></a></dfn> = {});
-  <a data-link-type="idl-name" href="#videoframe" id="ref-for-videoframe②④"><c- n>VideoFrame</c-></a> <a class="idl-code" data-link-type="method" href="#dom-videoframe-clone" id="ref-for-dom-videoframe-clone②"><c- g>clone</c-></a>();
+  <a data-link-type="idl-name" href="#videoframe" id="ref-for-videoframe②⑤"><c- n>VideoFrame</c-></a> <a class="idl-code" data-link-type="method" href="#dom-videoframe-clone" id="ref-for-dom-videoframe-clone②"><c- g>clone</c-></a>();
   <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-undefined" id="ref-for-idl-undefined②⑨"><c- b>undefined</c-></a> <a class="idl-code" data-link-type="method" href="#dom-videoframe-close" id="ref-for-dom-videoframe-close②"><c- g>close</c-></a>();
 };
 
@@ -3399,15 +3407,15 @@ channel attributed to a particular channel index.</p>
 this frame.</p>
     <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="VideoFrame" data-dfn-type="attribute" data-export id="dom-videoframe-format-slot"><code>[[format]]</code></dfn>
     <dd data-md>
-     <p>A <code class="idl"><a data-link-type="idl" href="#enumdef-videopixelformat" id="ref-for-enumdef-videopixelformat②">VideoPixelFormat</a></code> describing the pixel format of the <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe②⑤">VideoFrame</a></code>.
+     <p>A <code class="idl"><a data-link-type="idl" href="#enumdef-videopixelformat" id="ref-for-enumdef-videopixelformat②">VideoPixelFormat</a></code> describing the pixel format of the <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe②⑥">VideoFrame</a></code>.
 Will be <code>null</code> whenever the underlying format does not map to a <code class="idl"><a data-link-type="idl" href="#enumdef-videopixelformat" id="ref-for-enumdef-videopixelformat③">VideoPixelFormat</a></code> or when <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/structured-data.html#detached" id="ref-for-detached①③">[[Detached]]</a></code> is <code>true</code>.</p>
     <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="VideoFrame" data-dfn-type="attribute" data-export id="dom-videoframe-coded-width-slot"><code>[[coded width]]</code></dfn>
     <dd data-md>
-     <p>Width of the <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe②⑥">VideoFrame</a></code> in pixels, potentionally including non-visible
+     <p>Width of the <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe②⑦">VideoFrame</a></code> in pixels, potentionally including non-visible
 padding, and prior to considering potential ratio adjustments.</p>
     <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="VideoFrame" data-dfn-type="attribute" data-export id="dom-videoframe-coded-height-slot"><code>[[coded height]]</code></dfn>
     <dd data-md>
-     <p>Height of the <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe②⑦">VideoFrame</a></code> in pixels, potentionally including non-visible
+     <p>Height of the <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe②⑧">VideoFrame</a></code> in pixels, potentionally including non-visible
 padding, and prior to considering potential ratio adjustments.</p>
     <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="VideoFrame" data-dfn-type="attribute" data-export id="dom-videoframe-visible-left-slot"><code>[[visible left]]</code></dfn>
     <dd data-md>
@@ -3423,20 +3431,20 @@ padding, and prior to considering potential ratio adjustments.</p>
      <p>The height of pixels to include in visible rectangle, starting from <code class="idl"><a data-link-type="idl" href="#dom-videoframe-visible-top-slot" id="ref-for-dom-videoframe-visible-top-slot">[[visible top]]</a></code>.</p>
     <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="VideoFrame" data-dfn-type="attribute" data-export id="dom-videoframe-display-width-slot"><code>[[display width]]</code></dfn>
     <dd data-md>
-     <p>Width of the <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe②⑧">VideoFrame</a></code> when displayed after applying aspect ratio
+     <p>Width of the <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe②⑨">VideoFrame</a></code> when displayed after applying aspect ratio
 adjustments.</p>
     <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="VideoFrame" data-dfn-type="attribute" data-export id="dom-videoframe-display-height-slot"><code>[[display height]]</code></dfn>
     <dd data-md>
-     <p>Height of the <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe②⑨">VideoFrame</a></code> when displayed after applying aspect ratio
+     <p>Height of the <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe③⓪">VideoFrame</a></code> when displayed after applying aspect ratio
 adjustments.</p>
     <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="VideoFrame" data-dfn-type="attribute" data-export id="dom-videoframe-duration-slot"><code>[[duration]]</code></dfn>
     <dd data-md>
      <p>The presentation duration, given in microseconds. The duration is copied
-    from the <code class="idl"><a data-link-type="idl" href="#encodedvideochunk" id="ref-for-encodedvideochunk①⑧">EncodedVideoChunk</a></code> corresponding to this <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe③⓪">VideoFrame</a></code>.</p>
+    from the <code class="idl"><a data-link-type="idl" href="#encodedvideochunk" id="ref-for-encodedvideochunk①⑨">EncodedVideoChunk</a></code> corresponding to this <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe③①">VideoFrame</a></code>.</p>
     <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="VideoFrame" data-dfn-type="attribute" data-export id="dom-videoframe-timestamp-slot"><code>[[timestamp]]</code></dfn>
     <dd data-md>
      <p>The presentation timestamp, given in microseconds. The timestamp is copied
-from the <code class="idl"><a data-link-type="idl" href="#encodedvideochunk" id="ref-for-encodedvideochunk①⑨">EncodedVideoChunk</a></code> corresponding to this <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe③①">VideoFrame</a></code>.</p>
+from the <code class="idl"><a data-link-type="idl" href="#encodedvideochunk" id="ref-for-encodedvideochunk②⓪">EncodedVideoChunk</a></code> corresponding to this <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe③②">VideoFrame</a></code>.</p>
    </dl>
    <h4 class="heading settled" data-level="9.4.2" id="videoframe-constructors"><span class="secno">9.4.2. </span><span class="content">Constructors</span><a class="self-link" href="#videoframe-constructors"></a></h4>
    <p><dfn class="dfn-paneled idl-code" data-dfn-for="VideoFrame" data-dfn-type="constructor" data-export data-lt="VideoFrame(image, init)|constructor(image, init)|VideoFrame(image)|constructor(image)" id="dom-videoframe-videoframe" title="VideoFrame(image, init)"><code> VideoFrame(image, init) </code></dfn></p>
@@ -3447,7 +3455,7 @@ exception or returns <var>bad</var>, then throw an <code class="idl"><a data-lin
     <li data-md>
      <p>If the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/origin.html#concept-origin" id="ref-for-concept-origin">origin</a> of <var>image</var>’s image data is not <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/origin.html#same-origin" id="ref-for-same-origin">same origin</a> with the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#entry-settings-object" id="ref-for-entry-settings-object">entry settings object</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/origin.html#concept-origin" id="ref-for-concept-origin①">origin</a>, then throw a <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#securityerror" id="ref-for-securityerror">SecurityError</a></code> <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-DOMException" id="ref-for-idl-DOMException②③">DOMException</a></code>.</p>
     <li data-md>
-     <p>Let <var>frame</var> be a new <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe③②">VideoFrame</a></code>.</p>
+     <p>Let <var>frame</var> be a new <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe③③">VideoFrame</a></code>.</p>
     <li data-md>
      <p>Switch on <var>image</var>:</p>
      <ul>
@@ -3477,7 +3485,7 @@ such image, the first frame of the animation.</p>
         <li data-md>
          <p>If <var>image</var>’s <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/media.html#dom-media-networkstate" id="ref-for-dom-media-networkstate">networkState</a></code> attribute is <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/media.html#dom-media-network_empty" id="ref-for-dom-media-network_empty">NETWORK_EMPTY</a></code>, then throw an <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#invalidstateerror" id="ref-for-invalidstateerror②①">InvalidStateError</a></code> <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-DOMException" id="ref-for-idl-DOMException②⑤">DOMException</a></code>.</p>
         <li data-md>
-         <p>Let <var>currentPlaybackFrame</var> be the <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe③③">VideoFrame</a></code> at the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/media.html#current-playback-position" id="ref-for-current-playback-position">current
+         <p>Let <var>currentPlaybackFrame</var> be the <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe③④">VideoFrame</a></code> at the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/media.html#current-playback-position" id="ref-for-current-playback-position">current
 playback position</a>.</p>
         <li data-md>
          <p>Run the <a data-link-type="dfn" href="#videoframe-initialize-frame-from-other-frame" id="ref-for-videoframe-initialize-frame-from-other-frame">Initialize Frame From Other Frame</a> algorithm
@@ -3502,7 +3510,7 @@ with <var>init</var>, <var>frame</var>, and <var>currentPlaybackFrame</var>.</p>
          <p>Run the <a data-link-type="dfn" href="#videoframe-initialize-frame-with-resource-and-size" id="ref-for-videoframe-initialize-frame-with-resource-and-size①">Initialize Frame With Resource and Size</a> algorithm with <var>init</var>, <var>frame</var>, <var>resource</var>, <var>width</var>, and <var>height</var>.</p>
        </ol>
       <li data-md>
-       <p><code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe③④">VideoFrame</a></code></p>
+       <p><code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe③⑤">VideoFrame</a></code></p>
        <ol>
         <li data-md>
          <p>Run the <a data-link-type="dfn" href="#videoframe-initialize-frame-from-other-frame" id="ref-for-videoframe-initialize-frame-from-other-frame①">Initialize Frame From Other Frame</a> algorithm
@@ -3560,7 +3568,7 @@ Layout and Allocation Size</a> algorithm with <var>parsedRect</var>, <var>init</
      <p class="issue" id="issue-3beeea62"><a class="self-link" href="#issue-3beeea62"></a> The spec should provide definitions (and possibly diagrams) for
     coded size, visible rectangle, and display size. See <a href="https://github.com/w3c/webcodecs/issues/166">#166</a>.</p>
     <li data-md>
-     <p>Let <var>frame</var> be a new <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe③⑤">VideoFrame</a></code> object initialized as follows:</p>
+     <p>Let <var>frame</var> be a new <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe③⑥">VideoFrame</a></code> object initialized as follows:</p>
      <ol>
       <li data-md>
        <p>Assign <var>resourceCodedWidth</var>, <var>resourceCodedHeight</var>, <var>resourceVisibleLeft</var>, and <var>resourceVisibleTop</var> to <code class="idl"><a data-link-type="idl" href="#dom-videoframe-coded-width-slot" id="ref-for-dom-videoframe-coded-width-slot">[[coded width]]</a></code>, <code class="idl"><a data-link-type="idl" href="#dom-videoframe-coded-height-slot" id="ref-for-dom-videoframe-coded-height-slot">[[coded height]]</a></code>, <code class="idl"><a data-link-type="idl" href="#dom-videoframe-visible-left-slot" id="ref-for-dom-videoframe-visible-left-slot①">[[visible left]]</a></code>, and <code class="idl"><a data-link-type="idl" href="#dom-videoframe-visible-top-slot" id="ref-for-dom-videoframe-visible-top-slot①">[[visible top]]</a></code> respectively.</p>
@@ -3608,12 +3616,12 @@ map to a <code class="idl"><a data-link-type="idl" href="#enumdef-videopixelform
      <p>The <code class="idl"><a data-link-type="idl" href="#dom-videoframe-format" id="ref-for-dom-videoframe-format①">format</a></code> getter steps are to return <code class="idl"><a data-link-type="idl" href="#dom-videoframe-format-slot" id="ref-for-dom-videoframe-format-slot①">[[format]]</a></code>.</p>
     <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="VideoFrame" data-dfn-type="attribute" data-export id="dom-videoframe-codedwidth"><code>codedWidth</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#idl-unsigned-long" id="ref-for-idl-unsigned-long⑤④">unsigned long</a>, readonly</span>
     <dd data-md>
-     <p>Width of the <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe③⑥">VideoFrame</a></code> in pixels, potentionally including non-visible
+     <p>Width of the <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe③⑦">VideoFrame</a></code> in pixels, potentionally including non-visible
 padding, and prior to considering potential ratio adjustments.</p>
      <p>The <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedwidth" id="ref-for-dom-videoframe-codedwidth②">codedWidth</a></code> getter steps are to return <code class="idl"><a data-link-type="idl" href="#dom-videoframe-coded-width-slot" id="ref-for-dom-videoframe-coded-width-slot②">[[coded width]]</a></code>.</p>
     <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="VideoFrame" data-dfn-type="attribute" data-export id="dom-videoframe-codedheight"><code>codedHeight</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#idl-unsigned-long" id="ref-for-idl-unsigned-long⑤⑤">unsigned long</a>, readonly</span>
     <dd data-md>
-     <p>Height of the <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe③⑦">VideoFrame</a></code> in pixels, potentionally including non-visible
+     <p>Height of the <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe③⑧">VideoFrame</a></code> in pixels, potentionally including non-visible
 padding, and prior to considering potential ratio adjustments.</p>
      <p>The <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedheight" id="ref-for-dom-videoframe-codedheight②">codedHeight</a></code> getter steps are to return <code class="idl"><a data-link-type="idl" href="#dom-videoframe-coded-height-slot" id="ref-for-dom-videoframe-coded-height-slot②">[[coded height]]</a></code>.</p>
     <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="VideoFrame" data-dfn-type="attribute" data-export id="dom-videoframe-codedrect"><code>codedRect</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://drafts.fxtf.org/geometry-1/#domrectreadonly" id="ref-for-domrectreadonly②">DOMRectReadOnly</a>, readonly, nullable</span>
@@ -3636,7 +3644,7 @@ padding, and prior to considering potential ratio adjustments.</p>
      </ol>
     <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="VideoFrame" data-dfn-type="attribute" data-export id="dom-videoframe-visiblerect"><code>visibleRect</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://drafts.fxtf.org/geometry-1/#domrectreadonly" id="ref-for-domrectreadonly⑤">DOMRectReadOnly</a>, readonly, nullable</span>
     <dd data-md>
-     <p>A <code class="idl"><a data-link-type="idl" href="https://drafts.fxtf.org/geometry-1/#domrectreadonly" id="ref-for-domrectreadonly⑥">DOMRectReadOnly</a></code> describing the visible rectangle of pixels for this <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe③⑧">VideoFrame</a></code>.</p>
+     <p>A <code class="idl"><a data-link-type="idl" href="https://drafts.fxtf.org/geometry-1/#domrectreadonly" id="ref-for-domrectreadonly⑥">DOMRectReadOnly</a></code> describing the visible rectangle of pixels for this <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe③⑨">VideoFrame</a></code>.</p>
      <p>The <code class="idl"><a data-link-type="idl" href="#dom-videoframe-visiblerect" id="ref-for-dom-videoframe-visiblerect②">visibleRect</a></code> getter steps are:</p>
      <ol>
       <li data-md>
@@ -3664,12 +3672,12 @@ adjustments.</p>
     <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="VideoFrame" data-dfn-type="attribute" data-export id="dom-videoframe-timestamp"><code>timestamp</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#idl-long-long" id="ref-for-idl-long-long①②">long long</a>, readonly, nullable</span>
     <dd data-md>
      <p>The presentation timestamp, given in microseconds. The timestamp is copied
-from the <code class="idl"><a data-link-type="idl" href="#encodedvideochunk" id="ref-for-encodedvideochunk②⓪">EncodedVideoChunk</a></code> corresponding to this VideoFrame.</p>
+from the <code class="idl"><a data-link-type="idl" href="#encodedvideochunk" id="ref-for-encodedvideochunk②①">EncodedVideoChunk</a></code> corresponding to this VideoFrame.</p>
      <p>The <code class="idl"><a data-link-type="idl" href="#dom-videoframe-timestamp" id="ref-for-dom-videoframe-timestamp②">timestamp</a></code> getter steps are to return <code class="idl"><a data-link-type="idl" href="#dom-videoframe-timestamp-slot" id="ref-for-dom-videoframe-timestamp-slot②">[[timestamp]]</a></code>.</p>
     <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="VideoFrame" data-dfn-type="attribute" data-export id="dom-videoframe-duration"><code>duration</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#idl-unsigned-long-long" id="ref-for-idl-unsigned-long-long①②">unsigned long long</a>, readonly, nullable</span>
     <dd data-md>
      <p>The presentation duration, given in microseconds. The duration is copied
-from the <code class="idl"><a data-link-type="idl" href="#encodedvideochunk" id="ref-for-encodedvideochunk②①">EncodedVideoChunk</a></code> corresponding to this VideoFrame.</p>
+from the <code class="idl"><a data-link-type="idl" href="#encodedvideochunk" id="ref-for-encodedvideochunk②②">EncodedVideoChunk</a></code> corresponding to this VideoFrame.</p>
      <p>The <code class="idl"><a data-link-type="idl" href="#dom-videoframe-duration" id="ref-for-dom-videoframe-duration①">duration</a></code> getter steps are to return <code class="idl"><a data-link-type="idl" href="#dom-videoframe-duration-slot" id="ref-for-dom-videoframe-duration-slot②">[[duration]]</a></code>.</p>
    </dl>
    <h4 class="heading settled" data-level="9.4.4" id="videoframe-internal-structures"><span class="secno">9.4.4. </span><span class="content">Internal Structures</span><a class="self-link" href="#videoframe-internal-structures"></a></h4>
@@ -3718,7 +3726,7 @@ VideoFrameCopyToOptions</a> algorithm with <var>options</var>.</p>
     <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="VideoFrame" data-dfn-type="method" data-export data-lt="copyTo(destination, options)|copyTo(destination)" id="dom-videoframe-copyto"><code>copyTo(<var>destination</var>, <var>options</var>)</code></dfn>
     <dd data-md>
      <p>Asynchronously copies the planes of this frame into <var>destination</var> according
-to <var>options</var>. The format of the data is the same as this <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe③⑨">VideoFrame</a></code>'s <code class="idl"><a data-link-type="idl" href="#dom-videoframe-format" id="ref-for-dom-videoframe-format②">format</a></code>.</p>
+to <var>options</var>. The format of the data is the same as this <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe④⓪">VideoFrame</a></code>'s <code class="idl"><a data-link-type="idl" href="#dom-videoframe-format" id="ref-for-dom-videoframe-format②">format</a></code>.</p>
      <p class="note" role="note"><span>NOTE:</span> Promises that are returned by several calls to <code class="idl"><a data-link-type="idl" href="#dom-videoframe-copyto" id="ref-for-dom-videoframe-copyto③">copyTo()</a></code> are not guaranteed to resolve in the order they
     were returned.</p>
      <p>When invoked, run these steps:</p>
@@ -3790,7 +3798,7 @@ the position of <var>planeIndex</var></p>
      </ol>
     <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="VideoFrame" data-dfn-type="method" data-export id="dom-videoframe-clone"><code>clone()</code></dfn>
     <dd data-md>
-     <p>Creates a new <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe④⓪">VideoFrame</a></code> with a reference to the same <a data-link-type="dfn" href="#media-resource" id="ref-for-media-resource②③">media resource</a>.</p>
+     <p>Creates a new <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe④①">VideoFrame</a></code> with a reference to the same <a data-link-type="dfn" href="#media-resource" id="ref-for-media-resource②③">media resource</a>.</p>
      <p>When invoked, run these steps:</p>
      <ol>
       <li data-md>
@@ -3808,7 +3816,7 @@ Close is final.</p>
     <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="create-a-videoframe">Create a VideoFrame</dfn> (with <var>output</var>, <var>timestamp</var>, <var>duration</var>, <var>displayAspectWidth</var>, and <var>displayAspectHeight</var>) 
    <ol>
     <li data-md>
-     <p>Let <var>frame</var> be a new <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe④①">VideoFrame</a></code>, constructed as follows:</p>
+     <p>Let <var>frame</var> be a new <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe④②">VideoFrame</a></code>, constructed as follows:</p>
      <ol>
       <li data-md>
        <p>Assign <code>false</code> to <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/structured-data.html#detached" id="ref-for-detached②⓪">[[Detached]]</a></code>.</p>
@@ -3907,7 +3915,7 @@ assign <var>otherFrame</var>.<code class="idl"><a data-link-type="idl" href="#do
     <dd data-md>
      <ol>
       <li data-md>
-       <p>Let <var>clone</var> be a new <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe④②">VideoFrame</a></code> initialized as follows:</p>
+       <p>Let <var>clone</var> be a new <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe④③">VideoFrame</a></code> initialized as follows:</p>
        <ol>
         <li data-md>
          <p>Let <var>resource</var> be the <a data-link-type="dfn" href="#media-resource" id="ref-for-media-resource②⑦">media resource</a> referenced by <var>frame</var>’s
@@ -4131,27 +4139,27 @@ follows:</p>
    </dl>
    <h4 class="heading settled" data-level="9.4.7" id="videoframe-transfer-serialization"><span class="secno">9.4.7. </span><span class="content">Transfer and Serialization</span><a class="self-link" href="#videoframe-transfer-serialization"></a></h4>
    <dl>
-    <dt data-md>The <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe④③">VideoFrame</a></code> <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/structured-data.html#transfer-steps" id="ref-for-transfer-steps①">transfer steps</a> (with <var>value</var> and <var>dataHolder</var>) are:
+    <dt data-md>The <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe④④">VideoFrame</a></code> <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/structured-data.html#transfer-steps" id="ref-for-transfer-steps①">transfer steps</a> (with <var>value</var> and <var>dataHolder</var>) are:
     <dd data-md>
      <ol>
       <li data-md>
        <p>If <var>value</var>’s <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/structured-data.html#detached" id="ref-for-detached②②">[[Detached]]</a></code> is <code>true</code>, throw a <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#datacloneerror" id="ref-for-datacloneerror②">DataCloneError</a></code> <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-DOMException" id="ref-for-idl-DOMException③①">DOMException</a></code>.</p>
       <li data-md>
-       <p>For all <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe④④">VideoFrame</a></code> internal slots in <var>value</var>, assign the value of
+       <p>For all <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe④⑤">VideoFrame</a></code> internal slots in <var>value</var>, assign the value of
 each internal slot to a field in <var>dataHolder</var> with the same name as the
 internal slot.</p>
       <li data-md>
        <p>Run the <a data-link-type="dfn" href="#close-videoframe" id="ref-for-close-videoframe①">Close VideoFrame</a> algorithm with <var>value</var>.</p>
      </ol>
-    <dt data-md>The <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe④⑤">VideoFrame</a></code> <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/structured-data.html#transfer-receiving-steps" id="ref-for-transfer-receiving-steps①">transfer-receiving steps</a> (with <var>dataHolder</var> and <var>value</var>) are:
+    <dt data-md>The <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe④⑥">VideoFrame</a></code> <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/structured-data.html#transfer-receiving-steps" id="ref-for-transfer-receiving-steps①">transfer-receiving steps</a> (with <var>dataHolder</var> and <var>value</var>) are:
     <dd data-md>
      <ol>
       <li data-md>
        <p>For all named fields in <var>dataHolder</var>, assign the value of each named
-field to the <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe④⑥">VideoFrame</a></code> internal slot in <var>value</var> with the same name
+field to the <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe④⑦">VideoFrame</a></code> internal slot in <var>value</var> with the same name
 as the named field.</p>
      </ol>
-    <dt data-md>The <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe④⑦">VideoFrame</a></code> <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/structured-data.html#serialization-steps" id="ref-for-serialization-steps①">serialization steps</a> (with <var>value</var>, <var>serialized</var>, and <var>forStorage</var>) are:
+    <dt data-md>The <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe④⑧">VideoFrame</a></code> <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/structured-data.html#serialization-steps" id="ref-for-serialization-steps①">serialization steps</a> (with <var>value</var>, <var>serialized</var>, and <var>forStorage</var>) are:
     <dd data-md>
      <ol>
       <li data-md>
@@ -4165,17 +4173,17 @@ as the named field.</p>
       <li data-md>
        <p>Assign <var>newReference</var> to <var>serialized</var>.[[resource reference]].</p>
       <li data-md>
-       <p>For all remaining <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe④⑧">VideoFrame</a></code> internal slots (excluding <code class="idl"><a data-link-type="idl" href="#dom-videoframe-resource-reference-slot" id="ref-for-dom-videoframe-resource-reference-slot⑨">[[resource reference]]</a></code>) in <var>value</var>, assign the value of
+       <p>For all remaining <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe④⑨">VideoFrame</a></code> internal slots (excluding <code class="idl"><a data-link-type="idl" href="#dom-videoframe-resource-reference-slot" id="ref-for-dom-videoframe-resource-reference-slot⑨">[[resource reference]]</a></code>) in <var>value</var>, assign the value of
 each internal slot to a field in <var>serialized</var> with the same name as the
 internal slot.</p>
      </ol>
-    <dt data-md>The <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe④⑨">VideoFrame</a></code> <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/structured-data.html#deserialization-steps" id="ref-for-deserialization-steps①">deserialization steps</a> (with <var>serialized</var> and <var>value</var>)
+    <dt data-md>The <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe⑤⓪">VideoFrame</a></code> <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/structured-data.html#deserialization-steps" id="ref-for-deserialization-steps①">deserialization steps</a> (with <var>serialized</var> and <var>value</var>)
 are:
     <dd data-md>
      <ol>
       <li data-md>
        <p>For all named fields in <var>serialized</var>, assign the value of each named
-field to the <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe⑤⓪">VideoFrame</a></code> internal slot in <var>value</var> with the same name
+field to the <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe⑤①">VideoFrame</a></code> internal slot in <var>value</var> with the same name
 as the named field.</p>
      </ol>
    </dl>
@@ -4200,23 +4208,23 @@ sample-aligned as determiend by <code class="idl"><a data-link-type="idl" href="
    <dl>
     <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="VideoFrameCopyToOptions" data-dfn-type="dict-member" data-export id="dom-videoframecopytooptions-rect"><code>rect</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://drafts.fxtf.org/geometry-1/#dictdef-domrectinit" id="ref-for-dictdef-domrectinit②">DOMRectInit</a></span>
     <dd data-md>
-     <p>A <code class="idl"><a data-link-type="idl" href="https://drafts.fxtf.org/geometry-1/#dictdef-domrectinit" id="ref-for-dictdef-domrectinit③">DOMRectInit</a></code> describing the rectangle of pixels to copy from the <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe⑤①">VideoFrame</a></code>. If unspecified, the <code class="idl"><a data-link-type="idl" href="#dom-videoframe-visiblerect" id="ref-for-dom-videoframe-visiblerect⑥">visibleRect</a></code> will be used.</p>
-     <p class="note" role="note"><span>NOTE:</span> The coded rectangle can be specified by passing <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe⑤②">VideoFrame</a></code>'s <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedrect" id="ref-for-dom-videoframe-codedrect②">codedRect</a></code>.</p>
+     <p>A <code class="idl"><a data-link-type="idl" href="https://drafts.fxtf.org/geometry-1/#dictdef-domrectinit" id="ref-for-dictdef-domrectinit③">DOMRectInit</a></code> describing the rectangle of pixels to copy from the <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe⑤②">VideoFrame</a></code>. If unspecified, the <code class="idl"><a data-link-type="idl" href="#dom-videoframe-visiblerect" id="ref-for-dom-videoframe-visiblerect⑥">visibleRect</a></code> will be used.</p>
+     <p class="note" role="note"><span>NOTE:</span> The coded rectangle can be specified by passing <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe⑤③">VideoFrame</a></code>'s <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedrect" id="ref-for-dom-videoframe-codedrect②">codedRect</a></code>.</p>
     <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="VideoFrameCopyToOptions" data-dfn-type="dict-member" data-export id="dom-videoframecopytooptions-layout"><code>layout</code></dfn>, <span> of type sequence&lt;<a data-link-type="idl-name" href="#dictdef-planelayout" id="ref-for-dictdef-planelayout⑤">PlaneLayout</a>></span>
     <dd data-md>
-     <p>The <code class="idl"><a data-link-type="idl" href="#dictdef-planelayout" id="ref-for-dictdef-planelayout⑥">PlaneLayout</a></code> for each plane in <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe⑤③">VideoFrame</a></code>, affording the option
+     <p>The <code class="idl"><a data-link-type="idl" href="#dictdef-planelayout" id="ref-for-dictdef-planelayout⑥">PlaneLayout</a></code> for each plane in <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe⑤④">VideoFrame</a></code>, affording the option
 to specify an offset and stride for each plane in the destination <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#BufferSource" id="ref-for-BufferSource①⑥">BufferSource</a></code>. If unspecified, the planes will be tightly packed. It is
 invalid to specify planes that overlap.</p>
    </dl>
    <h3 class="heading settled" data-level="9.6" id="videoframe-domrect"><span class="secno">9.6. </span><span class="content">DOMRects in VideoFrame</span><a class="self-link" href="#videoframe-domrect"></a></h3>
-    The <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe⑤④">VideoFrame</a></code> interfaces uses <code class="idl"><a data-link-type="idl" href="https://drafts.fxtf.org/geometry-1/#domrect" id="ref-for-domrect">DOMRect</a></code>s to specify the position and
+    The <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe⑤⑤">VideoFrame</a></code> interfaces uses <code class="idl"><a data-link-type="idl" href="https://drafts.fxtf.org/geometry-1/#domrect" id="ref-for-domrect">DOMRect</a></code>s to specify the position and
 dimensions for a rectangle of pixels. <code class="idl"><a data-link-type="idl" href="https://drafts.fxtf.org/geometry-1/#dictdef-domrectinit" id="ref-for-dictdef-domrectinit④">DOMRectInit</a></code> is used with <code class="idl"><a data-link-type="idl" href="#dom-videoframe-copyto" id="ref-for-dom-videoframe-copyto⑤">copyTo()</a></code> and <code class="idl"><a data-link-type="idl" href="#dom-videoframe-allocationsize" id="ref-for-dom-videoframe-allocationsize③">allocationSize()</a></code> to describe the
-dimensions of the source rectangle. <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe⑤⑤">VideoFrame</a></code> defines <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedrect" id="ref-for-dom-videoframe-codedrect③">codedRect</a></code> and <code class="idl"><a data-link-type="idl" href="#dom-videoframe-visiblerect" id="ref-for-dom-videoframe-visiblerect⑦">visibleRect</a></code> for convenient copying
+dimensions of the source rectangle. <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe⑤⑥">VideoFrame</a></code> defines <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedrect" id="ref-for-dom-videoframe-codedrect③">codedRect</a></code> and <code class="idl"><a data-link-type="idl" href="#dom-videoframe-visiblerect" id="ref-for-dom-videoframe-visiblerect⑦">visibleRect</a></code> for convenient copying
 of the coded size and visible region respectively. 
    <p class="note" role="note"><span>NOTE:</span> VideoFrame pixels are only addressable by integer numbers. All floating
     point values provided to <code class="idl"><a data-link-type="idl" href="https://drafts.fxtf.org/geometry-1/#dictdef-domrectinit" id="ref-for-dictdef-domrectinit⑤">DOMRectInit</a></code> will be truncated.</p>
    <h3 class="heading settled" data-level="9.7" id="plane-layout"><span class="secno">9.7. </span><span class="content">Plane Layout</span><a class="self-link" href="#plane-layout"></a></h3>
-    A <code class="idl"><a data-link-type="idl" href="#dictdef-planelayout" id="ref-for-dictdef-planelayout⑦">PlaneLayout</a></code> is a dictionary specifying the offset and stride of a <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe⑤⑥">VideoFrame</a></code> plane once copied to a <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#BufferSource" id="ref-for-BufferSource①⑦">BufferSource</a></code>. A sequence of <code class="idl"><a data-link-type="idl" href="#dictdef-planelayout" id="ref-for-dictdef-planelayout⑧">PlaneLayout</a></code>s may be provided to <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe⑤⑦">VideoFrame</a></code>'s <code class="idl"><a data-link-type="idl" href="#dom-videoframe-copyto" id="ref-for-dom-videoframe-copyto⑥">copyTo()</a></code> to
+    A <code class="idl"><a data-link-type="idl" href="#dictdef-planelayout" id="ref-for-dictdef-planelayout⑦">PlaneLayout</a></code> is a dictionary specifying the offset and stride of a <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe⑤⑦">VideoFrame</a></code> plane once copied to a <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#BufferSource" id="ref-for-BufferSource①⑦">BufferSource</a></code>. A sequence of <code class="idl"><a data-link-type="idl" href="#dictdef-planelayout" id="ref-for-dictdef-planelayout⑧">PlaneLayout</a></code>s may be provided to <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe⑤⑧">VideoFrame</a></code>'s <code class="idl"><a data-link-type="idl" href="#dom-videoframe-copyto" id="ref-for-dom-videoframe-copyto⑥">copyTo()</a></code> to
 specify how the plane is laid out in the destination <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#BufferSource" id="ref-for-BufferSource①⑧">BufferSource</a></code>}.
 Alternatively, callers can inspect <code class="idl"><a data-link-type="idl" href="#dom-videoframe-copyto" id="ref-for-dom-videoframe-copyto⑦">copyTo()</a></code>'s returned sequence
 of <code class="idl"><a data-link-type="idl" href="#dictdef-planelayout" id="ref-for-dictdef-planelayout⑨">PlaneLayout</a></code>s to learn the the offset and stride for planes as decided by
@@ -4263,7 +4271,7 @@ number and order of the planes. Each format is described in its own sub-section.
 where a single sample contains information for multiple pixels in the final
 image. <a data-link-type="dfn" href="#sub-sampling" id="ref-for-sub-sampling">Sub-sampling</a> can be horizontal, vertical or both, and has a <dfn class="dfn-paneled" data-dfn-type="dfn" data-lt="sub-sampling factor|factor" data-noexport id="sub-sampling-factor">factor</dfn>, that is the number of final pixels
 in the image that are derived from a <a data-link-type="dfn" href="#sub-sampling" id="ref-for-sub-sampling①">sub-sampled</a> sample.</p>
-   <div class="example" id="example-33b7b945"><a class="self-link" href="#example-33b7b945"></a> If a <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe⑤⑧">VideoFrame</a></code> is in <code class="idl"><a data-link-type="idl" href="#dom-videopixelformat-i420" id="ref-for-dom-videopixelformat-i420①">I420</a></code> format, then the very first
+   <div class="example" id="example-33b7b945"><a class="self-link" href="#example-33b7b945"></a> If a <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe⑤⑨">VideoFrame</a></code> is in <code class="idl"><a data-link-type="idl" href="#dom-videopixelformat-i420" id="ref-for-dom-videopixelformat-i420①">I420</a></code> format, then the very first
   component of the second plane (the U plane) corresponds to four pixels, that are
   the pixels in the top-left angle of the image. Consequently, the first
   component of the second row corresponds to the four pixels below those initial
@@ -4415,13 +4423,13 @@ is its own <a data-link-type="dfn" href="#equivalent-opaque-format" id="ref-for-
 corresponding file format. Hence image decoders often perform both duties of
 unpacking (demuxing) as well as decoding the encoded image data. The WebCodecs <code class="idl"><a data-link-type="idl" href="#imagedecoder" id="ref-for-imagedecoder">ImageDecoder</a></code> follows this pattern, which motivates an interface design that
 is notably different from that of <code class="idl"><a data-link-type="idl" href="#videodecoder" id="ref-for-videodecoder②">VideoDecoder</a></code> and <code class="idl"><a data-link-type="idl" href="#audiodecoder" id="ref-for-audiodecoder②">AudioDecoder</a></code>.</p>
-   <p>In spite of these differences, <code class="idl"><a data-link-type="idl" href="#imagedecoder" id="ref-for-imagedecoder①">ImageDecoder</a></code> uses the same <a data-link-type="dfn" href="#codec-processing-model" id="ref-for-codec-processing-model">codec processing model</a> as the other codec interfaces. Additionally, <code class="idl"><a data-link-type="idl" href="#imagedecoder" id="ref-for-imagedecoder②">ImageDecoder</a></code> uses the <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe⑤⑨">VideoFrame</a></code> interface to describe decoded outputs.</p>
+   <p>In spite of these differences, <code class="idl"><a data-link-type="idl" href="#imagedecoder" id="ref-for-imagedecoder①">ImageDecoder</a></code> uses the same <a data-link-type="dfn" href="#codec-processing-model" id="ref-for-codec-processing-model">codec processing model</a> as the other codec interfaces. Additionally, <code class="idl"><a data-link-type="idl" href="#imagedecoder" id="ref-for-imagedecoder②">ImageDecoder</a></code> uses the <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe⑥⓪">VideoFrame</a></code> interface to describe decoded outputs.</p>
    <h3 class="heading settled" data-level="10.2" id="imagedecoder-interface"><span class="secno">10.2. </span><span class="content">ImageDecoder Interface</span><a class="self-link" href="#imagedecoder-interface"></a></h3>
 <pre class="idl highlight def">[<a class="idl-code" data-link-type="extended-attribute" href="https://heycam.github.io/webidl/#Exposed" id="ref-for-Exposed⑧"><c- g>Exposed</c-></a>=(<c- n>Window</c->,<c- n>DedicatedWorker</c->)]
 <c- b>interface</c-> <dfn class="dfn-paneled idl-code" data-dfn-type="interface" data-export id="imagedecoder"><code><c- g>ImageDecoder</c-></code></dfn> {
   <a class="idl-code" data-link-type="constructor" href="#dom-imagedecoder-imagedecoder" id="ref-for-dom-imagedecoder-imagedecoder"><c- g>constructor</c-></a>(<a data-link-type="idl-name" href="#dictdef-imagedecoderinit" id="ref-for-dictdef-imagedecoderinit"><c- n>ImageDecoderInit</c-></a> <dfn class="idl-code" data-dfn-for="ImageDecoder/ImageDecoder(init), ImageDecoder/constructor(init)" data-dfn-type="argument" data-export id="dom-imagedecoder-imagedecoder-init-init"><code><c- g>init</c-></code><a class="self-link" href="#dom-imagedecoder-imagedecoder-init-init"></a></dfn>);
 
-  <c- b>readonly</c-> <c- b>attribute</c-> <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-boolean" id="ref-for-idl-boolean①①"><c- b>boolean</c-></a> <a class="idl-code" data-link-type="attribute" data-readonly data-type="boolean" href="#dom-imagedecoder-complete" id="ref-for-dom-imagedecoder-complete"><c- g>complete</c-></a>;
+  <c- b>readonly</c-> <c- b>attribute</c-> <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-boolean" id="ref-for-idl-boolean①③"><c- b>boolean</c-></a> <a class="idl-code" data-link-type="attribute" data-readonly data-type="boolean" href="#dom-imagedecoder-complete" id="ref-for-dom-imagedecoder-complete"><c- g>complete</c-></a>;
   <c- b>readonly</c-> <c- b>attribute</c-> <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-promise" id="ref-for-idl-promise①⓪"><c- b>Promise</c-></a>&lt;<a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-undefined" id="ref-for-idl-undefined③⓪"><c- b>undefined</c-></a>> <a class="idl-code" data-link-type="attribute" data-readonly data-type="Promise<undefined>" href="#dom-imagedecoder-completed" id="ref-for-dom-imagedecoder-completed"><c- g>completed</c-></a>;
   <c- b>readonly</c-> <c- b>attribute</c-> <a data-link-type="idl-name" href="#imagetracklist" id="ref-for-imagetracklist"><c- n>ImageTrackList</c-></a> <a class="idl-code" data-link-type="attribute" data-readonly data-type="ImageTrackList" href="#dom-imagedecoder-tracks" id="ref-for-dom-imagedecoder-tracks"><c- g>tracks</c-></a>;
 
@@ -4429,7 +4437,7 @@ is notably different from that of <code class="idl"><a data-link-type="idl" href
   <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-undefined" id="ref-for-idl-undefined③①"><c- b>undefined</c-></a> <a class="idl-code" data-link-type="method" href="#dom-imagedecoder-reset" id="ref-for-dom-imagedecoder-reset"><c- g>reset</c-></a>();
   <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-undefined" id="ref-for-idl-undefined③②"><c- b>undefined</c-></a> <a class="idl-code" data-link-type="method" href="#dom-imagedecoder-close" id="ref-for-dom-imagedecoder-close"><c- g>close</c-></a>();
 
-  <c- b>static</c-> <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-promise" id="ref-for-idl-promise①②"><c- b>Promise</c-></a>&lt;<a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-boolean" id="ref-for-idl-boolean①②"><c- b>boolean</c-></a>> <a class="idl-code" data-link-type="method" href="#dom-imagedecoder-istypesupported" id="ref-for-dom-imagedecoder-istypesupported"><c- g>isTypeSupported</c-></a>(<a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-DOMString" id="ref-for-idl-DOMString①⓪"><c- b>DOMString</c-></a> <dfn class="idl-code" data-dfn-for="ImageDecoder/isTypeSupported(type)" data-dfn-type="argument" data-export id="dom-imagedecoder-istypesupported-type-type"><code><c- g>type</c-></code><a class="self-link" href="#dom-imagedecoder-istypesupported-type-type"></a></dfn>);
+  <c- b>static</c-> <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-promise" id="ref-for-idl-promise①②"><c- b>Promise</c-></a>&lt;<a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-boolean" id="ref-for-idl-boolean①④"><c- b>boolean</c-></a>> <a class="idl-code" data-link-type="method" href="#dom-imagedecoder-istypesupported" id="ref-for-dom-imagedecoder-istypesupported"><c- g>isTypeSupported</c-></a>(<a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-DOMString" id="ref-for-idl-DOMString①⓪"><c- b>DOMString</c-></a> <dfn class="idl-code" data-dfn-for="ImageDecoder/isTypeSupported(type)" data-dfn-type="argument" data-export id="dom-imagedecoder-istypesupported-type-type"><code><c- g>type</c-></code><a class="self-link" href="#dom-imagedecoder-istypesupported-type-type"></a></dfn>);
 };
 
 </pre>
@@ -4472,7 +4480,7 @@ and can no longer be used.</p>
     <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="ImageDecoder" data-dfn-type="attribute" data-export id="dom-imagedecoder-progressive-frame-generations-slot"><code>[[progressive frame generations]]</code></dfn>
     <dd data-md>
      <p>A mapping of frame indices to <a data-link-type="dfn" href="#progressive-image-frame-generation" id="ref-for-progressive-image-frame-generation">Progressive Image Frame Generations</a>. The
-values represent the Progressive Image Frame Generation for the <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe⑥⓪">VideoFrame</a></code> which was most recently output by a call to <code class="idl"><a data-link-type="idl" href="#dom-imagedecoder-decode" id="ref-for-dom-imagedecoder-decode①">decode()</a></code> with the given frame index.</p>
+values represent the Progressive Image Frame Generation for the <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe⑥①">VideoFrame</a></code> which was most recently output by a call to <code class="idl"><a data-link-type="idl" href="#dom-imagedecoder-decode" id="ref-for-dom-imagedecoder-decode①">decode()</a></code> with the given frame index.</p>
    </dl>
    <h4 class="heading settled" data-level="10.2.2" id="imagedecoder-constructor"><span class="secno">10.2.2. </span><span class="content">Constructor</span><a class="self-link" href="#imagedecoder-constructor"></a></h4>
    <dl>
@@ -4571,7 +4579,7 @@ running these steps:</p>
    </dl>
    <h4 class="heading settled" data-level="10.2.3" id="imagedecoder-attributes"><span class="secno">10.2.3. </span><span class="content">Attributes</span><a class="self-link" href="#imagedecoder-attributes"></a></h4>
    <dl>
-    <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="ImageDecoder" data-dfn-type="attribute" data-export id="dom-imagedecoder-complete"><code>complete</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#idl-boolean" id="ref-for-idl-boolean①③">boolean</a>, readonly</span>
+    <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="ImageDecoder" data-dfn-type="attribute" data-export id="dom-imagedecoder-complete"><code>complete</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#idl-boolean" id="ref-for-idl-boolean①⑤">boolean</a>, readonly</span>
     <dd data-md>
      <p>Indicates whether <code class="idl"><a data-link-type="idl" href="#dom-imagedecoder-encoded-data-slot" id="ref-for-dom-imagedecoder-encoded-data-slot⑤">[[encoded data]]</a></code> is completely buffered.</p>
      <p>The <code class="idl"><a data-link-type="idl" href="#dom-imagedecoder-complete" id="ref-for-dom-imagedecoder-complete①">complete</a></code> getter steps are to return <code class="idl"><a data-link-type="idl" href="#dom-imagedecoder-complete-slot" id="ref-for-dom-imagedecoder-complete-slot③">[[complete]]</a></code>.</p>
@@ -5063,7 +5071,7 @@ decoding operation.</p>
   <a data-link-type="idl-name" href="https://html.spec.whatwg.org/multipage/imagebitmap-and-animations.html#colorspaceconversion" id="ref-for-colorspaceconversion"><c- n>ColorSpaceConversion</c-></a> <a class="idl-code" data-default="&quot;default&quot;" data-link-type="dict-member" data-type="ColorSpaceConversion " href="#dom-imagedecoderinit-colorspaceconversion" id="ref-for-dom-imagedecoderinit-colorspaceconversion①"><c- g>colorSpaceConversion</c-></a> = "default";
   [<a class="idl-code" data-link-type="extended-attribute" href="https://heycam.github.io/webidl/#EnforceRange" id="ref-for-EnforceRange③②"><c- g>EnforceRange</c-></a>] <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-unsigned-long" id="ref-for-idl-unsigned-long⑦②"><c- b>unsigned</c-> <c- b>long</c-></a> <a class="idl-code" data-link-type="dict-member" data-type="unsigned long " href="#dom-imagedecoderinit-desiredwidth" id="ref-for-dom-imagedecoderinit-desiredwidth①"><c- g>desiredWidth</c-></a>;
   [<a class="idl-code" data-link-type="extended-attribute" href="https://heycam.github.io/webidl/#EnforceRange" id="ref-for-EnforceRange③③"><c- g>EnforceRange</c-></a>] <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-unsigned-long" id="ref-for-idl-unsigned-long⑦③"><c- b>unsigned</c-> <c- b>long</c-></a> <a class="idl-code" data-link-type="dict-member" data-type="unsigned long " href="#dom-imagedecoderinit-desiredheight" id="ref-for-dom-imagedecoderinit-desiredheight①"><c- g>desiredHeight</c-></a>;
-  <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-boolean" id="ref-for-idl-boolean①④"><c- b>boolean</c-></a> <a class="idl-code" data-link-type="dict-member" data-type="boolean " href="#dom-imagedecoderinit-preferanimation" id="ref-for-dom-imagedecoderinit-preferanimation①"><c- g>preferAnimation</c-></a>;
+  <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-boolean" id="ref-for-idl-boolean①⑥"><c- b>boolean</c-></a> <a class="idl-code" data-link-type="dict-member" data-type="boolean " href="#dom-imagedecoderinit-preferanimation" id="ref-for-dom-imagedecoderinit-preferanimation①"><c- g>preferAnimation</c-></a>;
 };
 
 </pre>
@@ -5117,7 +5125,7 @@ decoders.</p>
      <p>Indicates a desired height for decoded outputs. Implementation is best
 effort; decoding to a desired height may not be supported by all
 formats/decoders.</p>
-    <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="ImageDecoderInit" data-dfn-type="dict-member" data-export id="dom-imagedecoderinit-preferanimation"><code>preferAnimation</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#idl-boolean" id="ref-for-idl-boolean①⑤">boolean</a></span>
+    <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="ImageDecoderInit" data-dfn-type="dict-member" data-export id="dom-imagedecoderinit-preferanimation"><code>preferAnimation</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#idl-boolean" id="ref-for-idl-boolean①⑦">boolean</a></span>
     <dd data-md>
      <p>For images with multiple tracks, this indicates whether the
 initial track selection should prefer an animated track.</p>
@@ -5126,7 +5134,7 @@ initial track selection should prefer an animated track.</p>
    <h3 class="heading settled" data-level="10.4" id="imagedecodeoptions-interface"><span class="secno">10.4. </span><span class="content">ImageDecodeOptions Interface</span><a class="self-link" href="#imagedecodeoptions-interface"></a></h3>
 <pre class="idl highlight def"><c- b>dictionary</c-> <dfn class="dfn-paneled idl-code" data-dfn-type="dictionary" data-export id="dictdef-imagedecodeoptions"><code><c- g>ImageDecodeOptions</c-></code></dfn> {
   [<a class="idl-code" data-link-type="extended-attribute" href="https://heycam.github.io/webidl/#EnforceRange" id="ref-for-EnforceRange③④"><c- g>EnforceRange</c-></a>] <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-unsigned-long" id="ref-for-idl-unsigned-long⑦⑥"><c- b>unsigned</c-> <c- b>long</c-></a> <a class="idl-code" data-default="0" data-link-type="dict-member" data-type="unsigned long " href="#dom-imagedecodeoptions-frameindex" id="ref-for-dom-imagedecodeoptions-frameindex②"><c- g>frameIndex</c-></a> = 0;
-  <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-boolean" id="ref-for-idl-boolean①⑥"><c- b>boolean</c-></a> <a class="idl-code" data-default="true" data-link-type="dict-member" data-type="boolean " href="#dom-imagedecodeoptions-completeframesonly" id="ref-for-dom-imagedecodeoptions-completeframesonly①"><c- g>completeFramesOnly</c-></a> = <c- b>true</c->;
+  <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-boolean" id="ref-for-idl-boolean①⑧"><c- b>boolean</c-></a> <a class="idl-code" data-default="true" data-link-type="dict-member" data-type="boolean " href="#dom-imagedecodeoptions-completeframesonly" id="ref-for-dom-imagedecodeoptions-completeframesonly①"><c- g>completeFramesOnly</c-></a> = <c- b>true</c->;
 };
 
 </pre>
@@ -5134,7 +5142,7 @@ initial track selection should prefer an animated track.</p>
     <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="ImageDecodeOptions" data-dfn-type="dict-member" data-export id="dom-imagedecodeoptions-frameindex"><code>frameIndex</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#idl-unsigned-long" id="ref-for-idl-unsigned-long⑦⑦">unsigned long</a>, defaulting to <code>0</code></span>
     <dd data-md>
      <p>The index of the frame to decode.</p>
-    <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="ImageDecodeOptions" data-dfn-type="dict-member" data-export id="dom-imagedecodeoptions-completeframesonly"><code>completeFramesOnly</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#idl-boolean" id="ref-for-idl-boolean①⑦">boolean</a>, defaulting to <code>true</code></span>
+    <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="ImageDecodeOptions" data-dfn-type="dict-member" data-export id="dom-imagedecodeoptions-completeframesonly"><code>completeFramesOnly</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#idl-boolean" id="ref-for-idl-boolean①⑨">boolean</a>, defaulting to <code>true</code></span>
     <dd data-md>
      <p>For <a data-link-type="dfn" href="#progressive-image" id="ref-for-progressive-image②">Progressive Images</a>, a value of <code>false</code> indicates that the decoder
 may output an <code class="idl"><a data-link-type="idl" href="#dom-imagedecoderesult-image" id="ref-for-dom-imagedecoderesult-image②">image</a></code> with reduced detail. Each
@@ -5154,16 +5162,16 @@ decoded.</p>
    </dl>
    <h3 class="heading settled" data-level="10.5" id="imagedecoderesult-interface"><span class="secno">10.5. </span><span class="content">ImageDecodeResult Interface</span><a class="self-link" href="#imagedecoderesult-interface"></a></h3>
 <pre class="idl highlight def"><c- b>dictionary</c-> <dfn class="dfn-paneled idl-code" data-dfn-type="dictionary" data-export id="dictdef-imagedecoderesult"><code><c- g>ImageDecodeResult</c-></code></dfn> {
-  <c- b>required</c-> <a data-link-type="idl-name" href="#videoframe" id="ref-for-videoframe⑥①"><c- n>VideoFrame</c-></a> <a class="idl-code" data-link-type="dict-member" data-type="VideoFrame " href="#dom-imagedecoderesult-image" id="ref-for-dom-imagedecoderesult-image③"><c- g>image</c-></a>;
-  <c- b>required</c-> <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-boolean" id="ref-for-idl-boolean①⑧"><c- b>boolean</c-></a> <a class="idl-code" data-link-type="dict-member" data-type="boolean " href="#dom-imagedecoderesult-complete" id="ref-for-dom-imagedecoderesult-complete④"><c- g>complete</c-></a>;
+  <c- b>required</c-> <a data-link-type="idl-name" href="#videoframe" id="ref-for-videoframe⑥②"><c- n>VideoFrame</c-></a> <a class="idl-code" data-link-type="dict-member" data-type="VideoFrame " href="#dom-imagedecoderesult-image" id="ref-for-dom-imagedecoderesult-image③"><c- g>image</c-></a>;
+  <c- b>required</c-> <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-boolean" id="ref-for-idl-boolean②⓪"><c- b>boolean</c-></a> <a class="idl-code" data-link-type="dict-member" data-type="boolean " href="#dom-imagedecoderesult-complete" id="ref-for-dom-imagedecoderesult-complete④"><c- g>complete</c-></a>;
 };
 
 </pre>
    <dl>
-    <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="ImageDecodeResult" data-dfn-type="dict-member" data-export id="dom-imagedecoderesult-image"><code>image</code></dfn>, <span> of type <a data-link-type="idl-name" href="#videoframe" id="ref-for-videoframe⑥②">VideoFrame</a></span>
+    <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="ImageDecodeResult" data-dfn-type="dict-member" data-export id="dom-imagedecoderesult-image"><code>image</code></dfn>, <span> of type <a data-link-type="idl-name" href="#videoframe" id="ref-for-videoframe⑥③">VideoFrame</a></span>
     <dd data-md>
      <p>The decoded image.</p>
-    <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="ImageDecodeResult" data-dfn-type="dict-member" data-export id="dom-imagedecoderesult-complete"><code>complete</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#idl-boolean" id="ref-for-idl-boolean①⑨">boolean</a></span>
+    <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="ImageDecodeResult" data-dfn-type="dict-member" data-export id="dom-imagedecoderesult-complete"><code>complete</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#idl-boolean" id="ref-for-idl-boolean②①">boolean</a></span>
     <dd data-md>
      <p>Indicates whether <code class="idl"><a data-link-type="idl" href="#dom-imagedecoderesult-image" id="ref-for-dom-imagedecoderesult-image④">image</a></code> contains the final full-detail
 output.</p>
@@ -5221,11 +5229,11 @@ value of <code>-1</code> indicates that no track is selected.</p>
    <h3 class="heading settled" data-level="10.7" id="imagetrack-interface"><span class="secno">10.7. </span><span class="content">ImageTrack Interface</span><a class="self-link" href="#imagetrack-interface"></a></h3>
 <pre class="idl highlight def">[<a class="idl-code" data-link-type="extended-attribute" href="https://heycam.github.io/webidl/#Exposed" id="ref-for-Exposed①⓪"><c- g>Exposed</c-></a>=(<c- n>Window</c->,<c- n>DedicatedWorker</c->)]
 <c- b>interface</c-> <dfn class="dfn-paneled idl-code" data-dfn-type="interface" data-export id="imagetrack"><code><c- g>ImageTrack</c-></code></dfn> : <a data-link-type="idl-name" href="https://dom.spec.whatwg.org/#eventtarget" id="ref-for-eventtarget"><c- n>EventTarget</c-></a> {
-  <c- b>readonly</c-> <c- b>attribute</c-> <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-boolean" id="ref-for-idl-boolean②⓪"><c- b>boolean</c-></a> <a class="idl-code" data-link-type="attribute" data-readonly data-type="boolean" href="#dom-imagetrack-animated" id="ref-for-dom-imagetrack-animated②"><c- g>animated</c-></a>;
+  <c- b>readonly</c-> <c- b>attribute</c-> <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-boolean" id="ref-for-idl-boolean②②"><c- b>boolean</c-></a> <a class="idl-code" data-link-type="attribute" data-readonly data-type="boolean" href="#dom-imagetrack-animated" id="ref-for-dom-imagetrack-animated②"><c- g>animated</c-></a>;
   [<a class="idl-code" data-link-type="extended-attribute" href="https://heycam.github.io/webidl/#EnforceRange" id="ref-for-EnforceRange③⑦"><c- g>EnforceRange</c-></a>] <c- b>readonly</c-> <c- b>attribute</c-> <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-unsigned-long" id="ref-for-idl-unsigned-long⑧①"><c- b>unsigned</c-> <c- b>long</c-></a> <a class="idl-code" data-link-type="attribute" data-readonly data-type="unsigned long" href="#dom-imagetrack-framecount" id="ref-for-dom-imagetrack-framecount②"><c- g>frameCount</c-></a>;
   [<a class="idl-code" data-link-type="extended-attribute" href="https://heycam.github.io/webidl/#EnforceRange" id="ref-for-EnforceRange③⑧"><c- g>EnforceRange</c-></a>] <c- b>readonly</c-> <c- b>attribute</c-> <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-unrestricted-float" id="ref-for-idl-unrestricted-float"><c- b>unrestricted</c-> <c- b>float</c-></a> <a class="idl-code" data-link-type="attribute" data-readonly data-type="unrestricted float" href="#dom-imagetrack-repetitioncount" id="ref-for-dom-imagetrack-repetitioncount"><c- g>repetitionCount</c-></a>;
   <c- b>attribute</c-> <a data-link-type="idl-name" href="https://html.spec.whatwg.org/multipage/webappapis.html#eventhandler" id="ref-for-eventhandler"><c- n>EventHandler</c-></a> <a class="idl-code" data-link-type="attribute" data-type="EventHandler" href="#dom-imagetrack-onchange" id="ref-for-dom-imagetrack-onchange"><c- g>onchange</c-></a>;
-  <c- b>attribute</c-> <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-boolean" id="ref-for-idl-boolean②①"><c- b>boolean</c-></a> <a class="idl-code" data-link-type="attribute" data-type="boolean" href="#dom-imagetrack-selected" id="ref-for-dom-imagetrack-selected"><c- g>selected</c-></a>;
+  <c- b>attribute</c-> <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-boolean" id="ref-for-idl-boolean②③"><c- b>boolean</c-></a> <a class="idl-code" data-link-type="attribute" data-type="boolean" href="#dom-imagetrack-selected" id="ref-for-dom-imagetrack-selected"><c- g>selected</c-></a>;
 };
 
 </pre>
@@ -5253,7 +5261,7 @@ frames.</p>
    </dl>
    <h4 class="heading settled" data-level="10.7.2" id="imagetrack-attributes"><span class="secno">10.7.2. </span><span class="content">Attributes</span><a class="self-link" href="#imagetrack-attributes"></a></h4>
    <dl>
-    <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="ImageTrack" data-dfn-type="attribute" data-export id="dom-imagetrack-animated"><code>animated</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#idl-boolean" id="ref-for-idl-boolean②②">boolean</a>, readonly</span>
+    <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="ImageTrack" data-dfn-type="attribute" data-export id="dom-imagetrack-animated"><code>animated</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#idl-boolean" id="ref-for-idl-boolean②④">boolean</a>, readonly</span>
     <dd data-md>
      <p>The <code class="idl"><a data-link-type="idl" href="#dom-imagetrack-animated" id="ref-for-dom-imagetrack-animated③">animated</a></code> getter steps are to return the value of <code class="idl"><a data-link-type="idl" href="#dom-imagetrack-animated-slot" id="ref-for-dom-imagetrack-animated-slot①">[[animated]]</a></code>.</p>
      <p class="note" role="note"><span>NOTE:</span> This attribute provides an early indication that <code class="idl"><a data-link-type="idl" href="#dom-imagetrack-framecount" id="ref-for-dom-imagetrack-framecount③">frameCount</a></code> will ultimately exceed 0 for images where the <code class="idl"><a data-link-type="idl" href="#dom-imagetrack-framecount" id="ref-for-dom-imagetrack-framecount④">frameCount</a></code> starts at <code>0</code> and later increments as new
@@ -5267,7 +5275,7 @@ frames.</p>
     <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="ImageTrack" data-dfn-type="attribute" data-export id="dom-imagetrack-onchange"><code>onchange</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://html.spec.whatwg.org/multipage/webappapis.html#eventhandler" id="ref-for-eventhandler①">EventHandler</a></span>
     <dd data-md>
      <p>An <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#event-handler-idl-attributes" id="ref-for-event-handler-idl-attributes">event handler IDL attribute</a> whose <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#event-handler-event-type" id="ref-for-event-handler-event-type">event handler event type</a> is <code class="idl"><a data-link-type="idl" href="#eventdef-imagetrack-change" id="ref-for-eventdef-imagetrack-change①">change</a></code>.</p>
-    <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="ImageTrack" data-dfn-type="attribute" data-export id="dom-imagetrack-selected"><code>selected</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#idl-boolean" id="ref-for-idl-boolean②③">boolean</a></span>
+    <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="ImageTrack" data-dfn-type="attribute" data-export id="dom-imagetrack-selected"><code>selected</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#idl-boolean" id="ref-for-idl-boolean②⑤">boolean</a></span>
     <dd data-md>
      <p>The <code class="idl"><a data-link-type="idl" href="#dom-imagetrack-selected" id="ref-for-dom-imagetrack-selected①">selected</a></code> getter steps are to return the value of <code class="idl"><a data-link-type="idl" href="#dom-imagetrack-selected-slot" id="ref-for-dom-imagetrack-selected-slot②">[[selected]]</a></code>.</p>
      <p>The <code class="idl"><a data-link-type="idl" href="#dom-imagetrack-selected" id="ref-for-dom-imagetrack-selected②">selected</a></code> setter steps are:</p>
@@ -5881,6 +5889,7 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
    <li><a href="#dom-videopixelformat-nv12">NV12</a><span>, in §9.8</span>
    <li><a href="#dom-planelayout-offset">offset</a><span>, in §9.7</span>
    <li><a href="#dom-imagetrack-onchange">onchange</a><span>, in §10.7.2</span>
+   <li><a href="#dom-videodecoderconfig-optimizeforlatency">optimizeForLatency</a><span>, in §7.6</span>
    <li>
     output
     <ul>
@@ -6857,14 +6866,15 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
     <li><a href="#ref-for-idl-boolean③">7.3.2. VideoDecoderSupport</a> <a href="#ref-for-idl-boolean④">(2)</a>
     <li><a href="#ref-for-idl-boolean⑤">7.3.3. AudioEncoderSupport</a> <a href="#ref-for-idl-boolean⑥">(2)</a>
     <li><a href="#ref-for-idl-boolean⑦">7.3.4. VideoEncoderSupport</a> <a href="#ref-for-idl-boolean⑧">(2)</a>
-    <li><a href="#ref-for-idl-boolean⑨">7.13. VideoEncoderEncodeOptions</a> <a href="#ref-for-idl-boolean①⓪">(2)</a>
-    <li><a href="#ref-for-idl-boolean①①">10.2. ImageDecoder Interface</a> <a href="#ref-for-idl-boolean①②">(2)</a>
-    <li><a href="#ref-for-idl-boolean①③">10.2.3. Attributes</a>
-    <li><a href="#ref-for-idl-boolean①④">10.3. ImageDecoderInit Interface</a> <a href="#ref-for-idl-boolean①⑤">(2)</a>
-    <li><a href="#ref-for-idl-boolean①⑥">10.4. ImageDecodeOptions Interface</a> <a href="#ref-for-idl-boolean①⑦">(2)</a>
-    <li><a href="#ref-for-idl-boolean①⑧">10.5. ImageDecodeResult Interface</a> <a href="#ref-for-idl-boolean①⑨">(2)</a>
-    <li><a href="#ref-for-idl-boolean②⓪">10.7. ImageTrack Interface</a> <a href="#ref-for-idl-boolean②①">(2)</a>
-    <li><a href="#ref-for-idl-boolean②②">10.7.2. Attributes</a> <a href="#ref-for-idl-boolean②③">(2)</a>
+    <li><a href="#ref-for-idl-boolean⑨">7.6. VideoDecoderConfig</a> <a href="#ref-for-idl-boolean①⓪">(2)</a>
+    <li><a href="#ref-for-idl-boolean①①">7.13. VideoEncoderEncodeOptions</a> <a href="#ref-for-idl-boolean①②">(2)</a>
+    <li><a href="#ref-for-idl-boolean①③">10.2. ImageDecoder Interface</a> <a href="#ref-for-idl-boolean①④">(2)</a>
+    <li><a href="#ref-for-idl-boolean①⑤">10.2.3. Attributes</a>
+    <li><a href="#ref-for-idl-boolean①⑥">10.3. ImageDecoderInit Interface</a> <a href="#ref-for-idl-boolean①⑦">(2)</a>
+    <li><a href="#ref-for-idl-boolean①⑧">10.4. ImageDecodeOptions Interface</a> <a href="#ref-for-idl-boolean①⑨">(2)</a>
+    <li><a href="#ref-for-idl-boolean②⓪">10.5. ImageDecodeResult Interface</a> <a href="#ref-for-idl-boolean②①">(2)</a>
+    <li><a href="#ref-for-idl-boolean②②">10.7. ImageTrack Interface</a> <a href="#ref-for-idl-boolean②③">(2)</a>
+    <li><a href="#ref-for-idl-boolean②④">10.7.2. Attributes</a> <a href="#ref-for-idl-boolean②⑤">(2)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-idl-double">
@@ -7375,6 +7385,7 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
   [<a class="idl-code" data-link-type="extended-attribute" href="https://heycam.github.io/webidl/#EnforceRange"><c- g>EnforceRange</c-></a>] <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-unsigned-long"><c- b>unsigned</c-> <c- b>long</c-></a> <a class="idl-code" data-link-type="dict-member" data-type="unsigned long " href="#dom-videodecoderconfig-displayaspectwidth"><c- g>displayAspectWidth</c-></a>;
   [<a class="idl-code" data-link-type="extended-attribute" href="https://heycam.github.io/webidl/#EnforceRange"><c- g>EnforceRange</c-></a>] <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-unsigned-long"><c- b>unsigned</c-> <c- b>long</c-></a> <a class="idl-code" data-link-type="dict-member" data-type="unsigned long " href="#dom-videodecoderconfig-displayaspectheight"><c- g>displayAspectHeight</c-></a>;
   <a data-link-type="idl-name" href="#enumdef-hardwareacceleration"><c- n>HardwareAcceleration</c-></a> <a class="idl-code" data-default="&quot;allow&quot;" data-link-type="dict-member" data-type="HardwareAcceleration " href="#dom-videodecoderconfig-hardwareacceleration"><c- g>hardwareAcceleration</c-></a> = "allow";
+  <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-boolean"><c- b>boolean</c-></a> <a class="idl-code" data-link-type="dict-member" data-type="boolean " href="#dom-videodecoderconfig-optimizeforlatency"><c- g>optimizeForLatency</c-></a>;
 };
 
 <c- b>dictionary</c-> <a href="#dictdef-audioencoderconfig"><code><c- g>AudioEncoderConfig</c-></code></a> {
@@ -8716,6 +8727,12 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
     <li><a href="#ref-for-dom-videodecoderconfig-hardwareacceleration">7.6. VideoDecoderConfig</a>
    </ul>
   </aside>
+  <aside class="dfn-panel" data-for="dom-videodecoderconfig-optimizeforlatency">
+   <b><a href="#dom-videodecoderconfig-optimizeforlatency">#dom-videodecoderconfig-optimizeforlatency</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-dom-videodecoderconfig-optimizeforlatency">7.6. VideoDecoderConfig</a>
+   </ul>
+  </aside>
   <aside class="dfn-panel" data-for="dictdef-audioencoderconfig">
    <b><a href="#dictdef-audioencoderconfig">#dictdef-audioencoderconfig</a></b><b>Referenced in:</b>
    <ul>
@@ -9122,11 +9139,12 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
     <li><a href="#ref-for-encodedvideochunk⑤">6.1. Internal Slots</a>
     <li><a href="#ref-for-encodedvideochunk⑥">6.5. Algorithms</a>
     <li><a href="#ref-for-encodedvideochunk⑦">6.6. EncodedVideoChunkMetadata</a> <a href="#ref-for-encodedvideochunk⑧">(2)</a> <a href="#ref-for-encodedvideochunk⑨">(3)</a> <a href="#ref-for-encodedvideochunk①⓪">(4)</a> <a href="#ref-for-encodedvideochunk①①">(5)</a>
-    <li><a href="#ref-for-encodedvideochunk①②">7.8. VideoEncoderConfig</a> <a href="#ref-for-encodedvideochunk①③">(2)</a> <a href="#ref-for-encodedvideochunk①④">(3)</a> <a href="#ref-for-encodedvideochunk①⑤">(4)</a>
-    <li><a href="#ref-for-encodedvideochunk①⑥">8.2.1. Internal Slots</a>
-    <li><a href="#ref-for-encodedvideochunk①⑦">8.2.2. Constructors</a>
-    <li><a href="#ref-for-encodedvideochunk①⑧">9.4.1. Internal Slots</a> <a href="#ref-for-encodedvideochunk①⑨">(2)</a>
-    <li><a href="#ref-for-encodedvideochunk②⓪">9.4.3. Attributes</a> <a href="#ref-for-encodedvideochunk②①">(2)</a>
+    <li><a href="#ref-for-encodedvideochunk①②">7.6. VideoDecoderConfig</a>
+    <li><a href="#ref-for-encodedvideochunk①③">7.8. VideoEncoderConfig</a> <a href="#ref-for-encodedvideochunk①④">(2)</a> <a href="#ref-for-encodedvideochunk①⑤">(3)</a> <a href="#ref-for-encodedvideochunk①⑥">(4)</a>
+    <li><a href="#ref-for-encodedvideochunk①⑦">8.2.1. Internal Slots</a>
+    <li><a href="#ref-for-encodedvideochunk①⑧">8.2.2. Constructors</a>
+    <li><a href="#ref-for-encodedvideochunk①⑨">9.4.1. Internal Slots</a> <a href="#ref-for-encodedvideochunk②⓪">(2)</a>
+    <li><a href="#ref-for-encodedvideochunk②①">9.4.3. Attributes</a> <a href="#ref-for-encodedvideochunk②②">(2)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dictdef-encodedvideochunkinit">
@@ -9661,24 +9679,25 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
     <li><a href="#ref-for-videoframe③">4.4. Methods</a>
     <li><a href="#ref-for-videoframe④">6. VideoEncoder Interface</a>
     <li><a href="#ref-for-videoframe⑤">6.5. Algorithms</a> <a href="#ref-for-videoframe⑥">(2)</a>
-    <li><a href="#ref-for-videoframe⑦">7.8. VideoEncoderConfig</a> <a href="#ref-for-videoframe⑧">(2)</a> <a href="#ref-for-videoframe⑨">(3)</a> <a href="#ref-for-videoframe①⓪">(4)</a>
-    <li><a href="#ref-for-videoframe①①">7.10. Alpha Option</a> <a href="#ref-for-videoframe①②">(2)</a>
-    <li><a href="#ref-for-videoframe①③">9.1.2. Reference Counting</a> <a href="#ref-for-videoframe①④">(2)</a> <a href="#ref-for-videoframe①⑤">(3)</a> <a href="#ref-for-videoframe①⑥">(4)</a>
-    <li><a href="#ref-for-videoframe①⑦">9.1.3. Transfer and Serialization</a> <a href="#ref-for-videoframe①⑧">(2)</a> <a href="#ref-for-videoframe①⑨">(3)</a> <a href="#ref-for-videoframe②⓪">(4)</a> <a href="#ref-for-videoframe②①">(5)</a>
-    <li><a href="#ref-for-videoframe②②">9.4. VideoFrame Interface</a> <a href="#ref-for-videoframe②③">(2)</a> <a href="#ref-for-videoframe②④">(3)</a>
-    <li><a href="#ref-for-videoframe②⑤">9.4.1. Internal Slots</a> <a href="#ref-for-videoframe②⑥">(2)</a> <a href="#ref-for-videoframe②⑦">(3)</a> <a href="#ref-for-videoframe②⑧">(4)</a> <a href="#ref-for-videoframe②⑨">(5)</a> <a href="#ref-for-videoframe③⓪">(6)</a> <a href="#ref-for-videoframe③①">(7)</a>
-    <li><a href="#ref-for-videoframe③②">9.4.2. Constructors</a> <a href="#ref-for-videoframe③③">(2)</a> <a href="#ref-for-videoframe③④">(3)</a> <a href="#ref-for-videoframe③⑤">(4)</a>
-    <li><a href="#ref-for-videoframe③⑥">9.4.3. Attributes</a> <a href="#ref-for-videoframe③⑦">(2)</a> <a href="#ref-for-videoframe③⑧">(3)</a>
-    <li><a href="#ref-for-videoframe③⑨">9.4.5. Methods</a> <a href="#ref-for-videoframe④⓪">(2)</a>
-    <li><a href="#ref-for-videoframe④①">9.4.6. Algorithms</a> <a href="#ref-for-videoframe④②">(2)</a>
-    <li><a href="#ref-for-videoframe④③">9.4.7. Transfer and Serialization</a> <a href="#ref-for-videoframe④④">(2)</a> <a href="#ref-for-videoframe④⑤">(3)</a> <a href="#ref-for-videoframe④⑥">(4)</a> <a href="#ref-for-videoframe④⑦">(5)</a> <a href="#ref-for-videoframe④⑧">(6)</a> <a href="#ref-for-videoframe④⑨">(7)</a> <a href="#ref-for-videoframe⑤⓪">(8)</a>
-    <li><a href="#ref-for-videoframe⑤①">9.5. VideoFrame CopyTo() Options</a> <a href="#ref-for-videoframe⑤②">(2)</a> <a href="#ref-for-videoframe⑤③">(3)</a>
-    <li><a href="#ref-for-videoframe⑤④">9.6. DOMRects in VideoFrame</a> <a href="#ref-for-videoframe⑤⑤">(2)</a>
-    <li><a href="#ref-for-videoframe⑤⑥">9.7. Plane Layout</a> <a href="#ref-for-videoframe⑤⑦">(2)</a>
-    <li><a href="#ref-for-videoframe⑤⑧">9.8. Pixel Format</a>
-    <li><a href="#ref-for-videoframe⑤⑨">10.1. Background</a>
-    <li><a href="#ref-for-videoframe⑥⓪">10.2.1. Internal Slots</a>
-    <li><a href="#ref-for-videoframe⑥①">10.5. ImageDecodeResult Interface</a> <a href="#ref-for-videoframe⑥②">(2)</a>
+    <li><a href="#ref-for-videoframe⑦">7.6. VideoDecoderConfig</a>
+    <li><a href="#ref-for-videoframe⑧">7.8. VideoEncoderConfig</a> <a href="#ref-for-videoframe⑨">(2)</a> <a href="#ref-for-videoframe①⓪">(3)</a> <a href="#ref-for-videoframe①①">(4)</a>
+    <li><a href="#ref-for-videoframe①②">7.10. Alpha Option</a> <a href="#ref-for-videoframe①③">(2)</a>
+    <li><a href="#ref-for-videoframe①④">9.1.2. Reference Counting</a> <a href="#ref-for-videoframe①⑤">(2)</a> <a href="#ref-for-videoframe①⑥">(3)</a> <a href="#ref-for-videoframe①⑦">(4)</a>
+    <li><a href="#ref-for-videoframe①⑧">9.1.3. Transfer and Serialization</a> <a href="#ref-for-videoframe①⑨">(2)</a> <a href="#ref-for-videoframe②⓪">(3)</a> <a href="#ref-for-videoframe②①">(4)</a> <a href="#ref-for-videoframe②②">(5)</a>
+    <li><a href="#ref-for-videoframe②③">9.4. VideoFrame Interface</a> <a href="#ref-for-videoframe②④">(2)</a> <a href="#ref-for-videoframe②⑤">(3)</a>
+    <li><a href="#ref-for-videoframe②⑥">9.4.1. Internal Slots</a> <a href="#ref-for-videoframe②⑦">(2)</a> <a href="#ref-for-videoframe②⑧">(3)</a> <a href="#ref-for-videoframe②⑨">(4)</a> <a href="#ref-for-videoframe③⓪">(5)</a> <a href="#ref-for-videoframe③①">(6)</a> <a href="#ref-for-videoframe③②">(7)</a>
+    <li><a href="#ref-for-videoframe③③">9.4.2. Constructors</a> <a href="#ref-for-videoframe③④">(2)</a> <a href="#ref-for-videoframe③⑤">(3)</a> <a href="#ref-for-videoframe③⑥">(4)</a>
+    <li><a href="#ref-for-videoframe③⑦">9.4.3. Attributes</a> <a href="#ref-for-videoframe③⑧">(2)</a> <a href="#ref-for-videoframe③⑨">(3)</a>
+    <li><a href="#ref-for-videoframe④⓪">9.4.5. Methods</a> <a href="#ref-for-videoframe④①">(2)</a>
+    <li><a href="#ref-for-videoframe④②">9.4.6. Algorithms</a> <a href="#ref-for-videoframe④③">(2)</a>
+    <li><a href="#ref-for-videoframe④④">9.4.7. Transfer and Serialization</a> <a href="#ref-for-videoframe④⑤">(2)</a> <a href="#ref-for-videoframe④⑥">(3)</a> <a href="#ref-for-videoframe④⑦">(4)</a> <a href="#ref-for-videoframe④⑧">(5)</a> <a href="#ref-for-videoframe④⑨">(6)</a> <a href="#ref-for-videoframe⑤⓪">(7)</a> <a href="#ref-for-videoframe⑤①">(8)</a>
+    <li><a href="#ref-for-videoframe⑤②">9.5. VideoFrame CopyTo() Options</a> <a href="#ref-for-videoframe⑤③">(2)</a> <a href="#ref-for-videoframe⑤④">(3)</a>
+    <li><a href="#ref-for-videoframe⑤⑤">9.6. DOMRects in VideoFrame</a> <a href="#ref-for-videoframe⑤⑥">(2)</a>
+    <li><a href="#ref-for-videoframe⑤⑦">9.7. Plane Layout</a> <a href="#ref-for-videoframe⑤⑧">(2)</a>
+    <li><a href="#ref-for-videoframe⑤⑨">9.8. Pixel Format</a>
+    <li><a href="#ref-for-videoframe⑥⓪">10.1. Background</a>
+    <li><a href="#ref-for-videoframe⑥①">10.2.1. Internal Slots</a>
+    <li><a href="#ref-for-videoframe⑥②">10.5. ImageDecodeResult Interface</a> <a href="#ref-for-videoframe⑥③">(2)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dictdef-videoframeinit">
