@@ -1631,6 +1631,7 @@ dictionary VideoDecoderConfig {
   [EnforceRange] unsigned long displayAspectWidth;
   [EnforceRange] unsigned long displayAspectHeight;
   HardwareAcceleration hardwareAcceleration = "allow";
+  boolean optimizeForLatency;
 };
 </xmp>
 
@@ -1688,7 +1689,7 @@ run these steps:
     Vertical dimension of the VideoFrame's aspect ratio when displayed.
   </dd>
 
-Note: {{VideoFrame/displayWidth}} and {{VideoFrame/displayHeight}} can both be
+  NOTE: {{VideoFrame/displayWidth}} and {{VideoFrame/displayHeight}} can both be
   different from {{VideoDecoderConfig/displayAspectWidth}} and
   {{VideoDecoderConfig/displayAspectHeight}}, but they should have identical
   ratios, after scaling is applied when
@@ -1698,6 +1699,17 @@ Note: {{VideoFrame/displayWidth}} and {{VideoFrame/displayHeight}} can both be
   <dd>
     Configures hardware acceleration for this codec. See
     {{HardwareAcceleration}}.
+  </dd>
+
+  <dt><dfn dict-member for=VideoDecoderConfig>optimizeForLatency</dfn></dt>
+  <dd>
+    Hint that the selected decoder SHOULD be configured to minimize the number
+    of {{EncodedVideoChunk}}s that must be decoded before a {{VideoFrame}} is
+    output.
+
+    NOTE: In addition to User Agent and hardware limitations, some codec
+    bitstreams may require a minimum number of inputs before any output can be
+    produced.
   </dd>
 </dl>
 
