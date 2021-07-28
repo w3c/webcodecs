@@ -1630,7 +1630,7 @@ dictionary VideoDecoderConfig {
   [EnforceRange] unsigned long codedHeight;
   [EnforceRange] unsigned long displayAspectWidth;
   [EnforceRange] unsigned long displayAspectHeight;
-  HardwareAcceleration hardwareAcceleration = "noPreference";
+  HardwareAcceleration hardwareAcceleration = "no-preference";
   boolean optimizeForLatency;
 };
 </xmp>
@@ -1762,7 +1762,7 @@ dictionary VideoEncoderConfig {
   [EnforceRange] unsigned long displayHeight;
   [EnforceRange] unsigned long long bitrate;
   [EnforceRange] double framerate;
-  HardwareAcceleration hardwareAcceleration = "noPreference";
+  HardwareAcceleration hardwareAcceleration = "no-preference";
   AlphaOption alpha = "discard";
   DOMString scalabilityMode;
   BitrateMode bitrateMode = "variable";
@@ -1885,27 +1885,27 @@ Hardware Acceleration{#hardware-acceleration}
 ---------------------------------------------
 <xmp class='idl'>
 enum HardwareAcceleration {
-  "noPreference",
-  "preferHardware",
-  "preferSoftware",
+  "no-preference",
+  "prefer-hardware",
+  "prefer-software",
 };
 </xmp>
 
 When supported, hardware acceleration offloads encoding or decoding to
-specialized hardware. {{HardwareAcceleration/preferHardware}} and
-{{HardwareAcceleration/preferSoftware}} are hints. While User Agents SHOULD
+specialized hardware. {{HardwareAcceleration/prefer-hardware}} and
+{{HardwareAcceleration/prefer-software}} are hints. While User Agents SHOULD
 respect these values when possible, User Agents may ignore these values in some
 or all circumstances for any reason.
 
 <div class='note'>
   NOTE: Good examples of when a User Agent may ignore
-  {{HardwareAcceleration/preferHardware}} or
-  {{HardwareAcceleration/preferSoftware}} are for reasons of user privacy or
+  {{HardwareAcceleration/prefer-hardware}} or
+  {{HardwareAcceleration/prefer-software}} are for reasons of user privacy or
   circumstances where the User Agent determines an alternative setting would
   better serve the end user.
 
   NOTE: Most authors will be best served by using the default of
-  {{HardwareAcceleration/noPreference}}. This gives the User Agent flexibility
+  {{HardwareAcceleration/no-preference}}. This gives the User Agent flexibility
   to optimize based on its knowledge of the system and configuration. A common
   strategy will be to prioritize hardware acceleration at higher resolutions
   with a fallback to software codecs if hardware acceleration fails.
@@ -1914,8 +1914,8 @@ or all circumstances for any reason.
   acceleration preference. The precise tradeoffs will be device-specific, but
   authors should generally expect the following:
 
-  * Setting a value of {{HardwareAcceleration/preferHardware}} or
-      {{HardwareAcceleration/preferSoftware}} may significantly restrict what
+  * Setting a value of {{HardwareAcceleration/prefer-hardware}} or
+      {{HardwareAcceleration/prefer-software}} may significantly restrict what
       configurations are supported. It may occur that the user's device does not
       offer acceleration for any codec, or only for the most common profiles of
       older codecs. It may also occur that a given User Agent lacks a software
@@ -1931,21 +1931,22 @@ or all circumstances for any reason.
       may yield decreased performance and power efficiency compared to purely
       software based codecs.
 
-  Given these tradeoffs, a good example of using "preferHardware" would be if an
-  author intends to provide their own software based fallback via WebAssembly.
+  Given these tradeoffs, a good example of using "prefer-hardware" would be if
+  an author intends to provide their own software based fallback via
+  WebAssembly.
 
-  Alternatively, a good example of using "preferSoftware" would be if an author
+  Alternatively, a good example of using "prefer-software" would be if an author
   is especially sensitive to the higher startup latency or decreased robustness
   generally associated with hardware acceleration.
 </div>
 
 <dl>
-  <dt><dfn enum-value for=HardwareAcceleration>noPreference</dfn></dt>
+  <dt><dfn enum-value for=HardwareAcceleration>no-preference</dfn></dt>
   <dd>
     Indicates that the User Agent may use hardware acceleration if it is
     available and compatible with other aspects of the codec configuration.
   </dd>
-  <dt><dfn enum-value for=HardwareAcceleration>preferSoftware</dfn></dt>
+  <dt><dfn enum-value for=HardwareAcceleration>prefer-software</dfn></dt>
   <dd>
     Indicates that the User Agent SHOULD prefer a software codec implementation.
     User Agents may ignore this value for any reason.
@@ -1954,7 +1955,7 @@ or all circumstances for any reason.
     an unaccelerated codec is unavailable or is incompatible with other aspects
     of the codec configuration.
   </dd>
-  <dt><dfn enum-value for=HardwareAcceleration>preferHardware</dfn></dt>
+  <dt><dfn enum-value for=HardwareAcceleration>prefer-hardware</dfn></dt>
   <dd>
     Indicates that the User Agent SHOULD prefer hardware acceleration. User
     Agents may ignore this value for any reason.
