@@ -1,6 +1,6 @@
 SHELL=/bin/bash
 
-local: local-index local-codec-registry local-avc-codec-registration
+local: local-index local-codec-registry local-avc-codec-registration vorbis_codec_registration
 
 local-index: index.src.html
 	bikeshed --die-on=warning spec index.src.html index.html
@@ -10,6 +10,9 @@ local-codec-registry: codec_registry.src.html
 
 local-avc-codec-registration: avc_codec_registration.src.html
 	bikeshed --die-on=warning spec avc_codec_registration.src.html avc_codec_registration.html
+
+local-vorbis-codec-registration: vorbis_codec_registration.src.html
+	bikeshed --die-on=warning spec vorbis_codec_registration.src.html vorbis_codec_registration.html
 
 remote-index: index.src.html
 	@ (HTTP_STATUS=$$(curl https://api.csswg.org/bikeshed/ \
@@ -50,12 +53,26 @@ remote-avc-codec-registration: avc_codec_registration.src.html
 		exit 22 \
 	);
 
+remote-vorbis-codec-registration: vorbis_codec_registration.src.html
+	@ (HTTP_STATUS=$$(curl https://api.csswg.org/bikeshed/ \
+	                       --output vorbis_codec_registration.html \
+	                       --write-out "%{http_code}" \
+	                       --header "Accept: text/plain, text/html" \
+	                       -F die-on=warning \
+	                       -F file=@vorbis_codec_registration.src.html) && \
+	[[ "$$HTTP_STATUS" -eq "200" ]]) || ( \
+		echo ""; cat vorbis_codec_registration.html; echo ""; \
+		rm -f vorbis_codec_registration.html; \
+		exit 22 \
+	);
 
-remote: remote-index remote-codec-registry remote-avc-codec-registration
 
-ci: index.src.html codec_registry.src.html avc_codec_registration.src.html
+remote: remote-index remote-codec-registry remote-avc-codec-registration remote-vorbis_codec_registration
+
+ci: index.src.html codec_registry.src.html avc_codec_registration.src.html vorbis_codec_registration.src.html
 	mkdir -p out
 	make remote
 	mv index.html out/index.html
 	mv codec_registry.html out/codec_registry.html
 	mv avc_codec_registration.html out/avc_codec_registration.html
+	mv vorbis_codec_registration.html out/vorbis_codec_registration.html
