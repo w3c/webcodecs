@@ -4704,15 +4704,14 @@ may implement a "privacy budget", which depletes as authors use WebCodecs and
 other identifying APIs. Upon exhaustion of the privacy budget, codec
 capabilities could be reduced to a common baseline or prompt for user approval.
 
-Best Practies for Authors Using WebCodecs{#best-practices-developers}
-=====================================================================
+Best Practices for Authors Using WebCodecs{#best-practices-developers}
+======================================================================
 
 While WebCodecs internally operates on background threads, authors working with
 realtime media or in contended main thread environments should ensure their
 media pipelines operate in worker contexts entirely independent of the main
-thread where possible. For example, any processing of {{VideoFrame}}s for
-encoders or from decoders working with realtime media should generally be done
-in a worker context.
+thread where possible. For example, realtime media processing of {{VideoFrame}}s
+should generally be done in a worker context.
 
 The main thread has significant potential for high contention and jank that may
 go unnoticed in development, yet degrade inconsistently across devices and User
