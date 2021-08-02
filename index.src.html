@@ -4549,40 +4549,38 @@ interface ImageTrack : EventTarget {
 Resource Reclamation{#resource-reclamation}
 ==============================================
 
-When resources are constrained, a User Agent may proactively reclaim codecs.
+When resources are constrained, a User Agent MAY proactively reclaim codecs.
 This is particularly true in the case where hardware codecs are limited, and
 shared accross all web pages.
 
-A User Agent may only [=reclaim a codec=] that is either an
-[=inactive codec=], a [=background codec=], or both. A User Agent MUST NOT
-reclaim a codec that is both active and in the foreground, e.g any codec that is
-neither an [=inactive codec=] nor a [=background codec=].
-
-An <dfn>inactive codec</dfn> is a codec that has not received a call to
-`encode()` or `decode()` in the past `3 seconds`, and has not called its
-`output()` callback in the past `3 seconds`.
-
-A <dfn>background codec</dfn> is a codec whose {{ownerDocument}}'s
-{{Document/hidden}} attribute is {{hidden|"hidden"}}.
-
-To <dfn>reclaim a codec</dfn>, a User Agent must run the appropriate
+To <dfn>reclaim a codec</dfn>, a User Agent MUST run the appropriate
 close algorithm (amongst [=Close AudioDecoder=], [=Close AudioEncoder=],
 [=Close VideoDecoder=] and [=Close VideoEncoder=]) with a {{QuotaExceededError}}
 {{DOMException}}.
 
-When selecting which codec to reclaim, the User Agent should consider the
-following criteria:
-    - What type of resource is the codec holding on to? User Agents should
-        reclaim codecs that will alleviate the pressure of scarce resources.
-    - How disruptive might reclaiming the codec be? User Agents should consider
-        whether the codec is a [=background codec=], an [=inactive codec=], or
-        both. Codecs that are both are least likely disrupt to user experience
-        when reclaimed. Otherwise, User Agents might prefer reclaiming codecs
-        that are [=background codec=]s, before [=inactive codec=]s in
-        foreground pages.
-    - Any other heuristics, determined by the User Agent. For example,
-        heuristics might prioritize reclaiming the oldest codecs, the ones with
-        the least recent activity, or the least frequent activity.
+A User Agent MUST only [=reclaim a codec=] that is either an
+[=inactive codec=], a [=background codec=], or both. A User Agent MUST NOT
+reclaim a codec that is both [=active=] and in the foreground, e.g not a [=background codec=].
+
+An <dfn lt="active codec|active">active codec</dfn> is a codec that has
+received a call to `encode()` or `decode()` in the past `10 seconds`, or has
+called its `output()` callback in the past `10 seconds`. An
+<dfn lt="inactive codec|inactive">inactive codec</dfn> is any codec that does
+not meet the definition of an [=active codec=].
+
+A <dfn lt="background codec|background">background codec</dfn> is a codec whose
+{{ownerDocument}} (or [=owner set=]'s {{Document}}, for codecs in workers) has a
+{{Document/hidden}} attribute equal to {{hidden|"hidden"}}.
+
+Additionally, User Agents MUST NOT reclaim [=background=] codecs in the
+following scenarios:
+    - [=Active=] {{AudioEncoder}}s or {{VideoEncoder}}s, to prevent long running
+        encode tasks from being interrupted.
+    - [=Active=] {{AudioDecoder}}s or {{VideoDecoder}}s, if there is
+        respectively an [=active=] {{AudioEncoder}} or {{VideoEncoder}} in the
+        same context, to prevent breaking long running transcoding tasks.
+    - [=Active=] {{AudioDecoder}}s when their respective tabs is actively
+        playing audio.
 
 Security Considerations{#security-considerations}
 =================================================
