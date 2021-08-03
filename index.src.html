@@ -99,6 +99,17 @@ spec: webrtc-svc; urlPrefix: https://w3c.github.io/webrtc-svc/
     type: dfn; text: scalability mode identifier; url:#scalabilitymodes*
 </pre>
 
+<pre class='biblio'>
+{
+  "H.273": {
+    "href": "https://www.itu.int/rec/T-REC-H.273/en",
+    "title": "Coding-independent code points for video signal type identification",
+    "publisher": "ITU",
+    "date": "December 2016"
+  }
+}
+</pre>
+
 <style>
 main > dl > dd {
   margin-bottom: 1em;
@@ -3372,12 +3383,7 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
         |frame|.{{VideoFrame/timestamp}}.
     9. If |resource| has a known {{VideoColorSpace}}, assign its value to
         {{VideoFrame/[[color space]]}}.
-    10. Otherwise, assign {{VideoFrame/[[color space]]}} with the result of
-        running the [=VideoFrame/Pick Color Space=] algorithm, with
-        {{VideoFrame/[[format]]}}.
-
-        ISSUE: This implies frame.colorSpace would never be null. Should the
-            interface be changed to be not nullable?
+    10. Otherwise, assign `null` to {{VideoFrame/[[color space]]}}.
 
 : <dfn>Clone VideoFrame</dfn> (with |frame|)
 :: 1. Let |clone| be a new {{VideoFrame}} initialized as follows:
@@ -3582,6 +3588,16 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
         field to the {{VideoFrame}} internal slot in |value| with the same name
         as the named field.
 
+### Rendering ### {#videoframe-rendering}
+
+When rendered, for example by {{CanvasDrawImage}}
+{{CanvasDrawImage/drawImage()}}, a {{VideoFrame}} should be converted to a
+color space compatible with the rendering target, unless color conversion is
+explicitly disabled.
+
+Color space conversion during {{ImageBitmap}} construction is controlled by
+{{ImageBitmapOptions}} {{ImageBitmapOptions/colorSpaceConversion}}. Setting this
+value to "none" disables color space conversion.
 
 VideoFrame CopyTo() Options {#videoframe-copyto-options}
 ------------------------------------------------------------
@@ -3913,16 +3929,8 @@ is its own [=equivalent opaque format=].
   </dd>
 </dl>
 
-Video Color Space{#video-color-space}
--------------------------------------
-
-### Rendering Color ### {#video-color-space-rendering-color}
-
-ISSUE: (rough placeholder)
-    ImageBitmaps produced by createImageBitmap(videoFrame) should be converted to a
-    color space supported by the canvas implementation unless
-    colorSpaceConversion == “none”. Similarly texImage2D() should convert to the
-    context’s color space.
+Video Color Space Interface {#video-color-space-interface}
+----------------------------------------------------------
 
 <xmp class='idl'>
 [Exposed=(Window,DedicatedWorker)]
@@ -3943,19 +3951,118 @@ dictionary VideoColorSpaceInit {
   VideoMatrixCoefficients matrix;
   boolean fullRange;
 };
+</xmp>
 
+### Internal Slots ### {#videocolorspace-internal-slots}
+: <dfn attribute for=VideoColorSpace>\[[primaries]]</dfn>
+:: The color primaries.
+: <dfn attribute for=VideoColorSpace>\[[transfer]]</dfn>
+:: The transfer characteristics.
+: <dfn attribute for=VideoColorSpace>\[[matrix]]</dfn>
+:: The matrix coefficients.
+: <dfn attribute for=VideoColorSpace>[[full range]]</dfn>
+:: Indicates whether full-range color values are used.
+
+### Constructors ### {#videocolorspace-constructors}
+<dfn constructor for=VideoColorSpace title="VideoColorSpace(init)">
+  VideoColorSpace(init)
+</dfn>
+1. Let |c| be a new {{VideoColorSpace}} object, initialized as follows:
+    1. If `primaries` is present in `init`, assign `init.primaries` to
+        {{VideoColorSpace/[[primaries]]}}. Otherwise, assign `null` to
+        {{VideoColorSpace/[[primaries]]}}.
+    2. If `transfer` is present in `init`, assign `init.transfer` to
+        {{VideoColorSpace/[[transfer]]}}. Otherwise, assign `null` to
+        {{VideoColorSpace/[[transfer]]}}.
+    3. If `matrix` is present in `init`, assign `init.matrix` to
+        {{VideoColorSpace/[[matrix]]}}. Otherwise, assign `null` to
+        {{VideoColorSpace/[[matrix]]}}.
+    4. If `fullRange` is present in `init`, assign `init.fullRange` to
+        {{VideoColorSpace/[[full range]]}}. Otherwise, assign `null` to
+        {{VideoColorSpace/[[full range]]}}.
+6. Return |c|.
+
+### Attributes ### {#videocolorspace-attributes}
+: <dfn attribute for=VideoColorSpace>primaries</dfn>
+:: The {{VideoColorSpace/primaries}} getter steps are to return the value of
+    {{VideoColorSpace/[[primaries]]}}.
+: <dfn attribute for=VideoColorSpace>transfer</dfn>
+:: The {{VideoColorSpace/transfer}} getter steps are to return the value of
+    {{VideoColorSpace/[[transfer]]}}.
+: <dfn attribute for=VideoColorSpace>matrix</dfn>
+:: The {{VideoColorSpace/matrix}} getter steps are to return the value of
+    {{VideoColorSpace/[[matrix]]}}.
+: <dfn attribute for=VideoColorSpace>fullRange</dfn>
+:: The {{VideoColorSpace/fullRange}} getter steps are to return the value of
+    {{VideoColorSpace/[[full range]]}}.
+
+Video Color Primaries {#videocolorprimaries}
+--------------------------------------------
+Color primaries describe the color gamut of video samples.
+
+<xmp class='idl'>
 enum VideoColorPrimaries {
   "bt709",      // BT.709, sRGB
   "bt470bg",    // BT.601 PAL
   "smpte170m",  // BT.601 NTSC
 };
+</xmp>
 
+<dl>
+  <dt><dfn enum-value for=VideoColorPrimaries>bt709</dfn</dt>
+  <dd>
+    Color primaries used by BT.709 and sRGB, as described by [[H.273]]
+    section 8.1 table 2 value 1.
+  </dd>
+  <dt><dfn enum-value for=VideoColorPrimaries>bt470bg</dfn</dt>
+  <dd>
+    Color primaries used by BT.601 PAL, as described by [[H.273]]
+    section 8.1 table 2 value 5.
+  </dd>
+  <dt><dfn enum-value for=VideoColorPrimaries>smpte170m</dfn</dt>
+  <dd>
+    Color primaries used by BT.601 NTSC, as described by [[H.273]]
+    section 8.1 table 2 value 6.
+  </dd>
+</dl>
+
+Video Transfer Characteristics {#videotransfercharacteristics}
+--------------------------------------------------------------
+Transfer characteristics describe the opto-electronic transfer characteristics
+of video samples.
+
+<xmp class='idl'>
 enum VideoTransferCharacteristics {
   "bt709",         // BT.709
   "smpte170m",     // BT.601 (functionally the same as bt709)
   "iec61966-2-1",  // sRGB
 };
+</xmp>
 
+<dl>
+  <dt><dfn enum-value for=VideoTransferCharacteristics>bt709</dfn</dt>
+  <dd>
+    Transfer characteristics used by BT.709, as described by [[H.273]]
+    section 8.2 table 3 value 1.
+  </dd>
+  <dt><dfn enum-value for=VideoTransferCharacteristics>smpte170m</dfn</dt>
+  <dd>
+    Transfer characteristics used by BT.601, as described by [[H.273]]
+    section 8.2 table 3 value 6.
+  </dd>
+  <dt><dfn enum-value for=VideoTransferCharacteristics>iec61966-2-1</dfn</dt>
+  <dd>
+    Transfer characteristics used by sRGB, as described by [[H.273]]
+    section 8.2 table 3 value 13.
+  </dd>
+</dl>
+
+Video Matrix Coefficients {#videomatrixcoefficients}
+----------------------------------------------------
+Matrix coefficients describe the relationship between sample component values
+and color coordinates.
+
+<xmp class='idl'>
 enum VideoMatrixCoefficients {
   "rgb",        // sRGB
   "bt709",      // BT.709
@@ -3963,6 +4070,29 @@ enum VideoMatrixCoefficients {
   "smpte170m",  // BT.601 NTSC (functionally the same as bt470bg)
 };
 </xmp>
+
+<dl>
+  <dt><dfn enum-value for=VideoMatrixCoefficients>rgb</dfn</dt>
+  <dd>
+    Matrix coefficients used by sRGB, as described by [[H.273]]
+    section 8.3 table 4 value 0.
+  </dd>
+  <dt><dfn enum-value for=VideoMatrixCoefficients>bt709</dfn</dt>
+  <dd>
+    Matrix coefficients used by BT.709, as described by [[H.273]]
+    section 8.3 table 4 value 1.
+  </dd>
+  <dt><dfn enum-value for=VideoMatrixCoefficients>bt470bg</dfn</dt>
+  <dd>
+    Matrix coefficients used by BT.601 PAL, as described by [[H.273]]
+    section 8.3 table 4 value 5.
+  </dd>
+  <dt><dfn enum-value for=VideoMatrixCoefficients>smpte170m</dfn</dt>
+  <dd>
+    Matrix coefficients used by BT.601 NTSC, as described by [[H.273]]
+    section 8.3 table 4 value 6.
+  </dd>
+</dl>
 
 Image Decoding {#image-decoding}
 ====================================
