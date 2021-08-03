@@ -613,6 +613,11 @@ Methods {#videodecoder-methods}
         failing to release them (or waiting for garbage collection) may cause
         decoding to stall.
 
+    NOTE: {{VideoDecoder}} requires that frames are output in the order they
+        expect to be presented, commonly known as presentation order. Some
+        {{VideoDecoder/[[codec implementation]]}}s may require the User Agent
+        to reorder outputs into presentation order.
+
     When invoked, run these steps:
     1. If {{VideoDecoder/[[state]]}} is not `"configured"`, throw an
         {{InvalidStateError}}.
@@ -637,7 +642,7 @@ Methods {#videodecoder-methods}
     3. Queue a task on the [=control thread=] event loop to decrement
         {{VideoDecoder/[[decodeQueueSize]]}}
     4. Let |decoded outputs| be a [=list=] of decoded video data outputs emitted
-        by {{VideoDecoder/[[codec implementation]]}}.
+        by {{VideoDecoder/[[codec implementation]]}} in presentation order.
     5. If |decoded outputs| is not empty, queue a task on the [=control thread=]
         event loop to run the [=Output VideoFrames=] algorithm with
         |decoded outputs|.
