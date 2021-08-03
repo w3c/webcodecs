@@ -1442,7 +1442,22 @@ Configurations{#configurations}
 <dfn>Check Configuration Support</dfn> (with |config|) {#config-support}
 ------------------------------------------------------------------------
 Run these steps:
-1. If the User Agent can provide a <a>codec</a> to support all entries of the
+1. If |config| is an {{AudioDecoderConfig}} or {{VideoDecoderConfig}} and the
+    User Agent can't provide a <a>codec</a> that can decode the exact profile
+    (where present), level (where present), and constraint bits (where present)
+    indicated by the [[config-codec-string]], return `false`.
+2. If |config| is an {{AudioEncoderConfig}} or {{VideoEncoderConfig}}:
+    1. If [[config-codec-string]] contains a profile and the User Agent can't
+        provide a <a>codec</a> that can encode the exact profile indicated by
+        the [[config-codec-string]], return `false`.
+    2. If [[config-codec-string]] contains a level and the User Agent can't
+        provide a <a>codec</a> that can encode to a level less than or equal to
+        the level indicated by the [[config-codec-string]], return `false`.
+    3. If [[config-codec-string]] contains constraint bits and the User Agent
+        can't provide a <a>codec</a> that can produce an encoded bitstream at
+        least as constrained as indicated by the [[config-codec-string]], return
+        `false`.
+3. If the User Agent can provide a <a>codec</a> to support all entries of the
     |config|, including applicable default values for keys that are not
     included, return `true`.
 
@@ -1570,14 +1585,18 @@ decoding.
 A <dfn>valid codec string</dfn> must meet the following conditions.
 1. Is valid per the relevant codec specification (see examples below).
 2. It describes a single codec.
-3. It is unambiguous about codec profile and level for codecs that define these
-    concepts.
+3. It is unambiguous about codec profile, level, and constraint bits for codecs
+    that define these concepts.
 
 NOTE: In other media specifications, codec strings historically accompanied a
     [=MIME type=] as the "codecs=" parameter
     ({{MediaSource/isTypeSupported()}}, {{HTMLMediaElement/canPlayType()}})
     [[RFC6381]]. In this specification, encoded media is not containerized;
     hence, only the value of the codecs parameter is accepted.
+
+NOTE: Encoders for codecs that define level and constraint bits have flexibility
+    around these parameters, but won't produce bitstreams that have a higher
+    level or are less constrained than requested.
 
 The format and semantics for codec strings are defined by codec registrations
 listed in the [[WEBCODECS-CODEC-REGISTRY]]. A compliant implementation may support any
