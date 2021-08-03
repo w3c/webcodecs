@@ -54,6 +54,11 @@ spec: WEBCODECS; urlPrefix: https://w3c.github.io/webcodecs/#
     "title": "Vorbis I specification",
     "publisher": "Xiph.Org Foundation",
     "date": "July 4, 2020"
+  },
+  "OGG-FRAMING": {
+    "href": "https://xiph.org/vorbis/doc/framing.html",
+    "title": "Ogg logical bitstream framing",
+    "publisher": "Xiph.Org Foundation"
   }
 }
 </pre>
@@ -72,9 +77,12 @@ an "audio packet", as described in the section 4.3 of the [[VORBIS]] specificati
 AudioDecoderConfig description {#audiodecoderconfig-description}
 ================================================================
 
-{{AudioDecoderConfig.description}} is required. It is assumed to be three
-Vorbis header packets, respectively the identification header, the comments
-header, and the setup header, in this order, as described in section 4.2 of [[VORBIS]].
+{{AudioDecoderConfig.description}} is required. It is assumed to be in Xiph
+extradata format, described in [[OGG-FRAMING]]. This format consists in the
+`page_segments` field, followed by the `segment_table` field, followed by the
+three Vorbis header packets, respectively the identification header, the comments
+header, and the setup header, in this order, as described in section 4.2 of
+[[VORBIS]].
 
 The {{AudioDecoderConfig.sampleRate}} and {{AudioDecoderConfig.channelCount}}
 members are overridden by what the decoder finds in the identification header.
