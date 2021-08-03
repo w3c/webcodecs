@@ -15,7 +15,7 @@ Abstract: This registration is entered into the [[webcodecs-codec-registry]].
     It describes, for Vorbis, the (1) fully qualified codec strings, (2)
     the {{AudioDecoderConfig.description}} bytes, (3) the codec-specific
     {{EncodedAudioChunk}} [=EncodedAudioChunk/[[internal data]]=] bytes, and (4)
-    the meaning of {{EncodedAudioChunk}} [=EncodedAudioChunk/[[type]]=].
+    the values of {{EncodedAudioChunk}} [=EncodedAudioChunk/[[type]]=].
 
     The registration is not intended to include any information on whether a
     codec format is encumbered by intellectual property claims. Implementers and
@@ -34,11 +34,11 @@ Markup Shorthands:css no, markdown yes, dfn yes
 <pre class='anchors'>
 spec: WEBCODECS; urlPrefix: https://w3c.github.io/webcodecs/#
     type: attribute
-        for: EncodedAudioChunkType; text: key; url: dom-encodedaudiochunktype-key
         text: AudioDecoderConfig.description; url: dom-audiodecoderconfig-description
         text: AudioDecoderConfig.sampleRate; url: dom-audiodecoderconfig-samplerate
         text: AudioDecoderConfig.channelCount; url: dom-audiodecoderconfig-channelcount
     type: dfn
+        for: EncodedAudioChunkType; text: key; url: dom-encodedaudiochunktype-key
         for: EncodedAudioChunk; text: [[internal data]]; url: dom-encodedaudiochunk-internal-data-slot
         for: EncodedAudioChunk; text: [[type]]; url: dom-encodedaudiochunk-type-slot
     type: interface
@@ -92,11 +92,11 @@ NOTE: The comments header content is not used by [[WEBCODECS]].
 EncodedAudioChunk type {#encodedaudiochunk-type}
 ================================================
 
-The [=EncodedAudioChunk/[[type]]=] is not used in this codec, its value is
-ignored.
+The [=EncodedAudioChunk/[[type]]=] for an {{EncodedAudioChunk}} containing
+Vorbis is always "[=EncodedAudioChunkType/key=]".
 
 NOTE: Once the initialization has succeeded, any Vorbis packet can be decoded at
-any time, not necessarily in sequence, there is no concept of key-frames.
+any time without error, but this might not result in the expected audio output.
 
 Privacy and Security Considerations {#privacy-and-security-considerations}
 ==========================================================================
