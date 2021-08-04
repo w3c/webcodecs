@@ -6,7 +6,7 @@
   <link href="https://www.w3.org/StyleSheets/TR/2016/W3C-ED" rel="stylesheet" type="text/css">
   <meta content="Bikeshed version 59d067506, updated Fri Jul 23 15:43:29 2021 -0700" name="generator">
   <link href="https://www.w3.org/TR/webcodecs/" rel="canonical">
-  <meta content="90839e30787fb613c653d95e708b98875ad9ab80" name="document-revision">
+  <meta content="a044235116df03f3a97f574a1a546e45eff26346" name="document-revision">
 <style>
 main > dl > dd {
   margin-bottom: 1em;
@@ -1331,6 +1331,9 @@ supporting <var>config</var>.</p>
         underlying <a data-link-type="dfn" href="#media-resource" id="ref-for-media-resource①">media resource</a>s are owned by the <code class="idl"><a data-link-type="idl" href="#videodecoder" id="ref-for-videodecoder①">VideoDecoder</a></code> and
         failing to release them (or waiting for garbage collection) may cause
         decoding to stall.</p>
+     <p class="note" role="note"><span>NOTE:</span> <code class="idl"><a data-link-type="idl" href="#videodecoder" id="ref-for-videodecoder②">VideoDecoder</a></code> requires that frames are output in the order they
+        expect to be presented, commonly known as presentation order. Some <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-codec-implementation-slot" id="ref-for-dom-videodecoder-codec-implementation-slot①">[[codec implementation]]</a></code>s may require the User Agent
+        to reorder outputs into presentation order.</p>
      <p>When invoked, run these steps:</p>
      <ol>
       <li data-md>
@@ -1354,7 +1357,7 @@ it is truly a <a data-link-type="dfn" href="#key-chunk" id="ref-for-key-chunk③
      <p><a data-link-type="dfn" href="#running-a-control-message" id="ref-for-running-a-control-message⑤">Running a control message</a> to decode the chunk means performing these steps:</p>
      <ol>
       <li data-md>
-       <p>Attempt to use <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-codec-implementation-slot" id="ref-for-dom-videodecoder-codec-implementation-slot①">[[codec implementation]]</a></code> to decode the
+       <p>Attempt to use <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-codec-implementation-slot" id="ref-for-dom-videodecoder-codec-implementation-slot②">[[codec implementation]]</a></code> to decode the
 chunk.</p>
       <li data-md>
        <p>If decoding results in an error, queue a task on the <a data-link-type="dfn" href="#control-thread" id="ref-for-control-thread⑨">control thread</a> event loop to run the <a data-link-type="dfn" href="#close-videodecoder" id="ref-for-close-videodecoder①">Close VideoDecoder</a> algorithm with <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#encodingerror" id="ref-for-encodingerror①">EncodingError</a></code>.</p>
@@ -1362,7 +1365,7 @@ chunk.</p>
        <p>Queue a task on the <a data-link-type="dfn" href="#control-thread" id="ref-for-control-thread①⓪">control thread</a> event loop to decrement <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-decodequeuesize-slot" id="ref-for-dom-videodecoder-decodequeuesize-slot②">[[decodeQueueSize]]</a></code></p>
       <li data-md>
        <p>Let <var>decoded outputs</var> be a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#lists" id="ref-for-lists②">list</a> of decoded video data outputs emitted
-by <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-codec-implementation-slot" id="ref-for-dom-videodecoder-codec-implementation-slot②">[[codec implementation]]</a></code>.</p>
+by <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-codec-implementation-slot" id="ref-for-dom-videodecoder-codec-implementation-slot③">[[codec implementation]]</a></code> in presentation order.</p>
       <li data-md>
        <p>If <var>decoded outputs</var> is not empty, queue a task on the <a data-link-type="dfn" href="#control-thread" id="ref-for-control-thread①①">control thread</a> event loop to run the <a data-link-type="dfn" href="#output-videoframes" id="ref-for-output-videoframes">Output VideoFrames</a> algorithm with <var>decoded outputs</var>.</p>
      </ol>
@@ -1388,11 +1391,11 @@ by <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-codec-imple
         with <var>promise</var>.</p>
      <ol>
       <li data-md>
-       <p>Signal <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-codec-implementation-slot" id="ref-for-dom-videodecoder-codec-implementation-slot③">[[codec implementation]]</a></code> to emit all <a data-link-type="dfn" href="#internal-pending-output" id="ref-for-internal-pending-output①">internal
+       <p>Signal <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-codec-implementation-slot" id="ref-for-dom-videodecoder-codec-implementation-slot④">[[codec implementation]]</a></code> to emit all <a data-link-type="dfn" href="#internal-pending-output" id="ref-for-internal-pending-output①">internal
 pending outputs</a>.</p>
       <li data-md>
        <p>Let <var>decoded outputs</var> be a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#lists" id="ref-for-lists③">list</a> of decoded video data outputs emitted
-by <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-codec-implementation-slot" id="ref-for-dom-videodecoder-codec-implementation-slot④">[[codec implementation]]</a></code>.</p>
+by <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-codec-implementation-slot" id="ref-for-dom-videodecoder-codec-implementation-slot⑤">[[codec implementation]]</a></code>.</p>
       <li data-md>
        <p>If <var>decoded outputs</var> is not empty, queue a task on the <a data-link-type="dfn" href="#control-thread" id="ref-for-control-thread①②">control thread</a> event loop to run the <a data-link-type="dfn" href="#output-videoframes" id="ref-for-output-videoframes①">Output VideoFrames</a> algorithm with <var>decoded outputs</var>.</p>
       <li data-md>
@@ -1479,7 +1482,7 @@ the <a data-link-type="dfn" href="#check-configuration-support" id="ref-for-chec
       <li data-md>
        <p>Set <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-state" id="ref-for-dom-videodecoder-state②">state</a></code> to <code>"unconfigured"</code>.</p>
       <li data-md>
-       <p>Signal <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-codec-implementation-slot" id="ref-for-dom-videodecoder-codec-implementation-slot⑤">[[codec implementation]]</a></code> to cease producing
+       <p>Signal <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-codec-implementation-slot" id="ref-for-dom-videodecoder-codec-implementation-slot⑥">[[codec implementation]]</a></code> to cease producing
 output for the previous configuration.</p>
       <li data-md>
        <p>Remove all <a data-link-type="dfn" href="#control-messages" id="ref-for-control-messages⑧">control messages</a> from the <a data-link-type="dfn" href="#control-message-queue" id="ref-for-control-message-queue⑧">control message queue</a>.</p>
@@ -1503,7 +1506,7 @@ output for the previous configuration.</p>
       <li data-md>
        <p>Set <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-state" id="ref-for-dom-videodecoder-state③">state</a></code> to <code>"closed"</code>.</p>
       <li data-md>
-       <p>Clear <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-codec-implementation-slot" id="ref-for-dom-videodecoder-codec-implementation-slot⑥">[[codec implementation]]</a></code> and release associated <a data-link-type="dfn" href="#system-resources" id="ref-for-system-resources③">system resources</a>.</p>
+       <p>Clear <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-codec-implementation-slot" id="ref-for-dom-videodecoder-codec-implementation-slot⑦">[[codec implementation]]</a></code> and release associated <a data-link-type="dfn" href="#system-resources" id="ref-for-system-resources③">system resources</a>.</p>
       <li data-md>
        <p>If <var>exception</var> is not an <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#aborterror" id="ref-for-aborterror⑤">AbortError</a></code> <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-DOMException" id="ref-for-idl-DOMException⑦">DOMException</a></code>, queue a task on
 the <a data-link-type="dfn" href="#control-thread" id="ref-for-control-thread①④">control thread</a> event loop to invoke the <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-error-callback-slot" id="ref-for-dom-videodecoder-error-callback-slot①">[[error callback]]</a></code> with <var>exception</var>.</p>
@@ -2407,7 +2410,7 @@ return <code>false</code>.</p>
     <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoDecoderConfig" data-dfn-type="dict-member" data-export id="dom-videodecoderconfig-codedheight"><code>codedHeight</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#idl-unsigned-long" id="ref-for-idl-unsigned-long①①">unsigned long</a></span>
     <dd> Height of the VideoFrame in pixels, potentionally including non-visible
     padding, and prior to considering potential ratio adjustments. 
-    <p class="note" role="note"><span>NOTE:</span> <code class="idl"><a data-link-type="idl" href="#dom-videodecoderconfig-codedwidth" id="ref-for-dom-videodecoderconfig-codedwidth③">codedWidth</a></code> and <code class="idl"><a data-link-type="idl" href="#dom-videodecoderconfig-codedheight" id="ref-for-dom-videodecoderconfig-codedheight③">codedHeight</a></code> are used when selecting a <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-codec-implementation-slot" id="ref-for-dom-videodecoder-codec-implementation-slot⑦">[[codec implementation]]</a></code>.</p>
+    <p class="note" role="note"><span>NOTE:</span> <code class="idl"><a data-link-type="idl" href="#dom-videodecoderconfig-codedwidth" id="ref-for-dom-videodecoderconfig-codedwidth③">codedWidth</a></code> and <code class="idl"><a data-link-type="idl" href="#dom-videodecoderconfig-codedheight" id="ref-for-dom-videodecoderconfig-codedheight③">codedHeight</a></code> are used when selecting a <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-codec-implementation-slot" id="ref-for-dom-videodecoder-codec-implementation-slot⑧">[[codec implementation]]</a></code>.</p>
     <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoDecoderConfig" data-dfn-type="dict-member" data-export id="dom-videodecoderconfig-displayaspectwidth"><code>displayAspectWidth</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#idl-unsigned-long" id="ref-for-idl-unsigned-long①②">unsigned long</a></span>
     <dd> Horizontal dimension of the VideoFrame’s aspect ratio when displayed. 
     <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoDecoderConfig" data-dfn-type="dict-member" data-export id="dom-videodecoderconfig-displayaspectheight"><code>displayAspectHeight</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#idl-unsigned-long" id="ref-for-idl-unsigned-long①③">unsigned long</a></span>
@@ -4446,7 +4449,7 @@ is its own <a data-link-type="dfn" href="#equivalent-opaque-format" id="ref-for-
    <p>Image codec definitions are typically accompanied by a definition for a
 corresponding file format. Hence image decoders often perform both duties of
 unpacking (demuxing) as well as decoding the encoded image data. The WebCodecs <code class="idl"><a data-link-type="idl" href="#imagedecoder" id="ref-for-imagedecoder">ImageDecoder</a></code> follows this pattern, which motivates an interface design that
-is notably different from that of <code class="idl"><a data-link-type="idl" href="#videodecoder" id="ref-for-videodecoder②">VideoDecoder</a></code> and <code class="idl"><a data-link-type="idl" href="#audiodecoder" id="ref-for-audiodecoder②">AudioDecoder</a></code>.</p>
+is notably different from that of <code class="idl"><a data-link-type="idl" href="#videodecoder" id="ref-for-videodecoder③">VideoDecoder</a></code> and <code class="idl"><a data-link-type="idl" href="#audiodecoder" id="ref-for-audiodecoder②">AudioDecoder</a></code>.</p>
    <p>In spite of these differences, <code class="idl"><a data-link-type="idl" href="#imagedecoder" id="ref-for-imagedecoder①">ImageDecoder</a></code> uses the same <a data-link-type="dfn" href="#codec-processing-model" id="ref-for-codec-processing-model">codec processing model</a> as the other codec interfaces. Additionally, <code class="idl"><a data-link-type="idl" href="#imagedecoder" id="ref-for-imagedecoder②">ImageDecoder</a></code> uses the <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe⑥⓪">VideoFrame</a></code> interface to describe decoded outputs.</p>
    <h3 class="heading settled" data-level="10.2" id="imagedecoder-interface"><span class="secno">10.2. </span><span class="content">ImageDecoder Interface</span><a class="self-link" href="#imagedecoder-interface"></a></h3>
 <pre class="idl highlight def">[<a class="idl-code" data-link-type="extended-attribute" href="https://heycam.github.io/webidl/#Exposed" id="ref-for-Exposed⑧"><c- g>Exposed</c-></a>=(<c- n>Window</c->,<c- n>DedicatedWorker</c->)]
@@ -8010,8 +8013,8 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
    <b><a href="#videodecoder">#videodecoder</a></b><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-videodecoder">4.1. Internal Slots</a>
-    <li><a href="#ref-for-videodecoder①">4.4. Methods</a>
-    <li><a href="#ref-for-videodecoder②">10.1. Background</a>
+    <li><a href="#ref-for-videodecoder①">4.4. Methods</a> <a href="#ref-for-videodecoder②">(2)</a>
+    <li><a href="#ref-for-videodecoder③">10.1. Background</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dictdef-videodecoderinit">
@@ -8029,9 +8032,9 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
   <aside class="dfn-panel" data-for="dom-videodecoder-codec-implementation-slot">
    <b><a href="#dom-videodecoder-codec-implementation-slot">#dom-videodecoder-codec-implementation-slot</a></b><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-dom-videodecoder-codec-implementation-slot">4.4. Methods</a> <a href="#ref-for-dom-videodecoder-codec-implementation-slot①">(2)</a> <a href="#ref-for-dom-videodecoder-codec-implementation-slot②">(3)</a> <a href="#ref-for-dom-videodecoder-codec-implementation-slot③">(4)</a> <a href="#ref-for-dom-videodecoder-codec-implementation-slot④">(5)</a>
-    <li><a href="#ref-for-dom-videodecoder-codec-implementation-slot⑤">4.5. Algorithms</a> <a href="#ref-for-dom-videodecoder-codec-implementation-slot⑥">(2)</a>
-    <li><a href="#ref-for-dom-videodecoder-codec-implementation-slot⑦">7.6. VideoDecoderConfig</a>
+    <li><a href="#ref-for-dom-videodecoder-codec-implementation-slot">4.4. Methods</a> <a href="#ref-for-dom-videodecoder-codec-implementation-slot①">(2)</a> <a href="#ref-for-dom-videodecoder-codec-implementation-slot②">(3)</a> <a href="#ref-for-dom-videodecoder-codec-implementation-slot③">(4)</a> <a href="#ref-for-dom-videodecoder-codec-implementation-slot④">(5)</a> <a href="#ref-for-dom-videodecoder-codec-implementation-slot⑤">(6)</a>
+    <li><a href="#ref-for-dom-videodecoder-codec-implementation-slot⑥">4.5. Algorithms</a> <a href="#ref-for-dom-videodecoder-codec-implementation-slot⑦">(2)</a>
+    <li><a href="#ref-for-dom-videodecoder-codec-implementation-slot⑧">7.6. VideoDecoderConfig</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dom-videodecoder-output-callback-slot">
