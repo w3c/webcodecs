@@ -6,7 +6,7 @@
   <link href="https://www.w3.org/StyleSheets/TR/2016/W3C-ED" rel="stylesheet" type="text/css">
   <meta content="Bikeshed version 59d067506, updated Fri Jul 23 15:43:29 2021 -0700" name="generator">
   <link href="https://www.w3.org/TR/webcodecs/" rel="canonical">
-  <meta content="adfb63c591152cb2ccfd89f74319a73198576638" name="document-revision">
+  <meta content="90839e30787fb613c653d95e708b98875ad9ab80" name="document-revision">
 <style>
 main > dl > dd {
   margin-bottom: 1em;
@@ -2209,9 +2209,30 @@ channel data.</p>
     Run these steps: 
    <ol>
     <li data-md>
-     <p>If the User Agent can provide a <a data-link-type="dfn" href="#codec" id="ref-for-codec⑥">codec</a> to support all entries of the <var>config</var>, including applicable default values for keys that are not
+     <p>If <var>config</var> is an <code class="idl"><a data-link-type="idl" href="#dictdef-audiodecoderconfig" id="ref-for-dictdef-audiodecoderconfig⑦">AudioDecoderConfig</a></code> or <code class="idl"><a data-link-type="idl" href="#dictdef-videodecoderconfig" id="ref-for-dictdef-videodecoderconfig⑧">VideoDecoderConfig</a></code> and the
+User Agent can’t provide a <a data-link-type="dfn" href="#codec" id="ref-for-codec⑥">codec</a> that can decode the exact profile
+(where present), level (where present), and constraint bits (where present)
+indicated by the <a data-link-type="dfn" href="#codec-string" id="ref-for-codec-string">codec string</a> in <var>config</var>.codec, return <code>false</code>.</p>
+    <li data-md>
+     <p>If <var>config</var> is an <code class="idl"><a data-link-type="idl" href="#dictdef-audioencoderconfig" id="ref-for-dictdef-audioencoderconfig③">AudioEncoderConfig</a></code> or <code class="idl"><a data-link-type="idl" href="#dictdef-videoencoderconfig" id="ref-for-dictdef-videoencoderconfig③">VideoEncoderConfig</a></code>:</p>
+     <ol>
+      <li data-md>
+       <p>If the <a data-link-type="dfn" href="#codec-string" id="ref-for-codec-string①">codec string</a> in <var>config</var>.codec contains a profile and the
+User Agent can’t provide a <a data-link-type="dfn" href="#codec" id="ref-for-codec⑦">codec</a> that can encode the exact
+profile indicated by <var>config</var>.codec, return <code>false</code>.</p>
+      <li data-md>
+       <p>If the <a data-link-type="dfn" href="#codec-string" id="ref-for-codec-string②">codec string</a> in <var>config</var>.codec contains a level and the
+User Agent can’t provide a <a data-link-type="dfn" href="#codec" id="ref-for-codec⑧">codec</a> that can encode to a level less
+than or equal to the level indicated by <var>config</var>.codec, return <code>false</code>.</p>
+      <li data-md>
+       <p>If the <a data-link-type="dfn" href="#codec-string" id="ref-for-codec-string③">codec string</a> in <var>config</var>.codec contains constraint bits and
+the User Agent can’t provide a <a data-link-type="dfn" href="#codec" id="ref-for-codec⑨">codec</a> that can produce an encoded
+bitstream at least as constrained as indicated by <var>config</var>.codec, return <code>false</code>.</p>
+     </ol>
+    <li data-md>
+     <p>If the User Agent can provide a <a data-link-type="dfn" href="#codec" id="ref-for-codec①⓪">codec</a> to support all entries of the <var>config</var>, including applicable default values for keys that are not
 included, return <code>true</code>.</p>
-     <p class="note" role="note"><span>NOTE:</span> The types <code class="idl"><a data-link-type="idl" href="#dictdef-audiodecoderconfig" id="ref-for-dictdef-audiodecoderconfig⑦">AudioDecoderConfig</a></code>, <code class="idl"><a data-link-type="idl" href="#dictdef-videodecoderconfig" id="ref-for-dictdef-videodecoderconfig⑧">VideoDecoderConfig</a></code>, <code class="idl"><a data-link-type="idl" href="#dictdef-audioencoderconfig" id="ref-for-dictdef-audioencoderconfig③">AudioEncoderConfig</a></code>, and <code class="idl"><a data-link-type="idl" href="#dictdef-videoencoderconfig" id="ref-for-dictdef-videoencoderconfig③">VideoEncoderConfig</a></code> each define their
+     <p class="note" role="note"><span>NOTE:</span> The types <code class="idl"><a data-link-type="idl" href="#dictdef-audiodecoderconfig" id="ref-for-dictdef-audiodecoderconfig⑧">AudioDecoderConfig</a></code>, <code class="idl"><a data-link-type="idl" href="#dictdef-videodecoderconfig" id="ref-for-dictdef-videodecoderconfig⑨">VideoDecoderConfig</a></code>, <code class="idl"><a data-link-type="idl" href="#dictdef-audioencoderconfig" id="ref-for-dictdef-audioencoderconfig④">AudioEncoderConfig</a></code>, and <code class="idl"><a data-link-type="idl" href="#dictdef-videoencoderconfig" id="ref-for-dictdef-videoencoderconfig④">VideoEncoderConfig</a></code> each define their
     respective configuration entries and defaults.</p>
      <p class="note" role="note"><span>NOTE:</span> Support for a given configuration may change dynamically if the
     hardware is altered (e.g. external GPU unplugged) or if required
@@ -2246,50 +2267,50 @@ recursively running the <a data-link-type="dfn" href="#clone-configuration" id="
    <h4 class="heading settled" data-level="7.3.1" id="audio-decoder-support"><span class="secno">7.3.1. </span><span class="content">AudioDecoderSupport</span><a class="self-link" href="#audio-decoder-support"></a></h4>
 <pre class="idl highlight def"><c- b>dictionary</c-> <dfn class="dfn-paneled idl-code" data-dfn-type="dictionary" data-export id="dictdef-audiodecodersupport"><code><c- g>AudioDecoderSupport</c-></code></dfn> {
   <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-boolean" id="ref-for-idl-boolean①"><c- b>boolean</c-></a> <a class="idl-code" data-link-type="dict-member" data-type="boolean " href="#dom-audiodecodersupport-supported" id="ref-for-dom-audiodecodersupport-supported①"><c- g>supported</c-></a>;
-  <a data-link-type="idl-name" href="#dictdef-audiodecoderconfig" id="ref-for-dictdef-audiodecoderconfig⑧"><c- n>AudioDecoderConfig</c-></a> <a class="idl-code" data-link-type="dict-member" data-type="AudioDecoderConfig " href="#dom-audiodecodersupport-config" id="ref-for-dom-audiodecodersupport-config③"><c- g>config</c-></a>;
+  <a data-link-type="idl-name" href="#dictdef-audiodecoderconfig" id="ref-for-dictdef-audiodecoderconfig⑨"><c- n>AudioDecoderConfig</c-></a> <a class="idl-code" data-link-type="dict-member" data-type="AudioDecoderConfig " href="#dom-audiodecodersupport-config" id="ref-for-dom-audiodecodersupport-config③"><c- g>config</c-></a>;
 };
 </pre>
    <dl>
     <dt><dfn class="dfn-paneled idl-code" data-dfn-for="AudioDecoderSupport" data-dfn-type="dict-member" data-export id="dom-audiodecodersupport-supported"><code>supported</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#idl-boolean" id="ref-for-idl-boolean②">boolean</a></span>
     <dd> A boolean indicating the whether the corresponding <code class="idl"><a data-link-type="idl" href="#dom-audiodecodersupport-config" id="ref-for-dom-audiodecodersupport-config④">config</a></code> is supported by the User Agent. 
-    <dt><dfn class="dfn-paneled idl-code" data-dfn-for="AudioDecoderSupport" data-dfn-type="dict-member" data-export id="dom-audiodecodersupport-config"><code>config</code></dfn>, <span> of type <a data-link-type="idl-name" href="#dictdef-audiodecoderconfig" id="ref-for-dictdef-audiodecoderconfig⑨">AudioDecoderConfig</a></span>
-    <dd> An <code class="idl"><a data-link-type="idl" href="#dictdef-audiodecoderconfig" id="ref-for-dictdef-audiodecoderconfig①⓪">AudioDecoderConfig</a></code> used by the User Agent in determining the value of <code class="idl"><a data-link-type="idl" href="#dom-audiodecodersupport-supported" id="ref-for-dom-audiodecodersupport-supported②">supported</a></code>. 
+    <dt><dfn class="dfn-paneled idl-code" data-dfn-for="AudioDecoderSupport" data-dfn-type="dict-member" data-export id="dom-audiodecodersupport-config"><code>config</code></dfn>, <span> of type <a data-link-type="idl-name" href="#dictdef-audiodecoderconfig" id="ref-for-dictdef-audiodecoderconfig①⓪">AudioDecoderConfig</a></span>
+    <dd> An <code class="idl"><a data-link-type="idl" href="#dictdef-audiodecoderconfig" id="ref-for-dictdef-audiodecoderconfig①①">AudioDecoderConfig</a></code> used by the User Agent in determining the value of <code class="idl"><a data-link-type="idl" href="#dom-audiodecodersupport-supported" id="ref-for-dom-audiodecodersupport-supported②">supported</a></code>. 
    </dl>
    <h4 class="heading settled" data-level="7.3.2" id="video-decoder-support"><span class="secno">7.3.2. </span><span class="content">VideoDecoderSupport</span><a class="self-link" href="#video-decoder-support"></a></h4>
 <pre class="idl highlight def"><c- b>dictionary</c-> <dfn class="dfn-paneled idl-code" data-dfn-type="dictionary" data-export id="dictdef-videodecodersupport"><code><c- g>VideoDecoderSupport</c-></code></dfn> {
   <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-boolean" id="ref-for-idl-boolean③"><c- b>boolean</c-></a> <a class="idl-code" data-link-type="dict-member" data-type="boolean " href="#dom-videodecodersupport-supported" id="ref-for-dom-videodecodersupport-supported①"><c- g>supported</c-></a>;
-  <a data-link-type="idl-name" href="#dictdef-videodecoderconfig" id="ref-for-dictdef-videodecoderconfig⑨"><c- n>VideoDecoderConfig</c-></a> <a class="idl-code" data-link-type="dict-member" data-type="VideoDecoderConfig " href="#dom-videodecodersupport-config" id="ref-for-dom-videodecodersupport-config③"><c- g>config</c-></a>;
+  <a data-link-type="idl-name" href="#dictdef-videodecoderconfig" id="ref-for-dictdef-videodecoderconfig①⓪"><c- n>VideoDecoderConfig</c-></a> <a class="idl-code" data-link-type="dict-member" data-type="VideoDecoderConfig " href="#dom-videodecodersupport-config" id="ref-for-dom-videodecodersupport-config③"><c- g>config</c-></a>;
 };
 </pre>
    <dl>
     <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoDecoderSupport" data-dfn-type="dict-member" data-export id="dom-videodecodersupport-supported"><code>supported</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#idl-boolean" id="ref-for-idl-boolean④">boolean</a></span>
     <dd> A boolean indicating the whether the corresponding <code class="idl"><a data-link-type="idl" href="#dom-videodecodersupport-config" id="ref-for-dom-videodecodersupport-config④">config</a></code> is supported by the User Agent. 
-    <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoDecoderSupport" data-dfn-type="dict-member" data-export id="dom-videodecodersupport-config"><code>config</code></dfn>, <span> of type <a data-link-type="idl-name" href="#dictdef-videodecoderconfig" id="ref-for-dictdef-videodecoderconfig①⓪">VideoDecoderConfig</a></span>
-    <dd> A <code class="idl"><a data-link-type="idl" href="#dictdef-videodecoderconfig" id="ref-for-dictdef-videodecoderconfig①①">VideoDecoderConfig</a></code> used by the User Agent in determining the value of <code class="idl"><a data-link-type="idl" href="#dom-videodecodersupport-supported" id="ref-for-dom-videodecodersupport-supported②">supported</a></code>. 
+    <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoDecoderSupport" data-dfn-type="dict-member" data-export id="dom-videodecodersupport-config"><code>config</code></dfn>, <span> of type <a data-link-type="idl-name" href="#dictdef-videodecoderconfig" id="ref-for-dictdef-videodecoderconfig①①">VideoDecoderConfig</a></span>
+    <dd> A <code class="idl"><a data-link-type="idl" href="#dictdef-videodecoderconfig" id="ref-for-dictdef-videodecoderconfig①②">VideoDecoderConfig</a></code> used by the User Agent in determining the value of <code class="idl"><a data-link-type="idl" href="#dom-videodecodersupport-supported" id="ref-for-dom-videodecodersupport-supported②">supported</a></code>. 
    </dl>
    <h4 class="heading settled" data-level="7.3.3" id="audio-encoder-support"><span class="secno">7.3.3. </span><span class="content">AudioEncoderSupport</span><a class="self-link" href="#audio-encoder-support"></a></h4>
 <pre class="idl highlight def"><c- b>dictionary</c-> <dfn class="dfn-paneled idl-code" data-dfn-type="dictionary" data-export id="dictdef-audioencodersupport"><code><c- g>AudioEncoderSupport</c-></code></dfn> {
   <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-boolean" id="ref-for-idl-boolean⑤"><c- b>boolean</c-></a> <a class="idl-code" data-link-type="dict-member" data-type="boolean " href="#dom-audioencodersupport-supported" id="ref-for-dom-audioencodersupport-supported①"><c- g>supported</c-></a>;
-  <a data-link-type="idl-name" href="#dictdef-audioencoderconfig" id="ref-for-dictdef-audioencoderconfig④"><c- n>AudioEncoderConfig</c-></a> <a class="idl-code" data-link-type="dict-member" data-type="AudioEncoderConfig " href="#dom-audioencodersupport-config" id="ref-for-dom-audioencodersupport-config③"><c- g>config</c-></a>;
+  <a data-link-type="idl-name" href="#dictdef-audioencoderconfig" id="ref-for-dictdef-audioencoderconfig⑤"><c- n>AudioEncoderConfig</c-></a> <a class="idl-code" data-link-type="dict-member" data-type="AudioEncoderConfig " href="#dom-audioencodersupport-config" id="ref-for-dom-audioencodersupport-config③"><c- g>config</c-></a>;
 };
 </pre>
    <dl>
     <dt><dfn class="dfn-paneled idl-code" data-dfn-for="AudioEncoderSupport" data-dfn-type="dict-member" data-export id="dom-audioencodersupport-supported"><code>supported</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#idl-boolean" id="ref-for-idl-boolean⑥">boolean</a></span>
     <dd> A boolean indicating the whether the corresponding <code class="idl"><a data-link-type="idl" href="#dom-audioencodersupport-config" id="ref-for-dom-audioencodersupport-config④">config</a></code> is supported by the User Agent. 
-    <dt><dfn class="dfn-paneled idl-code" data-dfn-for="AudioEncoderSupport" data-dfn-type="dict-member" data-export id="dom-audioencodersupport-config"><code>config</code></dfn>, <span> of type <a data-link-type="idl-name" href="#dictdef-audioencoderconfig" id="ref-for-dictdef-audioencoderconfig⑤">AudioEncoderConfig</a></span>
-    <dd> An <code class="idl"><a data-link-type="idl" href="#dictdef-audioencoderconfig" id="ref-for-dictdef-audioencoderconfig⑥">AudioEncoderConfig</a></code> used by the User Agent in determining the value of <code class="idl"><a data-link-type="idl" href="#dom-audioencodersupport-supported" id="ref-for-dom-audioencodersupport-supported②">supported</a></code>. 
+    <dt><dfn class="dfn-paneled idl-code" data-dfn-for="AudioEncoderSupport" data-dfn-type="dict-member" data-export id="dom-audioencodersupport-config"><code>config</code></dfn>, <span> of type <a data-link-type="idl-name" href="#dictdef-audioencoderconfig" id="ref-for-dictdef-audioencoderconfig⑥">AudioEncoderConfig</a></span>
+    <dd> An <code class="idl"><a data-link-type="idl" href="#dictdef-audioencoderconfig" id="ref-for-dictdef-audioencoderconfig⑦">AudioEncoderConfig</a></code> used by the User Agent in determining the value of <code class="idl"><a data-link-type="idl" href="#dom-audioencodersupport-supported" id="ref-for-dom-audioencodersupport-supported②">supported</a></code>. 
    </dl>
    <h4 class="heading settled" data-level="7.3.4" id="video-encoder-support"><span class="secno">7.3.4. </span><span class="content">VideoEncoderSupport</span><a class="self-link" href="#video-encoder-support"></a></h4>
 <pre class="idl highlight def"><c- b>dictionary</c-> <dfn class="dfn-paneled idl-code" data-dfn-type="dictionary" data-export id="dictdef-videoencodersupport"><code><c- g>VideoEncoderSupport</c-></code></dfn> {
   <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-boolean" id="ref-for-idl-boolean⑦"><c- b>boolean</c-></a> <a class="idl-code" data-link-type="dict-member" data-type="boolean " href="#dom-videoencodersupport-supported" id="ref-for-dom-videoencodersupport-supported①"><c- g>supported</c-></a>;
-  <a data-link-type="idl-name" href="#dictdef-videoencoderconfig" id="ref-for-dictdef-videoencoderconfig④"><c- n>VideoEncoderConfig</c-></a> <a class="idl-code" data-link-type="dict-member" data-type="VideoEncoderConfig " href="#dom-videoencodersupport-config" id="ref-for-dom-videoencodersupport-config③"><c- g>config</c-></a>;
+  <a data-link-type="idl-name" href="#dictdef-videoencoderconfig" id="ref-for-dictdef-videoencoderconfig⑤"><c- n>VideoEncoderConfig</c-></a> <a class="idl-code" data-link-type="dict-member" data-type="VideoEncoderConfig " href="#dom-videoencodersupport-config" id="ref-for-dom-videoencodersupport-config③"><c- g>config</c-></a>;
 };
 </pre>
    <dl>
     <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoEncoderSupport" data-dfn-type="dict-member" data-export id="dom-videoencodersupport-supported"><code>supported</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#idl-boolean" id="ref-for-idl-boolean⑧">boolean</a></span>
     <dd> A boolean indicating the whether the corresponding <code class="idl"><a data-link-type="idl" href="#dom-videoencodersupport-config" id="ref-for-dom-videoencodersupport-config④">config</a></code> is supported by the User Agent. 
-    <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoEncoderSupport" data-dfn-type="dict-member" data-export id="dom-videoencodersupport-config"><code>config</code></dfn>, <span> of type <a data-link-type="idl-name" href="#dictdef-videoencoderconfig" id="ref-for-dictdef-videoencoderconfig⑤">VideoEncoderConfig</a></span>
-    <dd> A <code class="idl"><a data-link-type="idl" href="#dictdef-videoencoderconfig" id="ref-for-dictdef-videoencoderconfig⑥">VideoEncoderConfig</a></code> used by the User Agent in determining the value of <code class="idl"><a data-link-type="idl" href="#dom-videoencodersupport-supported" id="ref-for-dom-videoencodersupport-supported②">supported</a></code>. 
+    <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoEncoderSupport" data-dfn-type="dict-member" data-export id="dom-videoencodersupport-config"><code>config</code></dfn>, <span> of type <a data-link-type="idl-name" href="#dictdef-videoencoderconfig" id="ref-for-dictdef-videoencoderconfig⑥">VideoEncoderConfig</a></span>
+    <dd> A <code class="idl"><a data-link-type="idl" href="#dictdef-videoencoderconfig" id="ref-for-dictdef-videoencoderconfig⑦">VideoEncoderConfig</a></code> used by the User Agent in determining the value of <code class="idl"><a data-link-type="idl" href="#dom-videoencodersupport-supported" id="ref-for-dom-videoencodersupport-supported②">supported</a></code>. 
    </dl>
    <h3 class="heading settled" data-level="7.4" id="config-codec-string"><span class="secno">7.4. </span><span class="content"><dfn class="dfn-paneled" data-dfn-type="dfn" data-export id="codec-string">Codec String</dfn></span><a class="self-link" href="#config-codec-string"></a></h3>
     A codec string describes a given codec format to be used for encoding or
@@ -2301,12 +2322,15 @@ decoding.
     <li data-md>
      <p>It describes a single codec.</p>
     <li data-md>
-     <p>It is unambiguous about codec profile and level for codecs that define these
-concepts.</p>
+     <p>It is unambiguous about codec profile, level, and constraint bits for codecs
+that define these concepts.</p>
    </ol>
    <p class="note" role="note"><span>NOTE:</span> In other media specifications, codec strings historically accompanied a <a data-link-type="dfn" href="https://mimesniff.spec.whatwg.org/#mime-type" id="ref-for-mime-type">MIME type</a> as the "codecs=" parameter
     (<code class="idl"><a data-link-type="idl" href="https://www.w3.org/TR/media-source/#dom-mediasource-istypesupported" id="ref-for-dom-mediasource-istypesupported">isTypeSupported()</a></code>, <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/#dom-navigator-canplaytype" id="ref-for-dom-navigator-canplaytype">canPlayType()</a></code>) <a data-link-type="biblio" href="#biblio-rfc6381">[RFC6381]</a>. In this specification, encoded media is not containerized;
     hence, only the value of the codecs parameter is accepted.</p>
+   <p class="note" role="note"><span>NOTE:</span> Encoders for codecs that define level and constraint bits have flexibility
+    around these parameters, but won’t produce bitstreams that have a higher
+    level or are less constrained than requested.</p>
    <p>The format and semantics for codec strings are defined by codec registrations
 listed in the <a data-link-type="biblio" href="#biblio-webcodecs-codec-registry">[WEBCODECS-CODEC-REGISTRY]</a>. A compliant implementation may support any
 combination of codec registrations or none at all.</p>
@@ -2318,7 +2342,7 @@ combination of codec registrations or none at all.</p>
   <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#BufferSource" id="ref-for-BufferSource③"><c- n>BufferSource</c-></a> <a class="idl-code" data-link-type="dict-member" data-type="BufferSource " href="#dom-audiodecoderconfig-description" id="ref-for-dom-audiodecoderconfig-description②"><c- g>description</c-></a>;
 };
 </pre>
-   <p>To check if an <code class="idl"><a data-link-type="idl" href="#dictdef-audiodecoderconfig" id="ref-for-dictdef-audiodecoderconfig①①">AudioDecoderConfig</a></code> is a <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="valid-audiodecoderconfig">valid AudioDecoderConfig</dfn>,
+   <p>To check if an <code class="idl"><a data-link-type="idl" href="#dictdef-audiodecoderconfig" id="ref-for-dictdef-audiodecoderconfig①②">AudioDecoderConfig</a></code> is a <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="valid-audiodecoderconfig">valid AudioDecoderConfig</dfn>,
     run these steps:</p>
    <ol>
     <li data-md>
@@ -2328,7 +2352,7 @@ combination of codec registrations or none at all.</p>
    </ol>
    <dl>
     <dt><dfn class="dfn-paneled idl-code" data-dfn-for="AudioDecoderConfig" data-dfn-type="dict-member" data-export id="dom-audiodecoderconfig-codec"><code>codec</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#idl-DOMString" id="ref-for-idl-DOMString①">DOMString</a></span>
-    <dd>Contains a <a data-link-type="dfn" href="#codec-string" id="ref-for-codec-string">codec string</a> describing the codec.
+    <dd>Contains a <a data-link-type="dfn" href="#codec-string" id="ref-for-codec-string④">codec string</a> in <var>config</var>.codec describing the codec.
     <dt><dfn class="dfn-paneled idl-code" data-dfn-for="AudioDecoderConfig" data-dfn-type="dict-member" data-export id="dom-audiodecoderconfig-samplerate"><code>sampleRate</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#idl-unsigned-long" id="ref-for-idl-unsigned-long④">unsigned long</a></span>
     <dd>The number of frame samples per second.
     <dt><dfn class="dfn-paneled idl-code" data-dfn-for="AudioDecoderConfig" data-dfn-type="dict-member" data-export id="dom-audiodecoderconfig-numberofchannels"><code>numberOfChannels</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#idl-unsigned-long" id="ref-for-idl-unsigned-long⑤">unsigned long</a></span>
@@ -2351,7 +2375,7 @@ combination of codec registrations or none at all.</p>
   <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-boolean" id="ref-for-idl-boolean⑨"><c- b>boolean</c-></a> <a class="idl-code" data-link-type="dict-member" data-type="boolean " href="#dom-videodecoderconfig-optimizeforlatency" id="ref-for-dom-videodecoderconfig-optimizeforlatency"><c- g>optimizeForLatency</c-></a>;
 };
 </pre>
-   <p>To check if a <code class="idl"><a data-link-type="idl" href="#dictdef-videodecoderconfig" id="ref-for-dictdef-videodecoderconfig①②">VideoDecoderConfig</a></code> is a <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="valid-videodecoderconfig">valid VideoDecoderConfig</dfn>,
+   <p>To check if a <code class="idl"><a data-link-type="idl" href="#dictdef-videodecoderconfig" id="ref-for-dictdef-videodecoderconfig①③">VideoDecoderConfig</a></code> is a <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="valid-videodecoderconfig">valid VideoDecoderConfig</dfn>,
 run these steps:</p>
    <ol>
     <li data-md>
@@ -2409,9 +2433,9 @@ return <code>false</code>.</p>
   [<a class="idl-code" data-link-type="extended-attribute" href="https://heycam.github.io/webidl/#EnforceRange" id="ref-for-EnforceRange⑧"><c- g>EnforceRange</c-></a>] <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-unsigned-long-long" id="ref-for-idl-unsigned-long-long"><c- b>unsigned</c-> <c- b>long</c-> <c- b>long</c-></a> <a class="idl-code" data-link-type="dict-member" data-type="unsigned long long " href="#dom-audioencoderconfig-bitrate" id="ref-for-dom-audioencoderconfig-bitrate"><c- g>bitrate</c-></a>;
 };
 </pre>
-   <p class="note" role="note"><span>NOTE:</span> Codec-specific extensions to <code class="idl"><a data-link-type="idl" href="#dictdef-audioencoderconfig" id="ref-for-dictdef-audioencoderconfig⑦">AudioEncoderConfig</a></code> may be defined by the
+   <p class="note" role="note"><span>NOTE:</span> Codec-specific extensions to <code class="idl"><a data-link-type="idl" href="#dictdef-audioencoderconfig" id="ref-for-dictdef-audioencoderconfig⑧">AudioEncoderConfig</a></code> may be defined by the
     registrations in the <a data-link-type="biblio" href="#biblio-webcodecs-codec-registry">[WEBCODECS-CODEC-REGISTRY]</a>.</p>
-   <p>To check if an <code class="idl"><a data-link-type="idl" href="#dictdef-audioencoderconfig" id="ref-for-dictdef-audioencoderconfig⑧">AudioEncoderConfig</a></code> is a <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="valid-audioencoderconfig">valid AudioEncoderConfig</dfn>,
+   <p>To check if an <code class="idl"><a data-link-type="idl" href="#dictdef-audioencoderconfig" id="ref-for-dictdef-audioencoderconfig⑨">AudioEncoderConfig</a></code> is a <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="valid-audioencoderconfig">valid AudioEncoderConfig</dfn>,
 run these steps:</p>
    <ol>
     <li data-md>
@@ -2445,9 +2469,9 @@ run these steps:</p>
   <a data-link-type="idl-name" href="#enumdef-latencymode" id="ref-for-enumdef-latencymode"><c- n>LatencyMode</c-></a> <a class="idl-code" data-default="&quot;quality&quot;" data-link-type="dict-member" data-type="LatencyMode " href="#dom-videoencoderconfig-latencymode" id="ref-for-dom-videoencoderconfig-latencymode"><c- g>latencyMode</c-></a> = "quality";
 };
 </pre>
-   <p class="note" role="note"><span>NOTE:</span> Codec-specific extensions to <code class="idl"><a data-link-type="idl" href="#dictdef-videoencoderconfig" id="ref-for-dictdef-videoencoderconfig⑦">VideoEncoderConfig</a></code> may be defined by the
+   <p class="note" role="note"><span>NOTE:</span> Codec-specific extensions to <code class="idl"><a data-link-type="idl" href="#dictdef-videoencoderconfig" id="ref-for-dictdef-videoencoderconfig⑧">VideoEncoderConfig</a></code> may be defined by the
     registrations in the <a data-link-type="biblio" href="#biblio-webcodecs-codec-registry">[WEBCODECS-CODEC-REGISTRY]</a>.</p>
-   <p>To check if a <code class="idl"><a data-link-type="idl" href="#dictdef-videoencoderconfig" id="ref-for-dictdef-videoencoderconfig⑧">VideoEncoderConfig</a></code> is a <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="valid-videoencoderconfig">valid VideoEncoderConfig</dfn>,
+   <p>To check if a <code class="idl"><a data-link-type="idl" href="#dictdef-videoencoderconfig" id="ref-for-dictdef-videoencoderconfig⑨">VideoEncoderConfig</a></code> is a <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="valid-videoencoderconfig">valid VideoEncoderConfig</dfn>,
     run these steps:</p>
    <ol>
     <li data-md>
@@ -2461,7 +2485,7 @@ run these steps:</p>
    </ol>
    <dl>
     <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoEncoderConfig" data-dfn-type="dict-member" data-export id="dom-videoencoderconfig-codec"><code>codec</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#idl-DOMString" id="ref-for-idl-DOMString⑧">DOMString</a></span>
-    <dd>Contains a <a data-link-type="dfn" href="#codec-string" id="ref-for-codec-string①">codec string</a> describing the codec.
+    <dd>Contains a <a data-link-type="dfn" href="#codec-string" id="ref-for-codec-string⑤">codec string</a> in <var>config</var>.codec describing the codec.
     <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoEncoderConfig" data-dfn-type="dict-member" data-export id="dom-videoencoderconfig-width"><code>width</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#idl-unsigned-long" id="ref-for-idl-unsigned-long②②">unsigned long</a></span>
     <dd>
       The encoded width of output <code class="idl"><a data-link-type="idl" href="#encodedvideochunk" id="ref-for-encodedvideochunk①③">EncodedVideoChunk</a></code>s in pixels, prior to any
@@ -7675,7 +7699,7 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
    <b><a href="#codec">#codec</a></b><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-codec">2.2. Control Thread and Codec Thread</a> <a href="#ref-for-codec①">(2)</a> <a href="#ref-for-codec②">(3)</a> <a href="#ref-for-codec③">(4)</a> <a href="#ref-for-codec④">(5)</a> <a href="#ref-for-codec⑤">(6)</a>
-    <li><a href="#ref-for-codec⑥">7.1. Check Configuration Support (with config)</a>
+    <li><a href="#ref-for-codec⑥">7.1. Check Configuration Support (with config)</a> <a href="#ref-for-codec⑦">(2)</a> <a href="#ref-for-codec⑧">(3)</a> <a href="#ref-for-codec⑨">(4)</a> <a href="#ref-for-codec①⓪">(5)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="key-chunk">
@@ -8604,8 +8628,9 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
   <aside class="dfn-panel" data-for="codec-string">
    <b><a href="#codec-string">#codec-string</a></b><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-codec-string">7.5. AudioDecoderConfig</a>
-    <li><a href="#ref-for-codec-string①">7.8. VideoEncoderConfig</a>
+    <li><a href="#ref-for-codec-string">7.1. Check Configuration Support (with config)</a> <a href="#ref-for-codec-string①">(2)</a> <a href="#ref-for-codec-string②">(3)</a> <a href="#ref-for-codec-string③">(4)</a>
+    <li><a href="#ref-for-codec-string④">7.5. AudioDecoderConfig</a>
+    <li><a href="#ref-for-codec-string⑤">7.8. VideoEncoderConfig</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="valid-codec-string">
@@ -8624,9 +8649,9 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
     <li><a href="#ref-for-dictdef-audiodecoderconfig②">5.1. Internal Slots</a>
     <li><a href="#ref-for-dictdef-audiodecoderconfig③">5.5. Algorithms</a>
     <li><a href="#ref-for-dictdef-audiodecoderconfig④">5.6. EncodedAudioChunkMetadata</a> <a href="#ref-for-dictdef-audiodecoderconfig⑤">(2)</a> <a href="#ref-for-dictdef-audiodecoderconfig⑥">(3)</a>
-    <li><a href="#ref-for-dictdef-audiodecoderconfig⑦">7.1. Check Configuration Support (with config)</a>
-    <li><a href="#ref-for-dictdef-audiodecoderconfig⑧">7.3.1. AudioDecoderSupport</a> <a href="#ref-for-dictdef-audiodecoderconfig⑨">(2)</a> <a href="#ref-for-dictdef-audiodecoderconfig①⓪">(3)</a>
-    <li><a href="#ref-for-dictdef-audiodecoderconfig①①">7.5. AudioDecoderConfig</a>
+    <li><a href="#ref-for-dictdef-audiodecoderconfig⑦">7.1. Check Configuration Support (with config)</a> <a href="#ref-for-dictdef-audiodecoderconfig⑧">(2)</a>
+    <li><a href="#ref-for-dictdef-audiodecoderconfig⑨">7.3.1. AudioDecoderSupport</a> <a href="#ref-for-dictdef-audiodecoderconfig①⓪">(2)</a> <a href="#ref-for-dictdef-audiodecoderconfig①①">(3)</a>
+    <li><a href="#ref-for-dictdef-audiodecoderconfig①②">7.5. AudioDecoderConfig</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="valid-audiodecoderconfig">
@@ -8671,9 +8696,9 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
     <li><a href="#ref-for-dictdef-videodecoderconfig③">6.1. Internal Slots</a>
     <li><a href="#ref-for-dictdef-videodecoderconfig④">6.5. Algorithms</a>
     <li><a href="#ref-for-dictdef-videodecoderconfig⑤">6.6. EncodedVideoChunkMetadata</a> <a href="#ref-for-dictdef-videodecoderconfig⑥">(2)</a> <a href="#ref-for-dictdef-videodecoderconfig⑦">(3)</a>
-    <li><a href="#ref-for-dictdef-videodecoderconfig⑧">7.1. Check Configuration Support (with config)</a>
-    <li><a href="#ref-for-dictdef-videodecoderconfig⑨">7.3.2. VideoDecoderSupport</a> <a href="#ref-for-dictdef-videodecoderconfig①⓪">(2)</a> <a href="#ref-for-dictdef-videodecoderconfig①①">(3)</a>
-    <li><a href="#ref-for-dictdef-videodecoderconfig①②">7.6. VideoDecoderConfig</a>
+    <li><a href="#ref-for-dictdef-videodecoderconfig⑧">7.1. Check Configuration Support (with config)</a> <a href="#ref-for-dictdef-videodecoderconfig⑨">(2)</a>
+    <li><a href="#ref-for-dictdef-videodecoderconfig①⓪">7.3.2. VideoDecoderSupport</a> <a href="#ref-for-dictdef-videodecoderconfig①①">(2)</a> <a href="#ref-for-dictdef-videodecoderconfig①②">(3)</a>
+    <li><a href="#ref-for-dictdef-videodecoderconfig①③">7.6. VideoDecoderConfig</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="valid-videodecoderconfig">
@@ -8738,9 +8763,9 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
    <ul>
     <li><a href="#ref-for-dictdef-audioencoderconfig">5. AudioEncoder Interface</a> <a href="#ref-for-dictdef-audioencoderconfig①">(2)</a>
     <li><a href="#ref-for-dictdef-audioencoderconfig②">5.1. Internal Slots</a>
-    <li><a href="#ref-for-dictdef-audioencoderconfig③">7.1. Check Configuration Support (with config)</a>
-    <li><a href="#ref-for-dictdef-audioencoderconfig④">7.3.3. AudioEncoderSupport</a> <a href="#ref-for-dictdef-audioencoderconfig⑤">(2)</a> <a href="#ref-for-dictdef-audioencoderconfig⑥">(3)</a>
-    <li><a href="#ref-for-dictdef-audioencoderconfig⑦">7.7. AudioEncoderConfig</a> <a href="#ref-for-dictdef-audioencoderconfig⑧">(2)</a>
+    <li><a href="#ref-for-dictdef-audioencoderconfig③">7.1. Check Configuration Support (with config)</a> <a href="#ref-for-dictdef-audioencoderconfig④">(2)</a>
+    <li><a href="#ref-for-dictdef-audioencoderconfig⑤">7.3.3. AudioEncoderSupport</a> <a href="#ref-for-dictdef-audioencoderconfig⑥">(2)</a> <a href="#ref-for-dictdef-audioencoderconfig⑦">(3)</a>
+    <li><a href="#ref-for-dictdef-audioencoderconfig⑧">7.7. AudioEncoderConfig</a> <a href="#ref-for-dictdef-audioencoderconfig⑨">(2)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="valid-audioencoderconfig">
@@ -8781,9 +8806,9 @@ capabilities could be reduced to a common baseline or prompt for user approval.<
    <ul>
     <li><a href="#ref-for-dictdef-videoencoderconfig">6. VideoEncoder Interface</a> <a href="#ref-for-dictdef-videoencoderconfig①">(2)</a>
     <li><a href="#ref-for-dictdef-videoencoderconfig②">6.1. Internal Slots</a>
-    <li><a href="#ref-for-dictdef-videoencoderconfig③">7.1. Check Configuration Support (with config)</a>
-    <li><a href="#ref-for-dictdef-videoencoderconfig④">7.3.4. VideoEncoderSupport</a> <a href="#ref-for-dictdef-videoencoderconfig⑤">(2)</a> <a href="#ref-for-dictdef-videoencoderconfig⑥">(3)</a>
-    <li><a href="#ref-for-dictdef-videoencoderconfig⑦">7.8. VideoEncoderConfig</a> <a href="#ref-for-dictdef-videoencoderconfig⑧">(2)</a>
+    <li><a href="#ref-for-dictdef-videoencoderconfig③">7.1. Check Configuration Support (with config)</a> <a href="#ref-for-dictdef-videoencoderconfig④">(2)</a>
+    <li><a href="#ref-for-dictdef-videoencoderconfig⑤">7.3.4. VideoEncoderSupport</a> <a href="#ref-for-dictdef-videoencoderconfig⑥">(2)</a> <a href="#ref-for-dictdef-videoencoderconfig⑦">(3)</a>
+    <li><a href="#ref-for-dictdef-videoencoderconfig⑧">7.8. VideoEncoderConfig</a> <a href="#ref-for-dictdef-videoencoderconfig⑨">(2)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="valid-videoencoderconfig">
