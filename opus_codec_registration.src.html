@@ -39,6 +39,8 @@ spec: WEBCODECS; urlPrefix: https://w3c.github.io/webcodecs/#
         for: EncodedAudioChunkType; text: key; url: dom-encodedaudiochunktype-key
         for: EncodedAudioChunk; text: [[internal data]]; url: dom-encodedaudiochunk-internal-data-slot
         for: EncodedAudioChunk; text: [[type]]; url: dom-encodedaudiochunk-type-slot
+    type: method
+        for: AudioDecoder; text: AudioDecoder.decode; url: dom-audiodecoder-decode
     type: interface
         text: EncodedAudioChunk; url: encodedaudiochunk
     type: dictionary
@@ -52,6 +54,12 @@ spec: WEBCODECS; urlPrefix: https://w3c.github.io/webcodecs/#
     "title": "RFC 6716: Definition of the Opus Audio Codec",
     "publisher": "IETF",
     "date": "September 2012"
+  },
+  "OPUS-IN-OGG": {
+    "href": "https://datatracker.ietf.org/doc/html/rfc7845",
+    "title": "RFC 7845: Ogg Encapsulation for the Opus Audio Codec",
+    "publisher": "IETF",
+    "date": "April 2016"
   }
 }
 </pre>
@@ -64,16 +72,26 @@ The codec string is `"opus"`.
 EncodedAudioChunk data {#encodedaudiochunk-data}
 ================================================
 
-{{EncodedAudioChunk}} [=EncodedAudioChunk/[[internal data]]=] is expected to be
-a "packet", as described in the section 3 of the [[OPUS]] specification.
+An {{EncodedAudioChunk}} containing Opus can be in two different formats,
+depending on if {{AudioDecoderConfig.description}} has been set during
+initialization.
 
-NOTE: The self-delimiting framing described in Appendix B of [[OPUS]] is not
-supported.
+If an {{AudioDecoderConfig.description}} has been set, the
+{{EncodedAudioChunk}}s passed to the {{AudioDecoder.decode}}} method have to be
+in audio data packets, as described in [section
+2](https://datatracker.ietf.org/doc/html/rfc7845#section-3) of [[OPUS-IN-OGG]].
+
+If an {{AudioDecoderConfig.description}} has not been set, then the
+{{EncodedAudioChunk}}s passed to the {{AudioDecoder.decode}} method have to be
+Opus packets, as described in [section
+3](https://datatracker.ietf.org/doc/html/rfc6716#section-3) of [[OPUS]].
+
 
 AudioDecoderConfig description {#audiodecoderconfig-description}
 ================================================================
 
-{{AudioDecoderConfig.description}} is not used when decoding Opus.
+{{AudioDecoderConfig.description}} can optionally set to an Identification
+Header, described in section 5.1 of [[OPUS-IN-OGG]].
 
 EncodedAudioChunk type {#encodedaudiochunk-type}
 ================================================
@@ -81,8 +99,8 @@ EncodedAudioChunk type {#encodedaudiochunk-type}
 The [=EncodedAudioChunk/[[type]]=] for an {{EncodedAudioChunk}} containing
 Opus is always "[=EncodedAudioChunkType/key=]".
 
-NOTE: Once the initialization has succeeded, any Opus packet can be decoded at
-any time without error, but this might not result in the expected audio output.
+NOTE: Once the initialization has succeeded, any packet can be decoded at any
+time without error, but this might not result in the expected audio output.
 
 Privacy and Security Considerations {#privacy-and-security-considerations}
 ==========================================================================
