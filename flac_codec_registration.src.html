@@ -1,0 +1,100 @@
+<pre class='metadata'>
+Title: FLAC WebCodecs Registration
+Repository: w3c/webcodecs
+Status: NOTE-ED
+Shortname: webcodecs-flac-codec-registration
+Level: none
+Group: mediawg
+ED: https://w3c.github.io/webcodecs/flac_codec_registration.html
+TR: https://www.w3.org/TR/webcodecs-flac-codec-registration/
+Editor: Chris Cunningham, w3cid 114832, Google Inc. https://www.google.com/
+Editor: Paul Adenot, w3cid 62410, Mozilla https://www.mozilla.org/
+Editor: Bernard Aboba, w3cid 65611, Microsoft Corporation https://www.microsoft.com/
+
+Abstract: This registration is entered into the [[webcodecs-codec-registry]].
+    It describes, for FLAC, the (1) fully qualified codec strings, (2)
+    the {{AudioDecoderConfig.description}} bytes, (3) the codec-specific
+    {{EncodedAudioChunk}} [=EncodedAudioChunk/[[internal data]]=] bytes, and (4)
+    the values of {{EncodedAudioChunk}} [=EncodedAudioChunk/[[type]]=].
+
+    The registration is not intended to include any information on whether a
+    codec format is encumbered by intellectual property claims. Implementers and
+    authors are advised to seek appropriate legal counsel in this matter if they
+    intend to implement or use a specific codec format. Implementers of
+    WebCodecs are not required to support the FLAC codec.
+
+    This registration is non-normative.
+
+Markup Shorthands:css no, markdown yes, dfn yes
+!Participate: <a href="https://github.com/w3c/webcodecs">Git Repository.</a>
+!Participate: <a href="https://github.com/w3c/webcodecs/issues/new">File an issue.</a>
+!Version History: <a href="https://github.com/w3c/webcodecs/commits">https://github.com/w3c/webcodecs/commits</a>
+</pre>
+
+<pre class='anchors'>
+spec: WEBCODECS; urlPrefix: https://w3c.github.io/webcodecs/#
+    type: attribute
+        text: AudioDecoderConfig.description; url: dom-audiodecoderconfig-description
+        text: AudioDecoderConfig.sampleRate; url: dom-audiodecoderconfig-samplerate
+        text: AudioDecoderConfig.channelCount; url: dom-audiodecoderconfig-channelcount
+    type: dfn
+        for: EncodedAudioChunkType; text: key; url: dom-encodedaudiochunktype-key
+        for: EncodedAudioChunk; text: [[internal data]]; url: dom-encodedaudiochunk-internal-data-slot
+        for: EncodedAudioChunk; text: [[type]]; url: dom-encodedaudiochunk-type-slot
+    type: interface
+        text: EncodedAudioChunk; url: encodedaudiochunk
+    type: dictionary
+        text: AudioDecoderConfig; url: dictdef-audiodecoderconfig
+</pre>
+
+<pre class='biblio'>
+{
+  "FLAC": {
+    "href": "https://xiph.org/flac/format.html",
+    "title": "FLAC - format",
+    "publisher": "Xiph.Org Foundation"
+  }
+}
+</pre>
+
+Fully qualified codec strings {#fully-qualified-codec-strings}
+==============================================================
+
+The codec string is `"flac"`.
+
+EncodedAudioChunk data {#encodedaudiochunk-data}
+================================================
+
+{{EncodedAudioChunk}} [=EncodedAudioChunk/[[internal data]]=] is expected to be
+a "FRAME" as described in [[FLAC]].
+
+AudioDecoderConfig description {#audiodecoderconfig-description}
+================================================================
+
+{{AudioDecoderConfig.description}} is required, and has to be the following:
+
+- The bytes `0x66 0x4C 0x61 0x43` ("`fLaC`" in ASCII)
+- A `METADATA_BLOCK` of type `STEAMINFO`as described in [[FLAC]]
+- Optionaly other `METADATA_BLOCK`, that are not used by the specification
+
+The {{AudioDecoderConfig.sampleRate}} and {{AudioDecoderConfig.channelCount}}
+members are overridden by what the decoder finds in the
+{{AudioDecoderConfig.description}}.
+
+NOTE: This corresponds to the 
+
+EncodedAudioChunk type {#encodedaudiochunk-type}
+================================================
+
+The [=EncodedAudioChunk/[[type]]=] for an {{EncodedAudioChunk}} containing
+FLAC is always "[=EncodedAudioChunkType/key=]".
+
+NOTE: Once the initialization has succeeded, any FLAC packet can be decoded at
+any time without error, but this might not result in the expected audio output.
+
+Privacy and Security Considerations {#privacy-and-security-considerations}
+==========================================================================
+
+Please refer to the [[WEBCODECS#privacy-considerations|Privacy Considerations]]
+and [[WEBCODECS#security-considerations|Security Considerations]] sections in
+[[WEBCODECS]].
