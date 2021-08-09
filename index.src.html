@@ -4687,6 +4687,7 @@ immutable.
 
 Privacy Considerations{#privacy-considerations}
 ===============================================
+
 The primary privacy impact is an increased ability to fingerprint users by
 querying for different codec capabilities to establish a codec feature profile.
 Much of this profile is already exposed by existing APIs. Such profiles are very
@@ -4726,3 +4727,22 @@ attempts to exhaustively probe for codec capabilities. Additionally, User Agents
 may implement a "privacy budget", which depletes as authors use WebCodecs and
 other identifying APIs. Upon exhaustion of the privacy budget, codec
 capabilities could be reduced to a common baseline or prompt for user approval.
+
+Best Practices for Authors Using WebCodecs{#best-practices-developers}
+======================================================================
+
+While WebCodecs internally operates on background threads, authors working with
+realtime media or in contended main thread environments should ensure their
+media pipelines operate in worker contexts entirely independent of the main
+thread where possible. For example, realtime media processing of {{VideoFrame}}s
+should generally be done in a worker context.
+
+The main thread has significant potential for high contention and jank that may
+go unnoticed in development, yet degrade inconsistently across devices and User
+Agents in the field -- potentially dramatically impacting the end user
+experience. Ensuring the media pipeline is decoupled from the main thread helps
+provide a smooth experience for end users.
+
+Authors using the main thread for their media pipeline should be sure of their
+target frame rates, main thread work load, how their application will be
+embedded, and the class of devices their users will be using.
