@@ -16,7 +16,23 @@ on:
   workflow_dispatch:
 
 jobs:
+  images:
+    runs-on: ubuntu-20.04
+    steps:
+      # See doc at https://github.com/actions/checkout#checkout-v2
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      # See doc at https://github.com/marketplace/actions/deploy-to-github-pages
+      - name: Deploy images
+        uses: JamesIves/github-pages-deploy-action@4.1.1
+        with:
+          branch: gh-pages
+          folder: images
+          target-folder: images
+
   main:
+    needs: images
     runs-on: ubuntu-20.04
     strategy:
       fail-fast: false
