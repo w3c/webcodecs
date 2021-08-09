@@ -38,6 +38,41 @@ jobs:
             echidna_token: ECHIDNA_TOKEN_AVC_REGISTRATION
             build_override: |
               status: NOTE-WD
+          - source: vorbis_codec_registration.src.html
+            destination: vorbis_codec_registration.html
+            echidna_token: ECHIDNA_TOKEN_VORBIS_REGISTRATION
+            build_override: |
+              status: NOTE-WD
+          - source: mp3_codec_registration.src.html
+            destination: mp3_codec_registration.html
+            echidna_token: ECHIDNA_TOKEN_MP3_REGISTRATION
+            build_override: |
+              status: NOTE-WD
+          - source: flac_codec_registration.src.html
+            destination: flac_codec_registration.html
+            echidna_token: ECHIDNA_TOKEN_FLAC_REGISTRATION
+            build_override: |
+              status: NOTE-WD
+          - source: opus_codec_registration.src.html
+            destination: opus_codec_registration.html
+            echidna_token: ECHIDNA_TOKEN_OPUS_REGISTRATION
+            build_override: |
+              status: NOTE-WD
+          - source: av1_codec_registration.src.html
+            destination: av1_codec_registration.html
+            echidna_token: ECHIDNA_TOKEN_AV1_REGISTRATION              
+            build_override: |
+              status: NOTE-WD
+          - source: vp9_codec_registration.src.html
+            destination: vp9_codec_registration.html
+            echidna_token: ECHIDNA_TOKEN_VP9_REGISTRATION
+            build_override: |
+              status: NOTE-WD
+          - source: vp8_codec_registration.src.html
+            destination: vp8_codec_registration.html
+            echidna_token: ECHIDNA_TOKEN_VP8_REGISTRATION
+            build_override: |
+              status: NOTE-WD
     steps:
       # See doc at https://github.com/actions/checkout#checkout-v2
       - name: Checkout repository
@@ -52,7 +87,7 @@ jobs:
           TOOLCHAIN: bikeshed
           SOURCE: ${{ matrix.source }}
           DESTINATION: ${{ matrix.destination }}
-          BUILD_FAIL_ON: warning
+          BUILD_FAIL_ON: nothing
           GH_PAGES_BRANCH: gh-pages
           W3C_ECHIDNA_TOKEN: ${{ secrets[matrix.echidna_token] }}
           W3C_WG_DECISION_URL: https://github.com/w3c/media-wg/issues/27

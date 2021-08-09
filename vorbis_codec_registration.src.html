@@ -1,0 +1,106 @@
+<pre class='metadata'>
+Title: Vorbis WebCodecs Registration
+Repository: w3c/webcodecs
+Status: NOTE-ED
+Shortname: webcodecs-vorbis-codec-registration
+Level: none
+Group: mediawg
+ED: https://w3c.github.io/webcodecs/vorbis_codec_registration.html
+TR: https://www.w3.org/TR/webcodecs-vorbis-codec-registration/
+Editor: Chris Cunningham, w3cid 114832, Google Inc. https://www.google.com/
+Editor: Paul Adenot, w3cid 62410, Mozilla https://www.mozilla.org/
+Editor: Bernard Aboba, w3cid 65611, Microsoft Corporation https://www.microsoft.com/
+
+Abstract: This registration is entered into the [[webcodecs-codec-registry]].
+    It describes, for Vorbis, the (1) fully qualified codec strings, (2)
+    the {{AudioDecoderConfig.description}} bytes, (3) the codec-specific
+    {{EncodedAudioChunk}} [=EncodedAudioChunk/[[internal data]]=] bytes, and (4)
+    the values of {{EncodedAudioChunk}} [=EncodedAudioChunk/[[type]]=].
+
+    The registration is not intended to include any information on whether a
+    codec format is encumbered by intellectual property claims. Implementers and
+    authors are advised to seek appropriate legal counsel in this matter if they
+    intend to implement or use a specific codec format. Implementers of
+    WebCodecs are not required to support the Vorbis codec.
+
+    This registration is non-normative.
+
+Markup Shorthands:css no, markdown yes, dfn yes
+!Participate: <a href="https://github.com/w3c/webcodecs">Git Repository.</a>
+!Participate: <a href="https://github.com/w3c/webcodecs/issues/new">File an issue.</a>
+!Version History: <a href="https://github.com/w3c/webcodecs/commits">https://github.com/w3c/webcodecs/commits</a>
+</pre>
+
+<pre class='anchors'>
+spec: WEBCODECS; urlPrefix: https://w3c.github.io/webcodecs/#
+    type: attribute
+        text: AudioDecoderConfig.description; url: dom-audiodecoderconfig-description
+        text: AudioDecoderConfig.sampleRate; url: dom-audiodecoderconfig-samplerate
+        text: AudioDecoderConfig.channelCount; url: dom-audiodecoderconfig-channelcount
+    type: dfn
+        for: EncodedAudioChunkType; text: key; url: dom-encodedaudiochunktype-key
+        for: EncodedAudioChunk; text: [[internal data]]; url: dom-encodedaudiochunk-internal-data-slot
+        for: EncodedAudioChunk; text: [[type]]; url: dom-encodedaudiochunk-type-slot
+    type: interface
+        text: EncodedAudioChunk; url: encodedaudiochunk
+    type: dictionary
+        text: AudioDecoderConfig; url: dictdef-audiodecoderconfig
+</pre>
+
+<pre class='biblio'>
+{
+  "VORBIS": {
+    "href": "https://xiph.org/vorbis/doc/Vorbis_I_spec.html",
+    "title": "Vorbis I specification",
+    "publisher": "Xiph.Org Foundation",
+    "date": "July 4, 2020"
+  },
+  "OGG-FRAMING": {
+    "href": "https://xiph.org/vorbis/doc/framing.html",
+    "title": "Ogg logical bitstream framing",
+    "publisher": "Xiph.Org Foundation"
+  }
+}
+</pre>
+
+Fully qualified codec strings {#fully-qualified-codec-strings}
+==============================================================
+
+The codec string is `"vorbis"`.
+
+EncodedAudioChunk data {#encodedaudiochunk-data}
+================================================
+
+{{EncodedAudioChunk}} [=EncodedAudioChunk/[[internal data]]=] is expected to be
+an "audio packet", as described in the section 4.3 of the [[VORBIS]] specification.
+
+AudioDecoderConfig description {#audiodecoderconfig-description}
+================================================================
+
+{{AudioDecoderConfig.description}} is required. It is assumed to be in Xiph
+extradata format, described in [[OGG-FRAMING]]. This format consists in the
+`page_segments` field, followed by the `segment_table` field, followed by the
+three Vorbis header packets, respectively the identification header, the comments
+header, and the setup header, in this order, as described in section 4.2 of
+[[VORBIS]].
+
+The {{AudioDecoderConfig.sampleRate}} and {{AudioDecoderConfig.channelCount}}
+members are overridden by what the decoder finds in the identification header.
+
+NOTE: The comments header content is not used by [[WEBCODECS]].
+
+EncodedAudioChunk type {#encodedaudiochunk-type}
+================================================
+
+The [=EncodedAudioChunk/[[type]]=] for an {{EncodedAudioChunk}} containing
+Vorbis is always "[=EncodedAudioChunkType/key=]".
+
+NOTE: Once the initialization has succeeded, any Vorbis packet can be decoded at
+any time without error, but this might not result in the expected audio output.
+
+Privacy and Security Considerations {#privacy-and-security-considerations}
+==========================================================================
+
+Please refer to the [[WEBCODECS#privacy-considerations|Privacy Considerations]]
+and [[WEBCODECS#security-considerations|Security Considerations]] sections in
+[[WEBCODECS]].

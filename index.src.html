@@ -642,6 +642,11 @@ Methods {#videodecoder-methods}
         failing to release them (or waiting for garbage collection) may cause
         decoding to stall.
 
+    NOTE: {{VideoDecoder}} requires that frames are output in the order they
+        expect to be presented, commonly known as presentation order. Some
+        {{VideoDecoder/[[codec implementation]]}}s may require the User Agent
+        to reorder outputs into presentation order.
+
     When invoked, run these steps:
     1. If {{VideoDecoder/[[state]]}} is not `"configured"`, throw an
         {{InvalidStateError}}.
@@ -666,7 +671,7 @@ Methods {#videodecoder-methods}
     3. Queue a task on the [=control thread=] event loop to decrement
         {{VideoDecoder/[[decodeQueueSize]]}}
     4. Let |decoded outputs| be a [=list=] of decoded video data outputs emitted
-        by {{VideoDecoder/[[codec implementation]]}}.
+        by {{VideoDecoder/[[codec implementation]]}} in presentation order.
     5. If |decoded outputs| is not empty, queue a task on the [=control thread=]
         event loop to run the [=Output VideoFrames=] algorithm with
         |decoded outputs|.
@@ -1495,7 +1500,22 @@ Configurations{#configurations}
 <dfn>Check Configuration Support</dfn> (with |config|) {#config-support}
 ------------------------------------------------------------------------
 Run these steps:
-1. If the User Agent can provide a <a>codec</a> to support all entries of the
+1. If |config| is an {{AudioDecoderConfig}} or {{VideoDecoderConfig}} and the
+    User Agent can't provide a <a>codec</a> that can decode the exact profile
+    (where present), level (where present), and constraint bits (where present)
+    indicated by the <a>codec string</a> in |config|.codec, return `false`.
+2. If |config| is an {{AudioEncoderConfig}} or {{VideoEncoderConfig}}:
+    1. If the <a>codec string</a> in |config|.codec contains a profile and the
+        User Agent can't provide a <a>codec</a> that can encode the exact
+        profile indicated by |config|.codec, return `false`.
+    2. If the <a>codec string</a> in |config|.codec contains a level and the
+        User Agent can't provide a <a>codec</a> that can encode to a level less
+        than or equal to the level indicated by |config|.codec, return `false`.
+    3. If the <a>codec string</a> in |config|.codec contains constraint bits and
+        the User Agent can't provide a <a>codec</a> that can produce an encoded
+        bitstream at least as constrained as indicated by |config|.codec, return
+        `false`.
+3. If the User Agent can provide a <a>codec</a> to support all entries of the
     |config|, including applicable default values for keys that are not
     included, return `true`.
 
@@ -1623,14 +1643,18 @@ decoding.
 A <dfn>valid codec string</dfn> must meet the following conditions.
 1. Is valid per the relevant codec specification (see examples below).
 2. It describes a single codec.
-3. It is unambiguous about codec profile and level for codecs that define these
-    concepts.
+3. It is unambiguous about codec profile, level, and constraint bits for codecs
+    that define these concepts.
 
 NOTE: In other media specifications, codec strings historically accompanied a
     [=MIME type=] as the "codecs=" parameter
     ({{MediaSource/isTypeSupported()}}, {{HTMLMediaElement/canPlayType()}})
     [[RFC6381]]. In this specification, encoded media is not containerized;
     hence, only the value of the codecs parameter is accepted.
+
+NOTE: Encoders for codecs that define level and constraint bits have flexibility
+    around these parameters, but won't produce bitstreams that have a higher
+    level or are less constrained than requested.
 
 The format and semantics for codec strings are defined by codec registrations
 listed in the [[WEBCODECS-CODEC-REGISTRY]]. A compliant implementation may support any
@@ -1654,7 +1678,7 @@ To check if an {{AudioDecoderConfig}} is a <dfn>valid AudioDecoderConfig</dfn>,
 
 <dl>
   <dt><dfn dict-member for=AudioDecoderConfig>codec</dfn></dt>
-  <dd>Contains a <a>codec string</a> describing the codec.</dd>
+  <dd>Contains a <a>codec string</a> in |config|.codec describing the codec.</dd>
 
   <dt><dfn dict-member for=AudioDecoderConfig>sampleRate</dfn></dt>
   <dd>The number of frame samples per second.</dd>
@@ -1848,7 +1872,7 @@ To check if a {{VideoEncoderConfig}} is a <dfn>valid VideoEncoderConfig</dfn>,
 
 <dl>
   <dt><dfn dict-member for=VideoEncoderConfig>codec</dfn></dt>
-  <dd>Contains a <a>codec string</a> describing the codec.</dd>
+  <dd>Contains a <a>codec string</a> in |config|.codec describing the codec.</dd>
 
   <dt><dfn dict-member for=VideoEncoderConfig>width</dfn></dt>
   <dd>
@@ -2740,7 +2764,7 @@ NOTE: The following diagram exemplifies the memory layout of [=planar=] versus
     [=interleaved=] {{AudioSampleFormat}}s
 
 <img alt="Graphical representation the memory layout of interleaved and planar
-    formats" src="images/planar-interleaved-layout.svg" width="735" height="455">
+    formats" src="images/planar_interleaved.svg" width="735" height="455">
 </div>
 
 ### Magnitude of the audio samples ### {#audio-samples-magnitude}
@@ -4948,6 +4972,7 @@ immutable.
 
 Privacy Considerations{#privacy-considerations}
 ===============================================
+
 The primary privacy impact is an increased ability to fingerprint users by
 querying for different codec capabilities to establish a codec feature profile.
 Much of this profile is already exposed by existing APIs. Such profiles are very
@@ -4987,3 +5012,22 @@ attempts to exhaustively probe for codec capabilities. Additionally, User Agents
 may implement a "privacy budget", which depletes as authors use WebCodecs and
 other identifying APIs. Upon exhaustion of the privacy budget, codec
 capabilities could be reduced to a common baseline or prompt for user approval.
+
+Best Practices for Authors Using WebCodecs{#best-practices-developers}
+======================================================================
+
+While WebCodecs internally operates on background threads, authors working with
+realtime media or in contended main thread environments should ensure their
+media pipelines operate in worker contexts entirely independent of the main
+thread where possible. For example, realtime media processing of {{VideoFrame}}s
+should generally be done in a worker context.
+
+The main thread has significant potential for high contention and jank that may
+go unnoticed in development, yet degrade inconsistently across devices and User
+Agents in the field -- potentially dramatically impacting the end user
+experience. Ensuring the media pipeline is decoupled from the main thread helps
+provide a smooth experience for end users.
+
+Authors using the main thread for their media pipeline should be sure of their
+target frame rates, main thread work load, how their application will be
+embedded, and the class of devices their users will be using.
