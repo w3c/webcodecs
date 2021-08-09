@@ -1006,6 +1006,9 @@ Algorithms {#audioencoder-algorithms}
             3. Let {{EncodedAudioChunkInit/timestamp}} be the
                 {{AudioData/timestamp}} from the AudioData associated with
                 |output|.
+            4. Let {{EncodedAudioChunkInit/duration}} be the
+                {{AudioData/duration}} from the AudioData associated with
+                |output|.
         2. Let |chunk| be a new {{EncodedAudioChunk}} constructed with
             |chunkInit|.
         3. Let |chunkMetadata| be a new {{EncodedAudioChunkMetadata}}.
@@ -2072,8 +2075,8 @@ EncodedAudioChunk Interface {#encodedaudiochunk-interface}
 interface EncodedAudioChunk {
   constructor(EncodedAudioChunkInit init);
   readonly attribute EncodedAudioChunkType type;
-  readonly attribute long long timestamp;    // microseconds
-  readonly attribute unsigned long duration; // microseconds
+  readonly attribute long long timestamp;          // microseconds
+  readonly attribute unsigned long long? duration; // microseconds
   readonly attribute unsigned long byteLength;
 
   undefined copyTo([AllowShared] BufferSource destination);
@@ -2082,6 +2085,7 @@ interface EncodedAudioChunk {
 dictionary EncodedAudioChunkInit {
   required EncodedAudioChunkType type;
   [EnforceRange] required long long timestamp;    // microseconds
+  [EnforceRange] unsigned long long duration;     // microseconds
   required BufferSource data;
 };
 
@@ -2110,8 +2114,10 @@ enum EncodedAudioChunkType {
 1. Let |chunk| be a new {{EncodedAudioChunk}} object, initialized as follows
     1. Assign `init.type` to {{EncodedAudioChunk/[[type]]}}.
     2. Assign `init.timestamp` to {{EncodedAudioChunk/[[timestamp]]}}.
-    3. Assign a copy of `init.data` to {{EncodedAudioChunk/[[internal data]]}}.
-    4. Assign `init.data.byteLength` to {{EncodedAudioChunk/[[byte length]]}};
+    3. If `init.duration` exists, assign it to
+        {{EncodedAudioChunk/[[timestamp]]}}, or assign `null` otherwise.
+    4. Assign a copy of `init.data` to {{EncodedAudioChunk/[[internal data]]}}.
+    5. Assign `init.data.byteLength` to {{EncodedAudioChunk/[[byte length]]}};
 5. Return |chunk|.
 
 ### Attributes ###{#encodedaudiochunk-attributes}
