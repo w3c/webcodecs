@@ -364,7 +364,7 @@ Methods {#audiodecoder-methods}
         {{EncodingError}}.
     3. Queue a task on the [=control thread=] event loop to decrement
         {{AudioDecoder/[[decodeQueueSize]]}}.
-    4. Let |decoded outputs| be a [=list=] of decoded video data outputs emitted
+    4. Let |decoded outputs| be a [=list=] of decoded audio data outputs emitted
         by {{AudioDecoder/[[codec implementation]]}}.
     5. If |decoded outputs| is not empty, queue a task on the [=control thread=]
         event loop to run the [=Output AudioData=] algorithm with
@@ -463,8 +463,10 @@ Algorithms {#audiodecoder-algorithms}
             5. Let |timestamp| be the {{EncodedAudioChunk/[[timestamp]]}} of the
                 {{EncodedAudioChunk}} associated with |output|.
             6. Assign |timestamp| to {{AudioData/[[timestamp]]}}.
-            7. Assign values to {{AudioData/[[format]]}},
-                {{AudioData/[[sample rate]]}},
+            7. If |output| uses a recognized {{AudioSampleFormat}}, assign that
+                format to {{AudioData/[[format]]}}. Otherwise, assign `null` to
+                {{AudioData/[[format]]}}.
+            8. Assign values to {{AudioData/[[sample rate]]}},
                 {{AudioData/[[number of frames]]}}, and
                 {{AudioData/[[number of channels]]}} as determined by |output|.
         3. Invoke {{AudioDecoder/[[output callback]]}} with |data|.
@@ -614,6 +616,11 @@ Methods {#videodecoder-methods}
         failing to release them (or waiting for garbage collection) may cause
         decoding to stall.
 
+    NOTE: {{VideoDecoder}} requires that frames are output in the order they
+        expect to be presented, commonly known as presentation order. Some
+        {{VideoDecoder/[[codec implementation]]}}s may require the User Agent
+        to reorder outputs into presentation order.
+
     When invoked, run these steps:
     1. If {{VideoDecoder/[[state]]}} is not `"configured"`, throw an
         {{InvalidStateError}}.
@@ -638,7 +645,7 @@ Methods {#videodecoder-methods}
     3. Queue a task on the [=control thread=] event loop to decrement
         {{VideoDecoder/[[decodeQueueSize]]}}
     4. Let |decoded outputs| be a [=list=] of decoded video data outputs emitted
-        by {{VideoDecoder/[[codec implementation]]}}.
+        by {{VideoDecoder/[[codec implementation]]}} in presentation order.
     5. If |decoded outputs| is not empty, queue a task on the [=control thread=]
         event loop to run the [=Output VideoFrames=] algorithm with
         |decoded outputs|.
@@ -1368,7 +1375,11 @@ Algorithms {#videoencoder-algorithms}
                 |svc|.{{SvcOutputMetadata/temporalLayerId}}.
             4. Assign |svc| to
                 |chunkMetadata|.{{EncodedVideoChunkMetadata/svc}}.
-        8. Invoke {{VideoEncoder/[[output callback]]}} with |chunk| and
+        8. If |encoderConfig|.{{VideoEncoderConfig/alpha}} is set to `"keep"`:
+            1. Let |alphaSideData| be the encoded alpha data in |output|.
+            2. Assign |alphaSideData| to
+                |chunkMetadata|.{{EncodedVideoChunkMetadata/alphaSideData}}.
+        9. Invoke {{VideoEncoder/[[output callback]]}} with |chunk| and
             |chunkMetadata|.
   </dd>
   <dt><dfn>Reset VideoEncoder</dfn> (with |exception|)</dt>
@@ -1408,6 +1419,7 @@ The following metadata dictionary is emitted by the
 dictionary EncodedVideoChunkMetadata {
   VideoDecoderConfig decoderConfig;
   SvcOutputMetadata svc;
+  BufferSource alphaSideData;
 };
 
 dictionary SvcOutputMetadata {
@@ -1423,6 +1435,10 @@ dictionary SvcOutputMetadata {
 :: A collection of metadata describing this {{EncodedVideoChunk}} with respect
     to the configured {{VideoEncoderConfig/scalabilityMode}}.
 
+: <dfn dict-member for=EncodedVideoChunkMetadata>alphaSideData</dfn>
+:: A {{BufferSource}} that contains the {{EncodedVideoChunk}}'s extra alpha
+    channel data.
+
 : <dfn dict-member for=SvcOutputMetadata>temporalLayerId</dfn>
 :: A number that identifies the [=temporal layer=] for the associated
     {{EncodedVideoChunk}}.
@@ -1434,7 +1450,22 @@ Configurations{#configurations}
 <dfn>Check Configuration Support</dfn> (with |config|) {#config-support}
 ------------------------------------------------------------------------
 Run these steps:
-1. If the User Agent can provide a <a>codec</a> to support all entries of the
+1. If |config| is an {{AudioDecoderConfig}} or {{VideoDecoderConfig}} and the
+    User Agent can't provide a <a>codec</a> that can decode the exact profile
+    (where present), level (where present), and constraint bits (where present)
+    indicated by the <a>codec string</a> in |config|.codec, return `false`.
+2. If |config| is an {{AudioEncoderConfig}} or {{VideoEncoderConfig}}:
+    1. If the <a>codec string</a> in |config|.codec contains a profile and the
+        User Agent can't provide a <a>codec</a> that can encode the exact
+        profile indicated by |config|.codec, return `false`.
+    2. If the <a>codec string</a> in |config|.codec contains a level and the
+        User Agent can't provide a <a>codec</a> that can encode to a level less
+        than or equal to the level indicated by |config|.codec, return `false`.
+    3. If the <a>codec string</a> in |config|.codec contains constraint bits and
+        the User Agent can't provide a <a>codec</a> that can produce an encoded
+        bitstream at least as constrained as indicated by |config|.codec, return
+        `false`.
+3. If the User Agent can provide a <a>codec</a> to support all entries of the
     |config|, including applicable default values for keys that are not
     included, return `true`.
 
@@ -1562,14 +1593,18 @@ decoding.
 A <dfn>valid codec string</dfn> must meet the following conditions.
 1. Is valid per the relevant codec specification (see examples below).
 2. It describes a single codec.
-3. It is unambiguous about codec profile and level for codecs that define these
-    concepts.
+3. It is unambiguous about codec profile, level, and constraint bits for codecs
+    that define these concepts.
 
 NOTE: In other media specifications, codec strings historically accompanied a
     [=MIME type=] as the "codecs=" parameter
     ({{MediaSource/isTypeSupported()}}, {{HTMLMediaElement/canPlayType()}})
     [[RFC6381]]. In this specification, encoded media is not containerized;
     hence, only the value of the codecs parameter is accepted.
+
+NOTE: Encoders for codecs that define level and constraint bits have flexibility
+    around these parameters, but won't produce bitstreams that have a higher
+    level or are less constrained than requested.
 
 The format and semantics for codec strings are defined by codec registrations
 listed in the [[WEBCODECS-CODEC-REGISTRY]]. A compliant implementation may support any
@@ -1593,7 +1628,7 @@ To check if an {{AudioDecoderConfig}} is a <dfn>valid AudioDecoderConfig</dfn>,
 
 <dl>
   <dt><dfn dict-member for=AudioDecoderConfig>codec</dfn></dt>
-  <dd>Contains a <a>codec string</a> describing the codec.</dd>
+  <dd>Contains a <a>codec string</a> in |config|.codec describing the codec.</dd>
 
   <dt><dfn dict-member for=AudioDecoderConfig>sampleRate</dfn></dt>
   <dd>The number of frame samples per second.</dd>
@@ -1623,6 +1658,7 @@ dictionary VideoDecoderConfig {
   [EnforceRange] unsigned long displayAspectWidth;
   [EnforceRange] unsigned long displayAspectHeight;
   HardwareAcceleration hardwareAcceleration = "allow";
+  boolean optimizeForLatency;
 };
 </xmp>
 
@@ -1680,7 +1716,7 @@ run these steps:
     Vertical dimension of the VideoFrame's aspect ratio when displayed.
   </dd>
 
-Note: {{VideoFrame/displayWidth}} and {{VideoFrame/displayHeight}} can both be
+  NOTE: {{VideoFrame/displayWidth}} and {{VideoFrame/displayHeight}} can both be
   different from {{VideoDecoderConfig/displayAspectWidth}} and
   {{VideoDecoderConfig/displayAspectHeight}}, but they should have identical
   ratios, after scaling is applied when
@@ -1690,6 +1726,17 @@ Note: {{VideoFrame/displayWidth}} and {{VideoFrame/displayHeight}} can both be
   <dd>
     Configures hardware acceleration for this codec. See
     {{HardwareAcceleration}}.
+  </dd>
+
+  <dt><dfn dict-member for=VideoDecoderConfig>optimizeForLatency</dfn></dt>
+  <dd>
+    Hint that the selected decoder SHOULD be configured to minimize the number
+    of {{EncodedVideoChunk}}s that have to be decoded before a {{VideoFrame}}
+    is output.
+
+    NOTE: In addition to User Agent and hardware limitations, some codec
+    bitstreams may require a minimum number of inputs before any output can be
+    produced.
   </dd>
 </dl>
 
@@ -1743,6 +1790,7 @@ dictionary VideoEncoderConfig {
   [EnforceRange] unsigned long long bitrate;
   [EnforceRange] double framerate;
   HardwareAcceleration hardwareAcceleration = "allow";
+  AlphaOption alpha = "discard";
   DOMString scalabilityMode;
   BitrateMode bitrateMode = "variable";
   LatencyMode latencyMode = "quality";
@@ -1764,7 +1812,7 @@ To check if a {{VideoEncoderConfig}} is a <dfn>valid VideoEncoderConfig</dfn>,
 
 <dl>
   <dt><dfn dict-member for=VideoEncoderConfig>codec</dfn></dt>
-  <dd>Contains a <a>codec string</a> describing the codec.</dd>
+  <dd>Contains a <a>codec string</a> in |config|.codec describing the codec.</dd>
 
   <dt><dfn dict-member for=VideoEncoderConfig>width</dfn></dt>
   <dd>
@@ -1830,6 +1878,14 @@ To check if a {{VideoEncoderConfig}} is a <dfn>valid VideoEncoderConfig</dfn>,
   <dd>
     Configures hardware acceleration for this codec. See
     {{HardwareAcceleration}}.
+  </dd>
+
+<dt><dfn dict-member for=VideoEncoderConfig>alpha</dfn></dt>
+  <dd>
+    Whether the alpha component of the {{VideoFrame}} inputs should be kept
+    or discarded prior to encoding. If {{VideoEncoderConfig/alpha}} is
+    equal to {{AlphaOption/discard}}, alpha data is always discarded, regardless
+    of a {{VideoFrame}}'s {{VideoFrame/[[format]]}}.
   </dd>
 
   <dt><dfn dict-member for=VideoEncoderConfig>scalabilityMode</dfn></dt>
@@ -1920,6 +1976,31 @@ specialized hardware.
     NOTE: This will cause the configuration to be unsupported on platforms where
     an accelerated codec is unavailable or is incompatible with other aspects of
     the codec configuration.
+  </dd>
+</dl>
+
+Alpha Option{#alpha-option}
+---------------------------
+<xmp class='idl'>
+enum AlphaOption {
+  "keep",
+  "discard",
+};
+</xmp>
+
+Describes how the user agent should behave when dealing with alpha channels, for
+a variety of different operations.
+
+<dl>
+  <dt><dfn enum-value for=AlphaOption>keep</dfn></dt>
+  <dd>
+    Indicates that the user agent should preserve alpha channel data for
+    {{VideoFrame}}s, if it is present.
+  </dd>
+  <dt><dfn enum-value for=AlphaOption>discard</dfn></dt>
+  <dd>
+    Indicates that the user agent should ignore or remove {{VideoFrame}}'s alpha
+    channel data.
   </dd>
 </dl>
 
@@ -2228,7 +2309,7 @@ AudioData Interface {#audiodata-interface}
 interface AudioData {
   constructor(AudioDataInit init);
 
-  readonly attribute AudioSampleFormat format;
+  readonly attribute AudioSampleFormat? format;
   readonly attribute float sampleRate;
   readonly attribute unsigned long numberOfFrames;
   readonly attribute unsigned long numberOfChannels;
@@ -2258,7 +2339,9 @@ dictionary AudioDataInit {
     this {{AudioData}}.
 
 : <dfn attribute for=AudioData>\[[format]]</dfn>
-:: The {{AudioSampleFormat}} used by this {{AudioData}}.
+:: The {{AudioSampleFormat}} used by this {{AudioData}}. Will be `null` whenever
+    the underlying format does not map to an {{AudioSampleFormat}} or when
+    {{platform object/[[Detached]]}} is `true`.
 
 : <dfn attribute for=AudioData>[[sample rate]]</dfn>
 :: The sample-rate, in Hz, for this {{AudioData}}.
@@ -2298,7 +2381,9 @@ dictionary AudioDataInit {
 ### Attributes ###{#audiodata-attributes}
 
 : <dfn attribute for=AudioData>format</dfn>
-:: The {{AudioSampleFormat}} used by this {{AudioData}}.
+:: The {{AudioSampleFormat}} used by this {{AudioData}}. Will be `null` whenever
+    the underlying format does not map to a {{AudioSampleFormat}} or when
+    {{platform object/[[Detached]]}} is `true`.
 
     The {{AudioData/format}} getter steps are to return
     {{AudioData/[[format]]}}.
@@ -2342,11 +2427,13 @@ dictionary AudioDataInit {
     |options|.
 
     When invoked, run these steps:
-    1. Let |copyElementCount| be the result of running the
+    1. If {{platform object/[[Detached]]}} is `true`, throw an
+        {{InvalidStateError}} {{DOMException}}.
+    2. Let |copyElementCount| be the result of running the
         [=Compute Copy Element Count=] algorithm with |options|.
-    2. Let |bytesPerSample| be the number of bytes per sample, as defined by
+    3. Let |bytesPerSample| be the number of bytes per sample, as defined by
         the {{AudioData/[[format]]}}.
-    3. Return the product of multiplying |bytesPerSample| by
+    4. Return the product of multiplying |bytesPerSample| by
         |copyElementCount|.
 
 : <dfn method for=AudioData>copyTo(|destination|, |options|)</dfn>
@@ -2354,8 +2441,8 @@ dictionary AudioDataInit {
     destination buffer.
 
     When invoked, run these steps:
-    1. If the value of |frame|'s {{platform object/[[Detached]]}} internal slot is
-        `true`, throw an {{InvalidStateError}} {{DOMException}}.
+    1. If {{platform object/[[Detached]]}} is `true`, throw an
+        {{InvalidStateError}} {{DOMException}}.
     2. Let |copyElementCount| be the result of running the
         [=Compute Copy Element Count=] algorithm with |options|.
     3. Let |bytesPerSample| be the number of bytes per sample, as defined by
@@ -2382,8 +2469,8 @@ dictionary AudioDataInit {
 :: Creates a new AudioData with a reference to the same [=media resource=].
 
     When invoked, run these steps:
-    1. If the value of |frame|'s {{platform object/[[Detached]]}} internal slot is
-        `true`, throw an {{InvalidStateError}} {{DOMException}}.
+    1. If {{platform object/[[Detached]]}} is `true`, throw an
+        {{InvalidStateError}} {{DOMException}}.
     2. Return the result of running the [=Clone AudioData=] algorithm with
         [=this=].
 
@@ -2437,9 +2524,9 @@ dictionary AudioDataInit {
     3. Assign `0` to |data|'s {{AudioData/[[sample rate]]}}.
     4. Assign `0` to |data|'s {{AudioData/[[number of frames]]}}.
     5. Assign `0` to |data|'s {{AudioData/[[number of channels]]}}.
-    6. Assign `""` to |data|'s {{AudioData/[[format]]}}.
+    6. Assign `null` to |data|'s {{AudioData/[[format]]}}.
 
-: To check if a {{AudioDataInit}} is a 
+: To check if a {{AudioDataInit}} is a
     <dfn>valid AudioDataInit</dfn>, run these steps:
 :: 1. If {{AudioDataInit/sampleRate}} less than or equal to `0`, return `false`.
     2. If {{AudioDataInit/numberOfFrames}} = `0`, return `false`.
@@ -2527,8 +2614,8 @@ An audio sample format describes the numeric type used to represent a
 single sample (e.g. 32-bit floating point) and the arrangement of samples from
 different channels as either [=interleaved=] or [=planar=]. The <dfn>audio
 sample type</dfn> refers solely to the numeric type and interval used to store
-the data, this is {{U8}}, {{S16}}, {{S24}}, {{S32}}, or {{FLT}} for respectively
-unsigned 8-bits, signed 16-bits, signed 32-bits, signed 32-bits, and 32-bits
+the data, this is {{u8}}, {{s16}}, {{s32}}, or {{f32}} for respectively
+unsigned 8-bits, signed 16-bits, signed 32-bits, and 32-bits
 floating point number. The [[#audio-buffer-arrangement|audio buffer
 arrangement]] refers solely to the way the samples are laid out in memory
 ([=planar=] or [=interleaved=]).
@@ -2539,60 +2626,51 @@ signal at a particular point in time in a particular channel.
 A <dfn>frame</dfn> or (sample-frame) refers to a set of values of all channels
 of a multi-channel signal, that happen at the exact same time.
 
-Note: Consequently if an audio signal is mono (has only one channel), a frame
+NOTE: Consequently if an audio signal is mono (has only one channel), a frame
 and a sample refer to the same thing.
 
 All audio [=samples=] in this specification are using linear pulse-code
 modulation (Linear PCM): quantization levels are uniform between values.
 
-Note: The Web Audio API, that is expected to be used with this specification,
+NOTE: The Web Audio API, that is expected to be used with this specification,
 also uses Linear PCM.
 
 <xmp class='idl'>
 enum AudioSampleFormat {
-  "U8",
-  "S16",
-  "S24",
-  "S32",
-  "FLT",
-  "U8P",
-  "S16P",
-  "S24P",
-  "S32P",
-  "FLTP",
+  "u8",
+  "s16",
+  "s32",
+  "f32",
+  "u8-planar",
+  "s16-planar",
+  "s32-planar",
+  "f32-planar",
 };
 </xmp>
 
-: <dfn enum-value for=AudioSampleFormat>U8</dfn>
+: <dfn enum-value for=AudioSampleFormat>u8</dfn>
 :: [[WEBIDL#idl-octet|8-bit unsigned integer]] [=samples=] with [=interleaved=] [[#audio-buffer-arrangement|channel arrangement]].
 
-: <dfn enum-value for=AudioSampleFormat>S16</dfn>
+: <dfn enum-value for=AudioSampleFormat>s16</dfn>
 :: [[WEBIDL#idl-short|16-bit signed integer]] [=samples=] with [=interleaved=] [[#audio-buffer-arrangement|channel arrangement]].
 
-: <dfn enum-value for=AudioSampleFormat>S24</dfn>
-:: [[WEBIDL#idl-long|32-bit signed integer]] [=samples=] with [=interleaved=] [[#audio-buffer-arrangement|channel arrangement]], holding value in the 24-bit of lowest significance.
-
-: <dfn enum-value for=AudioSampleFormat>S32</dfn>
+: <dfn enum-value for=AudioSampleFormat>s32</dfn>
 :: [[WEBIDL#idl-long|32-bit signed integer]] [=samples=] with [=interleaved=] [[#audio-buffer-arrangement|channel arrangement]].
 
-: <dfn enum-value for=AudioSampleFormat>FLT</dfn>
+: <dfn enum-value for=AudioSampleFormat>f32</dfn>
 :: [[WEBIDL#idl-float|32-bit float]] [=samples=] with [=interleaved=] [[#audio-buffer-arrangement|channel arrangement]].
 
-: <dfn enum-value for=AudioSampleFormat>U8P</dfn>
+: <dfn enum-value for=AudioSampleFormat>u8-planar</dfn>
 :: [[WEBIDL#idl-octet|8-bit unsigned integer]] [=samples=] with [=planar=] [[#audio-buffer-arrangement|channel arrangement]].
 
-: <dfn enum-value for=AudioSampleFormat>S16P</dfn>
+: <dfn enum-value for=AudioSampleFormat>s16-planar</dfn>
 :: [[WEBIDL#idl-short|16-bit signed integer]] [=samples=] with [=planar=] [[#audio-buffer-arrangement|channel arrangement]].
 
-: <dfn enum-value for=AudioSampleFormat>S24P</dfn>
-:: [[WEBIDL#idl-long|32-bit signed integer]] [=samples=] with [=planar=] [[#audio-buffer-arrangement|channel arrangement]], holding value in the 24-bit of lowest significance.
-
-: <dfn enum-value for=AudioSampleFormat>S32P</dfn>
+: <dfn enum-value for=AudioSampleFormat>s32-planar</dfn>
 :: [[WEBIDL#idl-long|32-bit signed integer]] [=samples=] with [=planar=] [[#audio-buffer-arrangement|channel arrangement]].
 
-: <dfn enum-value for=AudioSampleFormat>FLTP</dfn>
+: <dfn enum-value for=AudioSampleFormat>f32-planar</dfn>
 :: [[WEBIDL#idl-float|32-bit float]] [=samples=] with [=planar=] [[#audio-buffer-arrangement|channel arrangement]].
-
 
 ### Arrangement of audio buffer ### {#audio-buffer-arrangement}
 
@@ -2610,14 +2688,14 @@ in different buffers, themselves arranged in an order described in the section
 {{AudioData}}'s {{AudioData/[[number of channels]]}}. Each plane contains
 {{AudioData/[[number of frames]]}} elements.
 
-Note: The [[WEBAUDIO|Web Audio API]] currently uses {{FLTP}} exclusively.
+NOTE: The [[WEBAUDIO|Web Audio API]] currently uses {{f32-planar}} exclusively.
 
 <div class='note'>
-Note: The following diagram exemplifies the memory layout of [=planar=] versus
+NOTE: The following diagram exemplifies the memory layout of [=planar=] versus
     [=interleaved=] {{AudioSampleFormat}}s
 
 <img alt="Graphical representation the memory layout of interleaved and planar
-    formats" src="images/planar-interleaved-layout.svg" width="735" height="455">
+    formats" src="images/planar_interleaved.svg" width="735" height="455">
 </div>
 
 ### Magnitude of the audio samples ### {#audio-samples-magnitude}
@@ -2644,35 +2722,28 @@ An audio buffer comprised only of values equal to the [=bias value=] is silent.
 </thead>
 <tbody>
 <tr class="odd">
-<td>{{U8}}</td>
+<td>{{u8}}</td>
 <td>[[WEBIDL#idl-octet|octet]]</td>
 <td>0</td>
 <td>128</td>
 <td>+255</td>
 </tr>
 <tr class="even">
-<td>{{S16}}</td>
+<td>{{s16}}</td>
 <td>[[WEBIDL#idl-short|short]]</td>
 <td>-32768</td>
 <td>0</td>
 <td>+32767</td>
 </tr>
 <tr class="odd">
-<td>{{S24}}</td>
-<td>[[WEBIDL#idl-long|long]]</td>
-<td>-8388608</td>
-<td>0</td>
-<td>+8388607</td>
-</tr>
-<tr class="even">
-<td>{{S32}}</td>
+<td>{{s32}}</td>
 <td>[[WEBIDL#idl-long|long]]</td>
 <td>-2147483648</td>
 <td>0</td>
 <td>+2147483647</td>
 </tr>
-<tr class="odd">
-<td>{{FLT}}</td>
+<tr class="even">
+<td>{{f32}}</td>
 <td>[[WEBIDL#idl-float|float]]</td>
 <td>-1.0</td>
 <td>0.0</td>
@@ -2681,9 +2752,19 @@ An audio buffer comprised only of values equal to the [=bias value=] is silent.
 </tbody>
 </table>
 
-Note: There is no data type that can hold 24 bits of information conveniently,
+NOTE: There is no data type that can hold 24 bits of information conveniently,
 but audio content using 24-bit samples is common, so 32-bits integers are
 commonly used to hold 24-bit content.
+
+{{AudioData}} containing 24-bit samples SHOULD store those samples in {{s32}} or
+{{f32}}. When samples are stored in {{s32}}, each sample MUST be left-shifted by
+`8` bits. By virtue of this process, samples outside of the valid 24-bit range
+([-8388608, +8388607]) will be clipped. To avoid clipping and ensure lossless
+transport, samples may be converted to {{f32}}.
+
+NOTE: While clipping is unavoidable in {{u8}}, {{s16}}, and {{s32}} samples due
+to their storage types, implementations SHOULD take care not to clip internally
+when handling {{f32}} samples.
 
 ### Audio channel ordering ### {#audio-channel-ordering}
 
@@ -2696,7 +2777,7 @@ When encoding, the ordering of the audio channels in the resulting
 
 In other terms, no channel reordering is performed when encoding and decoding.
 
-Note: The container either implies or specifies the channel mapping: the
+NOTE: The container either implies or specifies the channel mapping: the
 channel attributed to a particular channel index.
 
 
@@ -2711,10 +2792,9 @@ NOTE: {{VideoFrame}} is a {{CanvasImageSource}}. A {{VideoFrame}} may be
 [Exposed=(Window,DedicatedWorker), Serializable, Transferable]
 interface VideoFrame {
   constructor(CanvasImageSource image, optional VideoFrameInit init = {});
-  constructor(sequence<PlaneInit> planes,
-              VideoFramePlaneInit init);
+  constructor([AllowShared] BufferSource data, VideoFrameBufferInit init);
 
-  readonly attribute PixelFormat format;
+  readonly attribute VideoPixelFormat? format;
   readonly attribute unsigned long codedWidth;
   readonly attribute unsigned long codedHeight;
   readonly attribute DOMRectReadOnly? codedRect;
@@ -2735,23 +2815,25 @@ interface VideoFrame {
 dictionary VideoFrameInit {
   unsigned long long duration;  // microseconds
   long long timestamp;          // microseconds
+  AlphaOption alpha = "keep";
 };
 
-dictionary VideoFramePlaneInit {
-  required PixelFormat format;
-  [EnforceRange] required unsigned long codedWidth;
-  [EnforceRange] required unsigned long codedHeight;
+dictionary VideoFrameBufferInit {
+  required VideoPixelFormat format;
+  required [EnforceRange] unsigned long codedWidth;
+  required [EnforceRange] unsigned long codedHeight;
+  required [EnforceRange] long long timestamp;  // microseconds
+  [EnforceRange] unsigned long long duration;  // microseconds
+
+  // Default layout is tightly-packed.
+  sequence<PlaneLayout> layout;
+
+  // Default visible rect is coded size positioned at (0,0)
   DOMRectInit visibleRect;
+
+  // Default display dimensions match visibleRect.
   [EnforceRange] unsigned long displayWidth;
   [EnforceRange] unsigned long displayHeight;
-  [EnforceRange] unsigned long long duration;  // microseconds
-  [EnforceRange] long long timestamp;          // microseconds
-};
-
-dictionary PlaneInit {
-  required BufferSource data;
-  [EnforceRange] required unsigned long stride;
-  [EnforceRange] unsigned long offset = 0;
 };
 </xmp>
 
@@ -2762,7 +2844,9 @@ dictionary PlaneInit {
     this frame.
 
 : <dfn attribute for=VideoFrame>\[[format]]</dfn>
-:: A {{PixelFormat}} describing the pixel format of the {{VideoFrame}}.
+:: A {{VideoPixelFormat}} describing the pixel format of the {{VideoFrame}}.
+    Will be `null` whenever the underlying format does not map to a
+    {{VideoPixelFormat}} or when {{platform object/[[Detached]]}} is `true`.
 
 : <dfn attribute for=VideoFrame>[[coded width]]</dfn>
 :: Width of the {{VideoFrame}} in pixels, potentionally including non-visible
@@ -2865,100 +2949,91 @@ dictionary PlaneInit {
 6. Return |frame|.
 
 
-<dfn constructor for=VideoFrame title="VideoFrame(planes, init)">
-  VideoFrame(planes, init)
+<dfn constructor for=VideoFrame title="VideoFrame(data, init)">
+  VideoFrame(data, init)
 </dfn>
-1. If |init| is not a [=valid VideoFramePlaneInit=], throw a
-    {{TypeError}}.
-2. If |planes| is incompatible with the given {{VideoFramePlaneInit/format}}
-    (e.g. wrong number of planes), throw a {{TypeError}}.
+1. If |init| is not a [=valid VideoFrameBufferInit=], throw a {{TypeError}}.
+2. Let |defaultRect| be «[ "x:" → `0`, "y" → `0`,
+    "width" → |init|.{{VideoFrameBufferInit/codedWidth}}, "height" →
+        |init|.{{VideoFrameBufferInit/codedWidth}} ]».
+3. Let |overrideRect| be `undefined`.
+4. If |init|.{{VideoFrameBufferInit/visibleRect}} [=map/exists=], assign its
+    value to |overrideRect|.
+4. Let |parsedRect| be the result of running the [=VideoFrame/Parse Visible
+        Rect=] algorithm with |defaultRect|, |overrideRect|,
+        |init|.{{VideoFrameBufferInit/codedWidth}},
+        |init|.{{VideoFrameBufferInit/codedHeight}},
+        |init|.{{VideoFrameBufferInit/format}}.
+5. If |parsedRect| is an exception, return |parsedRect|.
+6. Let |optLayout| be `undefined`.
+7. If |options|.{{VideoFrameBufferInit/layout}} [=map/exists=], assign its value
+    to |optLayout|.
+8. Let |combinedLayout| be the result of running the [=VideoFrame/Compute
+    Layout and Allocation Size=] algorithm with |parsedRect|,
+    |init|.{{VideoFrameBufferInit/format}}, and |optLayout|.
+9. If |combinedLayout| is an exception, throw |combinedLayout|.
+10. If `data.byteLength` is less than |combinedLayout|’s
+    [=combined buffer layout/allocationSize=], throw a {{TypeError}}.
+11. Let |resource| be a new [=media resource=] containing a copy |data|. Use
+        {{VideoFrameBufferInit/visibleRect}} and {{VideoFrameBufferInit/layout}}
+        to determine where in |data| the pixels for each plane reside.
 
-    ISSUE: The spec should list additional format specific validation steps (
-        e.g. number and order of planes, acceptable sizing, etc...). See
-        [#165](https://github.com/w3c/webcodecs/issues/165).
+        The User Agent may choose to allocate |resource| with a larger coded
+        size and plane strides to improve memory alignment. Increases will be
+        reflected by {{VideoFrame/codedWidth}} and {{VideoFrame/codedHeight}}.
+        Additionally, the User Agent may use
+        {{VideoFrameBufferInit/visibleRect}} to copy only the visible rectangle.
+        It may also reposition the visible rectangle within |resource|. The
+        final position will be reflected by {{VideoFrame/visibleRect}}.
 
-3. Let |resource| be a new [=media resource=] allocated in accordance with
-    |init|.
+12. Let |resourceCodedWidth| be the coded width of |resource|.
+13. Let |resourceCodedHeight| be the coded height of |resource|.
+14. Let |resourceVisibleLeft| be the left offset for the visible rectangle of
+    |resource|.
+15. Let |resourceVisibleTop| be the top offset for the visible rectangle of
+    |resource|.
 
-    ISSUE: The spec should define explicit rules for each
-        {{PixelFormat}} and reference them in the steps above. See
-        [#165](https://github.com/w3c/webcodecs/issues/165).
+    ISSUE: The spec should provide definitions (and possibly diagrams) for
+        coded size, visible rectangle, and display size. See
+        [#166](https://github.com/w3c/webcodecs/issues/166).
 
-    NOTE: The User Agent may choose to allocate resource with a larger coded
-      size and plane strides to improve memory alignment. Increases will be
-      reflected by {{VideoFrame/codedWidth}} and {{VideoFrame/codedHeight}}.
-
-4. Let |resourceReference| be a reference to |resource|.
-5. Let |frame| be a new {{VideoFrame}} object initialized as follows:
-    1. Assign |resourceReference| to
-            {{VideoFrame/[[resource reference]]}}.
-    2. Assign {{VideoFramePlaneInit/format}} to {{VideoFrame/[[format]]}}.
-    3. For each |planeInit| in |planes|:
-        1. Let |rows| be the number of sample rows for the Plane coresponding
-            to |planeInit| as defined by {{VideoFrame/[[format]]}}.
-        2. Let |dataOffset| be `0`.
-        3. If {{PlaneInit/offset}} [=map/exists=], assign {{PlaneInit/offset}}
-            to |dataOffset|.
-        4. Let |row| be `0`.
-        5. While |row| is less than |rows|:
-            1. Copy bytes from {{PlaneInit/data}} to |resource|, starting with
-                the byte positioned at |dataOffset| and stopping after
-                {{PlaneInit/stride}} bytes have been copied.
-
-                NOTE: The User Agent may use {{VideoFramePlaneInit/visibleRect}}
-                    to copy only the visible rectangle. It may also reposition
-                    the visible rectangle within |resource|. The final position
-                    will be reflected by {{VideoFrame/visibleRect}}.
-
-            2. Increment |dataOffset| by {{PlaneInit/stride}}.
-            3. Increment |row| by `1`.
-
-    4. Let |resourceCodedWidth| be the coded width of |resource|.
-    5. Let |resourceCodedHeight| be the coded height of |resource|.
-    6. Let |resourceVisibleLeft| be the left offset for the visible rectangle of
-        |resource|.
-    7. Let |resourceVisibleTop| be the top offset for the visible rectangle of
-        |resource|.
-
-        ISSUE: The spec should provide definitions (and possibly diagrams) for
-            coded size, visible rectangle, and display size. See
-            [#166](https://github.com/w3c/webcodecs/issues/166).
-
-    8. Assign |resourceCodedWidth|, |resourceCodedHeight|,
+16. Let |frame| be a new {{VideoFrame}} object initialized as follows:
+    1. Assign |resourceCodedWidth|, |resourceCodedHeight|,
         |resourceVisibleLeft|, and |resourceVisibleTop| to
         {{VideoFrame/[[coded width]]}}, {{VideoFrame/[[coded height]]}},
         {{VideoFrame/[[visible left]]}}, and {{VideoFrame/[[visible top]]}}
         respectively.
-
-    10. If |init|.{{VideoFramePlaneInit/visibleRect}} [=map/exists=]:
+    2. If |init|.{{VideoFrameBufferInit/visibleRect}} [=map/exists=]:
         1. Let |truncatedVisibleWidth| be the value of
-            {{VideoFramePlaneInit/visibleRect}}.{{DOMRectInit/width}} after
+            {{VideoFrameBufferInit/visibleRect}}.{{DOMRectInit/width}} after
             truncating.
         1. Assign |truncatedVisibleWidth| to {{VideoFrame/[[visible width]]}}.
         3. Let |truncatedVisibleHeight| be the value of
-            {{VideoFramePlaneInit/visibleRect}}.{{DOMRectInit/height}} after
+            {{VideoFrameBufferInit/visibleRect}}.{{DOMRectInit/height}} after
             truncating.
         2. Assign |truncatedVisibleHeight| to {{VideoFrame/[[visible height]]}}.
-    11. Otherwise:
+    3. Otherwise:
         1. Assign {{VideoFrame/[[coded width]]}} to
             {{VideoFrame/[[visible width]]}}.
         2. Assign {{VideoFrame/[[coded height]]}} to
             {{VideoFrame/[[visible height]]}}.
-    12. If |init|.{{VideoFramePlaneInit/displayWidth}} [=map/exists=], assign
+    4. If |init|.{{VideoFrameBufferInit/displayWidth}} [=map/exists=], assign
         it to {{VideoFrame/[[display width]]}}. Otherwise, assign
         {{VideoFrame/[[visible width]]}} to {{VideoFrame/[[display width]]}}.
-    13. If |init|.{{VideoFramePlaneInit/displayHeight}} [=map/exists=], assign
+    5. If |init|.{{VideoFrameBufferInit/displayHeight}} [=map/exists=], assign
         it to {{VideoFrame/[[display height]]}}. Otherwise, assign
         {{VideoFrame/[[visible height]]}} to {{VideoFrame/[[display height]]}}.
-    14. Assign |init|'s {{VideoFramePlaneInit/timestamp}} and
-        {{VideoFramePlaneInit/duration}} to {{VideoFrame/[[timestamp]]}} and
+    6. Assign |init|'s {{VideoFrameBufferInit/timestamp}} and
+        {{VideoFrameBufferInit/duration}} to {{VideoFrame/[[timestamp]]}} and
         {{VideoFrame/[[duration]]}} respectively.
-6. Return |frame|.
+17. Return |frame|.
 
 ### Attributes ###{#videoframe-attributes}
 : <dfn attribute for=VideoFrame>format</dfn>
 :: Describes the arrangement of bytes in each plane as well as the number and
-    order of the planes.
+    order of the planes. Will be `null` whenever the underlying format does not
+    map to a {{VideoPixelFormat}} or when {{platform object/[[Detached]]}} is
+    `true`.
 
     The {{VideoFrame/format}} getter steps are to return
     {{VideoFrame/[[format]]}}.
@@ -3036,10 +3111,10 @@ dictionary PlaneInit {
     {{VideoFrame/[[duration]]}}.
 
 ### Internal Structures ###{#videoframe-internal-structures}
-A <dfn>parsed copyto options</dfn> is a [=struct=] that consists of:
-  * A <dfn for="parsed copyto options">allocationSize</dfn> (an {{unsigned
+A <dfn>combined buffer layout</dfn> is a [=struct=] that consists of:
+  * A <dfn for="combined buffer layout">allocationSize</dfn> (an {{unsigned
     long}})
-  * A <dfn for="parsed copyto options">computedLayouts</dfn> (a [=list=] of
+  * A <dfn for="combined buffer layout">computedLayouts</dfn> (a [=list=] of
     [=computed plane layout=] structs).
 
 A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
@@ -3060,13 +3135,14 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
     to be used with {{VideoFrame/copyTo()}} with the given options.
 
     When invoked, run these steps:
-    1. If {{platform object/[[Detached]]}} is `true`, return `0`.
-    2. If {{VideoFrame/[[format]]}} is `""`, throw a {{NotSupportedError}}
+    1. If {{platform object/[[Detached]]}} is `true`, throw an
+        {{InvalidStateError}} {{DOMException}}.
+    2. If {{VideoFrame/[[format]]}} is `null`, throw a {{NotSupportedError}}
         {{DOMException}}.
-    3. Let |parsedOptions| be the result of running the [=Parse
+    3. Let |combinedLayout| be the result of running the [=Parse
         VideoFrameCopyToOptions=] algorithm with |options|.
-    4. If |parsedOptions| is an excpetion, throw |parsedOptions|.
-    5. Return |parsedOptions|' [=parsed copyto options/allocationSize=]
+    4. If |combinedLayout| is an exception, throw |combinedLayout|.
+    5. Return |combinedLayout|'s [=combined buffer layout/allocationSize=].
 
 : <dfn method for=VideoFrame>copyTo(|destination|, |options|)</dfn>
 :: Asynchronously copies the planes of this frame into |destination| according
@@ -3078,15 +3154,16 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
         were returned.
 
     When invoked, run these steps:
-    1. If {{platform object/[[Detached]]}} is `true`, return `0`.
-    2. If {{VideoFrame/[[format]]}} is `""`, throw a {{NotSupportedError}}
+    1. If {{platform object/[[Detached]]}} is `true`, throw an
+        {{InvalidStateError}} {{DOMException}}.
+    2. If {{VideoFrame/[[format]]}} is `null`, throw a {{NotSupportedError}}
         {{DOMException}}.
-    3. Let |parsedOptions| be the result of running the [=Parse
+    3. Let |combinedLayout| be the result of running the [=Parse
         VideoFrameCopyToOptions=] algorithm with |options|.
-    4. If |parsedOptions| is an exception, return a promise rejected with
-        |parsedOptions|.
-    5. If `destionation.byteLength` is less than |parsedOptions|' [=parsed
-        copyto options/allocationSize=], return a promise rejected with a
+    4. If |combinedLayout| is an exception, return a promise rejected with
+        |combinedLayout|.
+    5. If `destionation.byteLength` is less than |combinedLayout|'s [=combined
+        buffer layout/allocationSize=], return a promise rejected with a
         {{TypeError}}.
     6. Let |p| be a new {{Promise}}.
     7. Let |copyStepsQueue| be the result of starting a new [=parallel queue=].
@@ -3096,17 +3173,17 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
         2. Let |numPlanes| be the number of planes as defined by
             {{VideoFrame/[[format]]}}.
         3. Let |planeIndex| be `0`.
-        4. While |planeIndex| is less than |parsedOptions|' |numPlanes|:
+        4. While |planeIndex| is less than |combinedLayout|'s |numPlanes|:
             1. Let |sourceStride| be the stride of the plane in |resource| as
                 identified by |planeIndex|.
             2. Let |computedLayout| be the [=computed plane layout=] in
-                |parsedOptions|' [=parsed copyto options/computedLayouts=] at the
-                position of |planeIndex|
+                |combinedLayout|'s [=combined buffer layout/computedLayouts=] at
+                the position of |planeIndex|
             3. Let |sourceOffset| be the product of multiplying
                 |computedLayout|'s [=computed plane layout/sourceTop=] by
                 |sourceStride|
-            4. Add |computedLayout|'s [=computed plane layout/sourceLeftBytes=] to
-                sourceOffset.
+            4. Add |computedLayout|'s [=computed plane layout/sourceLeftBytes=]
+                to sourceOffset.
             5. Let |destinationOffset| be |computedLayout|'s
                 [=computed plane layout/destinationOffset=].
             6. Let |rowBytes| be |computedLayout|'s
@@ -3148,8 +3225,8 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
       2. Let |resource| be the [=media resource=] described by |output|.
       3. Let |resourceReference| be a reference to |resource|.
       4. Assign |resourceReference| to {{VideoFrame/[[resource reference]]}}.
-      5. If |output| uses a recognized {{PixelFormat}}, assign that format to
-          {{VideoFrame/[[format]]}}. Otherwise, assign `""` to
+      5. If |output| uses a recognized {{VideoPixelFormat}}, assign that format to
+          {{VideoFrame/[[format]]}}. Otherwise, assign `null` to
           {{VideoFrame/[[format]]}}.
       6. Let |codedWidth| and |codedHeight| be the coded width and height of the
           |output| in pixels.
@@ -3171,22 +3248,24 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
           {{VideoFrame/[[timestamp]]}} respectively.
   2. Return |frame|.
 
-: To check if a {{VideoFramePlaneInit}} is a
-    <dfn>valid VideoFramePlaneInit</dfn>, run these steps:
-:: 1. If {{VideoFramePlaneInit/codedWidth}} = 0 or
-        {{VideoFramePlaneInit/codedHeight}} = 0,return `false`.
-    2. If {{VideoFramePlaneInit/visibleRect}}.{{DOMRectInit/width}} = 0
-        or {{VideoFramePlaneInit/visibleRect}}.{{DOMRectInit/height}} =
+: To check if a {{VideoFrameBufferInit}} is a
+    <dfn>valid VideoFrameBufferInit</dfn>, run these steps:
+:: 1. If {{VideoFrameBufferInit/codedWidth}} = 0 or
+        {{VideoFrameBufferInit/codedHeight}} = 0,return `false`.
+     2. If {{VideoFrameBufferInit/visibleRect}}.{{DOMRectInit/width}} = 0
+        or {{VideoFrameBufferInit/visibleRect}}.{{DOMRectInit/height}} =
         0, return `false`.
-    3. If {{VideoFramePlaneInit/visibleRect}}.{{DOMRectInit/y}} +
-        {{VideoFramePlaneInit/visibleRect}}.{{DOMRectInit/height}} >=
-        {{VideoFramePlaneInit/codedHeight}}, return `false`.
-    4. If {{VideoFramePlaneInit/visibleRect}}.{{DOMRectInit/x}} +
-        {{VideoFramePlaneInit/visibleRect}}.{{DOMRectInit/width}} >=
-        {{VideoFramePlaneInit/codedWidth}}, return `false`.
-    5. If {{VideoFramePlaneInit/displayWidth}} = 0 or
-        {{VideoFramePlaneInit/displayHeight}} = 0, return `false`.
-    6. Return `true`.
+    3. If {{VideoFrameBufferInit/visibleRect}}.{{DOMRectInit/y}} +
+        {{VideoFrameBufferInit/visibleRect}}.{{DOMRectInit/height}} >=
+        {{VideoFrameBufferInit/codedHeight}}, return `false`.
+    4. If {{VideoFrameBufferInit/visibleRect}}.{{DOMRectInit/x}} +
+        {{VideoFrameBufferInit/visibleRect}}.{{DOMRectInit/width}} >=
+        {{VideoFrameBufferInit/codedWidth}}, return `false`.
+    5. If only one of {{VideoFrameBufferInit/displayWidth}} or
+        {{VideoFrameBufferInit/displayHeight}} [=map/exists=], return `false`.
+    6. If {{VideoFrameBufferInit/displayWidth}} = 0 or
+        {{VideoFrameBufferInit/displayHeight}} = 0, return `false`.
+    7. Return `true`.
 
 : <dfn for=VideoFrame>Initialize Frame From Other Frame</dfn> (with |init|,
     |frame|, and |otherFrame|)
@@ -3195,9 +3274,9 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
     2. Assign a new reference for |resource| to |frame|'s
         {{VideoFrame/[[resource reference]]}}.
     3. Assign the following attributes from |otherFrame| to |frame|:
-        {{VideoFrame/format}}, {{VideoFrame/codedWidth}},
-        {{VideoFrame/codedHeight}}, {{VideoFrame/visibleRect}},
-        {{VideoFrame/displayWidth}}, {{VideoFrame/displayHeight}}.
+        {{VideoFrame/codedWidth}}, {{VideoFrame/codedHeight}},
+        {{VideoFrame/visibleRect}}, {{VideoFrame/displayWidth}},
+        {{VideoFrame/displayHeight}}.
     4. If {{VideoFrameInit/duration}} [=map/exists=] in |init|, assign it to
         |frame|.{{VideoFrame/duration}}. Otherwise, assign
         |otherFrame|.{{VideoFrame/duration}} to
@@ -3206,23 +3285,31 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
         |frame|.{{VideoFrame/timestamp}}. Otherwise, assign
         |otherFrame|.{{VideoFrame/timestamp}} to
         |frame|.{{VideoFrame/timestamp}}.
+    7. If |init|.{{VideoFrameInit/alpha}} is {{AlphaOption/discard}},
+        assign |otherFrame|.{{VideoFrame/format}}'s
+        [=equivalent opaque format=] to |frame|.{{VideoFrame/[[format]]}}.
+    8. Otherwise, assign |otherFrame|.{{VideoFrame/format}} to
+        |frame|.{{VideoFrame/[[format]]}}.
 
 : <dfn for=VideoFrame>Initialize Frame With Resource and Size</dfn> (with
     |init|,  |frame|, |resource|, |width| and |height|)
 :: 1. Assign a new reference for |resource| to |frame|'s
         {{VideoFrame/[[resource reference]]}}.
-    2. If |resource| uses a recognized {{PixelFormat}}, assign the
-        {{PixelFormat}} of |resource| to {{VideoFrame/[[format]]}}.
-    3. Otherwise, assign `""` to {{VideoFrame/[[format]]}}.
-    4. Assign |width| to the following attributes of |frame|:
+    2. Let |format| be `null`.
+    3. If |resource| uses a recognized {{VideoPixelFormat}}, assign the
+        {{VideoPixelFormat}} of |resource| to |format|.
+    4. If |init|.{{VideoFrameInit/alpha}} is {{AlphaOption/discard}}, assign
+        |format|'s [=equivalent opaque format=] to |format|.
+    5. Assign |format| to {{VideoFrame/[[format]]}}
+    6. Assign |width| to the following attributes of |frame|:
         {{VideoFrame/codedWidth}}, {{VideoFrame/displayWidth}}.
-    5. Assign |height| to the following attributes of |frame|:
+    7. Assign |height| to the following attributes of |frame|:
         {{VideoFrame/codedHeight}}, {{VideoFrame/displayHeight}}.
-    6. Assign «[ "left:" → `0`, "top" → `0`, "width" → |width|, "height" →
+    8. Assign «[ "x:" → `0`, "y" → `0`, "width" → |width|, "height" →
         |height| ]» to |frame|.{{VideoFrame/visibleRect}}.
-    7. Assign `init`.{{VideoFrameInit/duration}} to
+    9. Assign `init`.{{VideoFrameInit/duration}} to
         |frame|.{{VideoFrame/duration}}.
-    8. Assign `init`.{{VideoFrameInit/timestamp}} to
+    10. Assign `init`.{{VideoFrameInit/timestamp}} to
         |frame|.{{VideoFrame/timestamp}}.
 
 : <dfn>Clone VideoFrame</dfn> (with |frame|)
@@ -3240,7 +3327,7 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
 : <dfn>Close VideoFrame</dfn> (with |frame|)
 :: 1. Assign `null` to |frame|'s {{VideoFrame/[[resource reference]]}}.
     2. Assign `true` to |frame|'s {{platform object/[[Detached]]}}.
-    3. Assign `""` to |frame|'s {{VideoFrame/format}}.
+    3. Assign `null` to |frame|'s {{VideoFrame/format}}.
     4. Assign `0` to |frame|'s {{VideoFrame/[[coded width]]}},
         {{VideoFrame/[[coded height]]}}, {{VideoFrame/[[visible left]]}},
         {{VideoFrame/[[visible top]]}}, {{VideoFrame/[[visible width]]}},
@@ -3250,37 +3337,45 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
         {{VideoFrame/[[timestamp]]}}.
 
 : <dfn for=VideoFrame>Parse VideoFrameCopyToOptions</dfn> (with |options|)
-:: 1. Let |parsedRect| be the result of running the [=VideoFrame/Parse CopyTo
-        Rect=] with |options|.
-    2. If |parsedRect| is an exception, return |parsedRect|.
-    3. Let |parsedOptions| be the result of running the [=VideoFrame/Compute
-        Layout and Allocation Size=] algorithm with |parsedRect| and |options|.
-    6. Return |parsedOptions|.
-
-: <dfn for=VideoFrame>Parse CopyTo Rect</dfn> (with |options|)
-:: 1. Let |sourceRect| be the be the result of performing the getter steps for
+::  1. Let |defaultRect| be the result of performing the getter steps for
         {{VideoFrame/visibleRect}}.
-    2. If {{VideoFrameCopyToOptions/rect}} [=map/exists=] in |options|:
-        1. Let |optRect| be {{VideoFrameCopyToOptions/rect}}:
-        2. If either of |optRect|.{{DOMRectInit/width}} or
+    2. Let |overrideRect| be `undefined`.
+    3. If |options|.{{VideoFrameCopyToOptions/rect}} [=map/exists=], assign its
+        value to |overrideRect|.
+    4. Let |parsedRect| be the result of running the [=VideoFrame/Parse Visible
+        Rect=] algorithm with |defaultRect|, |overrideRect|,
+        {{VideoFrame/[[coded width]]}}, {{VideoFrame/[[coded height]]}}, and
+        {{VideoFrame/[[format]]}}.
+    5. If |parsedRect| is an exception, return |parsedRect|.
+    6. Let |optLayout| be `undefined`.
+    7. If |options|.{{VideoFrameCopyToOptions/layout}} [=map/exists=], assign
+        its value to |optLayout|.
+    8. Let |combinedLayout| be the result of running the [=VideoFrame/Compute
+        Layout and Allocation Size=] algorithm with |parsedRect|,
+        {{VideoFrame/[[format]]}}, and |optLayout|.
+    9. Return |combinedLayout|.
+
+: <dfn for=VideoFrame>Parse Visible Rect</dfn> (with |defaultRect|, |overrideRect|, |codedWidth|, |codedHeight|, and |format|)
+:: 1. Let |sourceRect| be |defaultRect|
+    2. If |overrideRect| is not `undefined`:
+        1. If either of |overrideRect|.{{DOMRectInit/width}} or
             {{DOMRectInit/height}} is `0`, return a {{TypeError}}.
-        3. If the sum of |optRect|.{{DOMRectInit/x}} and
-            |optRect|.{{DOMRectInit/width}} is greater than
+        2. If the sum of |overrideRect|.{{DOMRectInit/x}} and
+            |overrideRect|.{{DOMRectInit/width}} is greater than
             {{VideoFrame/[[coded width]]}}, return a {{TypeError}}.
-        4. If the sum of |optRect|.{{DOMRectInit/y}} and
-            |optRect|.{{DOMRectInit/height}} is greater than
+        3. If the sum of |overrideRect|.{{DOMRectInit/y}} and
+            |overrideRect|.{{DOMRectInit/height}} is greater than
             {{VideoFrame/[[coded height]]}}, return a {{TypeError}}.
-        5. Assign |optRect| to |sourceRect|.
+        4. Assign |overrideRect| to |sourceRect|.
     3. Let |planeIndex| be `0`.
-    4. Let |numPlanes| be the number of planes as defined by
-        {{VideoFrame/[[format]]}}
+    4. Let |numPlanes| be the number of planes as defined by |format|.
     5. While |planeIndex| is less than |numPlanes|:
 
-        NOTE: The following steps validate |rect| is sample-aligned for this
-            frame's {{VideoFrame/[[format]]}}.
+        NOTE: The following steps validate |rect| is sample-aligned for the
+            given |format|.
 
         1. Let |plane| be the Plane identified by |planeIndex| as defined by
-            {{VideoFrame/[[format]]}}.
+            |format|.
         2. Let |sampleWidth| be the horizontal [=sub-sampling factor=] of each
             subsample for |plane|.
         3. Let |sampleHeight| be the vertical [=sub-sampling factor=] of each subsample
@@ -3295,18 +3390,17 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
     6. Return |sourceRect|.
 
 : <dfn for=VideoFrame>Compute Layout and Allocation Size</dfn> (with
-    |parsedRect| and |options|)
-:: 1. Let |numPlanes| be the number of planes as defined by
-        {{VideoFrame/[[format]]}}
-    2. If {{VideoFrameCopyToOptions/layout}} [=map/exists=] its size does not
-        equal |numPlanes|, throw a {{TypeError}}.
+    |parsedRect|, |format|, and |layout|)
+:: 1. Let |numPlanes| be the number of planes as defined by |format|.
+    2. If |layout| is not `undefined` and its length does not equal |numPlanes|,
+         throw a {{TypeError}}.
     3. Let |minAllocationSize| be `0`.
     4. Let |computedLayouts| be a new [=list=].
     5. Let |endOffsets| be a new [=list=].
     6. Let |planeIndex| be `0`.
     7. While |planeIndex| < |numPlanes|:
         1. Let |plane| be the Plane identified by |planeIndex| as defined by
-            {{VideoFrame/[[format]]}}.
+            |format|.
         2. Let |sampleBytes| be the number of bytes per sample for |plane|.
         3. Let |sampleWidth| be the horizontal [=sub-sampling factor=] of each
             subsample for |plane|.
@@ -3327,9 +3421,9 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
         10. Set |computedLayout|'s [=computed plane layout/sourceWidthBytes=] to
             the result of the integer division of
             truncated |parsedRect|.{{DOMRectInit/width}} by |sampleWidthBytes|.
-        11. If {{VideoFrameCopyToOptions/layout}} [=map/exists=]:
-            1. Let |planeLayout| be the {{PlaneLayout}} in
-                {{VideoFrameCopyToOptions/layout}} at position |planeIndex|.
+        11. If |layout| is not `undefined`:
+            1. Let |planeLayout| be the {{PlaneLayout}} in |layout| at position
+                |planeIndex|.
             2. If |planeLayout|.{{PlaneLayout/stride}} is less than
                 |computedLayout|'s [=computed plane layout/sourceWidthBytes=],
                 return a {{TypeError}}.
@@ -3377,13 +3471,13 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
             4. Increment |earlierPlaneIndex| by `1`.
         20. Append |computedLayout| to |computedLayouts|.
         21. Increment |planeIndex| by `1`.
-    8. Let |parsedOptions| be a new [=parsed copyto options=], initialized as
+    8. Let |combinedLayout| be a new [=combined buffer layout=], initialized as
         follows:
         1. Assign |computedLayouts| to
-            [=parsed copyto options/computedLayouts=].
+            [=combined buffer layout/computedLayouts=].
         2. Assign |minAllocationSize| to
-            [=parsed copyto options/allocationSize=].
-    9. Return |parsedOptions|.
+            [=combined buffer layout/allocationSize=].
+    9. Return |combinedLayout|.
 
 ### Transfer and Serialization ###{#videoframe-transfer-serialization}
 
@@ -3498,7 +3592,7 @@ Pixel formats describe the arrangement of bytes in each plane as well as the
 number and order of the planes. Each format is described in its own sub-section.
 
 <xmp class='idl'>
-enum PixelFormat {
+enum VideoPixelFormat {
   // 4:2:0 Y, U, V
   "I420",
   // 4:2:0 Y, U, V, A
@@ -3535,8 +3629,13 @@ in the image that are derived from a [=sub-sampled=] sample.
   and vertical direction.
 </div>
 
+If a {{VideoPixelFormat}} has an alpha component, the format's
+<dfn>equivalent opaque format</dfn> is the same {{VideoPixelFormat}}, without an
+alpha component. If a {{VideoPixelFormat}} does not have an alpha component, it
+is its own [=equivalent opaque format=].
+
 <dl>
-  <dt><dfn enum-value for=PixelFormat>I420</dfn></dt>
+  <dt><dfn enum-value for=VideoPixelFormat>I420</dfn></dt>
   <dd>
     This format is composed of three distinct planes, one plane of Luma and two
     planes of Chroma, denoted Y, U and V, and present in this order. It is also
@@ -3561,7 +3660,7 @@ in the image that are derived from a [=sub-sampled=] sample.
     Similarly, the visible rectangle ({{VideoFrame/displayWidth}} and
     {{VideoFrame/displayHeight}}) MUST be even.
   </dd>
-  <dt><dfn enum-value for=PixelFormat>I420A</dfn></dt>
+  <dt><dfn enum-value for=VideoPixelFormat>I420A</dfn></dt>
   <dd>
 
     This format is composed of four distinct planes, one plane of Luma, two
@@ -3587,8 +3686,10 @@ in the image that are derived from a [=sub-sampled=] sample.
     The {{VideoFrame/codedWidth}} and {{VideoFrame/codedHeight}} MUST be even.
     Similarly, the visible rectangle ({{VideoFrame/displayWidth}} and
     {{VideoFrame/displayHeight}}) MUST be even.
+
+    {{I420A}}'s [=equivalent opaque format=] is {{I420}}.
   </dd>
-  <dt><dfn enum-value for=PixelFormat>I422</dfn></dt>
+  <dt><dfn enum-value for=VideoPixelFormat>I422</dfn></dt>
   <dd>
 
     This format is composed of three distinct planes, one plane of Luma and two
@@ -3614,7 +3715,7 @@ in the image that are derived from a [=sub-sampled=] sample.
     coordinates ({{VideoFrame/displayWidth}} and {{VideoFrame/displayHeight}})
     MUST be even.
   </dd>
-  <dt><dfn enum-value for=PixelFormat>I444</dfn></dt>
+  <dt><dfn enum-value for=VideoPixelFormat>I444</dfn></dt>
   <dd>
 
     This format is composed of three distinct planes, one plane of Luma and two
@@ -3629,7 +3730,7 @@ in the image that are derived from a [=sub-sampled=] sample.
     image, in {{VideoFrame/codedHeight}} lines of {{VideoFrame/codedWidth}}
     samples.
   </dd>
-  <dt><dfn enum-value for=PixelFormat>NV12</dfn></dt>
+  <dt><dfn enum-value for=VideoPixelFormat>NV12</dfn></dt>
   <dd>
 
     This format is composed of two distinct planes, one plane of Luma and then
@@ -3685,7 +3786,7 @@ in the image that are derived from a [=sub-sampled=] sample.
     All samples being linear in memory.
   </div>
   </dd>
-  <dt><dfn enum-value for=PixelFormat>RGBA</dfn></dt>
+  <dt><dfn enum-value for=VideoPixelFormat>RGBA</dfn></dt>
   <dd>
 
     This format is composed of a single plane, that encodes four components:
@@ -3697,8 +3798,10 @@ in the image that are derived from a [=sub-sampled=] sample.
     (and therefore bytes) in the single plane, arranged starting at the top
     left in the image, in {{VideoFrame/codedHeight}} lines of
     {{VideoFrame/codedWidth}} samples.
+
+    {{RGBA}}'s [=equivalent opaque format=] is {{RGBX}}.
   </dd>
-  <dt><dfn enum-value for=PixelFormat>RGBX</dfn></dt>
+  <dt><dfn enum-value for=VideoPixelFormat>RGBX</dfn></dt>
   <dd>
 
     This format is composed of a single plane, that encodes four components:
@@ -3712,7 +3815,7 @@ in the image that are derived from a [=sub-sampled=] sample.
     in the image, in {{VideoFrame/codedHeight}} lines of
     {{VideoFrame/codedWidth}} samples.
   </dd>
-  <dt><dfn enum-value for=PixelFormat>BGRA</dfn></dt>
+  <dt><dfn enum-value for=VideoPixelFormat>BGRA</dfn></dt>
   <dd>
 
     This format is composed of a single plane, that encodes four components:
@@ -3724,8 +3827,10 @@ in the image that are derived from a [=sub-sampled=] sample.
     (and therefore bytes) in the single plane, arranged starting at the top left
     in the image, in {{VideoFrame/codedHeight}} lines of
     {{VideoFrame/codedWidth}} samples.
+
+    {{BGRA}}'s [=equivalent opaque format=] is {{BGRX}}.
   </dd>
-  <dt><dfn enum-value for=PixelFormat>BGRX</dfn></dt>
+  <dt><dfn enum-value for=VideoPixelFormat>BGRX</dfn></dt>
   <dd>
 
     This format is composed of a single plane, that encodes four components:
@@ -4620,6 +4725,7 @@ immutable.
 
 Privacy Considerations{#privacy-considerations}
 ===============================================
+
 The primary privacy impact is an increased ability to fingerprint users by
 querying for different codec capabilities to establish a codec feature profile.
 Much of this profile is already exposed by existing APIs. Such profiles are very
@@ -4659,3 +4765,22 @@ attempts to exhaustively probe for codec capabilities. Additionally, User Agents
 may implement a "privacy budget", which depletes as authors use WebCodecs and
 other identifying APIs. Upon exhaustion of the privacy budget, codec
 capabilities could be reduced to a common baseline or prompt for user approval.
+
+Best Practices for Authors Using WebCodecs{#best-practices-developers}
+======================================================================
+
+While WebCodecs internally operates on background threads, authors working with
+realtime media or in contended main thread environments should ensure their
+media pipelines operate in worker contexts entirely independent of the main
+thread where possible. For example, realtime media processing of {{VideoFrame}}s
+should generally be done in a worker context.
+
+The main thread has significant potential for high contention and jank that may
+go unnoticed in development, yet degrade inconsistently across devices and User
+Agents in the field -- potentially dramatically impacting the end user
+experience. Ensuring the media pipeline is decoupled from the main thread helps
+provide a smooth experience for end users.
+
+Authors using the main thread for their media pipeline should be sure of their
+target frame rates, main thread work load, how their application will be
+embedded, and the class of devices their users will be using.
