@@ -4663,9 +4663,8 @@ close algorithm (amongst [=Close AudioDecoder=], [=Close AudioEncoder=],
 [=Close VideoDecoder=] and [=Close VideoEncoder=]) with a {{QuotaExceededError}}
 {{DOMException}}.
 
-A User Agent MUST only [=reclaim a codec=] that is either an
-[=inactive codec=], a [=background codec=], or both. A User Agent MUST NOT
-reclaim a codec that is both [=active=] and in the foreground, e.g not a [=background codec=].
+The rules governing when a codec may be reclaimed depend on whether the codec is
+an [=active=] or [=inactive=] codec and/or a [=background=] codec.
 
 An <dfn lt="active codec|active">active codec</dfn> is a codec that has
 received a call to `encode()` or `decode()` in the past `10 seconds`, or has
@@ -4677,15 +4676,24 @@ A <dfn lt="background codec|background">background codec</dfn> is a codec whose
 {{ownerDocument}} (or [=owner set=]'s {{Document}}, for codecs in workers) has a
 {{Document/hidden}} attribute equal to {{hidden|"hidden"}}.
 
-Additionally, User Agents MUST NOT reclaim [=background=] codecs in the
-following scenarios:
-    - [=Active=] {{AudioEncoder}}s or {{VideoEncoder}}s, to prevent long running
-        encode tasks from being interrupted.
-    - [=Active=] {{AudioDecoder}}s or {{VideoDecoder}}s, if there is
-        respectively an [=active=] {{AudioEncoder}} or {{VideoEncoder}} in the
-        same context, to prevent breaking long running transcoding tasks.
-    - [=Active=] {{AudioDecoder}}s when their respective tabs is actively
-        playing audio.
+A User Agent MUST only [=reclaim a codec=] that is either an
+[=inactive codec=], a [=background codec=], or both. A User Agent MUST NOT
+reclaim a codec that is both [=active=] and in the foreground, i.e. not a
+[=background codec=].
+
+Additionally, User Agents MUST NOT reclaim an [=active=] [=background=] codec
+if it is:
+    - An encoder, e.g. an {{AudioEncoder}} or {{VideoEncoder}}.
+
+        NOTE: This prevents long running encode tasks from being interrupted.
+
+    - An {{AudioDecoder}} or {{VideoDecoder}}, when there is, respectively, an
+        [=active=] {{AudioEncoder}} or {{VideoEncoder}} in the same {{Window}}
+        (or {{WorkerGlobalScope}} for if the codec is running in a worker).
+
+        NOTE: This prevents prevents breaking long running transcoding tasks.
+
+    - An {{AudioDecoder}}, when its tab is actively playing audio.
 
 Security Considerations{#security-considerations}
 =================================================
