@@ -102,6 +102,17 @@ spec: visibility-state; urlPrefix: https://www.w3.org/TR/page-visibility/#
     type: enum-value; text: hidden; url: dom-visibilitystate-hidden
 </pre>
 
+<pre class='biblio'>
+{
+  "H.273": {
+    "href": "https://www.itu.int/rec/T-REC-H.273/en",
+    "title": "Coding-independent code points for video signal type identification",
+    "publisher": "ITU",
+    "date": "December 2016"
+  }
+}
+</pre>
+
 <style>
 main > dl > dd {
   margin-bottom: 1em;
@@ -165,6 +176,24 @@ Definitions {#definitions}
 :: An image track that is marked by the given image file as being the default
     track. The mechanism for indicating a primary track is format defined.
 
+: <dfn>RGB Format</dfn>
+:: A {{VideoPixelFormat}} containing red, green, and blue color channels in
+    any order or layout (interleaved or planar), and irrespective of whether an
+    alpha channel is present.
+
+: <dfn>sRGB Color Space</dfn>
+:: A {{VideoColorSpaceInit}} containing «[
+    "primaries" → {{VideoColorPrimaries/bt709}},
+    "transfer" → {{VideoTransferCharacteristics/iec61966-2-1}},
+    "matrix" → {{VideoMatrixCoefficients/rgb}},
+    "fullRange" → `true`]».
+
+: <dfn>REC709 Color Space</dfn>
+:: A {{VideoColorSpaceInit}} containing «[
+    "primaries" → {{VideoColorPrimaries/bt709}},
+    "transfer" → {{VideoTransferCharacteristics/bt709}},
+    "matrix" → {{VideoMatrixCoefficients/bt709}},
+    "fullRange" → `false`]».
 
 <dfn>Codec Processing Model</dfn> {#codec-processing-model-section}
 ===================================================================
@@ -742,10 +771,24 @@ Algorithms {#videodecoder-algorithms}
             {{VideoDecoderConfig/displayAspectHeight}} [=map/exist=] in the
             {{VideoDecoder/[[active decoder config]]}}, assign their values to
             |displayAspectWidth| and |displayAspectHeight| respectively.
-        4. Let |frame| be the result of running the [=Create a VideoFrame=]
-            algorithm with |output|, |timestamp|, |duration|, |displayAspectWidth|
-            and |displayAspectHeight|.
-        5. Invoke {{VideoDecoder/[[output callback]]}} with |frame|.
+        4. Let |colorSpace| be the {{VideoColorSpace}} for |output| as detected
+            by the codec implementation. If no {{VideoColorSpace}} is detected,
+            let |colorSpace| be `undefined`.
+
+            NOTE: The codec implementation can detect a {{VideoColorSpace}} by
+                analyzing the bitstream. Detection is not required and may not
+                always be feasible. The exact method of detection is implementer
+                defined and codec-specific. Authors may override the
+                detected {{VideoColorSpace}} by providing a
+                {{VideoDecoderConfig/colorSpace}} in the {{VideoDecoderConfig}}.
+
+        5. If {{VideoDecoderConfig/colorSpace}} [=map/exists=] in the
+            {{VideoDecoder/[[active decoder config]]}}, assign its value to
+            |colorSpace|.
+        6. Let |frame| be the result of running the [=Create a VideoFrame=]
+            algorithm with |output|, |timestamp|, |duration|,
+            |displayAspectWidth|, |displayAspectHeight|, and |colorSpace|.
+        7. Invoke {{VideoDecoder/[[output callback]]}} with |frame|.
   </dd>
   <dt><dfn>Reset VideoDecoder</dfn> (with |exception|)</dt>
   <dd>
@@ -1014,6 +1057,9 @@ Algorithms {#audioencoder-algorithms}
             3. Let {{EncodedAudioChunkInit/timestamp}} be the
                 {{AudioData/timestamp}} from the AudioData associated with
                 |output|.
+            4. Let {{EncodedAudioChunkInit/duration}} be the
+                {{AudioData/duration}} from the AudioData associated with
+                |output|.
         2. Let |chunk| be a new {{EncodedAudioChunk}} constructed with
             |chunkInit|.
         3. Let |chunkMetadata| be a new {{EncodedAudioChunkMetadata}}.
@@ -1138,6 +1184,8 @@ Internal Slots {#videoencoder-internal-slots}
   The {{VideoDecoderConfig}} that describes how to decode the most recently
   emitted {{EncodedVideoChunk}}.
 </dd>
+<dt><dfn attribute for=VideoEncoder>[[active color space]]</dfn></dt>
+<dd>The {{VideoColorSpace}}</dd> that is actively applied for encoding.
 <dt><dfn attribute for=VideoEncoder>\[[state]]</dfn></dt>
 <dd>
   The current {{CodecState}} of this {{VideoEncoder}}.
@@ -1209,6 +1257,9 @@ Methods {#videoencoder-methods}
     3. Otherwise, run the <a>Close VideoEncoder</a> algorithm with
         {{NotSupportedError}} and abort these steps.
     4. Assign |config| to {{VideoEncoder/[[active encoder config]]}}.
+    5. If {{VideoEncoderConfig/colorSpace}} [=map/exists=] in |config|, assign
+        its value to {{VideoEncoder/[[active color space]]}}. Otherwise, assign
+        `null` to {{VideoEncoder/[[active color space]]}}.
   </dd>
 
   <dt><dfn method for=VideoEncoder>encode(|frame|, |options|)</dfn></dt>
@@ -1226,16 +1277,26 @@ Methods {#videoencoder-methods}
     5. [=Queue a control message=] to encode |frameClone|.
 
     [=Running a control message=] to encode the frame means performing these steps.
-    1. Attempt to use {{VideoEncoder/[[codec implementation]]}} to encode
+    1. If {{VideoEncoder/[[active color space]]}} is `null`, assign
+        |frame|.{{VideoFrame/colorSpace}} to
+        {{VideoEncoder/[[active color space]]}}.
+
+        NOTE: For codec implementations that encode in-band color space metdata,
+                the above step implies that User Agents defer running the
+                [=control message steps=] associated with the most recent call
+                to {{VideoEncoder/configure()}} until the arrival of the first
+                frame to {{VideoEncoder/encode()}}.
+
+    2. Attempt to use {{VideoEncoder/[[codec implementation]]}} to encode
         |frameClone| according to |options|.
-    2. If encoding results in an error, queue a task on the [=control thread=]
+    3. If encoding results in an error, queue a task on the [=control thread=]
         event loop to run the [=Close VideoEncoder=] algorithm with
         {{EncodingError}}.
-    3. Queue a task on the [=control thread=] event loop to decrement
+    4. Queue a task on the [=control thread=] event loop to decrement
         {{VideoEncoder/[[encodeQueueSize]]}}.
-    4. Let |encoded outputs| be a [=list=] of encoded video data outputs
+    5. Let |encoded outputs| be a [=list=] of encoded video data outputs
         emitted by {{VideoEncoder/[[codec implementation]]}}.
-    5. If |encoded outputs| is not empty, queue a task on the [=control thread=]
+    6. If |encoded outputs| is not empty, queue a task on the [=control thread=]
         event loop to run the [=Output EncodedVideoChunks=] algorithm with
         |encoded outputs|.
   </dd>
@@ -1350,7 +1411,9 @@ Algorithms {#videoencoder-algorithms}
                 `outputConfig.displayWidth`.
             5. Assign `encoderConfig.displayHeight` to
                 `outputConfig.displayHeight`.
-            6. Assign the remaining keys of `outputConfig` as determined by
+            6. Assign {{VideoEncoder/[[active color space]]}} to
+                `outputConfig.colorSpace`.
+            7. Assign the remaining keys of `outputConfig` as determined by
                 {{VideoEncoder/[[codec implementation]]}}. The User Agent
                 must ensure that the configuration is completely described
                 such that |outputConfig| could be used to correctly decode
@@ -1657,6 +1720,7 @@ dictionary VideoDecoderConfig {
   [EnforceRange] unsigned long codedHeight;
   [EnforceRange] unsigned long displayAspectWidth;
   [EnforceRange] unsigned long displayAspectHeight;
+  VideoColorSpaceInit colorSpace;
   HardwareAcceleration hardwareAcceleration = "allow";
   boolean optimizeForLatency;
 };
@@ -1721,6 +1785,14 @@ run these steps:
   {{VideoDecoderConfig/displayAspectHeight}}, but they should have identical
   ratios, after scaling is applied when
   [=create a videoframe|creating the video frame=].
+
+  <dt><dfn dict-member for=VideoDecoderConfig>colorSpace</dfn></dt>
+  <dd>
+    Configures the {{VideoFrame}}.{{VideoFrame/colorSpace}} for {{VideoFrame}}s
+    associated with this {{VideoDecoderConfig}}. If
+    {{VideoDecoderConfig/colorSpace}} [=map/exists=], the provided values will
+    override any in-band values from the bitsream.
+  </dd>
 
   <dt><dfn dict-member for=VideoDecoderConfig>hardwareAcceleration</dfn></dt>
   <dd>
@@ -1794,6 +1866,7 @@ dictionary VideoEncoderConfig {
   DOMString scalabilityMode;
   BitrateMode bitrateMode = "variable";
   LatencyMode latencyMode = "quality";
+  VideoColorSpaceInit colorSpace;
 };
 </xmp>
 
@@ -1905,6 +1978,15 @@ To check if a {{VideoEncoderConfig}} is a <dfn>valid VideoEncoderConfig</dfn>,
   <dt><dfn dict-member for=VideoEncoderConfig>latencyMode</dfn></dt>
   <dd>
     Configures latency related behaviors for this codec. See {{LatencyMode}}.
+  </dd>
+
+  <dt><dfn dict-member for=VideoEncoderConfig>colorSpace</dfn></dt>
+  <dd>
+    Configures the {{VideoColorSpace}} to be used in the output
+    {{VideoDecoderConfig}}. May also be used to set in-band color information
+    while encoding. If not provided, the codec will attempt to use the
+    {{VideoFrame}}.{{VideoFrame/colorSpace}} for the first frame passed to
+    {{VideoEncoder/encode()}} following this {{VideoEncoderConfig}}.
   </dd>
 </dl>
 
@@ -2099,8 +2181,8 @@ EncodedAudioChunk Interface {#encodedaudiochunk-interface}
 interface EncodedAudioChunk {
   constructor(EncodedAudioChunkInit init);
   readonly attribute EncodedAudioChunkType type;
-  readonly attribute long long timestamp;    // microseconds
-  readonly attribute unsigned long duration; // microseconds
+  readonly attribute long long timestamp;          // microseconds
+  readonly attribute unsigned long long? duration; // microseconds
   readonly attribute unsigned long byteLength;
 
   undefined copyTo([AllowShared] BufferSource destination);
@@ -2109,6 +2191,7 @@ interface EncodedAudioChunk {
 dictionary EncodedAudioChunkInit {
   required EncodedAudioChunkType type;
   [EnforceRange] required long long timestamp;    // microseconds
+  [EnforceRange] unsigned long long duration;     // microseconds
   required BufferSource data;
 };
 
@@ -2137,8 +2220,10 @@ enum EncodedAudioChunkType {
 1. Let |chunk| be a new {{EncodedAudioChunk}} object, initialized as follows
     1. Assign `init.type` to {{EncodedAudioChunk/[[type]]}}.
     2. Assign `init.timestamp` to {{EncodedAudioChunk/[[timestamp]]}}.
-    3. Assign a copy of `init.data` to {{EncodedAudioChunk/[[internal data]]}}.
-    4. Assign `init.data.byteLength` to {{EncodedAudioChunk/[[byte length]]}};
+    3. If `init.duration` exists, assign it to
+        {{EncodedAudioChunk/[[duration]]}}, or assign `null` otherwise.
+    4. Assign a copy of `init.data` to {{EncodedAudioChunk/[[internal data]]}}.
+    5. Assign `init.data.byteLength` to {{EncodedAudioChunk/[[byte length]]}};
 5. Return |chunk|.
 
 ### Attributes ###{#encodedaudiochunk-attributes}
@@ -2803,6 +2888,8 @@ interface VideoFrame {
   readonly attribute unsigned long displayHeight;
   readonly attribute unsigned long long? duration;  // microseconds
   readonly attribute long long? timestamp;          // microseconds
+  readonly attribute VideoColorSpace? colorSpace;
+
   unsigned long allocationSize(
       optional VideoFrameCopyToOptions options = {});
   Promise<sequence<PlaneLayout>> copyTo(
@@ -2834,6 +2921,8 @@ dictionary VideoFrameBufferInit {
   // Default display dimensions match visibleRect.
   [EnforceRange] unsigned long displayWidth;
   [EnforceRange] unsigned long displayHeight;
+
+  VideoColorSpaceInit colorSpace;
 };
 </xmp>
 
@@ -2885,6 +2974,9 @@ dictionary VideoFrameBufferInit {
 : <dfn attribute for=VideoFrame>\[[timestamp]]</dfn>
 ::  The presentation timestamp, given in microseconds. The timestamp is copied
     from the {{EncodedVideoChunk}} corresponding to this {{VideoFrame}}.
+
+: <dfn attribute for=VideoFrame>[[color space]]</dfn>
+:: The {{VideoColorSpace}} associated with this frame.
 
 ### Constructors ###{#videoframe-constructors}
 
@@ -3026,6 +3118,12 @@ dictionary VideoFrameBufferInit {
     6. Assign |init|'s {{VideoFrameBufferInit/timestamp}} and
         {{VideoFrameBufferInit/duration}} to {{VideoFrame/[[timestamp]]}} and
         {{VideoFrame/[[duration]]}} respectively.
+    7. Let |colorSpace| be `undefined`.
+    8. If |init|.{{VideoFrameBufferInit/colorSpace}} [=map/exists=], assign its
+        value to |colorSpace|.
+    9. Assign the result of running the [=VideoFrame/Pick Color Space=]
+        algorithm, with |colorSpace| and {{VideoFrame/[[format]]}}, to
+        {{VideoFrame/[[color space]]}}.
 17. Return |frame|.
 
 ### Attributes ###{#videoframe-attributes}
@@ -3109,6 +3207,12 @@ dictionary VideoFrameBufferInit {
 
     The {{VideoFrame/duration}} getter steps are to return
     {{VideoFrame/[[duration]]}}.
+
+: <dfn attribute for=VideoFrame>colorSpace</dfn>
+:: The {{VideoColorSpace}} associated with this frame.
+
+    The {{VideoFrame/colorSpace}} getter steps are to return
+    {{VideoFrame/[[color space]]}}.
 
 ### Internal Structures ###{#videoframe-internal-structures}
 A <dfn>combined buffer layout</dfn> is a [=struct=] that consists of:
@@ -3219,40 +3323,56 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
     When invoked, run the [=Close VideoFrame=] algorithm with [=this=].
 
 ### Algorithms ###{#videoframe-algorithms}
-  <dfn>Create a VideoFrame</dfn> (with |output|, |timestamp|, |duration|, |displayAspectWidth|, and |displayAspectHeight|)
-  1. Let |frame| be a new {{VideoFrame}}, constructed as follows:
-      1. Assign `false` to {{platform object/[[Detached]]}}.
-      2. Let |resource| be the [=media resource=] described by |output|.
-      3. Let |resourceReference| be a reference to |resource|.
-      4. Assign |resourceReference| to {{VideoFrame/[[resource reference]]}}.
-      5. If |output| uses a recognized {{VideoPixelFormat}}, assign that format to
-          {{VideoFrame/[[format]]}}. Otherwise, assign `null` to
-          {{VideoFrame/[[format]]}}.
-      6. Let |codedWidth| and |codedHeight| be the coded width and height of the
-          |output| in pixels.
-      8. Let |visibleLeft|, |visibleTop|, |visibleWidth|, and |visibleHeight| be
-          the left, top, width and height for the visible rectangle of |output|.
-      7. Let |displayWidth| and |displayHeight| be the the display size of
-          |output| in pixels.
-      8. If |displayAspectWidth| and |displayAspectHeight| are provided,
-          increase |displayWidth| or |displayHeight| until the ratio of
-          |displayWidth| to |displayHeight| matches the ratio of
-          |displayAspectWidth| to |displayAspectHeight|.
-      9. Assign |codedWidth|, |codedHeight|, |visibleLeft|, |visibleTop|,
-          |visibleWidth|, |visibleHeight|, |displayWidth|, and
-          |displayHeight| to {{VideoFrame/[[coded width]]}},
-          {{VideoFrame/[[coded height]]}}, {{VideoFrame/[[visible left]]}},
-          {{VideoFrame/[[visible top]]}}, {{VideoFrame/[[visible width]]}},
-          and {{VideoFrame/[[visible height]]}} respectively.
-      10. Assign |duration| and |timestamp| to {{VideoFrame/[[duration]]}} and
-          {{VideoFrame/[[timestamp]]}} respectively.
-  2. Return |frame|.
+: <dfn>Create a VideoFrame</dfn> (with |output|, |timestamp|, |duration|, |displayAspectWidth|, |displayAspectHeight|, and |colorSpace|)
+:: 1. Let |frame| be a new {{VideoFrame}}, constructed as follows:
+        1. Assign `false` to {{platform object/[[Detached]]}}.
+        2. Let |resource| be the [=media resource=] described by |output|.
+        3. Let |resourceReference| be a reference to |resource|.
+        4. Assign |resourceReference| to {{VideoFrame/[[resource reference]]}}.
+        5. If |output| uses a recognized {{VideoPixelFormat}}, assign that format to
+            {{VideoFrame/[[format]]}}. Otherwise, assign `null` to
+            {{VideoFrame/[[format]]}}.
+        6. Let |codedWidth| and |codedHeight| be the coded width and height of the
+            |output| in pixels.
+        8. Let |visibleLeft|, |visibleTop|, |visibleWidth|, and |visibleHeight| be
+            the left, top, width and height for the visible rectangle of |output|.
+        7. Let |displayWidth| and |displayHeight| be the the display size of
+            |output| in pixels.
+        8. If |displayAspectWidth| and |displayAspectHeight| are provided,
+            increase |displayWidth| or |displayHeight| until the ratio of
+            |displayWidth| to |displayHeight| matches the ratio of
+            |displayAspectWidth| to |displayAspectHeight|.
+        9. Assign |codedWidth|, |codedHeight|, |visibleLeft|, |visibleTop|,
+            |visibleWidth|, |visibleHeight|, |displayWidth|, and
+            |displayHeight| to {{VideoFrame/[[coded width]]}},
+            {{VideoFrame/[[coded height]]}}, {{VideoFrame/[[visible left]]}},
+            {{VideoFrame/[[visible top]]}}, {{VideoFrame/[[visible width]]}},
+            and {{VideoFrame/[[visible height]]}} respectively.
+        10. Assign |duration| and |timestamp| to {{VideoFrame/[[duration]]}} and
+            {{VideoFrame/[[timestamp]]}} respectively.
+        11. Assign {{VideoFrame/[[color space]]}} with the result of running the
+            [=VideoFrame/Pick Color Space=] algorithm, with |colorSpace| and
+            {{VideoFrame/[[format]]}}.
+    2. Return |frame|.
+
+
+: <dfn for=VideoFrame>Pick Color Space</dfn> (with |overrideColorSpace| and |format|)
+:: 1. If |overrideColorSpace| is provided, return a new {{VideoColorSpace}}
+        constructed with |overrideColorSpace|.
+
+        NOTE: User Agents may replace `null` members of the provided
+            |overrideColorSpace| with guessed values as determined by
+            implementer defined heuristics.
+
+    2. Otherwise, if {{VideoFrame/[[format]]}} is an [=RGB format=] return a new
+        instance of the [=sRGB Color Space=]
+    3. Otherwise, return a new instance of the [=REC709 Color Space=].
 
 : To check if a {{VideoFrameBufferInit}} is a
     <dfn>valid VideoFrameBufferInit</dfn>, run these steps:
 :: 1. If {{VideoFrameBufferInit/codedWidth}} = 0 or
         {{VideoFrameBufferInit/codedHeight}} = 0,return `false`.
-     2. If {{VideoFrameBufferInit/visibleRect}}.{{DOMRectInit/width}} = 0
+    2. If {{VideoFrameBufferInit/visibleRect}}.{{DOMRectInit/width}} = 0
         or {{VideoFrameBufferInit/visibleRect}}.{{DOMRectInit/height}} =
         0, return `false`.
     3. If {{VideoFrameBufferInit/visibleRect}}.{{DOMRectInit/y}} +
@@ -3276,7 +3396,7 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
     3. Assign the following attributes from |otherFrame| to |frame|:
         {{VideoFrame/codedWidth}}, {{VideoFrame/codedHeight}},
         {{VideoFrame/visibleRect}}, {{VideoFrame/displayWidth}},
-        {{VideoFrame/displayHeight}}.
+        {{VideoFrame/displayHeight}}, {{VideoFrame/colorSpace}}.
     4. If {{VideoFrameInit/duration}} [=map/exists=] in |init|, assign it to
         |frame|.{{VideoFrame/duration}}. Otherwise, assign
         |otherFrame|.{{VideoFrame/duration}} to
@@ -3311,6 +3431,9 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
         |frame|.{{VideoFrame/duration}}.
     10. Assign `init`.{{VideoFrameInit/timestamp}} to
         |frame|.{{VideoFrame/timestamp}}.
+    9. If |resource| has a known {{VideoColorSpace}}, assign its value to
+        {{VideoFrame/[[color space]]}}.
+    10. Otherwise, assign `null` to {{VideoFrame/[[color space]]}}.
 
 : <dfn>Clone VideoFrame</dfn> (with |frame|)
 :: 1. Let |clone| be a new {{VideoFrame}} initialized as follows:
@@ -3515,6 +3638,16 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
         field to the {{VideoFrame}} internal slot in |value| with the same name
         as the named field.
 
+### Rendering ### {#videoframe-rendering}
+
+When rendered, for example by {{CanvasDrawImage}}
+{{CanvasDrawImage/drawImage()}}, a {{VideoFrame}} must be converted to a
+color space compatible with the rendering target, unless color conversion is
+explicitly disabled.
+
+Color space conversion during {{ImageBitmap}} construction is controlled by
+{{ImageBitmapOptions}} {{ImageBitmapOptions/colorSpaceConversion}}. Setting this
+value to "none" disables color space conversion.
 
 VideoFrame CopyTo() Options {#videoframe-copyto-options}
 ------------------------------------------------------------
@@ -3843,6 +3976,171 @@ is its own [=equivalent opaque format=].
     (and therefore bytes) in the single plane, arranged starting at the top left
     in the image, in {{VideoFrame/codedHeight}} lines of
     {{VideoFrame/codedWidth}} samples.
+  </dd>
+</dl>
+
+Video Color Space Interface {#video-color-space-interface}
+----------------------------------------------------------
+
+<xmp class='idl'>
+[Exposed=(Window,DedicatedWorker)]
+interface VideoColorSpace {
+  constructor(VideoColorSpaceInit init);
+
+  readonly attribute VideoColorPrimaries? primaries;
+  readonly attribute VideoTransferCharacteristics? transfer;
+  readonly attribute VideoMatrixCoefficients? matrix;
+  readonly attribute boolean? fullRange;
+
+  [Default] VideoColorSpaceInit toJSON();
+};
+
+dictionary VideoColorSpaceInit {
+  VideoColorPrimaries primaries;
+  VideoTransferCharacteristics transfer;
+  VideoMatrixCoefficients matrix;
+  boolean fullRange;
+};
+</xmp>
+
+### Internal Slots ### {#videocolorspace-internal-slots}
+: <dfn attribute for=VideoColorSpace>\[[primaries]]</dfn>
+:: The color primaries.
+: <dfn attribute for=VideoColorSpace>\[[transfer]]</dfn>
+:: The transfer characteristics.
+: <dfn attribute for=VideoColorSpace>\[[matrix]]</dfn>
+:: The matrix coefficients.
+: <dfn attribute for=VideoColorSpace>[[full range]]</dfn>
+:: Indicates whether full-range color values are used.
+
+### Constructors ### {#videocolorspace-constructors}
+<dfn constructor for=VideoColorSpace title="VideoColorSpace(init)">
+  VideoColorSpace(init)
+</dfn>
+1. Let |c| be a new {{VideoColorSpace}} object, initialized as follows:
+    1. If `primaries` is present in `init`, assign `init.primaries` to
+        {{VideoColorSpace/[[primaries]]}}. Otherwise, assign `null` to
+        {{VideoColorSpace/[[primaries]]}}.
+    2. If `transfer` is present in `init`, assign `init.transfer` to
+        {{VideoColorSpace/[[transfer]]}}. Otherwise, assign `null` to
+        {{VideoColorSpace/[[transfer]]}}.
+    3. If `matrix` is present in `init`, assign `init.matrix` to
+        {{VideoColorSpace/[[matrix]]}}. Otherwise, assign `null` to
+        {{VideoColorSpace/[[matrix]]}}.
+    4. If `fullRange` is present in `init`, assign `init.fullRange` to
+        {{VideoColorSpace/[[full range]]}}. Otherwise, assign `null` to
+        {{VideoColorSpace/[[full range]]}}.
+6. Return |c|.
+
+### Attributes ### {#videocolorspace-attributes}
+: <dfn attribute for=VideoColorSpace>primaries</dfn>
+:: The {{VideoColorSpace/primaries}} getter steps are to return the value of
+    {{VideoColorSpace/[[primaries]]}}.
+: <dfn attribute for=VideoColorSpace>transfer</dfn>
+:: The {{VideoColorSpace/transfer}} getter steps are to return the value of
+    {{VideoColorSpace/[[transfer]]}}.
+: <dfn attribute for=VideoColorSpace>matrix</dfn>
+:: The {{VideoColorSpace/matrix}} getter steps are to return the value of
+    {{VideoColorSpace/[[matrix]]}}.
+: <dfn attribute for=VideoColorSpace>fullRange</dfn>
+:: The {{VideoColorSpace/fullRange}} getter steps are to return the value of
+    {{VideoColorSpace/[[full range]]}}.
+
+Video Color Primaries {#videocolorprimaries}
+--------------------------------------------
+Color primaries describe the color gamut of video samples.
+
+<xmp class='idl'>
+enum VideoColorPrimaries {
+  "bt709",      // BT.709, sRGB
+  "bt470bg",    // BT.601 PAL
+  "smpte170m",  // BT.601 NTSC
+};
+</xmp>
+
+<dl>
+  <dt><dfn enum-value for=VideoColorPrimaries>bt709</dfn</dt>
+  <dd>
+    Color primaries used by BT.709 and sRGB, as described by [[H.273]]
+    section 8.1 table 2 value 1.
+  </dd>
+  <dt><dfn enum-value for=VideoColorPrimaries>bt470bg</dfn</dt>
+  <dd>
+    Color primaries used by BT.601 PAL, as described by [[H.273]]
+    section 8.1 table 2 value 5.
+  </dd>
+  <dt><dfn enum-value for=VideoColorPrimaries>smpte170m</dfn</dt>
+  <dd>
+    Color primaries used by BT.601 NTSC, as described by [[H.273]]
+    section 8.1 table 2 value 6.
+  </dd>
+</dl>
+
+Video Transfer Characteristics {#videotransfercharacteristics}
+--------------------------------------------------------------
+Transfer characteristics describe the opto-electronic transfer characteristics
+of video samples.
+
+<xmp class='idl'>
+enum VideoTransferCharacteristics {
+  "bt709",         // BT.709
+  "smpte170m",     // BT.601 (functionally the same as bt709)
+  "iec61966-2-1",  // sRGB
+};
+</xmp>
+
+<dl>
+  <dt><dfn enum-value for=VideoTransferCharacteristics>bt709</dfn</dt>
+  <dd>
+    Transfer characteristics used by BT.709, as described by [[H.273]]
+    section 8.2 table 3 value 1.
+  </dd>
+  <dt><dfn enum-value for=VideoTransferCharacteristics>smpte170m</dfn</dt>
+  <dd>
+    Transfer characteristics used by BT.601, as described by [[H.273]]
+    section 8.2 table 3 value 6.
+  </dd>
+  <dt><dfn enum-value for=VideoTransferCharacteristics>iec61966-2-1</dfn</dt>
+  <dd>
+    Transfer characteristics used by sRGB, as described by [[H.273]]
+    section 8.2 table 3 value 13.
+  </dd>
+</dl>
+
+Video Matrix Coefficients {#videomatrixcoefficients}
+----------------------------------------------------
+Matrix coefficients describe the relationship between sample component values
+and color coordinates.
+
+<xmp class='idl'>
+enum VideoMatrixCoefficients {
+  "rgb",        // sRGB
+  "bt709",      // BT.709
+  "bt470bg",    // BT.601 PAL
+  "smpte170m",  // BT.601 NTSC (functionally the same as bt470bg)
+};
+</xmp>
+
+<dl>
+  <dt><dfn enum-value for=VideoMatrixCoefficients>rgb</dfn</dt>
+  <dd>
+    Matrix coefficients used by sRGB, as described by [[H.273]]
+    section 8.3 table 4 value 0.
+  </dd>
+  <dt><dfn enum-value for=VideoMatrixCoefficients>bt709</dfn</dt>
+  <dd>
+    Matrix coefficients used by BT.709, as described by [[H.273]]
+    section 8.3 table 4 value 1.
+  </dd>
+  <dt><dfn enum-value for=VideoMatrixCoefficients>bt470bg</dfn</dt>
+  <dd>
+    Matrix coefficients used by BT.601 PAL, as described by [[H.273]]
+    section 8.3 table 4 value 5.
+  </dd>
+  <dt><dfn enum-value for=VideoMatrixCoefficients>smpte170m</dfn</dt>
+  <dd>
+    Matrix coefficients used by BT.601 NTSC, as described by [[H.273]]
+    section 8.3 table 4 value 6.
   </dd>
 </dl>
 
