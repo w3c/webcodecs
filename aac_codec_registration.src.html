@@ -1,0 +1,178 @@
+<pre class='metadata'>
+Title: AAC WebCodecs Registration
+Repository: w3c/webcodecs
+Status: NOTE-ED
+Shortname: webcodecs-aac-codec-registration
+Level: none
+Group: mediawg
+ED: https://w3c.github.io/webcodecs/aac_codec_registration.html
+TR: https://www.w3.org/TR/webcodecs-aac-codec-registration/
+Editor: Chris Cunningham, w3cid 114832, Google Inc. https://www.google.com/
+Editor: Paul Adenot, w3cid 62410, Mozilla https://www.mozilla.org/
+Editor: Bernard Aboba, w3cid 65611, Microsoft Corporation https://www.microsoft.com/
+
+Abstract: This registration is entered into the [[webcodecs-codec-registry]].
+    It describes, for AAC, (1) the fully qualified codec strings, (2)
+    the {{AudioDecoderConfig.description}} bytes, (3) the codec-specific
+    {{EncodedAudioChunk}} [=EncodedAudioChunk/[[internal data]]=] bytes, and (4)
+    the values of {{EncodedAudioChunk}} [=EncodedAudioChunk/[[type]]=].
+
+    The registration is not intended to include any information on whether a
+    codec format is encumbered by intellectual property claims. Implementers and
+    authors are advised to seek appropriate legal counsel in this matter if they
+    intend to implement or use a specific codec format. Implementers of
+    WebCodecs are not required to support the AAC codec.
+
+    This registration is non-normative.
+
+Markup Shorthands:css no, markdown yes, dfn yes
+!Participate: <a href="https://github.com/w3c/webcodecs">Git Repository.</a>
+!Participate: <a href="https://github.com/w3c/webcodecs/issues/new">File an issue.</a>
+!Version History: <a href="https://github.com/w3c/webcodecs/commits">https://github.com/w3c/webcodecs/commits</a>
+</pre>
+
+<pre class='anchors'>
+spec: WEBCODECS; urlPrefix: https://w3c.github.io/webcodecs/#
+    type: attribute
+        text: AudioDecoderConfig.description; url: dom-audiodecoderconfig-description
+        text: AudioDecoderConfig.sampleRate; url: dom-audiodecoderconfig-samplerate
+        text: AudioDecoderConfig.channelCount; url: dom-audiodecoderconfig-channelcount
+    type: dfn
+        for: EncodedAudioChunkType; text: key; url: dom-encodedaudiochunktype-key
+        for: EncodedAudioChunk; text: [[internal data]]; url: dom-encodedaudiochunk-internal-data-slot
+        for: EncodedAudioChunk; text: [[type]]; url: dom-encodedaudiochunk-type-slot
+    type: interface
+        text: EncodedAudioChunk; url: encodedaudiochunk
+    type: dictionary
+        text: AudioDecoderConfig; url: dictdef-audiodecoderconfig
+        text: AudioEncoderConfig; url: dictdef-audioencoderconfig
+</pre>
+
+<pre class='biblio'>
+{
+  "iso14496-3": {
+    "href": "https://www.iso.org/standard/53943.html",
+    "title": "ISO/IEC 14496-3:2009 - Information technology — Coding of audio-visual objects — Part 3: Audio",
+    "publisher": "ISO",
+    "date": "2009-09"
+  }
+}
+</pre>
+
+Fully qualified codec strings {#fully-qualified-codec-strings}
+==============================================================
+
+This codec has multiple possible codec string:
+
+- `"mp4a.40.2"`
+- `"mp4a.40.02"`
+- `"mp4a.40.5"`
+- `"mp4a.40.05"`
+- `"mp4a.67"`
+- `"mp4a.40.29"`
+
+AudioDecoderConfig description {#audiodecoderconfig-description}
+================================================================
+
+If {{AudioDecoderConfig.description}} is present, it is assumed to a
+`AudioSpecificConfig` as defined in [[iso14496-3]] section 1.6.2.1, Table 1.15,
+and the bitstream is assumed to be in {{AacBitstreamFormat/aac}}.
+
+If the {{AudioDecoderConfig.description}} is not present, ht ebitstream is
+assumed to be in {{AacBitstreamFormat/adts}} format.
+
+The {{AudioDecoderConfig.sampleRate}} and {{AudioDecoderConfig.channelCount}}
+members are ignored.
+
+AudioEncoderConfig extensions {#audioencoderconfig-extensions}
+==============================================================
+
+<pre class='idl'>
+<xmp>
+partial dictionary AudioEncoderConfig {
+  AacEncoderConfig aac;
+};
+</xmp>
+</pre>
+
+<dl>
+  <dt><dfn dict-member for=AudioEncoderConfig>aac</dfn></dt>
+  <dd>
+    Contains codec specific configuration options for the AAC codec.
+  </dd>
+</dl>
+
+AacEncoderConfig {#aac-encoder-config}
+--------------------------------------
+
+<pre class='idl'>
+<xmp>
+dictionary AacEncoderConfig {
+  AacBitstreamFormat format = "aac";
+};
+</xmp>
+</pre>
+
+<dl>
+  <dt><dfn dict-member for=AacEncoderConfig>format</dfn></dt>
+  <dd>
+    Configures the format of output {{EncodedAudioChunk}}s. See
+    {{AacBitstreamFormat}}.
+  </dd>
+</dl>
+
+AacBitstreamFormat {#aac-bitstream-format}
+------------------------------------------
+<pre class='idl'>
+<xmp>
+enum AacBitstreamFormat {
+  "aac",
+  "adts",
+};
+</xmp>
+</pre>
+
+The {{AacBitstreamFormat}} determines the location of the metadata necessary to decode the encoded audio stream.
+
+<dl>
+  <dt><dfn enum-value for=AacBitstreamFormat>aac</dfn></dt>
+  <dd>
+    The metadata of the encoded audio stream are provided at configuration via
+    {{AudioDecoderConfig.description}}.
+  </dd>
+  <dt><dfn enum-value for=AacBitstreamFormat>adts</dfn></dt>
+  <dd>
+    The metadata of the encoded audio stream are provided in each ADTS frame,
+    and therefore no {{AudioDecoderConfig.description}} is necessary.
+</dl>
+
+
+EncodedAudioChunk data {#encodedaudiochunk-data}
+================================================
+
+If the bitstream is in {{AacBitstreamFormat/adts}} format, the
+[=EncodedAudioChunk/[[internal data]]=] of {{EncodedAudioChunk}}s are expected
+to be an ADTS frame, as described in section 1.A.3.2 of [[iso14496-3]].
+
+If the bitstream is in {{AacBitstreamFormat/aac}} format, the
+[=EncodedAudioChunk/[[internal data]]=] of {{EncodedAudioChunk}}s are expected
+to be a raw AAC frame (syntax element `raw_data_block()`), as described in
+section 4.4.2.1 of [[iso14496-3]].
+
+
+EncodedAudioChunk type {#encodedaudiochunk-type}
+================================================
+
+The [=EncodedAudioChunk/[[type]]=] for an {{EncodedAudioChunk}} containing
+AAC is always "[=EncodedAudioChunkType/key=]".
+
+NOTE: Once the initialization has succeeded, any AAC packet can be decoded at
+    any time without error, but this might not result in the expected audio
+    output.
+
+Privacy and Security Considerations {#privacy-and-security-considerations}
+==========================================================================
+
+Please refer to the [[WEBCODECS#privacy-considerations|Privacy Considerations]]
+and [[WEBCODECS#security-considerations|Security Considerations]] sections in
+[[WEBCODECS]].
