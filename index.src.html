@@ -1274,6 +1274,13 @@ Methods {#videoencoder-methods}
     1. If {{VideoEncoder/[[active color space]]}} is `null`, assign
         |frame|.{{VideoFrame/colorSpace}} to
         {{VideoEncoder/[[active color space]]}}.
+
+        NOTE: For codec implementations that encode in-band color space metdata,
+                the above step implies that User Agents defer running the
+                [=control message steps=] associated with the most recent call
+                to {{VideoEncoder/configure()}} until the arrival of the first
+                frame to {{VideoEncoder/encode()}}.
+
     2. Attempt to use {{VideoEncoder/[[codec implementation]]}} to encode
         |frameClone| according to |options|.
     3. If encoding results in an error, queue a task on the [=control thread=]
@@ -3103,8 +3110,8 @@ dictionary VideoFrameBufferInit {
         {{VideoFrameBufferInit/duration}} to {{VideoFrame/[[timestamp]]}} and
         {{VideoFrame/[[duration]]}} respectively.
     7. Let |colorSpace| be `undefined`.
-    8. If {{VideoFrameBufferInit/colorSpace}} [=map/exists=], assign its value
-        to |colorSpace|.
+    8. If |init|.{{VideoFrameBufferInit/colorSpace}} [=map/exists=], assign its
+        value to |colorSpace|.
     9. Assign the result of running the [=VideoFrame/Pick Color Space=]
         algorithm, with |colorSpace| and {{VideoFrame/[[format]]}}, to
         {{VideoFrame/[[color space]]}}.
