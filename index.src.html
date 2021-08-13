@@ -343,9 +343,9 @@ Methods {#audiodecoder-methods}
     chunks as described by |config|.
 
     NOTE: This method will trigger a {{NotSupportedError}} if the User Agent
-        does not support |config|. Authors should first check support by calling
-        {{AudioDecoder/isConfigSupported()}} with |config|. User Agents are not
-        required to support any particular codec type or configuration.
+        does not support |config|. Authors are encouraged to first check support
+        by calling {{AudioDecoder/isConfigSupported()}} with |config|. User
+        Agents don't have to support any particular codec type or configuration.
 
     When invoked, run these steps:
     1. If |config| is not a [=valid AudioDecoderConfig=], throw a
@@ -455,7 +455,7 @@ Methods {#audiodecoder-methods}
 
     NOTE: The returned {{AudioDecoderSupport}} {{AudioDecoderSupport/config}}
         will contain only the dictionary members that User Agent recognized.
-        Unrecognized dictionary members will be ignored. Authors may detect
+        Unrecognized dictionary members will be ignored. Authors can detect
         unrecognized dictionary members by comparing
         {{AudioDecoderSupport/config}} to their provided |config|.
 
@@ -612,9 +612,9 @@ Methods {#videodecoder-methods}
     chunks as described by |config|.
 
     NOTE: This method will trigger a {{NotSupportedError}} if the User Agent
-        does not support |config|. Authors should first check support by calling
-        {{VideoDecoder/isConfigSupported()}} with |config|. User Agents are not
-        required to support any particular codec type or configuration.
+      does not support |config|. Authors are encouraged to first check support by
+      calling {{VideoDecoder/isConfigSupported()}} with |config|. User Agents
+      don't have to support any particular codec type or configuration.
 
     When invoked, run these steps:
     1. If |config| is not a [=valid VideoDecoderConfig=], throw a
@@ -640,15 +640,15 @@ Methods {#videodecoder-methods}
   <dd>
     [=Enqueues a control message=] to decode the given |chunk|.
 
-    NOTE: Authors should call {{VideoFrame/close()}} on output
+    NOTE: Authors are encouraged to call {{VideoFrame/close()}} on output
         {{VideoFrame}}s immediately when frames are no longer needed. The
         underlying [=media resource=]s are owned by the {{VideoDecoder}} and
-        failing to release them (or waiting for garbage collection) may cause
+        failing to release them (or waiting for garbage collection) can cause
         decoding to stall.
 
     NOTE: {{VideoDecoder}} requires that frames are output in the order they
-        expect to be presented, commonly known as presentation order. Some
-        {{VideoDecoder/[[codec implementation]]}}s may require the User Agent
+        expect to be presented, commonly known as presentation order. When using
+        some {{VideoDecoder/[[codec implementation]]}}s the User Agent will have to
         to reorder outputs into presentation order.
 
     When invoked, run these steps:
@@ -735,7 +735,7 @@ Methods {#videodecoder-methods}
 
     NOTE: The returned {{VideoDecoderSupport}} {{VideoDecoderSupport/config}}
         will contain only the dictionary members that User Agent recognized.
-        Unrecognized dictionary members will be ignored. Authors may detect
+        Unrecognized dictionary members will be ignored. Authors can detect
         unrecognized dictionary members by comparing
         {{VideoDecoderSupport/config}} to their provided |config|.
 
@@ -777,10 +777,10 @@ Algorithms {#videodecoder-algorithms}
             let |colorSpace| be `undefined`.
 
             NOTE: The codec implementation can detect a {{VideoColorSpace}} by
-                analyzing the bitstream. Detection is not required and may not
-                always be feasible. The exact method of detection is implementer
-                defined and codec-specific. Authors may override the
-                detected {{VideoColorSpace}} by providing a
+                analyzing the bitstream. Detection is made on a best-effort
+                basis. The exact method of detection is implementer defined and
+                codec-specific.  Authors can override the detected
+                {{VideoColorSpace}} by providing a
                 {{VideoDecoderConfig/colorSpace}} in the {{VideoDecoderConfig}}.
 
         5. If {{VideoDecoderConfig/colorSpace}} [=map/exists=] in the
@@ -916,9 +916,9 @@ Methods {#audioencoder-methods}
     decoding chunks as described by |config|.
 
     NOTE: This method will trigger a {{NotSupportedError}} if the User Agent
-        does not support |config|. Authors should first check support by calling
-        {{AudioEncoder/isConfigSupported()}} with |config|. User Agents are not
-        required to support any particular codec type or configuration.
+        does not support |config|. Authors are encouraged to first check support
+        by calling {{AudioEncoder/isConfigSupported()}} with |config|. User
+        Agents don't have to support any particular codec type or configuration.
 
     When invoked, run these steps:
     1. If |config| is not a [=valid AudioEncoderConfig=], throw a
@@ -1020,7 +1020,7 @@ Methods {#audioencoder-methods}
 
     NOTE: The returned {{AudioEncoderSupport}} {{AudioEncoderSupport/config}}
         will contain only the dictionary members that User Agent recognized.
-        Unrecognized dictionary members will be ignored. Authors may detect
+        Unrecognized dictionary members will be ignored. Authors can detect
         unrecognized dictionary members by comparing
         {{AudioEncoderSupport/config}} to their provided |config|.
 
@@ -1235,9 +1235,10 @@ Methods {#videoencoder-methods}
     decoding chunks as described by |config|.
 
     NOTE: This method will trigger a {{NotSupportedError}} if the User Agent
-        does not support |config|. Authors should first check support by calling
-        {{VideoEncoder/isConfigSupported()}} with |config|. User Agents are not
-        required to support any particular codec type or configuration.
+        does not support |config|. Authors are encouraged to first check support
+        by calling {{VideoEncoder/isConfigSupported()}} with |config|. User
+        Agents don't have to support any particular codec type or
+        configuration.
 
     When invoked, run these steps:
     1. If |config| is not a [=valid VideoEncoderConfig=], throw a
@@ -1340,7 +1341,7 @@ Methods {#videoencoder-methods}
 
     NOTE: The returned {{VideoEncoderSupport}} {{VideoEncoderSupport/config}}
         will contain only the dictionary members that User Agent recognized.
-        Unrecognized dictionary members will be ignored. Authors may detect
+        Unrecognized dictionary members will be ignored. Authors can detect
         unrecognized dictionary members by comparing
         {{VideoEncoderSupport/config}} to their provided |config|.
 
@@ -1520,9 +1521,9 @@ Run these steps:
         {{AudioEncoderConfig}}, and {{VideoEncoderConfig}} each define their
         respective configuration entries and defaults.
 
-    NOTE: Support for a given configuration may change dynamically if the
-        hardware is altered (e.g. external GPU unplugged) or if required
-        hardware resources are exhausted. User Agents should describe support on
+    NOTE: Support for a given configuration can change dynamically if the
+        hardware is altered (e.g. external GPU unplugged) or if an essential
+        hardware resources are exhausted. User Agents describe support on
         a best-effort basis given the resources that are available at the time
         of the query.
 
@@ -1734,8 +1735,8 @@ run these steps:
   <dd>
     A sequence of codec specific bytes, commonly known as extradata.
 
-    NOTE: The registrations in the [[WEBCODECS-CODEC-REGISTRY]] may describe whether/how
-        to populate this sequence, corresponding to the provided
+    NOTE: The registrations in the [[WEBCODECS-CODEC-REGISTRY]] describes
+        whether/how to populate this sequence, corresponding to the provided
         {{VideoDecoderConfig/codec}}.
   </dd>
 
@@ -1765,10 +1766,9 @@ run these steps:
   </dd>
 
   NOTE: {{VideoFrame/displayWidth}} and {{VideoFrame/displayHeight}} can both be
-  different from {{VideoDecoderConfig/displayAspectWidth}} and
-  {{VideoDecoderConfig/displayAspectHeight}}, but they should have identical
-  ratios, after scaling is applied when
-  [=create a videoframe|creating the video frame=].
+      different from {{VideoDecoderConfig/displayAspectWidth}} and
+      {{VideoDecoderConfig/displayAspectHeight}}, but have identical ratios, after scaling is applied when [=create a videoframe|creating the
+      video frame=].
 
   <dt><dfn dict-member for=VideoDecoderConfig>colorSpace</dfn></dt>
   <dd>
@@ -1791,8 +1791,8 @@ run these steps:
     is output.
 
     NOTE: In addition to User Agent and hardware limitations, some codec
-    bitstreams may require a minimum number of inputs before any output can be
-    produced.
+        bitstreams require a minimum number of inputs before any output can be
+        produced.
   </dd>
 </dl>
 
@@ -1808,8 +1808,8 @@ dictionary AudioEncoderConfig {
 };
 </xmp>
 
-NOTE: Codec-specific extensions to {{AudioEncoderConfig}} may be defined by the
-    registrations in the [[WEBCODECS-CODEC-REGISTRY]].
+NOTE: Codec-specific extensions to {{AudioEncoderConfig}} are described in
+    their registrations in the [[WEBCODECS-CODEC-REGISTRY]].
 
 To check if an {{AudioEncoderConfig}} is a <dfn>valid AudioEncoderConfig</dfn>,
 run these steps:
@@ -1853,7 +1853,7 @@ dictionary VideoEncoderConfig {
 };
 </xmp>
 
-NOTE: Codec-specific extensions to {{VideoEncoderConfig}} may be defined by the
+NOTE: Codec-specific extensions to {{VideoEncoderConfig}} are described in their
     registrations in the [[WEBCODECS-CODEC-REGISTRY]].
 
 To check if a {{VideoEncoderConfig}} is a <dfn>valid VideoEncoderConfig</dfn>,
@@ -1907,11 +1907,11 @@ To check if a {{VideoEncoderConfig}} is a <dfn>valid VideoEncoderConfig</dfn>,
   NOTE: Providing a {{VideoEncoderConfig/displayWidth}} or
       {{VideoEncoderConfig/displayHeight}} that differs from
       {{VideoEncoderConfig/width}} and {{VideoEncoderConfig/height}} signals
-      that chunks should be scaled after decoding to arrive at the final
+      that chunks are to be scaled after decoding to arrive at the final
       display aspect ratio.
 
       For many codecs this is merely pass-through information, but some codecs
-      may optionally include display sizing in the bitstream.
+      can /ometimes include display sizing in the bitstream.
 </div>
 
 <dl>
@@ -2001,9 +2001,9 @@ fingerprinting, they SHOULD ignore the {{HardwareAcceleration}} preference.
   strategy will be to prioritize hardware acceleration at higher resolutions
   with a fallback to software codecs if hardware acceleration fails.
 
-  Authors should carefully weigh the tradeoffs when setting a hardware
-  acceleration preference. The precise tradeoffs will be device-specific, but
-  authors should generally expect the following:
+  Authors are encouraged to carefully weigh the tradeoffs when setting a
+  hardware acceleration preference. The precise tradeoffs will be
+  device-specific, but authors can generally expect the following:
 
   * Setting a value of {{HardwareAcceleration/prefer-hardware}} or
       {{HardwareAcceleration/prefer-software}} may significantly restrict what
@@ -2019,7 +2019,7 @@ fingerprinting, they SHOULD ignore the {{HardwareAcceleration}} preference.
   * Hardware acceleration will often be more power efficient than purely
       software based codecs.
   * For lower resolution content, the overhead added by hardware acceleration
-      may yield decreased performance and power efficiency compared to purely
+      can yield decreased performance and power efficiency compared to purely
       software based codecs.
 
   Given these tradeoffs, a good example of using "prefer-hardware" would be if
@@ -2332,7 +2332,7 @@ Decoded media data may occupy a large amount of system memory. To minimize the
 need for expensive copies, this specification defines a scheme for reference
 counting (`clone()` and `close()`).
 
-NOTE: Authors should take care to invoke `close()` immediately when frames are
+NOTE: Authors are encourage to call `close()` immediately when frames are
     no longer needed.
 
 ### Reference Counting ### {#raw-media-memory-model-reference-counting}
@@ -2357,7 +2357,7 @@ A [=media resource=] must remain alive at least as long as it continues to be
 referenced by a `[[resource reference]]`.
 
 NOTE: When a [=media resource=] is no longer referenced by a
-    `[[resource reference]]`, the resource may be destroyed. User Agents are
+    `[[resource reference]]`, the resource can be destroyed. User Agents are
     encouraged to destroy such resources quickly to reduce memory pressure and
     facilitate resource reuse.
 
@@ -2865,7 +2865,7 @@ channel attributed to a particular channel index.
 VideoFrame Interface {#videoframe-interface}
 --------------------------------------------
 
-NOTE: {{VideoFrame}} is a {{CanvasImageSource}}. A {{VideoFrame}} may be
+NOTE: {{VideoFrame}} is a {{CanvasImageSource}}. A {{VideoFrame}} can be
     passed to any method accepting a {{CanvasImageSource}}, including
     {{CanvasDrawImage}}'s {{CanvasDrawImage/drawImage()}}.
 
@@ -3023,8 +3023,8 @@ dictionary VideoFrameBufferInit {
         2. Let |resource| be a new [=media resource=] containing a copy of
             |image|'s [=bitmap data=].
 
-            NOTE: Implementers should avoid a deep copy by using reference
-                counting where feasible.
+            NOTE: Implementers are encouraged to avoid a deep copy by using
+                reference counting where feasible.
 
         3. Let |width| be `image.width` and |height| be `image.height`.
         4. Run the [=VideoFrame/Initialize Frame With Resource and Size=]
@@ -3572,7 +3572,7 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
                 |minAllocationSize|.
 
                 NOTE: The above step uses a maximum to allow for the
-                    possibility that user specified plane offsets may reorder
+                    possibility that user specified plane offsets reorder
                     planes.
 
         18. Let |earlierPlaneIndex| be `0`.
@@ -3661,10 +3661,10 @@ dictionary VideoFrameCopyToOptions {
 <div class='note'>
 NOTE: The steps of {{VideoFrame/copyTo()}} or {{VideoFrame/allocationSize()}}
 will enforce the following requirements:
-    * The coordinates of {{VideoFrameCopyToOptions/rect}} must be
+    * The coordinates of {{VideoFrameCopyToOptions/rect}} are
         sample-aligned as determiend by {{VideoFrame/[[format]]}}.
     * If {{VideoFrameCopyToOptions/layout}} [=map/exists=], a {{PlaneLayout}}
-        must be provided for all planes.
+        is provided for all planes.
 </div>
 
 : <dfn dict-member for=VideoFrameCopyToOptions>rect</dfn>
@@ -4234,9 +4234,9 @@ interface ImageDecoder {
     </dfn>
 :: NOTE: Calling {{ImageDecoder/decode()}} on the constructed {{ImageDecoder}}
     will trigger a {{NotSupportedError}} if the User Agent does not support
-    |type|. Authors should first check support by calling
-    {{ImageDecoder/isTypeSupported()}} with |type|. User Agents are not
-    required to support any particular type.
+    |type|. Authors are encouraged to first check support by calling
+    {{ImageDecoder/isTypeSupported()}} with |type|. User Agents don't have to
+    support any particular type.
 
     When invoked, run these steps:
     1. If |init| is not [=valid ImageDecoderInit=], throw a {{TypeError}}.
@@ -4428,7 +4428,7 @@ interface ImageDecoder {
 
                 NOTE: If [=this=] was constructed with
                   {{ImageDecoderInit/data}} as a {{ReadableStream}}, the
-                  {{ImageTrack/frameCount}} may change as additional bytes are
+                  {{ImageTrack/frameCount}} can change as additional bytes are
                   appended to {{ImageDecoder/[[encoded data]]}}. See the
                   [=Update Tracks=] algorithm.
 
@@ -4763,7 +4763,7 @@ dictionary ImageDecodeOptions {
 
     <div class='note'>
       NOTE: For [=Progressive Images=], setting
-          {{ImageDecodeOptions/completeFramesOnly}} to `false` may be used to
+          {{ImageDecodeOptions/completeFramesOnly}} to `false` can be used to
           offer users a preview an image that is still being buffered from the
           network (via the {{ImageDecoderInit/data}} {{ReadableStream}}).
 
@@ -4815,7 +4815,7 @@ interface ImageTrackList {
 :: The promise used to signal when the {{ImageTrackList}} has been populated
     with {{ImageTrack}}s.
 
-    NOTE: {{ImageTrack}} {{ImageTrack/frameCount}} may receive subsequent
+    NOTE: {{ImageTrack}} {{ImageTrack/frameCount}} can receive subsequent
         updates until {{ImageDecoder/complete}} is `true`.
 
 : <dfn attribute for=ImageTrackList>[[track list]]</dfn>
