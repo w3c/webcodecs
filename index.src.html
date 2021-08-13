@@ -202,18 +202,20 @@ Definitions {#definitions}
 Background {#processing-model-background}
 -----------------------------------------
 
-This section is non-normative.
+<div class=non-normative>
+  This section is non-normative.
 
-The codec interfaces defined by the specification are designed such that new
-codec tasks may be scheduled while previous tasks are still pending. For
-example, web authors may call `decode()` without waiting for a previous
-`decode()` to complete. This is achieved by offloading underlying codec tasks to
-a separate thread for parallel execution.
+  The codec interfaces defined by the specification are designed such that new
+  codec tasks can be scheduled while previous tasks are still pending. For
+  example, web authors can call `decode()` without waiting for a previous
+  `decode()` to complete. This is achieved by offloading underlying codec tasks
+  to a separate thread for parallel execution.
 
-This section describes threading behaviors as they are visible from the
-perspective of web authors. Implementers may choose to use more or less threads
-as long as the exernally visible behaviors of blocking and sequencing are
-maintained as follows.
+  This section describes threading behaviors as they are visible from the
+  perspective of web authors. Implementers can choose to use more or less
+  threads as long as the exernally visible behaviors of blocking and sequencing
+  are maintained as follows.
+</div>
 
 Control Thread and Codec Thread {#control-thread-and-codec-thread}
 ------------------------------------------------------------------
@@ -4147,17 +4149,19 @@ Image Decoding {#image-decoding}
 Background {#image-decoding-background}
 -------------------------------------
 
-This section is non-normative.
+<div class=non-normative>
+  This section is non-normative.
 
-Image codec definitions are typically accompanied by a definition for a
-corresponding file format. Hence image decoders often perform both duties of
-unpacking (demuxing) as well as decoding the encoded image data. The WebCodecs
-{{ImageDecoder}} follows this pattern, which motivates an interface design that
-is notably different from that of {{VideoDecoder}} and {{AudioDecoder}}.
+  Image codec definitions are typically accompanied by a definition for a
+  corresponding file format. Hence image decoders often perform both duties of
+  unpacking (demuxing) as well as decoding the encoded image data. The WebCodecs
+  {{ImageDecoder}} follows this pattern, which motivates an interface design that
+  is notably different from that of {{VideoDecoder}} and {{AudioDecoder}}.
 
-In spite of these differences, {{ImageDecoder}} uses the same
-[=codec processing model=] as the other codec interfaces. Additionally,
-{{ImageDecoder}} uses the {{VideoFrame}} interface to describe decoded outputs.
+  In spite of these differences, {{ImageDecoder}} uses the same
+  [=codec processing model=] as the other codec interfaces. Additionally,
+  {{ImageDecoder}} uses the {{VideoFrame}} interface to describe decoded outputs.
+</div>
 
 ImageDecoder Interface {#imagedecoder-interface}
 ------------------------------------------------
@@ -5079,18 +5083,22 @@ capabilities could be reduced to a common baseline or prompt for user approval.
 Best Practices for Authors Using WebCodecs{#best-practices-developers}
 ======================================================================
 
-While WebCodecs internally operates on background threads, authors working with
-realtime media or in contended main thread environments should ensure their
-media pipelines operate in worker contexts entirely independent of the main
-thread where possible. For example, realtime media processing of {{VideoFrame}}s
-should generally be done in a worker context.
+<div class=non-normative>
+  This section is non-normative.
 
-The main thread has significant potential for high contention and jank that may
-go unnoticed in development, yet degrade inconsistently across devices and User
-Agents in the field -- potentially dramatically impacting the end user
-experience. Ensuring the media pipeline is decoupled from the main thread helps
-provide a smooth experience for end users.
+  While WebCodecs internally operates on background threads, authors working with
+  realtime media or in contended main thread environments are encouraged to ensure their
+  media pipelines operate in worker contexts entirely independent of the main
+  thread where possible. For example, realtime media processing of {{VideoFrame}}s
+  are generally be done in a worker context.
 
-Authors using the main thread for their media pipeline should be sure of their
-target frame rates, main thread workload, how their application will be
-embedded, and the class of devices their users will be using.
+  The main thread has significant potential for high contention and jank that can
+  go unnoticed in development, yet degrade inconsistently across devices and User
+  Agents in the field -- potentially dramatically impacting the end user
+  experience. Ensuring the media pipeline is decoupled from the main thread helps
+  provide a smooth experience for end users.
+
+  Authors using the main thread for their media pipeline ought to be sure of
+  their target frame rates, main thread workload, how their application will be
+  embedded, and the class of devices their users will be using.
+</div>
