@@ -6,7 +6,7 @@
   <link href="https://www.w3.org/StyleSheets/TR/2016/W3C-ED" rel="stylesheet" type="text/css">
   <meta content="Bikeshed version 4f053d00e, updated Tue Aug 10 14:13:32 2021 -0700" name="generator">
   <link href="https://www.w3.org/TR/webcodecs/" rel="canonical">
-  <meta content="7dc4e8705d596eed5cd1b1249cb190e7ce510173" name="document-revision">
+  <meta content="79a1416752c0f0691e877f6a52137555372aecfd" name="document-revision">
 <style>
 main > dl > dd {
   margin-bottom: 1em;
@@ -586,7 +586,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
   <div class="head">
    <p data-fill-with="logo"><a class="logo" href="https://www.w3.org/"> <img alt="W3C" height="48" src="https://www.w3.org/StyleSheets/TR/2016/logos/W3C" width="72"> </a> </p>
    <h1 class="p-name no-ref" id="title">WebCodecs</h1>
-   <h2 class="no-num no-toc no-ref heading settled" id="profile-and-date"><span class="content">Editor’s Draft, <time class="dt-updated" datetime="2021-08-13">13 August 2021</time></span></h2>
+   <h2 class="no-num no-toc no-ref heading settled" id="profile-and-date"><span class="content">Editor’s Draft, <time class="dt-updated" datetime="2021-08-16">16 August 2021</time></span></h2>
    <div data-fill-with="spec-metadata">
     <dl>
      <dt>This version:
@@ -818,9 +818,10 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
         <li><a href="#imagetracklist-eventsummary"><span class="secno">10.7.3</span> <span class="content">Event Summary</span></a>
        </ol>
      </ol>
-    <li><a href="#security-considerations"><span class="secno">11</span> <span class="content">Security Considerations</span></a>
-    <li><a href="#privacy-considerations"><span class="secno">12</span> <span class="content">Privacy Considerations</span></a>
-    <li><a href="#best-practices-developers"><span class="secno">13</span> <span class="content">Best Practices for Authors Using WebCodecs</span></a>
+    <li><a href="#resource-reclamation"><span class="secno">11</span> <span class="content">Resource Reclamation</span></a>
+    <li><a href="#security-considerations"><span class="secno">12</span> <span class="content">Security Considerations</span></a>
+    <li><a href="#privacy-considerations"><span class="secno">13</span> <span class="content">Privacy Considerations</span></a>
+    <li><a href="#best-practices-developers"><span class="secno">14</span> <span class="content">Best Practices for Authors Using WebCodecs</span></a>
     <li>
      <a href="#index"><span class="secno"></span> <span class="content">Index</span></a>
      <ol class="toc">
@@ -5587,7 +5588,39 @@ means running these steps:</p>
     <dd data-md>
      <p>Fired at the <code class="idl"><a data-link-type="idl" href="#imagetrack" id="ref-for-imagetrack①④">ImageTrack</a></code> when the <code class="idl"><a data-link-type="idl" href="#dom-imagetrack-framecount" id="ref-for-dom-imagetrack-framecount⑥">frameCount</a></code> is altered.</p>
    </dl>
-   <h2 class="heading settled" data-level="11" id="security-considerations"><span class="secno">11. </span><span class="content">Security Considerations</span><a class="self-link" href="#security-considerations"></a></h2>
+   <h2 class="heading settled" data-level="11" id="resource-reclamation"><span class="secno">11. </span><span class="content">Resource Reclamation</span><a class="self-link" href="#resource-reclamation"></a></h2>
+   <p>When resources are constrained, a User Agent MAY proactively reclaim codecs.
+This is particularly true in the case where hardware codecs are limited, and
+shared accross web pages or platform apps.</p>
+   <p>To <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="reclaim-a-codec">reclaim a codec</dfn>, a User Agent MUST run the appropriate
+close algorithm (amongst <a data-link-type="dfn" href="#close-audiodecoder" id="ref-for-close-audiodecoder③">Close AudioDecoder</a>, <a data-link-type="dfn" href="#close-audioencoder" id="ref-for-close-audioencoder③">Close AudioEncoder</a>, <a data-link-type="dfn" href="#close-videodecoder" id="ref-for-close-videodecoder③">Close VideoDecoder</a> and <a data-link-type="dfn" href="#close-videoencoder" id="ref-for-close-videoencoder③">Close VideoEncoder</a>) with a <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#quotaexceedederror" id="ref-for-quotaexceedederror">QuotaExceededError</a></code> <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-DOMException" id="ref-for-idl-DOMException④②">DOMException</a></code>.</p>
+   <p>The rules governing when a codec may be reclaimed depend on whether the codec is
+an <a data-link-type="dfn" href="#active-codec" id="ref-for-active-codec">active</a> or <a data-link-type="dfn" href="#inactive-codec" id="ref-for-inactive-codec">inactive</a> codec and/or a <a data-link-type="dfn" href="#background-codec" id="ref-for-background-codec">background</a> codec.</p>
+   <p>An <dfn class="dfn-paneled" data-dfn-type="dfn" data-lt="active codec|active" data-noexport id="active-codec">active codec</dfn> is a codec that has
+received a call to <code>encode()</code>, <code>decode()</code>, <code>configure()</code>, <code>flush()</code> or <code>reset()</code> in the past <code>10 seconds</code>, or has called its <code>output()</code> callback in the past <code>10
+seconds</code>. Addionally, <code class="idl"><a data-link-type="idl" href="#videoencoder" id="ref-for-videoencoder①">VideoEncoder</a></code>s are considered <a data-link-type="dfn" href="#active-codec" id="ref-for-active-codec①">active</a> if they are
+making progress in encoding queued <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe⑥⑧">VideoFrame</a></code>s.</p>
+   <p class="note" role="note"><span>NOTE:</span> Encoding large <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe⑥⑨">VideoFrame</a></code>s can take more than <code>10s</code> per frame. The
+special case for <code class="idl"><a data-link-type="idl" href="#videoencoder" id="ref-for-videoencoder②">VideoEncoder</a></code>s ensures that they are not reclaimed if more
+than <code>10 seconds</code> elapses between each <code>output()</code> callback.</p>
+   <p>An <dfn class="dfn-paneled" data-dfn-type="dfn" data-lt="inactive codec|inactive" data-noexport id="inactive-codec">inactive codec</dfn> is any codec that does
+not meet the definition of an <a data-link-type="dfn" href="#active-codec" id="ref-for-active-codec②">active codec</a>.</p>
+   <p>A <dfn class="dfn-paneled" data-dfn-type="dfn" data-lt="background codec|background" data-noexport id="background-codec">background codec</dfn> is a codec whose <code class="idl"><a data-link-type="idl" href="https://dom.spec.whatwg.org/#dom-node-ownerdocument" id="ref-for-dom-node-ownerdocument">ownerDocument</a></code> (or <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/workers.html#concept-WorkerGlobalScope-owner-set" id="ref-for-concept-WorkerGlobalScope-owner-set">owner set</a>'s <code class="idl"><a data-link-type="idl" href="https://dom.spec.whatwg.org/#document" id="ref-for-document">Document</a></code>, for codecs in workers) has a <code class="idl"><a data-link-type="idl" href="https://www.w3.org/TR/page-visibility-2/#dom-document-hidden" id="ref-for-dom-document-hidden">hidden</a></code> attribute equal to <code class="idl"><a data-link-type="idl" href="https://www.w3.org/TR/page-visibility/#dom-visibilitystate-hidden" id="ref-for-dom-visibilitystate-hidden">"hidden"</a></code>.</p>
+   <p>A User Agent MUST only <a data-link-type="dfn" href="#reclaim-a-codec" id="ref-for-reclaim-a-codec">reclaim a codec</a> that is either an <a data-link-type="dfn" href="#inactive-codec" id="ref-for-inactive-codec①">inactive codec</a>, a <a data-link-type="dfn" href="#background-codec" id="ref-for-background-codec①">background codec</a>, or both. A User Agent MUST NOT
+reclaim a codec that is both <a data-link-type="dfn" href="#active-codec" id="ref-for-active-codec③">active</a> and in the foreground, i.e. not a <a data-link-type="dfn" href="#background-codec" id="ref-for-background-codec②">background codec</a>.</p>
+   <p>Additionally, User Agents MUST NOT reclaim an <a data-link-type="dfn" href="#active-codec" id="ref-for-active-codec④">active</a> <a data-link-type="dfn" href="#background-codec" id="ref-for-background-codec③">background</a> codec
+if it is:</p>
+   <ul>
+    <li data-md>
+     <p>An encoder, e.g. an <code class="idl"><a data-link-type="idl" href="#audioencoder" id="ref-for-audioencoder①">AudioEncoder</a></code> or <code class="idl"><a data-link-type="idl" href="#videoencoder" id="ref-for-videoencoder③">VideoEncoder</a></code>.</p>
+     <p class="note" role="note"><span>NOTE:</span> This prevents long running encode tasks from being interrupted.</p>
+    <li data-md>
+     <p>An <code class="idl"><a data-link-type="idl" href="#audiodecoder" id="ref-for-audiodecoder③">AudioDecoder</a></code> or <code class="idl"><a data-link-type="idl" href="#videodecoder" id="ref-for-videodecoder④">VideoDecoder</a></code>, when there is, respectively, an <a data-link-type="dfn" href="#active-codec" id="ref-for-active-codec⑤">active</a> <code class="idl"><a data-link-type="idl" href="#audioencoder" id="ref-for-audioencoder②">AudioEncoder</a></code> or <code class="idl"><a data-link-type="idl" href="#videoencoder" id="ref-for-videoencoder④">VideoEncoder</a></code> in the same <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#global-object" id="ref-for-global-object①">global object</a>.</p>
+     <p class="note" role="note"><span>NOTE:</span> This prevents prevents breaking long running transcoding tasks.</p>
+    <li data-md>
+     <p>An <code class="idl"><a data-link-type="idl" href="#audiodecoder" id="ref-for-audiodecoder④">AudioDecoder</a></code>, when its tab is audibly playing audio.</p>
+   </ul>
+   <h2 class="heading settled" data-level="12" id="security-considerations"><span class="secno">12. </span><span class="content">Security Considerations</span><a class="self-link" href="#security-considerations"></a></h2>
    <p>The primary security impact is that features of this API make it easier for an
 attacker to exploit vulnerabilities in the underlying platform codecs.
 Additionally, new abilities to configure and control the codecs may allow for
@@ -5613,7 +5646,7 @@ conditions. Specifically, it should not be possible for a site to mutate a codec
 input or output while the underlying codec may still be operating on that data.
 This concern is mitigated by ensuring that input and output interfaces are
 immutable.</p>
-   <h2 class="heading settled" data-level="12" id="privacy-considerations"><span class="secno">12. </span><span class="content">Privacy Considerations</span><a class="self-link" href="#privacy-considerations"></a></h2>
+   <h2 class="heading settled" data-level="13" id="privacy-considerations"><span class="secno">13. </span><span class="content">Privacy Considerations</span><a class="self-link" href="#privacy-considerations"></a></h2>
    <p>The primary privacy impact is an increased ability to fingerprint users by
 querying for different codec capabilities to establish a codec feature profile.
 Much of this profile is already exposed by existing APIs. Such profiles are very
@@ -5646,11 +5679,11 @@ attempts to exhaustively probe for codec capabilities. Additionally, User Agents
 may implement a "privacy budget", which depletes as authors use WebCodecs and
 other identifying APIs. Upon exhaustion of the privacy budget, codec
 capabilities could be reduced to a common baseline or prompt for user approval.</p>
-   <h2 class="heading settled" data-level="13" id="best-practices-developers"><span class="secno">13. </span><span class="content">Best Practices for Authors Using WebCodecs</span><a class="self-link" href="#best-practices-developers"></a></h2>
+   <h2 class="heading settled" data-level="14" id="best-practices-developers"><span class="secno">14. </span><span class="content">Best Practices for Authors Using WebCodecs</span><a class="self-link" href="#best-practices-developers"></a></h2>
    <p>While WebCodecs internally operates on background threads, authors working with
 realtime media or in contended main thread environments should ensure their
 media pipelines operate in worker contexts entirely independent of the main
-thread where possible. For example, realtime media processing of <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe⑥⑧">VideoFrame</a></code>s
+thread where possible. For example, realtime media processing of <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe⑦⓪">VideoFrame</a></code>s
 should generally be done in a worker context.</p>
    <p>The main thread has significant potential for high contention and jank that may
 go unnoticed in development, yet degrade inconsistently across devices and User
@@ -5666,6 +5699,8 @@ embedded, and the class of devices their users will be using.</p>
   <h2 class="no-num no-ref heading settled" id="index"><span class="content">Index</span><a class="self-link" href="#index"></a></h2>
   <h3 class="no-num no-ref heading settled" id="index-defined-here"><span class="content">Terms defined by this specification</span><a class="self-link" href="#index-defined-here"></a></h3>
   <ul class="index">
+   <li><a href="#active-codec">active</a><span>, in § 11</span>
+   <li><a href="#active-codec">active codec</a><span>, in § 11</span>
    <li><a href="#dom-videoencoder-active-color-space-slot">[[active color space]]</a><span>, in § 6.1</span>
    <li><a href="#dom-videodecoder-active-decoder-config-slot">[[active decoder config]]</a><span>, in § 4.1</span>
    <li>
@@ -5717,6 +5752,8 @@ embedded, and the class of devices their users will be using.</p>
    <li><a href="#dictdef-audioencodersupport">AudioEncoderSupport</a><span>, in § 7.3.3</span>
    <li><a href="#enumdef-audiosampleformat">AudioSampleFormat</a><span>, in § 9.3</span>
    <li><a href="#audio-sample-type">audio sample type</a><span>, in § 9.3</span>
+   <li><a href="#background-codec">background</a><span>, in § 11</span>
+   <li><a href="#background-codec">background codec</a><span>, in § 11</span>
    <li><a href="#dom-videopixelformat-bgra">"BGRA"</a><span>, in § 9.8</span>
    <li><a href="#dom-videopixelformat-bgra">BGRA</a><span>, in § 9.8</span>
    <li><a href="#dom-videopixelformat-bgrx">"BGRX"</a><span>, in § 9.8</span>
@@ -6144,6 +6181,8 @@ embedded, and the class of devices their users will be using.</p>
      <li><a href="#dom-imagetrack-imagetracklist-slot">attribute for ImageTrack</a><span>, in § 10.7.1</span>
     </ul>
    <li><a href="#imagetracklist">ImageTrackList</a><span>, in § 10.6</span>
+   <li><a href="#inactive-codec">inactive</a><span>, in § 11</span>
+   <li><a href="#inactive-codec">inactive codec</a><span>, in § 11</span>
    <li><a href="#videoframe-initialize-frame-from-other-frame">Initialize Frame From Other Frame</a><span>, in § 9.4.6</span>
    <li><a href="#videoframe-initialize-frame-with-resource-and-size">Initialize Frame With Resource and Size</a><span>, in § 9.4.6</span>
    <li><a href="#interleaved">interleaved</a><span>, in § 9.3.1</span>
@@ -6278,6 +6317,7 @@ embedded, and the class of devices their users will be using.</p>
    <li><a href="#dom-latencymode-realtime">"realtime"</a><span>, in § 7.11</span>
    <li><a href="#dom-latencymode-realtime">realtime</a><span>, in § 7.11</span>
    <li><a href="#rec709-color-space">REC709 Color Space</a><span>, in § 1</span>
+   <li><a href="#reclaim-a-codec">reclaim a codec</a><span>, in § 11</span>
    <li><a href="#dom-videoframecopytooptions-rect">rect</a><span>, in § 9.5</span>
    <li><a href="#imagedecoder-reject-infeasible-decode">Reject Infeasible Decode</a><span>, in § 10.2.5</span>
    <li><a href="#dom-imagetrack-repetition-count-slot">[[repetition count]]</a><span>, in § 10.7.1</span>
@@ -6512,10 +6552,22 @@ embedded, and the class of devices their users will be using.</p>
     <li><a href="#ref-for-natural-width">9.4.2. Constructors</a>
    </ul>
   </aside>
+  <aside class="dfn-panel" data-for="term-for-document">
+   <a href="https://dom.spec.whatwg.org/#document">https://dom.spec.whatwg.org/#document</a><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-document">11. Resource Reclamation</a>
+   </ul>
+  </aside>
   <aside class="dfn-panel" data-for="term-for-eventtarget">
    <a href="https://dom.spec.whatwg.org/#eventtarget">https://dom.spec.whatwg.org/#eventtarget</a><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-eventtarget">10.7. ImageTrack Interface</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="term-for-dom-node-ownerdocument">
+   <a href="https://dom.spec.whatwg.org/#dom-node-ownerdocument">https://dom.spec.whatwg.org/#dom-node-ownerdocument</a><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-dom-node-ownerdocument">11. Resource Reclamation</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-domrect">
@@ -6608,7 +6660,7 @@ embedded, and the class of devices their users will be using.</p>
   <aside class="dfn-panel" data-for="term-for-htmlmediaelement">
    <a href="https://html.spec.whatwg.org/multipage/media.html#htmlmediaelement">https://html.spec.whatwg.org/multipage/media.html#htmlmediaelement</a><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-htmlmediaelement">11. Security Considerations</a> <a href="#ref-for-htmlmediaelement①">(2)</a>
+    <li><a href="#ref-for-htmlmediaelement">12. Security Considerations</a> <a href="#ref-for-htmlmediaelement①">(2)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-htmlvideoelement">
@@ -6749,6 +6801,7 @@ embedded, and the class of devices their users will be using.</p>
    <a href="https://html.spec.whatwg.org/multipage/webappapis.html#global-object">https://html.spec.whatwg.org/multipage/webappapis.html#global-object</a><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-global-object">2.2. Control Thread and Codec Thread</a>
+    <li><a href="#ref-for-global-object①">11. Resource Reclamation</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-live">
@@ -6767,6 +6820,12 @@ embedded, and the class of devices their users will be using.</p>
    <a href="https://html.spec.whatwg.org/multipage/origin.html#concept-origin">https://html.spec.whatwg.org/multipage/origin.html#concept-origin</a><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-concept-origin">9.4.2. Constructors</a> <a href="#ref-for-concept-origin①">(2)</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="term-for-concept-WorkerGlobalScope-owner-set">
+   <a href="https://html.spec.whatwg.org/multipage/workers.html#concept-WorkerGlobalScope-owner-set">https://html.spec.whatwg.org/multipage/workers.html#concept-WorkerGlobalScope-owner-set</a><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-concept-WorkerGlobalScope-owner-set">11. Resource Reclamation</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-parallel-queue">
@@ -6807,7 +6866,7 @@ embedded, and the class of devices their users will be using.</p>
   <aside class="dfn-panel" data-for="term-for-dom-media-src">
    <a href="https://html.spec.whatwg.org/multipage/media.html#dom-media-src">https://html.spec.whatwg.org/multipage/media.html#dom-media-src</a><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-dom-media-src">11. Security Considerations</a>
+    <li><a href="#ref-for-dom-media-src">12. Security Considerations</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-transfer-steps">
@@ -6911,13 +6970,13 @@ embedded, and the class of devices their users will be using.</p>
   <aside class="dfn-panel" data-for="term-for-dom-mediacapabilities-decodinginfo">
    <a href="https://w3c.github.io/media-capabilities/#dom-mediacapabilities-decodinginfo">https://w3c.github.io/media-capabilities/#dom-mediacapabilities-decodinginfo</a><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-dom-mediacapabilities-decodinginfo">12. Privacy Considerations</a>
+    <li><a href="#ref-for-dom-mediacapabilities-decodinginfo">13. Privacy Considerations</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-dom-mediacapabilitiesinfo-powerefficient">
    <a href="https://w3c.github.io/media-capabilities/#dom-mediacapabilitiesinfo-powerefficient">https://w3c.github.io/media-capabilities/#dom-mediacapabilitiesinfo-powerefficient</a><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-dom-mediacapabilitiesinfo-powerefficient">12. Privacy Considerations</a>
+    <li><a href="#ref-for-dom-mediacapabilitiesinfo-powerefficient">13. Privacy Considerations</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-dom-mediasource-istypesupported">
@@ -6954,6 +7013,12 @@ embedded, and the class of devices their users will be using.</p>
    <a href="https://mimesniff.spec.whatwg.org/#valid-mime-type">https://mimesniff.spec.whatwg.org/#valid-mime-type</a><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-valid-mime-type">10.3. ImageDecoderInit Interface</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="term-for-dom-document-hidden">
+   <a href="https://www.w3.org/TR/page-visibility-2/#dom-document-hidden">https://www.w3.org/TR/page-visibility-2/#dom-document-hidden</a><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-dom-document-hidden">11. Resource Reclamation</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-readablestream">
@@ -7012,6 +7077,12 @@ embedded, and the class of devices their users will be using.</p>
    <a href="https://svgwg.org/svg2-draft/embedded.html#InterfaceSVGImageElement">https://svgwg.org/svg2-draft/embedded.html#InterfaceSVGImageElement</a><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-InterfaceSVGImageElement">9.4.2. Constructors</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="term-for-dom-visibilitystate-hidden">
+   <a href="https://www.w3.org/TR/page-visibility/#dom-visibilitystate-hidden">https://www.w3.org/TR/page-visibility/#dom-visibilitystate-hidden</a><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-dom-visibilitystate-hidden">11. Resource Reclamation</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-aborterror">
@@ -7074,6 +7145,7 @@ embedded, and the class of devices their users will be using.</p>
     <li><a href="#ref-for-idl-DOMException③③">10.2.2. Constructor</a>
     <li><a href="#ref-for-idl-DOMException③④">10.2.4. Methods</a> <a href="#ref-for-idl-DOMException③⑤">(2)</a> <a href="#ref-for-idl-DOMException③⑥">(3)</a> <a href="#ref-for-idl-DOMException③⑦">(4)</a>
     <li><a href="#ref-for-idl-DOMException③⑧">10.2.5. Algorithms</a> <a href="#ref-for-idl-DOMException③⑨">(2)</a> <a href="#ref-for-idl-DOMException④⓪">(3)</a> <a href="#ref-for-idl-DOMException④①">(4)</a>
+    <li><a href="#ref-for-idl-DOMException④②">11. Resource Reclamation</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-idl-DOMString">
@@ -7201,6 +7273,12 @@ embedded, and the class of devices their users will be using.</p>
     <li><a href="#ref-for-idl-promise①⓪">10.2. ImageDecoder Interface</a> <a href="#ref-for-idl-promise①①">(2)</a> <a href="#ref-for-idl-promise①②">(3)</a>
     <li><a href="#ref-for-idl-promise①③">10.2.4. Methods</a> <a href="#ref-for-idl-promise①④">(2)</a> <a href="#ref-for-idl-promise①⑤">(3)</a> <a href="#ref-for-idl-promise①⑥">(4)</a> <a href="#ref-for-idl-promise①⑦">(5)</a>
     <li><a href="#ref-for-idl-promise①⑧">10.6. ImageTrackList Interface</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="term-for-quotaexceedederror">
+   <a href="https://heycam.github.io/webidl/#quotaexceedederror">https://heycam.github.io/webidl/#quotaexceedederror</a><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-quotaexceedederror">11. Resource Reclamation</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-exceptiondef-rangeerror">
@@ -7401,13 +7479,13 @@ embedded, and the class of devices their users will be using.</p>
   <aside class="dfn-panel" data-for="term-for-dom-rtcrtpsender-getcapabilities">
    <a href="https://www.w3.org/TR/webrtc/#dom-rtcrtpsender-getcapabilities">https://www.w3.org/TR/webrtc/#dom-rtcrtpsender-getcapabilities</a><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-dom-rtcrtpsender-getcapabilities">12. Privacy Considerations</a>
+    <li><a href="#ref-for-dom-rtcrtpsender-getcapabilities">13. Privacy Considerations</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-widl-RTCPeerConnection-getStats-Promise-RTCStatsReport--MediaStreamTrack-selector">
    <a href="https://www.w3.org/TR/webrtc/#widl-RTCPeerConnection-getStats-Promise-RTCStatsReport--MediaStreamTrack-selector">https://www.w3.org/TR/webrtc/#widl-RTCPeerConnection-getStats-Promise-RTCStatsReport--MediaStreamTrack-selector</a><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-widl-RTCPeerConnection-getStats-Promise-RTCStatsReport--MediaStreamTrack-selector">12. Privacy Considerations</a>
+    <li><a href="#ref-for-widl-RTCPeerConnection-getStats-Promise-RTCStatsReport--MediaStreamTrack-selector">13. Privacy Considerations</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-scalabilitymodes*">
@@ -7428,7 +7506,9 @@ embedded, and the class of devices their users will be using.</p>
    <li>
     <a data-link-type="biblio">[DOM]</a> defines the following terms:
     <ul>
+     <li><span class="dfn-paneled" id="term-for-document">Document</span>
      <li><span class="dfn-paneled" id="term-for-eventtarget">EventTarget</span>
+     <li><span class="dfn-paneled" id="term-for-dom-node-ownerdocument">ownerDocument</span>
     </ul>
    <li>
     <a data-link-type="biblio">[geometry-1]</a> defines the following terms:
@@ -7474,6 +7554,7 @@ embedded, and the class of devices their users will be using.</p>
      <li><span class="dfn-paneled" id="term-for-live">live</span>
      <li><span class="dfn-paneled" id="term-for-dom-media-networkstate">networkState</span>
      <li><span class="dfn-paneled" id="term-for-concept-origin">origin</span>
+     <li><span class="dfn-paneled" id="term-for-concept-WorkerGlobalScope-owner-set">owner set</span>
      <li><span class="dfn-paneled" id="term-for-parallel-queue">parallel queue</span>
      <li><span class="dfn-paneled" id="term-for-dom-imagebitmapoptions-premultiplyalpha">premultiplyAlpha</span>
      <li><span class="dfn-paneled" id="term-for-same-origin">same origin</span>
@@ -7523,6 +7604,11 @@ embedded, and the class of devices their users will be using.</p>
      <li><span class="dfn-paneled" id="term-for-valid-mime-type">valid mime type string</span>
     </ul>
    <li>
+    <a data-link-type="biblio">[page-visibility-2]</a> defines the following terms:
+    <ul>
+     <li><span class="dfn-paneled" id="term-for-dom-document-hidden">hidden</span>
+    </ul>
+   <li>
     <a data-link-type="biblio">[STREAMS]</a> defines the following terms:
     <ul>
      <li><span class="dfn-paneled" id="term-for-readablestream">ReadableStream</span>
@@ -7538,6 +7624,11 @@ embedded, and the class of devices their users will be using.</p>
     <a data-link-type="biblio">[SVG2]</a> defines the following terms:
     <ul>
      <li><span class="dfn-paneled" id="term-for-InterfaceSVGImageElement">SVGImageElement</span>
+    </ul>
+   <li>
+    <a data-link-type="biblio">[visibility-state]</a> defines the following terms:
+    <ul>
+     <li><span class="dfn-paneled" id="term-for-dom-visibilitystate-hidden">hidden</span>
     </ul>
    <li>
     <a data-link-type="biblio">[WebIDL]</a> defines the following terms:
@@ -7557,6 +7648,7 @@ embedded, and the class of devices their users will be using.</p>
      <li><span class="dfn-paneled" id="term-for-notreadableerror">NotReadableError</span>
      <li><span class="dfn-paneled" id="term-for-notsupportederror">NotSupportedError</span>
      <li><span class="dfn-paneled" id="term-for-idl-promise">Promise</span>
+     <li><span class="dfn-paneled" id="term-for-quotaexceedederror">QuotaExceededError</span>
      <li><span class="dfn-paneled" id="term-for-exceptiondef-rangeerror">RangeError</span>
      <li><span class="dfn-paneled" id="term-for-securityerror">SecurityError</span>
      <li><span class="dfn-paneled" id="term-for-exceptiondef-typeerror">TypeError</span>
@@ -7607,6 +7699,8 @@ embedded, and the class of devices their users will be using.</p>
    <dd>Miguel Casas-sanchez; James Barnett; Travis Leithead. <a href="https://www.w3.org/TR/mediastream-recording/"><cite>MediaStream Recording</cite></a>. 4 June 2021. WD. URL: <a href="https://www.w3.org/TR/mediastream-recording/">https://www.w3.org/TR/mediastream-recording/</a>
    <dt id="biblio-mimesniff">[MIMESNIFF]
    <dd>Gordon P. Hemsley. <a href="https://mimesniff.spec.whatwg.org/"><cite>MIME Sniffing Standard</cite></a>. Living Standard. URL: <a href="https://mimesniff.spec.whatwg.org/">https://mimesniff.spec.whatwg.org/</a>
+   <dt id="biblio-page-visibility-2">[PAGE-VISIBILITY-2]
+   <dd>Ilya Grigorik; Marcos Caceres. <a href="https://www.w3.org/TR/page-visibility-2/"><cite>Page Visibility Level 2</cite></a>. 18 May 2021. CR. URL: <a href="https://www.w3.org/TR/page-visibility-2/">https://www.w3.org/TR/page-visibility-2/</a>
    <dt id="biblio-streams">[STREAMS]
    <dd>Adam Rice; et al. <a href="https://streams.spec.whatwg.org/"><cite>Streams Standard</cite></a>. Living Standard. URL: <a href="https://streams.spec.whatwg.org/">https://streams.spec.whatwg.org/</a>
    <dt id="biblio-svg2">[SVG2]
@@ -8295,6 +8389,7 @@ embedded, and the class of devices their users will be using.</p>
     <li><a href="#ref-for-audiodecoder">3.1. Internal Slots</a>
     <li><a href="#ref-for-audiodecoder①">3.2. Constructors</a>
     <li><a href="#ref-for-audiodecoder②">10.1. Background</a>
+    <li><a href="#ref-for-audiodecoder③">11. Resource Reclamation</a> <a href="#ref-for-audiodecoder④">(2)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dictdef-audiodecoderinit">
@@ -8437,6 +8532,7 @@ embedded, and the class of devices their users will be using.</p>
    <b><a href="#close-audiodecoder">#close-audiodecoder</a></b><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-close-audiodecoder">3.4. Methods</a> <a href="#ref-for-close-audiodecoder①">(2)</a> <a href="#ref-for-close-audiodecoder②">(3)</a>
+    <li><a href="#ref-for-close-audiodecoder③">11. Resource Reclamation</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="videodecoder">
@@ -8445,6 +8541,7 @@ embedded, and the class of devices their users will be using.</p>
     <li><a href="#ref-for-videodecoder">4.1. Internal Slots</a>
     <li><a href="#ref-for-videodecoder①">4.4. Methods</a> <a href="#ref-for-videodecoder②">(2)</a>
     <li><a href="#ref-for-videodecoder③">10.1. Background</a>
+    <li><a href="#ref-for-videodecoder④">11. Resource Reclamation</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dictdef-videodecoderinit">
@@ -8561,7 +8658,7 @@ embedded, and the class of devices their users will be using.</p>
    <b><a href="#dom-videodecoder-reset">#dom-videodecoder-reset</a></b><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-dom-videodecoder-reset">4. VideoDecoder Interface</a>
-    <li><a href="#ref-for-dom-videodecoder-reset①">11. Security Considerations</a>
+    <li><a href="#ref-for-dom-videodecoder-reset①">12. Security Considerations</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dom-videodecoder-close">
@@ -8594,12 +8691,14 @@ embedded, and the class of devices their users will be using.</p>
    <b><a href="#close-videodecoder">#close-videodecoder</a></b><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-close-videodecoder">4.4. Methods</a> <a href="#ref-for-close-videodecoder①">(2)</a> <a href="#ref-for-close-videodecoder②">(3)</a>
+    <li><a href="#ref-for-close-videodecoder③">11. Resource Reclamation</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="audioencoder">
    <b><a href="#audioencoder">#audioencoder</a></b><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-audioencoder">5.1. Internal Slots</a>
+    <li><a href="#ref-for-audioencoder①">11. Resource Reclamation</a> <a href="#ref-for-audioencoder②">(2)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dictdef-audioencoderinit">
@@ -8746,6 +8845,7 @@ embedded, and the class of devices their users will be using.</p>
    <b><a href="#close-audioencoder">#close-audioencoder</a></b><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-close-audioencoder">5.4. Methods</a> <a href="#ref-for-close-audioencoder①">(2)</a> <a href="#ref-for-close-audioencoder②">(3)</a>
+    <li><a href="#ref-for-close-audioencoder③">11. Resource Reclamation</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dictdef-encodedaudiochunkmetadata">
@@ -8766,6 +8866,7 @@ embedded, and the class of devices their users will be using.</p>
    <b><a href="#videoencoder">#videoencoder</a></b><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-videoencoder">6.1. Internal Slots</a>
+    <li><a href="#ref-for-videoencoder①">11. Resource Reclamation</a> <a href="#ref-for-videoencoder②">(2)</a> <a href="#ref-for-videoencoder③">(3)</a> <a href="#ref-for-videoencoder④">(4)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dictdef-videoencoderinit">
@@ -8922,6 +9023,7 @@ embedded, and the class of devices their users will be using.</p>
    <b><a href="#close-videoencoder">#close-videoencoder</a></b><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-close-videoencoder">6.4. Methods</a> <a href="#ref-for-close-videoencoder①">(2)</a> <a href="#ref-for-close-videoencoder②">(3)</a>
+    <li><a href="#ref-for-close-videoencoder③">11. Resource Reclamation</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dictdef-encodedvideochunkmetadata">
@@ -10191,7 +10293,8 @@ embedded, and the class of devices their users will be using.</p>
     <li><a href="#ref-for-videoframe⑥④">10.1. Background</a>
     <li><a href="#ref-for-videoframe⑥⑤">10.2.1. Internal Slots</a>
     <li><a href="#ref-for-videoframe⑥⑥">10.5. ImageDecodeResult Interface</a> <a href="#ref-for-videoframe⑥⑦">(2)</a>
-    <li><a href="#ref-for-videoframe⑥⑧">13. Best Practices for Authors Using WebCodecs</a>
+    <li><a href="#ref-for-videoframe⑥⑧">11. Resource Reclamation</a> <a href="#ref-for-videoframe⑥⑨">(2)</a>
+    <li><a href="#ref-for-videoframe⑦⓪">14. Best Practices for Authors Using WebCodecs</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dictdef-videoframeinit">
@@ -11540,6 +11643,30 @@ embedded, and the class of devices their users will be using.</p>
    <ul>
     <li><a href="#ref-for-eventdef-imagetrack-change">10.2.5. Algorithms</a>
     <li><a href="#ref-for-eventdef-imagetrack-change①">10.7.2. Attributes</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="reclaim-a-codec">
+   <b><a href="#reclaim-a-codec">#reclaim-a-codec</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-reclaim-a-codec">11. Resource Reclamation</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="active-codec">
+   <b><a href="#active-codec">#active-codec</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-active-codec">11. Resource Reclamation</a> <a href="#ref-for-active-codec①">(2)</a> <a href="#ref-for-active-codec②">(3)</a> <a href="#ref-for-active-codec③">(4)</a> <a href="#ref-for-active-codec④">(5)</a> <a href="#ref-for-active-codec⑤">(6)</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="inactive-codec">
+   <b><a href="#inactive-codec">#inactive-codec</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-inactive-codec">11. Resource Reclamation</a> <a href="#ref-for-inactive-codec①">(2)</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="background-codec">
+   <b><a href="#background-codec">#background-codec</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-background-codec">11. Resource Reclamation</a> <a href="#ref-for-background-codec①">(2)</a> <a href="#ref-for-background-codec②">(3)</a> <a href="#ref-for-background-codec③">(4)</a>
    </ul>
   </aside>
 <script>/* script-dfn-panel */
