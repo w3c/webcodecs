@@ -1,7 +1,5 @@
 SHELL := /bin/bash
 
-WEBCODECS_IGNORE_WARNINGS=1
-
 DST := $(patsubst %.src.html,%.html,$(wildcard *.src.html))
 REMOTE := $(filter remote,$(MAKECMDGOALS))
 
