@@ -1,61 +1,41 @@
-SHELL=/bin/bash
+SHELL := /bin/bash
 
-local: local-index local-codec-registry local-avc-codec-registration
+DST := $(patsubst %.src.html,%.html,$(wildcard *.src.html))
+REMOTE := $(filter remote,$(MAKECMDGOALS))
 
-local-index: index.src.html
-	bikeshed --die-on=warning spec index.src.html index.html
-
-local-codec-registry: codec_registry.src.html
-	bikeshed --die-on=warning spec codec_registry.src.html codec_registry.html
-
-local-avc-codec-registration: avc_codec_registration.src.html
-	bikeshed --die-on=warning spec avc_codec_registration.src.html avc_codec_registration.html
-
-remote-index: index.src.html
+%.html : %.src.html
+ifndef REMOTE
+# When addding a new registry entry, bikeshed will error out, this allows
+# bypassing the error.
+ifdef WEBCODECS_IGNORE_WARNINGS
+	@ echo "Building $@, ignoring warnings"
+	bikeshed -f spec $< $@
+else
+	@ echo "Building $@"
+	bikeshed --die-on=warning spec $< $@
+endif
+else
+	@ echo "Building $@ remotely"
 	@ (HTTP_STATUS=$$(curl https://api.csswg.org/bikeshed/ \
-	                       --output index.html \
+	                       --output $@ \
 	                       --write-out "%{http_code}" \
 	                       --header "Accept: text/plain, text/html" \
 	                       -F die-on=warning \
-	                       -F file=@index.src.html) && \
+	                       -F file=@$<) && \
 	[[ "$$HTTP_STATUS" -eq "200" ]]) || ( \
-		echo ""; cat index.html; echo ""; \
+		echo ""; cat $@; echo ""; \
 		rm -f index.html; \
 		exit 22 \
 	);
+endif
 
-remote-codec-registry: codec_registry.src.html
-	@ (HTTP_STATUS=$$(curl https://api.csswg.org/bikeshed/ \
-	                       --output codec_registry.html \
-	                       --write-out "%{http_code}" \
-	                       --header "Accept: text/plain, text/html" \
-	                       -F die-on=warning \
-	                       -F file=@codec_registry.src.html) && \
-	[[ "$$HTTP_STATUS" -eq "200" ]]) || ( \
-		echo ""; cat codec_registry.html; echo ""; \
-		rm -f codec_registry.html; \
-		exit 22 \
-	);
+all: $(DST)
+	@ echo "All done"
 
-remote-avc-codec-registration: avc_codec_registration.src.html
-	@ (HTTP_STATUS=$$(curl https://api.csswg.org/bikeshed/ \
-	                       --output avc_codec_registration.html \
-	                       --write-out "%{http_code}" \
-	                       --header "Accept: text/plain, text/html" \
-	                       -F die-on=warning \
-	                       -F file=@avc_codec_registration.src.html) && \
-	[[ "$$HTTP_STATUS" -eq "200" ]]) || ( \
-		echo ""; cat avc_codec_registration.html; echo ""; \
-		rm -f avc_codec_registration.html; \
-		exit 22 \
-	);
+remote: all
 
-
-remote: remote-index remote-codec-registry remote-avc-codec-registration
-
-ci: index.src.html codec_registry.src.html avc_codec_registration.src.html
+ci:
 	mkdir -p out
 	make remote
-	mv index.html out/index.html
-	mv codec_registry.html out/codec_registry.html
-	mv avc_codec_registration.html out/avc_codec_registration.html
+	mv $(DST) out
+
