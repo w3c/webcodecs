@@ -1184,8 +1184,6 @@ Internal Slots {#videoencoder-internal-slots}
   The {{VideoDecoderConfig}} that describes how to decode the most recently
   emitted {{EncodedVideoChunk}}.
 </dd>
-<dt><dfn attribute for=VideoEncoder>[[active color space]]</dfn></dt>
-<dd>The {{VideoColorSpace}}</dd> that is actively applied for encoding.
 <dt><dfn attribute for=VideoEncoder>\[[state]]</dfn></dt>
 <dd>
   The current {{CodecState}} of this {{VideoEncoder}}.
@@ -1257,9 +1255,6 @@ Methods {#videoencoder-methods}
     3. Otherwise, run the <a>Close VideoEncoder</a> algorithm with
         {{NotSupportedError}} and abort these steps.
     4. Assign |config| to {{VideoEncoder/[[active encoder config]]}}.
-    5. If {{VideoEncoderConfig/colorSpace}} [=map/exists=] in |config|, assign
-        its value to {{VideoEncoder/[[active color space]]}}. Otherwise, assign
-        `null` to {{VideoEncoder/[[active color space]]}}.
   </dd>
 
   <dt><dfn method for=VideoEncoder>encode(|frame|, |options|)</dfn></dt>
@@ -1277,26 +1272,16 @@ Methods {#videoencoder-methods}
     5. [=Queue a control message=] to encode |frameClone|.
 
     [=Running a control message=] to encode the frame means performing these steps.
-    1. If {{VideoEncoder/[[active color space]]}} is `null`, assign
-        |frame|.{{VideoFrame/colorSpace}} to
-        {{VideoEncoder/[[active color space]]}}.
-
-        NOTE: For codec implementations that encode in-band color space metdata,
-                the above step implies that User Agents defer running the
-                [=control message steps=] associated with the most recent call
-                to {{VideoEncoder/configure()}} until the arrival of the first
-                frame to {{VideoEncoder/encode()}}.
-
-    2. Attempt to use {{VideoEncoder/[[codec implementation]]}} to encode
+    1. Attempt to use {{VideoEncoder/[[codec implementation]]}} to encode
         |frameClone| according to |options|.
-    3. If encoding results in an error, queue a task on the [=control thread=]
+    2. If encoding results in an error, queue a task on the [=control thread=]
         event loop to run the [=Close VideoEncoder=] algorithm with
         {{EncodingError}}.
-    4. Queue a task on the [=control thread=] event loop to decrement
+    3. Queue a task on the [=control thread=] event loop to decrement
         {{VideoEncoder/[[encodeQueueSize]]}}.
-    5. Let |encoded outputs| be a [=list=] of encoded video data outputs
+    4. Let |encoded outputs| be a [=list=] of encoded video data outputs
         emitted by {{VideoEncoder/[[codec implementation]]}}.
-    6. If |encoded outputs| is not empty, queue a task on the [=control thread=]
+    5. If |encoded outputs| is not empty, queue a task on the [=control thread=]
         event loop to run the [=Output EncodedVideoChunks=] algorithm with
         |encoded outputs|.
   </dd>
@@ -1411,9 +1396,7 @@ Algorithms {#videoencoder-algorithms}
                 `outputConfig.displayWidth`.
             5. Assign `encoderConfig.displayHeight` to
                 `outputConfig.displayHeight`.
-            6. Assign {{VideoEncoder/[[active color space]]}} to
-                `outputConfig.colorSpace`.
-            7. Assign the remaining keys of `outputConfig` as determined by
+            6. Assign the remaining keys of `outputConfig` as determined by
                 {{VideoEncoder/[[codec implementation]]}}. The User Agent
                 must ensure that the configuration is completely described
                 such that |outputConfig| could be used to correctly decode
@@ -1866,7 +1849,6 @@ dictionary VideoEncoderConfig {
   DOMString scalabilityMode;
   BitrateMode bitrateMode = "variable";
   LatencyMode latencyMode = "quality";
-  VideoColorSpaceInit colorSpace;
 };
 </xmp>
 
@@ -1980,14 +1962,6 @@ To check if a {{VideoEncoderConfig}} is a <dfn>valid VideoEncoderConfig</dfn>,
     Configures latency related behaviors for this codec. See {{LatencyMode}}.
   </dd>
 
-  <dt><dfn dict-member for=VideoEncoderConfig>colorSpace</dfn></dt>
-  <dd>
-    Configures the {{VideoColorSpace}} to be used in the output
-    {{VideoDecoderConfig}}. May also be used to set in-band color information
-    while encoding. If not provided, the codec will attempt to use the
-    {{VideoFrame}}.{{VideoFrame/colorSpace}} for the first frame passed to
-    {{VideoEncoder/encode()}} following this {{VideoEncoderConfig}}.
-  </dd>
 </dl>
 
 Hardware Acceleration{#hardware-acceleration}
@@ -2909,7 +2883,7 @@ interface VideoFrame {
   readonly attribute unsigned long displayHeight;
   readonly attribute unsigned long long? duration;  // microseconds
   readonly attribute long long? timestamp;          // microseconds
-  readonly attribute VideoColorSpace? colorSpace;
+  readonly attribute VideoColorSpace colorSpace;
 
   unsigned long allocationSize(
       optional VideoFrameCopyToOptions options = {});
@@ -3454,7 +3428,8 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
         |frame|.{{VideoFrame/timestamp}}.
     9. If |resource| has a known {{VideoColorSpace}}, assign its value to
         {{VideoFrame/[[color space]]}}.
-    10. Otherwise, assign `null` to {{VideoFrame/[[color space]]}}.
+    10. Otherwise, assign a new {{VideoColorSpace}}, constructed with an empty
+        {{VideoColorSpaceInit}}, to {{VideoFrame/[[color space]]}}.
 
 : <dfn>Clone VideoFrame</dfn> (with |frame|)
 :: 1. Let |clone| be a new {{VideoFrame}} initialized as follows:
