@@ -6,7 +6,7 @@
   <link href="https://www.w3.org/StyleSheets/TR/2016/W3C-ED" rel="stylesheet" type="text/css">
   <meta content="Bikeshed version 4f053d00e, updated Tue Aug 10 14:13:32 2021 -0700" name="generator">
   <link href="https://www.w3.org/TR/webcodecs/" rel="canonical">
-  <meta content="fe8a639c6fe088533c15b013af51df27129af9a9" name="document-revision">
+  <meta content="f25d932fa0ba39f29da79e2adaf7450928e9fec6" name="document-revision">
 <style>
 main > dl > dd {
   margin-bottom: 1em;
@@ -24,6 +24,11 @@ table#sample-types .even {
     background-color: lightgrey;
 }
 
+.rfc2119 {
+  text-transform: lowercase;
+  font-variant: small-caps;
+  font-style: normal;
+}
 
 </style>
 <style>/* style-autolinks */
@@ -586,7 +591,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
   <div class="head">
    <p data-fill-with="logo"><a class="logo" href="https://www.w3.org/"> <img alt="W3C" height="48" src="https://www.w3.org/StyleSheets/TR/2016/logos/W3C" width="72"> </a> </p>
    <h1 class="p-name no-ref" id="title">WebCodecs</h1>
-   <h2 class="no-num no-toc no-ref heading settled" id="profile-and-date"><span class="content">Editor’s Draft, <time class="dt-updated" datetime="2021-08-20">20 August 2021</time></span></h2>
+   <h2 class="no-num no-toc no-ref heading settled" id="profile-and-date"><span class="content">Editor’s Draft, <time class="dt-updated" datetime="2021-08-23">23 August 2021</time></span></h2>
    <div data-fill-with="spec-metadata">
     <dl>
      <dt>This version:
@@ -620,8 +625,8 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
 
     method of encoding or decoding. The purpose of this specification is to
     provide JavaScript interfaces to implementations of existing codec
-    technology developed elsewhere. Implementers may support any combination of
-    codecs or none at all.</p>
+    technology developed elsewhere. Implementers are free to
+    support any combination of codecs or none at all.</p>
   </div>
   <h2 class="no-num no-toc no-ref heading settled" id="status"><span class="content">Status of this document</span></h2>
   <div data-fill-with="status">
@@ -853,15 +858,15 @@ commonly referred to as a "key frame".</p>
     <dd data-md>
      <p>Codec outputs such as <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe">VideoFrame</a></code>s that currently reside in the internal
 pipeline of the underlying codec implementation. The underlying codec
-implementation may emit new outputs only when new inputs are provided. The
-underlying codec implementation must emit all outputs in response to a
-flush.</p>
+implementation <em class="rfc2119">MAY</em> emit new outputs only when new
+inputs are provided. The underlying codec implementation <em class="rfc2119">MUST</em> emit all outputs in response to a flush.</p>
     <dt data-md><dfn class="dfn-paneled" data-dfn-type="dfn" data-lt="system resources" data-noexport id="system-resources">Codec System Resources</dfn>
     <dd data-md>
      <p>Resources including CPU memory, GPU memory, and exclusive handles to specific
-decoding/encoding hardware that may be allocated by the User Agent as part
-of codec configuration or generation of <code class="idl"><a data-link-type="idl" href="#audiodata" id="ref-for-audiodata">AudioData</a></code> and <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe①">VideoFrame</a></code> objects. Such resources may be quickly exhausted and should be released
-immediately when no longer in use.</p>
+decoding/encoding hardware that <em class="rfc2119">MAY</em> be allocated by
+the User Agent as part of codec configuration or generation of <code class="idl"><a data-link-type="idl" href="#audiodata" id="ref-for-audiodata">AudioData</a></code> and <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe①">VideoFrame</a></code> objects. Such resources <em class="rfc2119">MAY</em> be
+quickly exhausted and <em class="rfc2119">SHOULD</em> be released immediately
+when no longer in use.</p>
     <dt data-md><dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="temporal-layer">Temporal Layer</dfn>
     <dd data-md>
      <p>A grouping of <code class="idl"><a data-link-type="idl" href="#encodedvideochunk" id="ref-for-encodedvideochunk">EncodedVideoChunk</a></code>s whose timestamp cadence produces a
@@ -901,15 +906,17 @@ alpha channel is present.</p>
    </dl>
    <h2 class="heading settled" data-level="2" id="codec-processing-model-section"><span class="secno">2. </span><span class="content"><dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="codec-processing-model">Codec Processing Model</dfn></span><a class="self-link" href="#codec-processing-model-section"></a></h2>
    <h3 class="heading settled" data-level="2.1" id="processing-model-background"><span class="secno">2.1. </span><span class="content">Background</span><a class="self-link" href="#processing-model-background"></a></h3>
-   <p>This section is non-normative.</p>
-   <p>The codec interfaces defined by the specification are designed such that new
-codec tasks may be scheduled while previous tasks are still pending. For
-example, web authors may call <code>decode()</code> without waiting for a previous <code>decode()</code> to complete. This is achieved by offloading underlying codec tasks to
-a separate thread for parallel execution.</p>
-   <p>This section describes threading behaviors as they are visible from the
-perspective of web authors. Implementers may choose to use more or less threads
-as long as the exernally visible behaviors of blocking and sequencing are
-maintained as follows.</p>
+   <div class="non-normative">
+     This section is non-normative. 
+    <p>The codec interfaces defined by the specification are designed such that new
+  codec tasks can be scheduled while previous tasks are still pending. For
+  example, web authors can call <code>decode()</code> without waiting for a previous <code>decode()</code> to complete. This is achieved by offloading underlying codec tasks
+  to a separate thread for parallel execution.</p>
+    <p>This section describes threading behaviors as they are visible from the
+  perspective of web authors. Implementers can choose to use more or less
+  threads as long as the exernally visible behaviors of blocking and sequencing
+  are maintained as follows.</p>
+   </div>
    <h3 class="heading settled" data-level="2.2" id="control-thread-and-codec-thread"><span class="secno">2.2. </span><span class="content">Control Thread and Codec Thread</span><a class="self-link" href="#control-thread-and-codec-thread"></a></h3>
    <p>All steps in this specification will run on either a <a data-link-type="dfn" href="#control-thread" id="ref-for-control-thread">control thread</a> or
 a <a data-link-type="dfn" href="#codec-thread" id="ref-for-codec-thread">codec thread</a>.</p>
@@ -932,7 +939,7 @@ to schedule work.</p>
    <p><dfn class="dfn-paneled" data-dfn-type="dfn" data-lt="running a control message|control message steps" data-noexport id="running-a-control-message">Running a control
 message</dfn> means performing a sequence of steps specified by the method
 that enqueued the message.</p>
-   <p>The <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="codec-processing-loop">codec processing loop</dfn> must run these steps:</p>
+   <p>The <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="codec-processing-loop">codec processing loop</dfn> <em class="rfc2119">MUST</em> run these steps:</p>
    <ol>
     <li data-md>
      <p>While true:</p>
@@ -982,7 +989,7 @@ that enqueued the message.</p>
      <p>Callback given at construction for decode errors.</p>
     <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="AudioDecoder" data-dfn-type="attribute" data-export id="dom-audiodecoder-key-chunk-required-slot"><code>[[key chunk required]]</code></dfn>
     <dd data-md>
-     <p>A boolean indicating that the next chunk passed to <code class="idl"><a data-link-type="idl" href="#dom-audiodecoder-decode" id="ref-for-dom-audiodecoder-decode①">decode()</a></code> must describe a <a data-link-type="dfn" href="#key-chunk" id="ref-for-key-chunk">key chunk</a> as indicated by <code class="idl"><a data-link-type="idl" href="#dom-encodedaudiochunk-type-slot" id="ref-for-dom-encodedaudiochunk-type-slot">[[type]]</a></code>.</p>
+     <p>A boolean indicating that the next chunk passed to <code class="idl"><a data-link-type="idl" href="#dom-audiodecoder-decode" id="ref-for-dom-audiodecoder-decode①">decode()</a></code> <em class="rfc2119">MUST</em> describe a <a data-link-type="dfn" href="#key-chunk" id="ref-for-key-chunk">key chunk</a> as indicated by <code class="idl"><a data-link-type="idl" href="#dom-encodedaudiochunk-type-slot" id="ref-for-dom-encodedaudiochunk-type-slot">[[type]]</a></code>.</p>
     <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="AudioDecoder" data-dfn-type="attribute" data-export id="dom-audiodecoder-state-slot"><code>[[state]]</code></dfn>
     <dd data-md>
      <p>The current <code class="idl"><a data-link-type="idl" href="#enumdef-codecstate" id="ref-for-enumdef-codecstate①">CodecState</a></code> of this <code class="idl"><a data-link-type="idl" href="#audiodecoder" id="ref-for-audiodecoder">AudioDecoder</a></code>.</p>
@@ -1024,8 +1031,9 @@ underlying codec is ready to accept new input.</p>
       <a data-link-type="dfn" href="#enqueues-a-control-message" id="ref-for-enqueues-a-control-message">Enqueues a control message</a> to configure the audio decoder for decoding
     chunks as described by <var>config</var>. 
      <p class="note" role="note"><span>NOTE:</span> This method will trigger a <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#notsupportederror" id="ref-for-notsupportederror">NotSupportedError</a></code> if the User Agent
-        does not support <var>config</var>. Authors should first check support by calling <code class="idl"><a data-link-type="idl" href="#dom-audiodecoder-isconfigsupported" id="ref-for-dom-audiodecoder-isconfigsupported①">isConfigSupported()</a></code> with <var>config</var>. User Agents are not
-        required to support any particular codec type or configuration.</p>
+        does not support <var>config</var>. Authors are encouraged to first check support
+        by calling <code class="idl"><a data-link-type="idl" href="#dom-audiodecoder-isconfigsupported" id="ref-for-dom-audiodecoder-isconfigsupported①">isConfigSupported()</a></code> with <var>config</var>. User
+        Agents don’t have to support any particular codec type or configuration.</p>
      <p>When invoked, run these steps:</p>
      <ol>
       <li data-md>
@@ -1064,7 +1072,7 @@ supporting <var>config</var>.</p>
         <li data-md>
          <p>If <var>chunk</var>.<code class="idl"><a data-link-type="idl" href="#dom-encodedaudiochunk-type-slot" id="ref-for-dom-encodedaudiochunk-type-slot①">[[type]]</a></code> is not <code class="idl"><a data-link-type="idl" href="#dom-encodedaudiochunktype-key" id="ref-for-dom-encodedaudiochunktype-key">key</a></code>, throw a <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#dataerror" id="ref-for-dataerror">DataError</a></code>.</p>
         <li data-md>
-         <p>Implementers should inspect the <var>chunk</var>’s <code class="idl"><a data-link-type="idl" href="#dom-encodedaudiochunk-internal-data-slot" id="ref-for-dom-encodedaudiochunk-internal-data-slot">[[internal data]]</a></code> to verify that
+         <p>Implementers <em class="rfc2119">SHOULD</em> inspect the <var>chunk</var>’s <code class="idl"><a data-link-type="idl" href="#dom-encodedaudiochunk-internal-data-slot" id="ref-for-dom-encodedaudiochunk-internal-data-slot">[[internal data]]</a></code> to verify that
 it is truly a <a data-link-type="dfn" href="#key-chunk" id="ref-for-key-chunk①">key chunk</a>. If a mismatch is detected, throw a <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#dataerror" id="ref-for-dataerror①">DataError</a></code>.</p>
         <li data-md>
          <p>Otherwise, assign <code>false</code> to <code class="idl"><a data-link-type="idl" href="#dom-audiodecoder-key-chunk-required-slot" id="ref-for-dom-audiodecoder-key-chunk-required-slot③">[[key chunk required]]</a></code>.</p>
@@ -1143,7 +1151,7 @@ by <code class="idl"><a data-link-type="idl" href="#dom-audiodecoder-codec-imple
       Returns a promise indicating whether the provided <var>config</var> is supported by
     the User Agent. 
      <p class="note" role="note"><span>NOTE:</span> The returned <code class="idl"><a data-link-type="idl" href="#dictdef-audiodecodersupport" id="ref-for-dictdef-audiodecodersupport①">AudioDecoderSupport</a></code> <code class="idl"><a data-link-type="idl" href="#dom-audiodecodersupport-config" id="ref-for-dom-audiodecodersupport-config">config</a></code> will contain only the dictionary members that User Agent recognized.
-        Unrecognized dictionary members will be ignored. Authors may detect
+        Unrecognized dictionary members will be ignored. Authors can detect
         unrecognized dictionary members by comparing <code class="idl"><a data-link-type="idl" href="#dom-audiodecodersupport-config" id="ref-for-dom-audiodecodersupport-config①">config</a></code> to their provided <var>config</var>.</p>
      <p>When invoked, run these steps:</p>
      <ol>
@@ -1286,13 +1294,14 @@ the <a data-link-type="dfn" href="#control-thread" id="ref-for-control-thread⑧
      <p>The <code class="idl"><a data-link-type="idl" href="#dictdef-videodecoderconfig" id="ref-for-dictdef-videodecoderconfig②">VideoDecoderConfig</a></code> that is actively applied.</p>
     <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="VideoDecoder" data-dfn-type="attribute" data-export id="dom-videodecoder-key-chunk-required-slot"><code>[[key chunk required]]</code></dfn>
     <dd data-md>
-     <p>A boolean indicating that the next chunk passed to <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-decode" id="ref-for-dom-videodecoder-decode①">decode()</a></code> must describe a <a data-link-type="dfn" href="#key-chunk" id="ref-for-key-chunk②">key chunk</a> as indicated by <code class="idl"><a data-link-type="idl" href="#dom-encodedvideochunk-type" id="ref-for-dom-encodedvideochunk-type">type</a></code>.</p>
+     <p>A boolean indicating that the next chunk passed to <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-decode" id="ref-for-dom-videodecoder-decode①">decode()</a></code> <em class="rfc2119">MUST</em> describe a <a data-link-type="dfn" href="#key-chunk" id="ref-for-key-chunk②">key chunk</a> as indicated by <code class="idl"><a data-link-type="idl" href="#dom-encodedvideochunk-type" id="ref-for-dom-encodedvideochunk-type">type</a></code>.</p>
     <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="VideoDecoder" data-dfn-type="attribute" data-export id="dom-videodecoder-state-slot"><code>[[state]]</code></dfn>
     <dd data-md>
      <p>The current <code class="idl"><a data-link-type="idl" href="#enumdef-codecstate" id="ref-for-enumdef-codecstate④">CodecState</a></code> of this <code class="idl"><a data-link-type="idl" href="#videodecoder" id="ref-for-videodecoder">VideoDecoder</a></code>.</p>
     <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="VideoDecoder" data-dfn-type="attribute" data-export id="dom-videodecoder-decodequeuesize-slot"><code>[[decodeQueueSize]]</code></dfn>
     <dd data-md>
-     <p>The number of pending decode requests. This number will decrease as the underlying codec is ready to accept new input.</p>
+     <p>The number of pending decode requests. This number will decrease as the
+underlying codec is ready to accept new input.</p>
     <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="VideoDecoder" data-dfn-type="attribute" data-export id="dom-videodecoder-pending-flush-promises-slot"><code>[[pending flush promises]]</code></dfn>
     <dd data-md>
      <p>A list of unresolved promises returned by calls to <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-flush" id="ref-for-dom-videodecoder-flush①">flush()</a></code>.</p>
@@ -1327,8 +1336,9 @@ the <a data-link-type="dfn" href="#control-thread" id="ref-for-control-thread⑧
       <a data-link-type="dfn" href="#enqueues-a-control-message" id="ref-for-enqueues-a-control-message⑤">Enqueues a control message</a> to configure the video decoder for decoding
     chunks as described by <var>config</var>. 
      <p class="note" role="note"><span>NOTE:</span> This method will trigger a <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#notsupportederror" id="ref-for-notsupportederror②">NotSupportedError</a></code> if the User Agent
-        does not support <var>config</var>. Authors should first check support by calling <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-isconfigsupported" id="ref-for-dom-videodecoder-isconfigsupported①">isConfigSupported()</a></code> with <var>config</var>. User Agents are not
-        required to support any particular codec type or configuration.</p>
+      does not support <var>config</var>. Authors are encouraged to first check support by
+      calling <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-isconfigsupported" id="ref-for-dom-videodecoder-isconfigsupported①">isConfigSupported()</a></code> with <var>config</var>. User Agents
+      don’t have to support any particular codec type or configuration.</p>
      <p>When invoked, run these steps:</p>
      <ol>
       <li data-md>
@@ -1359,12 +1369,13 @@ supporting <var>config</var>.</p>
     <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoDecoder" data-dfn-type="method" data-export id="dom-videodecoder-decode"><code>decode(chunk)</code></dfn>
     <dd>
       <a data-link-type="dfn" href="#enqueues-a-control-message" id="ref-for-enqueues-a-control-message⑦">Enqueues a control message</a> to decode the given <var>chunk</var>. 
-     <p class="note" role="note"><span>NOTE:</span> Authors should call <code class="idl"><a data-link-type="idl" href="#dom-videoframe-close" id="ref-for-dom-videoframe-close">close()</a></code> on output <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe③">VideoFrame</a></code>s immediately when frames are no longer needed. The
+     <p class="note" role="note"><span>NOTE:</span> Authors are encouraged to call <code class="idl"><a data-link-type="idl" href="#dom-videoframe-close" id="ref-for-dom-videoframe-close">close()</a></code> on output <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe③">VideoFrame</a></code>s immediately when frames are no longer needed. The
         underlying <a data-link-type="dfn" href="#media-resource" id="ref-for-media-resource①">media resource</a>s are owned by the <code class="idl"><a data-link-type="idl" href="#videodecoder" id="ref-for-videodecoder①">VideoDecoder</a></code> and
-        failing to release them (or waiting for garbage collection) may cause
+        failing to release them (or waiting for garbage collection) can cause
         decoding to stall.</p>
      <p class="note" role="note"><span>NOTE:</span> <code class="idl"><a data-link-type="idl" href="#videodecoder" id="ref-for-videodecoder②">VideoDecoder</a></code> requires that frames are output in the order they
-        expect to be presented, commonly known as presentation order. Some <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-codec-implementation-slot" id="ref-for-dom-videodecoder-codec-implementation-slot①">[[codec implementation]]</a></code>s may require the User Agent
+        expect to be presented, commonly known as presentation order. When using
+        some <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-codec-implementation-slot" id="ref-for-dom-videodecoder-codec-implementation-slot①">[[codec implementation]]</a></code>s the User Agent will have to
         to reorder outputs into presentation order.</p>
      <p>When invoked, run these steps:</p>
      <ol>
@@ -1376,7 +1387,7 @@ supporting <var>config</var>.</p>
         <li data-md>
          <p>If <var>chunk</var>.<code class="idl"><a data-link-type="idl" href="#dom-encodedvideochunk-type" id="ref-for-dom-encodedvideochunk-type①">type</a></code> is not <code class="idl"><a data-link-type="idl" href="#dom-encodedvideochunktype-key" id="ref-for-dom-encodedvideochunktype-key">key</a></code>, throw a <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#dataerror" id="ref-for-dataerror②">DataError</a></code>.</p>
         <li data-md>
-         <p>Implementers should inspect the <var>chunk</var>’s <code class="idl"><a data-link-type="idl" href="#dom-encodedvideochunk-internal-data-slot" id="ref-for-dom-encodedvideochunk-internal-data-slot">[[internal data]]</a></code> to verify that
+         <p>Implementers <em class="rfc2119">SHOULD</em> inspect the <var>chunk</var>’s <code class="idl"><a data-link-type="idl" href="#dom-encodedvideochunk-internal-data-slot" id="ref-for-dom-encodedvideochunk-internal-data-slot">[[internal data]]</a></code> to verify that
 it is truly a <a data-link-type="dfn" href="#key-chunk" id="ref-for-key-chunk③">key chunk</a>. If a mismatch is detected, throw a <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#dataerror" id="ref-for-dataerror③">DataError</a></code>.</p>
         <li data-md>
          <p>Otherwise, assign <code>false</code> to <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-key-chunk-required-slot" id="ref-for-dom-videodecoder-key-chunk-required-slot③">[[key chunk required]]</a></code>.</p>
@@ -1454,7 +1465,7 @@ by <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-codec-imple
       Returns a promise indicating whether the provided <var>config</var> is supported by
     the User Agent. 
      <p class="note" role="note"><span>NOTE:</span> The returned <code class="idl"><a data-link-type="idl" href="#dictdef-videodecodersupport" id="ref-for-dictdef-videodecodersupport①">VideoDecoderSupport</a></code> <code class="idl"><a data-link-type="idl" href="#dom-videodecodersupport-config" id="ref-for-dom-videodecodersupport-config">config</a></code> will contain only the dictionary members that User Agent recognized.
-        Unrecognized dictionary members will be ignored. Authors may detect
+        Unrecognized dictionary members will be ignored. Authors can detect
         unrecognized dictionary members by comparing <code class="idl"><a data-link-type="idl" href="#dom-videodecodersupport-config" id="ref-for-dom-videodecodersupport-config①">config</a></code> to their provided <var>config</var>.</p>
      <p>When invoked, run these steps:</p>
      <ol>
@@ -1504,10 +1515,9 @@ the <a data-link-type="dfn" href="#check-configuration-support" id="ref-for-chec
 by the codec implementation. If no <code class="idl"><a data-link-type="idl" href="#videocolorspace" id="ref-for-videocolorspace①">VideoColorSpace</a></code> is detected,
 let <var>colorSpace</var> be <code>undefined</code>.</p>
          <p class="note" role="note"><span>NOTE:</span> The codec implementation can detect a <code class="idl"><a data-link-type="idl" href="#videocolorspace" id="ref-for-videocolorspace②">VideoColorSpace</a></code> by
-    analyzing the bitstream. Detection is not required and may not
-    always be feasible. The exact method of detection is implementer
-    defined and codec-specific. Authors may override the
-    detected <code class="idl"><a data-link-type="idl" href="#videocolorspace" id="ref-for-videocolorspace③">VideoColorSpace</a></code> by providing a <code class="idl"><a data-link-type="idl" href="#dom-videodecoderconfig-colorspace" id="ref-for-dom-videodecoderconfig-colorspace">colorSpace</a></code> in the <code class="idl"><a data-link-type="idl" href="#dictdef-videodecoderconfig" id="ref-for-dictdef-videodecoderconfig③">VideoDecoderConfig</a></code>.</p>
+    analyzing the bitstream. Detection is made on a best-effort
+    basis. The exact method of detection is implementer defined and
+    codec-specific.  Authors can override the detected <code class="idl"><a data-link-type="idl" href="#videocolorspace" id="ref-for-videocolorspace③">VideoColorSpace</a></code> by providing a <code class="idl"><a data-link-type="idl" href="#dom-videodecoderconfig-colorspace" id="ref-for-dom-videodecoderconfig-colorspace">colorSpace</a></code> in the <code class="idl"><a data-link-type="idl" href="#dictdef-videodecoderconfig" id="ref-for-dictdef-videodecoderconfig③">VideoDecoderConfig</a></code>.</p>
         <li data-md>
          <p>If <code class="idl"><a data-link-type="idl" href="#dom-videodecoderconfig-colorspace" id="ref-for-dom-videodecoderconfig-colorspace①">colorSpace</a></code> <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#map-exists" id="ref-for-map-exists①">exists</a> in the <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-active-decoder-config-slot" id="ref-for-dom-videodecoder-active-decoder-config-slot②">[[active decoder config]]</a></code>, assign its value to <var>colorSpace</var>.</p>
         <li data-md>
@@ -1634,8 +1644,9 @@ the <a data-link-type="dfn" href="#control-thread" id="ref-for-control-thread①
       <a data-link-type="dfn" href="#enqueues-a-control-message" id="ref-for-enqueues-a-control-message①⓪">Enqueues a control message</a> to configure the audio encoder for
     decoding chunks as described by <var>config</var>. 
      <p class="note" role="note"><span>NOTE:</span> This method will trigger a <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#notsupportederror" id="ref-for-notsupportederror④">NotSupportedError</a></code> if the User Agent
-        does not support <var>config</var>. Authors should first check support by calling <code class="idl"><a data-link-type="idl" href="#dom-audioencoder-isconfigsupported" id="ref-for-dom-audioencoder-isconfigsupported①">isConfigSupported()</a></code> with <var>config</var>. User Agents are not
-        required to support any particular codec type or configuration.</p>
+        does not support <var>config</var>. Authors are encouraged to first check support
+        by calling <code class="idl"><a data-link-type="idl" href="#dom-audioencoder-isconfigsupported" id="ref-for-dom-audioencoder-isconfigsupported①">isConfigSupported()</a></code> with <var>config</var>. User
+        Agents don’t have to support any particular codec type or configuration.</p>
      <p>When invoked, run these steps:</p>
      <ol>
       <li data-md>
@@ -1743,7 +1754,7 @@ emitted by <code class="idl"><a data-link-type="idl" href="#dom-audioencoder-cod
       Returns a promise indicating whether the provided <var>config</var> is supported by
     the User Agent. 
      <p class="note" role="note"><span>NOTE:</span> The returned <code class="idl"><a data-link-type="idl" href="#dictdef-audioencodersupport" id="ref-for-dictdef-audioencodersupport①">AudioEncoderSupport</a></code> <code class="idl"><a data-link-type="idl" href="#dom-audioencodersupport-config" id="ref-for-dom-audioencodersupport-config">config</a></code> will contain only the dictionary members that User Agent recognized.
-        Unrecognized dictionary members will be ignored. Authors may detect
+        Unrecognized dictionary members will be ignored. Authors can detect
         unrecognized dictionary members by comparing <code class="idl"><a data-link-type="idl" href="#dom-audioencodersupport-config" id="ref-for-dom-audioencodersupport-config①">config</a></code> to their provided <var>config</var>.</p>
      <p>When invoked, run these steps:</p>
      <ol>
@@ -1813,9 +1824,8 @@ from <var>output</var>.</p>
            <p>Assign to <var>encoderConfig</var>.<code class="idl"><a data-link-type="idl" href="#dom-audioencoderconfig-numberofchannels" id="ref-for-dom-audioencoderconfig-numberofchannels">numberOfChannels</a></code> to <var>outputConfig</var>.<code class="idl"><a data-link-type="idl" href="#dom-audiodecoderconfig-numberofchannels" id="ref-for-dom-audiodecoderconfig-numberofchannels">numberOfChannels</a></code>.</p>
           <li data-md>
            <p>Assign <var>outputConfig</var>.<code class="idl"><a data-link-type="idl" href="#dom-audiodecoderconfig-description" id="ref-for-dom-audiodecoderconfig-description">description</a></code> with a
-sequence of codec specific bytes as determined by the <code class="idl"><a data-link-type="idl" href="#dom-audioencoder-codec-implementation-slot" id="ref-for-dom-audioencoder-codec-implementation-slot⑤">[[codec implementation]]</a></code>. The User Agent must
-ensure that the provided description could be used to
-correctly decode output.</p>
+sequence of codec specific bytes as determined by the <code class="idl"><a data-link-type="idl" href="#dom-audioencoder-codec-implementation-slot" id="ref-for-dom-audioencoder-codec-implementation-slot⑤">[[codec implementation]]</a></code>. The User Agent <em class="rfc2119">MUST</em> ensure that the provided description
+could be used to correctly decode output.</p>
            <p class="note" role="note"><span>NOTE:</span> The codec specific requirements for populating the <code class="idl"><a data-link-type="idl" href="#dom-audiodecoderconfig-description" id="ref-for-dom-audiodecoderconfig-description①">description</a></code> are described in the <a data-link-type="biblio" href="#biblio-webcodecs-codec-registry">[WEBCODECS-CODEC-REGISTRY]</a>.</p>
          </ol>
         <li data-md>
@@ -1883,7 +1893,8 @@ the <a data-link-type="dfn" href="#control-thread" id="ref-for-control-thread②
    <dl>
     <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="EncodedAudioChunkMetadata" data-dfn-type="dict-member" data-export id="dom-encodedaudiochunkmetadata-decoderconfig"><code>decoderConfig</code></dfn>, <span> of type <a data-link-type="idl-name" href="#dictdef-audiodecoderconfig" id="ref-for-dictdef-audiodecoderconfig⑤">AudioDecoderConfig</a></span>
     <dd data-md>
-     <p>A <code class="idl"><a data-link-type="idl" href="#dictdef-audiodecoderconfig" id="ref-for-dictdef-audiodecoderconfig⑥">AudioDecoderConfig</a></code> that authors may use to decode the associated <code class="idl"><a data-link-type="idl" href="#encodedaudiochunk" id="ref-for-encodedaudiochunk⑤">EncodedAudioChunk</a></code>.</p>
+     <p>A <code class="idl"><a data-link-type="idl" href="#dictdef-audiodecoderconfig" id="ref-for-dictdef-audiodecoderconfig⑥">AudioDecoderConfig</a></code> that authors <em class="rfc2119">MAY</em> use to
+decode the associated <code class="idl"><a data-link-type="idl" href="#encodedaudiochunk" id="ref-for-encodedaudiochunk⑤">EncodedAudioChunk</a></code>.</p>
    </dl>
    <h2 class="heading settled" data-level="6" id="videoencoder-interface"><span class="secno">6. </span><span class="content">VideoEncoder Interface</span><a class="self-link" href="#videoencoder-interface"></a></h2>
 <pre class="idl highlight def">[<a class="idl-code" data-link-type="extended-attribute" href="https://heycam.github.io/webidl/#Exposed" id="ref-for-Exposed③"><c- g>Exposed</c-></a>=(<c- n>Window</c->,<c- n>DedicatedWorker</c->)]
@@ -1960,8 +1971,10 @@ the <a data-link-type="dfn" href="#control-thread" id="ref-for-control-thread②
       <a data-link-type="dfn" href="#enqueues-a-control-message" id="ref-for-enqueues-a-control-message①⑤">Enqueues a control message</a> to configure the video encoder for
     decoding chunks as described by <var>config</var>. 
      <p class="note" role="note"><span>NOTE:</span> This method will trigger a <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#notsupportederror" id="ref-for-notsupportederror⑥">NotSupportedError</a></code> if the User Agent
-        does not support <var>config</var>. Authors should first check support by calling <code class="idl"><a data-link-type="idl" href="#dom-videoencoder-isconfigsupported" id="ref-for-dom-videoencoder-isconfigsupported①">isConfigSupported()</a></code> with <var>config</var>. User Agents are not
-        required to support any particular codec type or configuration.</p>
+        does not support <var>config</var>. Authors are encouraged to first check support
+        by calling <code class="idl"><a data-link-type="idl" href="#dom-videoencoder-isconfigsupported" id="ref-for-dom-videoencoder-isconfigsupported①">isConfigSupported()</a></code> with <var>config</var>. User
+        Agents don’t have to support any particular codec type or
+        configuration.</p>
      <p>When invoked, run these steps:</p>
      <ol>
       <li data-md>
@@ -2068,7 +2081,7 @@ emitted by <code class="idl"><a data-link-type="idl" href="#dom-videoencoder-cod
       Returns a promise indicating whether the provided <var>config</var> is supported by
     the User Agent. 
      <p class="note" role="note"><span>NOTE:</span> The returned <code class="idl"><a data-link-type="idl" href="#dictdef-videoencodersupport" id="ref-for-dictdef-videoencodersupport">VideoEncoderSupport</a></code> <code class="idl"><a data-link-type="idl" href="#dom-videoencodersupport-config" id="ref-for-dom-videoencodersupport-config">config</a></code> will contain only the dictionary members that User Agent recognized.
-        Unrecognized dictionary members will be ignored. Authors may detect
+        Unrecognized dictionary members will be ignored. Authors can detect
         unrecognized dictionary members by comparing <code class="idl"><a data-link-type="idl" href="#dom-videoencodersupport-config" id="ref-for-dom-videoencodersupport-config①">config</a></code> to their provided <var>config</var>.</p>
      <p>When invoked, run these steps:</p>
      <ol>
@@ -2142,9 +2155,9 @@ with <var>output</var>.</p>
           <li data-md>
            <p>Assign <code>encoderConfig.displayHeight</code> to <code>outputConfig.displayHeight</code>.</p>
           <li data-md>
-           <p>Assign the remaining keys of <code>outputConfig</code> as determined by <code class="idl"><a data-link-type="idl" href="#dom-videoencoder-codec-implementation-slot" id="ref-for-dom-videoencoder-codec-implementation-slot⑤">[[codec implementation]]</a></code>. The User Agent
-must ensure that the configuration is completely described
-such that <var>outputConfig</var> could be used to correctly decode <var>output</var>.</p>
+           <p>Assign the remaining keys of <code>outputConfig</code> as determined by <code class="idl"><a data-link-type="idl" href="#dom-videoencoder-codec-implementation-slot" id="ref-for-dom-videoencoder-codec-implementation-slot⑤">[[codec implementation]]</a></code>. The User Agent <em class="rfc2119">MUST</em> ensure that the configuration is
+completely described such that <var>outputConfig</var> could be used to
+correctly decode <var>output</var>.</p>
            <p class="note" role="note"><span>NOTE:</span> The codec specific requirements for populating the <code class="idl"><a data-link-type="idl" href="#dom-videodecoderconfig-description" id="ref-for-dom-videodecoderconfig-description">description</a></code> are described in the <a data-link-type="biblio" href="#biblio-webcodecs-codec-registry">[WEBCODECS-CODEC-REGISTRY]</a>.</p>
          </ol>
         <li data-md>
@@ -2239,7 +2252,8 @@ the <a data-link-type="dfn" href="#control-thread" id="ref-for-control-thread②
    <dl>
     <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="EncodedVideoChunkMetadata" data-dfn-type="dict-member" data-export id="dom-encodedvideochunkmetadata-decoderconfig"><code>decoderConfig</code></dfn>, <span> of type <a data-link-type="idl-name" href="#dictdef-videodecoderconfig" id="ref-for-dictdef-videodecoderconfig⑦">VideoDecoderConfig</a></span>
     <dd data-md>
-     <p>A <code class="idl"><a data-link-type="idl" href="#dictdef-videodecoderconfig" id="ref-for-dictdef-videodecoderconfig⑧">VideoDecoderConfig</a></code> that authors may use to decode the associated <code class="idl"><a data-link-type="idl" href="#encodedvideochunk" id="ref-for-encodedvideochunk⑧">EncodedVideoChunk</a></code>.</p>
+     <p>A <code class="idl"><a data-link-type="idl" href="#dictdef-videodecoderconfig" id="ref-for-dictdef-videodecoderconfig⑧">VideoDecoderConfig</a></code> that authors <em class="rfc2119">MAY</em> use to
+decode the associated <code class="idl"><a data-link-type="idl" href="#encodedvideochunk" id="ref-for-encodedvideochunk⑧">EncodedVideoChunk</a></code>.</p>
     <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="EncodedVideoChunkMetadata" data-dfn-type="dict-member" data-export id="dom-encodedvideochunkmetadata-svc"><code>svc</code></dfn>, <span> of type <a data-link-type="idl-name" href="#dictdef-svcoutputmetadata" id="ref-for-dictdef-svcoutputmetadata②">SvcOutputMetadata</a></span>
     <dd data-md>
      <p>A collection of metadata describing this <code class="idl"><a data-link-type="idl" href="#encodedvideochunk" id="ref-for-encodedvideochunk⑨">EncodedVideoChunk</a></code> with respect
@@ -2282,9 +2296,9 @@ bitstream at least as constrained as indicated by <var>config</var>.codec, retur
 included, return <code>true</code>.</p>
      <p class="note" role="note"><span>NOTE:</span> The types <code class="idl"><a data-link-type="idl" href="#dictdef-audiodecoderconfig" id="ref-for-dictdef-audiodecoderconfig⑧">AudioDecoderConfig</a></code>, <code class="idl"><a data-link-type="idl" href="#dictdef-videodecoderconfig" id="ref-for-dictdef-videodecoderconfig①⓪">VideoDecoderConfig</a></code>, <code class="idl"><a data-link-type="idl" href="#dictdef-audioencoderconfig" id="ref-for-dictdef-audioencoderconfig④">AudioEncoderConfig</a></code>, and <code class="idl"><a data-link-type="idl" href="#dictdef-videoencoderconfig" id="ref-for-dictdef-videoencoderconfig④">VideoEncoderConfig</a></code> each define their
     respective configuration entries and defaults.</p>
-     <p class="note" role="note"><span>NOTE:</span> Support for a given configuration may change dynamically if the
-    hardware is altered (e.g. external GPU unplugged) or if required
-    hardware resources are exhausted. User Agents should describe support on
+     <p class="note" role="note"><span>NOTE:</span> Support for a given configuration can change dynamically if the
+    hardware is altered (e.g. external GPU unplugged) or if essential
+    hardware resources are exhausted. User Agents describe support on
     a best-effort basis given the resources that are available at the time
     of the query.</p>
     <li data-md>
@@ -2363,7 +2377,8 @@ recursively running the <a data-link-type="dfn" href="#clone-configuration" id="
    <h3 class="heading settled" data-level="7.4" id="config-codec-string"><span class="secno">7.4. </span><span class="content"><dfn class="dfn-paneled" data-dfn-type="dfn" data-export id="codec-string">Codec String</dfn></span><a class="self-link" href="#config-codec-string"></a></h3>
     A codec string describes a given codec format to be used for encoding or
 decoding. 
-   <p>A <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="valid-codec-string">valid codec string</dfn> must meet the following conditions.</p>
+   <p>A <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="valid-codec-string">valid codec string</dfn> <em class="rfc2119">MUST</em> meet the following
+conditions.</p>
    <ol>
     <li data-md>
      <p>Is valid per the relevant codec specification (see examples below).</p>
@@ -2380,8 +2395,8 @@ that define these concepts.</p>
     around these parameters, but won’t produce bitstreams that have a higher
     level or are less constrained than requested.</p>
    <p>The format and semantics for codec strings are defined by codec registrations
-listed in the <a data-link-type="biblio" href="#biblio-webcodecs-codec-registry">[WEBCODECS-CODEC-REGISTRY]</a>. A compliant implementation may support any
-combination of codec registrations or none at all.</p>
+listed in the <a data-link-type="biblio" href="#biblio-webcodecs-codec-registry">[WEBCODECS-CODEC-REGISTRY]</a>. A compliant implementation <em class="rfc2119">MAY</em> support any combination of codec registrations or
+none at all.</p>
    <h3 class="heading settled" data-level="7.5" id="audio-decoder-config"><span class="secno">7.5. </span><span class="content">AudioDecoderConfig</span><a class="self-link" href="#audio-decoder-config"></a></h3>
 <pre class="idl highlight def"><c- b>dictionary</c-> <dfn class="dfn-paneled idl-code" data-dfn-type="dictionary" data-export id="dictdef-audiodecoderconfig"><code><c- g>AudioDecoderConfig</c-></code></dfn> {
   <c- b>required</c-> <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-DOMString" id="ref-for-idl-DOMString"><c- b>DOMString</c-></a> <a class="idl-code" data-link-type="dict-member" data-type="DOMString " href="#dom-audiodecoderconfig-codec" id="ref-for-dom-audiodecoderconfig-codec①"><c- g>codec</c-></a>;
@@ -2448,8 +2463,8 @@ return <code>false</code>.</p>
     <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoDecoderConfig" data-dfn-type="dict-member" data-export id="dom-videodecoderconfig-description"><code>description</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#BufferSource" id="ref-for-BufferSource⑥">BufferSource</a></span>
     <dd>
       A sequence of codec specific bytes, commonly known as extradata. 
-     <p class="note" role="note"><span>NOTE:</span> The registrations in the <a data-link-type="biblio" href="#biblio-webcodecs-codec-registry">[WEBCODECS-CODEC-REGISTRY]</a> may describe whether/how
-        to populate this sequence, corresponding to the provided <code class="idl"><a data-link-type="idl" href="#dom-videodecoderconfig-codec" id="ref-for-dom-videodecoderconfig-codec②">codec</a></code>.</p>
+     <p class="note" role="note"><span>NOTE:</span> The registrations in the <a data-link-type="biblio" href="#biblio-webcodecs-codec-registry">[WEBCODECS-CODEC-REGISTRY]</a> describes
+        whether/how to populate this sequence, corresponding to the provided <code class="idl"><a data-link-type="idl" href="#dom-videodecoderconfig-codec" id="ref-for-dom-videodecoderconfig-codec②">codec</a></code>.</p>
     <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoDecoderConfig" data-dfn-type="dict-member" data-export id="dom-videodecoderconfig-codedwidth"><code>codedWidth</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#idl-unsigned-long" id="ref-for-idl-unsigned-long①⓪">unsigned long</a></span>
     <dd> Width of the VideoFrame in pixels, potentionally including non-visible
     padding, and prior to considering potential ratio adjustments. 
@@ -2462,8 +2477,8 @@ return <code>false</code>.</p>
     <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoDecoderConfig" data-dfn-type="dict-member" data-export id="dom-videodecoderconfig-displayaspectheight"><code>displayAspectHeight</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#idl-unsigned-long" id="ref-for-idl-unsigned-long①③">unsigned long</a></span>
     <dd> Vertical dimension of the VideoFrame’s aspect ratio when displayed. 
     <p class="note" role="note"><span>NOTE:</span> <code class="idl"><a data-link-type="idl" href="#dom-videoframe-displaywidth" id="ref-for-dom-videoframe-displaywidth">displayWidth</a></code> and <code class="idl"><a data-link-type="idl" href="#dom-videoframe-displayheight" id="ref-for-dom-videoframe-displayheight">displayHeight</a></code> can both be
-  different from <code class="idl"><a data-link-type="idl" href="#dom-videodecoderconfig-displayaspectwidth" id="ref-for-dom-videodecoderconfig-displayaspectwidth④">displayAspectWidth</a></code> and <code class="idl"><a data-link-type="idl" href="#dom-videodecoderconfig-displayaspectheight" id="ref-for-dom-videodecoderconfig-displayaspectheight④">displayAspectHeight</a></code>, but they should have identical
-  ratios, after scaling is applied when <a data-link-type="dfn" href="#create-a-videoframe" id="ref-for-create-a-videoframe①">creating the video frame</a>.</p>
+      different from <code class="idl"><a data-link-type="idl" href="#dom-videodecoderconfig-displayaspectwidth" id="ref-for-dom-videodecoderconfig-displayaspectwidth④">displayAspectWidth</a></code> and <code class="idl"><a data-link-type="idl" href="#dom-videodecoderconfig-displayaspectheight" id="ref-for-dom-videodecoderconfig-displayaspectheight④">displayAspectHeight</a></code>, but have identical ratios, after scaling is applied when <a data-link-type="dfn" href="#create-a-videoframe" id="ref-for-create-a-videoframe①">creating the
+      video frame</a>.</p>
     <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoDecoderConfig" data-dfn-type="dict-member" data-export id="dom-videodecoderconfig-colorspace"><code>colorSpace</code></dfn>, <span> of type <a data-link-type="idl-name" href="#dictdef-videocolorspaceinit" id="ref-for-dictdef-videocolorspaceinit③">VideoColorSpaceInit</a></span>
     <dd> Configures the <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe⑦">VideoFrame</a></code>.<code class="idl"><a data-link-type="idl" href="#dom-videoframe-colorspace" id="ref-for-dom-videoframe-colorspace">colorSpace</a></code> for <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe⑧">VideoFrame</a></code>s
     associated with this <code class="idl"><a data-link-type="idl" href="#dictdef-videodecoderconfig" id="ref-for-dictdef-videodecoderconfig①⑤">VideoDecoderConfig</a></code>. If <code class="idl"><a data-link-type="idl" href="#dom-videodecoderconfig-colorspace" id="ref-for-dom-videodecoderconfig-colorspace③">colorSpace</a></code> <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#map-exists" id="ref-for-map-exists③">exists</a>, the provided values will
@@ -2475,8 +2490,8 @@ return <code>false</code>.</p>
       Hint that the selected decoder SHOULD be configured to minimize the number
     of <code class="idl"><a data-link-type="idl" href="#encodedvideochunk" id="ref-for-encodedvideochunk①②">EncodedVideoChunk</a></code>s that have to be decoded before a <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe⑨">VideoFrame</a></code> is output. 
      <p class="note" role="note"><span>NOTE:</span> In addition to User Agent and hardware limitations, some codec
-    bitstreams may require a minimum number of inputs before any output can be
-    produced.</p>
+        bitstreams require a minimum number of inputs before any output can be
+        produced.</p>
    </dl>
    <h3 class="heading settled" data-level="7.7" id="audio-encoder-config"><span class="secno">7.7. </span><span class="content">AudioEncoderConfig</span><a class="self-link" href="#audio-encoder-config"></a></h3>
 <pre class="idl highlight def"><c- b>dictionary</c-> <dfn class="dfn-paneled idl-code" data-dfn-type="dictionary" data-export id="dictdef-audioencoderconfig"><code><c- g>AudioEncoderConfig</c-></code></dfn> {
@@ -2486,8 +2501,8 @@ return <code>false</code>.</p>
   [<a class="idl-code" data-link-type="extended-attribute" href="https://heycam.github.io/webidl/#EnforceRange" id="ref-for-EnforceRange⑧"><c- g>EnforceRange</c-></a>] <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-unsigned-long-long" id="ref-for-idl-unsigned-long-long"><c- b>unsigned</c-> <c- b>long</c-> <c- b>long</c-></a> <a class="idl-code" data-link-type="dict-member" data-type="unsigned long long " href="#dom-audioencoderconfig-bitrate" id="ref-for-dom-audioencoderconfig-bitrate"><c- g>bitrate</c-></a>;
 };
 </pre>
-   <p class="note" role="note"><span>NOTE:</span> Codec-specific extensions to <code class="idl"><a data-link-type="idl" href="#dictdef-audioencoderconfig" id="ref-for-dictdef-audioencoderconfig⑧">AudioEncoderConfig</a></code> may be defined by the
-    registrations in the <a data-link-type="biblio" href="#biblio-webcodecs-codec-registry">[WEBCODECS-CODEC-REGISTRY]</a>.</p>
+   <p class="note" role="note"><span>NOTE:</span> Codec-specific extensions to <code class="idl"><a data-link-type="idl" href="#dictdef-audioencoderconfig" id="ref-for-dictdef-audioencoderconfig⑧">AudioEncoderConfig</a></code> are described in
+    their registrations in the <a data-link-type="biblio" href="#biblio-webcodecs-codec-registry">[WEBCODECS-CODEC-REGISTRY]</a>.</p>
    <p>To check if an <code class="idl"><a data-link-type="idl" href="#dictdef-audioencoderconfig" id="ref-for-dictdef-audioencoderconfig⑨">AudioEncoderConfig</a></code> is a <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="valid-audioencoderconfig">valid AudioEncoderConfig</dfn>,
 run these steps:</p>
    <ol>
@@ -2522,7 +2537,7 @@ run these steps:</p>
   <a data-link-type="idl-name" href="#enumdef-latencymode" id="ref-for-enumdef-latencymode"><c- n>LatencyMode</c-></a> <a class="idl-code" data-default="&quot;quality&quot;" data-link-type="dict-member" data-type="LatencyMode " href="#dom-videoencoderconfig-latencymode" id="ref-for-dom-videoencoderconfig-latencymode"><c- g>latencyMode</c-></a> = "quality";
 };
 </pre>
-   <p class="note" role="note"><span>NOTE:</span> Codec-specific extensions to <code class="idl"><a data-link-type="idl" href="#dictdef-videoencoderconfig" id="ref-for-dictdef-videoencoderconfig⑧">VideoEncoderConfig</a></code> may be defined by the
+   <p class="note" role="note"><span>NOTE:</span> Codec-specific extensions to <code class="idl"><a data-link-type="idl" href="#dictdef-videoencoderconfig" id="ref-for-dictdef-videoencoderconfig⑧">VideoEncoderConfig</a></code> are described in their
     registrations in the <a data-link-type="biblio" href="#biblio-webcodecs-codec-registry">[WEBCODECS-CODEC-REGISTRY]</a>.</p>
    <p>To check if a <code class="idl"><a data-link-type="idl" href="#dictdef-videoencoderconfig" id="ref-for-dictdef-videoencoderconfig⑨">VideoEncoderConfig</a></code> is a <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="valid-videoencoderconfig">valid VideoEncoderConfig</dfn>,
     run these steps:</p>
@@ -2543,12 +2558,12 @@ run these steps:</p>
     <dd>
       The encoded width of output <code class="idl"><a data-link-type="idl" href="#encodedvideochunk" id="ref-for-encodedvideochunk①③">EncodedVideoChunk</a></code>s in pixels, prior to any
     display aspect ratio adjustments. 
-     <p>The encoder must scale any <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe①⓪">VideoFrame</a></code> whose <code class="idl"><a data-link-type="idl" href="#dom-videoframe-visible-width-slot" id="ref-for-dom-videoframe-visible-width-slot">[[visible width]]</a></code> differs from this value.</p>
+     <p>The encoder <em class="rfc2119">MUST</em> scale any <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe①⓪">VideoFrame</a></code> whose <code class="idl"><a data-link-type="idl" href="#dom-videoframe-visible-width-slot" id="ref-for-dom-videoframe-visible-width-slot">[[visible width]]</a></code> differs from this value.</p>
     <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoEncoderConfig" data-dfn-type="dict-member" data-export id="dom-videoencoderconfig-height"><code>height</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#idl-unsigned-long" id="ref-for-idl-unsigned-long②③">unsigned long</a></span>
     <dd>
       The encoded height of output <code class="idl"><a data-link-type="idl" href="#encodedvideochunk" id="ref-for-encodedvideochunk①④">EncodedVideoChunk</a></code>s in pixels, prior to any
     display aspect ratio adjustments. 
-     <p>The encoder must scale any <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe①①">VideoFrame</a></code> whose <code class="idl"><a data-link-type="idl" href="#dom-videoframe-visible-height-slot" id="ref-for-dom-videoframe-visible-height-slot">[[visible height]]</a></code> differs from this value.</p>
+     <p>The encoder <em class="rfc2119">MUST</em> scale any <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe①①">VideoFrame</a></code> whose <code class="idl"><a data-link-type="idl" href="#dom-videoframe-visible-height-slot" id="ref-for-dom-videoframe-visible-height-slot">[[visible height]]</a></code> differs from this value.</p>
    </dl>
    <dl>
     <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoEncoderConfig" data-dfn-type="dict-member" data-export id="dom-videoencoderconfig-displaywidth"><code>displayWidth</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#idl-unsigned-long" id="ref-for-idl-unsigned-long②④">unsigned long</a></span>
@@ -2560,27 +2575,25 @@ run these steps:</p>
    </dl>
    <div class="note" role="note">
      NOTE: Providing a <code class="idl"><a data-link-type="idl" href="#dom-videoencoderconfig-displaywidth" id="ref-for-dom-videoencoderconfig-displaywidth②">displayWidth</a></code> or <code class="idl"><a data-link-type="idl" href="#dom-videoencoderconfig-displayheight" id="ref-for-dom-videoencoderconfig-displayheight②">displayHeight</a></code> that differs from <code class="idl"><a data-link-type="idl" href="#dom-videoencoderconfig-width" id="ref-for-dom-videoencoderconfig-width④">width</a></code> and <code class="idl"><a data-link-type="idl" href="#dom-videoencoderconfig-height" id="ref-for-dom-videoencoderconfig-height②">height</a></code> signals
-      that chunks should be scaled after decoding to arrive at the final
+      that chunks are to be scaled after decoding to arrive at the final
       display aspect ratio. 
     <p>For many codecs this is merely pass-through information, but some codecs
-      may optionally include display sizing in the bitstream.</p>
+      can sometimes include display sizing in the bitstream.</p>
    </div>
    <dl>
     <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoEncoderConfig" data-dfn-type="dict-member" data-export id="dom-videoencoderconfig-bitrate"><code>bitrate</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#idl-unsigned-long-long" id="ref-for-idl-unsigned-long-long③">unsigned long long</a></span>
     <dd> The average bitrate of the encoded video given in units of bits per second. 
     <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoEncoderConfig" data-dfn-type="dict-member" data-export id="dom-videoencoderconfig-framerate"><code>framerate</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#idl-double" id="ref-for-idl-double①">double</a></span>
     <dd> The expected frame rate in frames per second, if known. This value, along
-    with the frame <code class="idl"><a data-link-type="idl" href="#dom-videoframe-timestamp" id="ref-for-dom-videoframe-timestamp">timestamp</a></code>, should be used by the video encoder
-    to calculate the optimal byte length for each encoded frame. Additionally,
-    the value should be considered a target deadline for outputting encoding
-    chunks when <code class="idl"><a data-link-type="idl" href="#dom-videoencoderconfig-latencymode" id="ref-for-dom-videoencoderconfig-latencymode①">latencyMode</a></code> is set to <code class="idl"><a data-link-type="idl" href="#dom-latencymode-realtime" id="ref-for-dom-latencymode-realtime">realtime</a></code>. 
+    with the frame <code class="idl"><a data-link-type="idl" href="#dom-videoframe-timestamp" id="ref-for-dom-videoframe-timestamp">timestamp</a></code>, <em class="rfc2119">SHOULD</em> be
+    used by the video encoder to calculate the optimal byte length for each
+    encoded frame. Additionally, the value <em class="rfc2119">SHOULD</em> be
+    considered a target deadline for outputting encoding chunks when <code class="idl"><a data-link-type="idl" href="#dom-videoencoderconfig-latencymode" id="ref-for-dom-videoencoderconfig-latencymode①">latencyMode</a></code> is set to <code class="idl"><a data-link-type="idl" href="#dom-latencymode-realtime" id="ref-for-dom-latencymode-realtime">realtime</a></code>. 
     <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoEncoderConfig" data-dfn-type="dict-member" data-export id="dom-videoencoderconfig-hardwareacceleration"><code>hardwareAcceleration</code></dfn>, <span> of type <a data-link-type="idl-name" href="#enumdef-hardwareacceleration" id="ref-for-enumdef-hardwareacceleration④">HardwareAcceleration</a>, defaulting to <code>"no-preference"</code></span>
     <dd> Hint that configures hardware acceleration for this codec. See <code class="idl"><a data-link-type="idl" href="#enumdef-hardwareacceleration" id="ref-for-enumdef-hardwareacceleration⑤">HardwareAcceleration</a></code>. 
     <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoEncoderConfig" data-dfn-type="dict-member" data-export id="dom-videoencoderconfig-alpha"><code>alpha</code></dfn>, <span> of type <a data-link-type="idl-name" href="#enumdef-alphaoption" id="ref-for-enumdef-alphaoption①">AlphaOption</a>, defaulting to <code>"discard"</code></span>
-    <dd> Whether the alpha component of the <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe①②">VideoFrame</a></code> inputs should be kept
-    or discarded prior to encoding. If <code class="idl"><a data-link-type="idl" href="#dom-videoencoderconfig-alpha" id="ref-for-dom-videoencoderconfig-alpha②">alpha</a></code> is
-    equal to <code class="idl"><a data-link-type="idl" href="#dom-alphaoption-discard" id="ref-for-dom-alphaoption-discard">discard</a></code>, alpha data is always discarded, regardless
-    of a <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe①③">VideoFrame</a></code>'s <code class="idl"><a data-link-type="idl" href="#dom-videoframe-format-slot" id="ref-for-dom-videoframe-format-slot">[[format]]</a></code>. 
+    <dd> Whether the alpha component of the <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe①②">VideoFrame</a></code> inputs <em class="rfc2119">SHOULD</em> be kept or discarded prior to encoding. If <code class="idl"><a data-link-type="idl" href="#dom-videoencoderconfig-alpha" id="ref-for-dom-videoencoderconfig-alpha②">alpha</a></code> is equal to <code class="idl"><a data-link-type="idl" href="#dom-alphaoption-discard" id="ref-for-dom-alphaoption-discard">discard</a></code>, alpha data
+    is always discarded, regardless of a <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe①③">VideoFrame</a></code>'s <code class="idl"><a data-link-type="idl" href="#dom-videoframe-format-slot" id="ref-for-dom-videoframe-format-slot">[[format]]</a></code>. 
     <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoEncoderConfig" data-dfn-type="dict-member" data-export id="dom-videoencoderconfig-scalabilitymode"><code>scalabilityMode</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#idl-DOMString" id="ref-for-idl-DOMString⑨">DOMString</a></span>
     <dd> An encoding <a data-link-type="dfn" href="https://w3c.github.io/webrtc-svc/#scalabilitymodes*" id="ref-for-scalabilitymodes*">scalability mode identifier</a> as defined by <a data-link-type="biblio" href="#biblio-webrtc-svc">[WebRTC-SVC]</a>. 
     <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoEncoderConfig" data-dfn-type="dict-member" data-export id="dom-videoencoderconfig-bitratemode"><code>bitrateMode</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://www.w3.org/TR/mediastream-recording/#bitratemode" id="ref-for-bitratemode①">BitrateMode</a>, defaulting to <code>"variable"</code></span>
@@ -2608,22 +2621,22 @@ what is inherent to the User Agent and revealed by <a data-link-type="biblio" hr
 User Agent does not implement <a data-link-type="biblio" href="#biblio-media-capabilities">[media-capabilities]</a> for reasons of
 fingerprinting, they SHOULD ignore the <code class="idl"><a data-link-type="idl" href="#enumdef-hardwareacceleration" id="ref-for-enumdef-hardwareacceleration⑦">HardwareAcceleration</a></code> preference.</p>
    <div class="note" role="note">
-     NOTE: Good examples of when a User Agent may ignore <code class="idl"><a data-link-type="idl" href="#dom-hardwareacceleration-prefer-hardware" id="ref-for-dom-hardwareacceleration-prefer-hardware②">prefer-hardware</a></code> or <code class="idl"><a data-link-type="idl" href="#dom-hardwareacceleration-prefer-software" id="ref-for-dom-hardwareacceleration-prefer-software②">prefer-software</a></code> are for reasons of user privacy or
+     NOTE: Good examples of when a User Agent can ignore <code class="idl"><a data-link-type="idl" href="#dom-hardwareacceleration-prefer-hardware" id="ref-for-dom-hardwareacceleration-prefer-hardware②">prefer-hardware</a></code> or <code class="idl"><a data-link-type="idl" href="#dom-hardwareacceleration-prefer-software" id="ref-for-dom-hardwareacceleration-prefer-software②">prefer-software</a></code> are for reasons of user privacy or
   circumstances where the User Agent determines an alternative setting would
   better serve the end user. 
     <p>Most authors will be best served by using the default of <code class="idl"><a data-link-type="idl" href="#dom-hardwareacceleration-no-preference" id="ref-for-dom-hardwareacceleration-no-preference①">no-preference</a></code>. This gives the User Agent flexibility
   to optimize based on its knowledge of the system and configuration. A common
   strategy will be to prioritize hardware acceleration at higher resolutions
   with a fallback to software codecs if hardware acceleration fails.</p>
-    <p>Authors should carefully weigh the tradeoffs when setting a hardware
-  acceleration preference. The precise tradeoffs will be device-specific, but
-  authors should generally expect the following:</p>
+    <p>Authors are encouraged to carefully weigh the tradeoffs when setting a
+  hardware acceleration preference. The precise tradeoffs will be
+  device-specific, but authors can generally expect the following:</p>
     <ul>
      <li data-md>
-      <p>Setting a value of <code class="idl"><a data-link-type="idl" href="#dom-hardwareacceleration-prefer-hardware" id="ref-for-dom-hardwareacceleration-prefer-hardware③">prefer-hardware</a></code> or <code class="idl"><a data-link-type="idl" href="#dom-hardwareacceleration-prefer-software" id="ref-for-dom-hardwareacceleration-prefer-software③">prefer-software</a></code> may significantly restrict what
-  configurations are supported. It may occur that the user’s device does not
+      <p>Setting a value of <code class="idl"><a data-link-type="idl" href="#dom-hardwareacceleration-prefer-hardware" id="ref-for-dom-hardwareacceleration-prefer-hardware③">prefer-hardware</a></code> or <code class="idl"><a data-link-type="idl" href="#dom-hardwareacceleration-prefer-software" id="ref-for-dom-hardwareacceleration-prefer-software③">prefer-software</a></code> can significantly restrict what
+  configurations are supported. It can occur that the user’s device does not
   offer acceleration for any codec, or only for the most common profiles of
-  older codecs. It may also occur that a given User Agent lacks a software
+  older codecs. It can also occur that a given User Agent lacks a software
   based codec implementation.</p>
      <li data-md>
       <p>Hardware acceleration does not simply imply faster encoding / decoding.
@@ -2637,7 +2650,7 @@ fingerprinting, they SHOULD ignore the <code class="idl"><a data-link-type="idl"
   software based codecs.</p>
      <li data-md>
       <p>For lower resolution content, the overhead added by hardware acceleration
-  may yield decreased performance and power efficiency compared to purely
+  can yield decreased performance and power efficiency compared to purely
   software based codecs.</p>
     </ul>
     <p>Given these tradeoffs, a good example of using "prefer-hardware" would be if
@@ -2649,20 +2662,22 @@ fingerprinting, they SHOULD ignore the <code class="idl"><a data-link-type="idl"
    </div>
    <dl>
     <dt><dfn class="dfn-paneled idl-code" data-dfn-for="HardwareAcceleration" data-dfn-type="enum-value" data-export data-lt="&quot;no-preference&quot;|no-preference" id="dom-hardwareacceleration-no-preference"><code>no-preference</code></dfn>
-    <dd> Indicates that the User Agent may use hardware acceleration if it is
-    available and compatible with other aspects of the codec configuration. 
+    <dd> Indicates that the User Agent <em class="rfc2119">MAY</em> use hardware
+    acceleration if it is available and compatible with other aspects of the
+    codec configuration. 
     <dt><dfn class="dfn-paneled idl-code" data-dfn-for="HardwareAcceleration" data-dfn-type="enum-value" data-export data-lt="&quot;prefer-software&quot;|prefer-software" id="dom-hardwareacceleration-prefer-software"><code>prefer-software</code></dfn>
     <dd>
-      Indicates that the User Agent SHOULD prefer a software codec implementation.
-    User Agents may ignore this value for any reason. 
-     <p class="note" role="note"><span>NOTE:</span> This may cause the configuration to be unsupported on platforms where
+      Indicates that the User Agent <em class="rfc2119">SHOULD</em> prefer a
+    software codec implementation.  User Agents may ignore this value for any
+    reason. 
+     <p class="note" role="note"><span>NOTE:</span> This can cause the configuration to be unsupported on platforms where
     an unaccelerated codec is unavailable or is incompatible with other aspects
     of the codec configuration.</p>
     <dt><dfn class="dfn-paneled idl-code" data-dfn-for="HardwareAcceleration" data-dfn-type="enum-value" data-export data-lt="&quot;prefer-hardware&quot;|prefer-hardware" id="dom-hardwareacceleration-prefer-hardware"><code>prefer-hardware</code></dfn>
     <dd>
-      Indicates that the User Agent SHOULD prefer hardware acceleration. User
-    Agents may ignore this value for any reason. 
-     <p class="note" role="note"><span>NOTE:</span> This may cause the configuration to be unsupported on platforms where
+      Indicates that the User Agent <em class="rfc2119">SHOULD</em> prefer
+    hardware acceleration. User Agents may ignore this value for any reason. 
+     <p class="note" role="note"><span>NOTE:</span> This can cause the configuration to be unsupported on platforms where
     an accelerated codec is unavailable or is incompatible with other aspects of
     the codec configuration.</p>
    </dl>
@@ -2672,14 +2687,15 @@ fingerprinting, they SHOULD ignore the <code class="idl"><a data-link-type="idl"
   <a class="idl-code" data-link-type="enum-value" href="#dom-alphaoption-discard" id="ref-for-dom-alphaoption-discard①"><c- s>"discard"</c-></a>,
 };
 </pre>
-   <p>Describes how the user agent should behave when dealing with alpha channels, for
-a variety of different operations.</p>
+   <p>Describes how the user agent <em class="rfc2119">SHOULD</em> behave when dealing
+with alpha channels, for a variety of different operations.</p>
    <dl>
     <dt><dfn class="dfn-paneled idl-code" data-dfn-for="AlphaOption" data-dfn-type="enum-value" data-export data-lt="&quot;keep&quot;|keep" id="dom-alphaoption-keep"><code>keep</code></dfn>
-    <dd> Indicates that the user agent should preserve alpha channel data for <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe①④">VideoFrame</a></code>s, if it is present. 
+    <dd> Indicates that the user agent <em class="rfc2119">SHOULD</em> preserve alpha
+    channel data for <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe①④">VideoFrame</a></code>s, if it is present. 
     <dt><dfn class="dfn-paneled idl-code" data-dfn-for="AlphaOption" data-dfn-type="enum-value" data-export data-lt="&quot;discard&quot;|discard" id="dom-alphaoption-discard"><code>discard</code></dfn>
-    <dd> Indicates that the user agent should ignore or remove <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe①⑤">VideoFrame</a></code>'s alpha
-    channel data. 
+    <dd> Indicates that the user agent <em class="rfc2119">SHOULD</em> ignore or
+    remove <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe①⑤">VideoFrame</a></code>'s alpha channel data. 
    </dl>
    <h3 class="heading settled" data-level="7.11" id="latency-mode"><span class="secno">7.11. </span><span class="content">Latency Mode</span><a class="self-link" href="#latency-mode"></a></h3>
 <pre class="idl highlight def"><c- b>enum</c-> <dfn class="dfn-paneled idl-code" data-dfn-type="enum" data-export id="enumdef-latencymode"><code><c- g>LatencyMode</c-></code></dfn> {
@@ -2690,29 +2706,33 @@ a variety of different operations.</p>
    <dl>
     <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="LatencyMode" data-dfn-type="enum-value" data-export data-lt="&quot;quality&quot;|quality" id="dom-latencymode-quality"><code>quality</code></dfn>
     <dd data-md>
-     <p>Indicates that the User Agent should optimize for encoding quality. In
-this mode:</p>
+     <p>Indicates that the User Agent <em class="rfc2119">SHOULD</em> optimize for
+encoding quality. In this mode:</p>
      <ul>
       <li data-md>
-       <p>User Agents may increase encoding latency to improve quality.</p>
+       <p>User Agents <em class="rfc2119">MAY</em> increase encoding latency to
+improve quality.</p>
       <li data-md>
-       <p>User Agents must not drop frames to achieve the target <code class="idl"><a data-link-type="idl" href="#dom-videoencoderconfig-bitrate" id="ref-for-dom-videoencoderconfig-bitrate①">bitrate</a></code> and/or <code class="idl"><a data-link-type="idl" href="#dom-videoencoderconfig-framerate" id="ref-for-dom-videoencoderconfig-framerate①">framerate</a></code>.</p>
+       <p>User Agents <em class="rfc2119">MUST</em> not drop frames to achieve the
+target <code class="idl"><a data-link-type="idl" href="#dom-videoencoderconfig-bitrate" id="ref-for-dom-videoencoderconfig-bitrate①">bitrate</a></code> and/or <code class="idl"><a data-link-type="idl" href="#dom-videoencoderconfig-framerate" id="ref-for-dom-videoencoderconfig-framerate①">framerate</a></code>.</p>
       <li data-md>
-       <p><code class="idl"><a data-link-type="idl" href="#dom-videoencoderconfig-framerate" id="ref-for-dom-videoencoderconfig-framerate②">framerate</a></code> should not be used as a target deadline
-for emitting encoded chunks.</p>
+       <p><code class="idl"><a data-link-type="idl" href="#dom-videoencoderconfig-framerate" id="ref-for-dom-videoencoderconfig-framerate②">framerate</a></code> <em class="rfc2119">SHOULD</em> not be
+used as a target deadline for emitting encoded chunks.</p>
      </ul>
     <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="LatencyMode" data-dfn-type="enum-value" data-export data-lt="&quot;realtime&quot;|realtime" id="dom-latencymode-realtime"><code>realtime</code></dfn>
     <dd data-md>
-     <p>Indicates that the User Agent should optimize for low latency. In this
+     <p>Indicates that the User Agent <em class="rfc2119">SHOULD</em> optimize for
+low latency. In this
 mode:</p>
      <ul>
       <li data-md>
-       <p>User Agents may sacrifice quality to improve latency.</p>
+       <p>User Agents <em class="rfc2119">MAY</em> sacrifice quality to improve
+latency.</p>
       <li data-md>
-       <p>User Agents may drop frames to achieve the target <code class="idl"><a data-link-type="idl" href="#dom-videoencoderconfig-bitrate" id="ref-for-dom-videoencoderconfig-bitrate②">bitrate</a></code> and/or <code class="idl"><a data-link-type="idl" href="#dom-videoencoderconfig-framerate" id="ref-for-dom-videoencoderconfig-framerate③">framerate</a></code>.</p>
+       <p>User Agents <em class="rfc2119">MAY</em> drop frames to achieve the target <code class="idl"><a data-link-type="idl" href="#dom-videoencoderconfig-bitrate" id="ref-for-dom-videoencoderconfig-bitrate②">bitrate</a></code> and/or <code class="idl"><a data-link-type="idl" href="#dom-videoencoderconfig-framerate" id="ref-for-dom-videoencoderconfig-framerate③">framerate</a></code>.</p>
       <li data-md>
-       <p><code class="idl"><a data-link-type="idl" href="#dom-videoencoderconfig-framerate" id="ref-for-dom-videoencoderconfig-framerate④">framerate</a></code> should be used as a target deadline for
-emitting encoded chunks.</p>
+       <p><code class="idl"><a data-link-type="idl" href="#dom-videoencoderconfig-framerate" id="ref-for-dom-videoencoderconfig-framerate④">framerate</a></code> <em class="rfc2119">SHOULD</em> be used
+as a target deadline for emitting encoded chunks.</p>
      </ul>
    </dl>
    <h3 class="heading settled" data-level="7.12" id="config-equivalence"><span class="secno">7.12. </span><span class="content">Configuration Equivalence</span><a class="self-link" href="#config-equivalence"></a></h3>
@@ -2938,10 +2958,10 @@ the <code class="idl"><a data-link-type="idl" href="#dom-encodedvideochunk-byte-
    <h3 class="heading settled" data-level="9.1" id="raw-media-memory-model"><span class="secno">9.1. </span><span class="content">Memory Model</span><a class="self-link" href="#raw-media-memory-model"></a></h3>
    <h4 class="heading settled" data-level="9.1.1" id="raw-media-memory-model-background"><span class="secno">9.1.1. </span><span class="content">Background</span><a class="self-link" href="#raw-media-memory-model-background"></a></h4>
    <p>This section is non-normative.</p>
-   <p>Decoded media data may occupy a large amount of system memory. To minimize the
-need for expensive copies, this specification defines a scheme for reference
-counting (<code>clone()</code> and <code>close()</code>).</p>
-   <p class="note" role="note"><span>NOTE:</span> Authors should take care to invoke <code>close()</code> immediately when frames are
+   <p>Decoded media data <em class="rfc2119">MAY</em> occupy a large amount of system
+memory. To minimize the need for expensive copies, this specification defines a
+scheme for reference counting (<code>clone()</code> and <code>close()</code>).</p>
+   <p class="note" role="note"><span>NOTE:</span> Authors are encourage to call <code>close()</code> immediately when frames are
     no longer needed.</p>
    <h4 class="heading settled" data-level="9.1.2" id="raw-media-memory-model-reference-counting"><span class="secno">9.1.2. </span><span class="content">Reference Counting</span><a class="self-link" href="#raw-media-memory-model-reference-counting"></a></h4>
    <p>A <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="media-resource">media resource</dfn> is storage for the actual pixel data or the audio
@@ -2950,9 +2970,9 @@ sample data described by a <code class="idl"><a data-link-type="idl" href="#vide
    <p><code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe①⑧">VideoFrame</a></code>.<code class="idl"><a data-link-type="idl" href="#dom-videoframe-clone" id="ref-for-dom-videoframe-clone">clone()</a></code> and <code class="idl"><a data-link-type="idl" href="#audiodata" id="ref-for-audiodata⑥">AudioData</a></code>.<code class="idl"><a data-link-type="idl" href="#dom-audiodata-clone" id="ref-for-dom-audiodata-clone">clone()</a></code> return new objects whose <code>[[resource reference]]</code> points to the same <a data-link-type="dfn" href="#media-resource" id="ref-for-media-resource④">media resource</a> as the original
 object.</p>
    <p><code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe①⑨">VideoFrame</a></code>.<code class="idl"><a data-link-type="idl" href="#dom-videoframe-close" id="ref-for-dom-videoframe-close①">close()</a></code> and <code class="idl"><a data-link-type="idl" href="#audiodata" id="ref-for-audiodata⑦">AudioData</a></code>.<code class="idl"><a data-link-type="idl" href="#dom-audiodata-close" id="ref-for-dom-audiodata-close">close()</a></code> will clear their [[resource reference]] slot, releasing the reference their <a data-link-type="dfn" href="#media-resource" id="ref-for-media-resource⑤">media resource</a>.</p>
-   <p>A <a data-link-type="dfn" href="#media-resource" id="ref-for-media-resource⑥">media resource</a> must remain alive at least as long as it continues to be
-referenced by a <code>[[resource reference]]</code>.</p>
-   <p class="note" role="note"><span>NOTE:</span> When a <a data-link-type="dfn" href="#media-resource" id="ref-for-media-resource⑦">media resource</a> is no longer referenced by a <code>[[resource reference]]</code>, the resource may be destroyed. User Agents are
+   <p>A <a data-link-type="dfn" href="#media-resource" id="ref-for-media-resource⑥">media resource</a> <em class="rfc2119">MUST</em> remain alive at least as long
+as it continues to be referenced by a <code>[[resource reference]]</code>.</p>
+   <p class="note" role="note"><span>NOTE:</span> When a <a data-link-type="dfn" href="#media-resource" id="ref-for-media-resource⑦">media resource</a> is no longer referenced by a <code>[[resource reference]]</code>, the resource can be destroyed. User Agents are
     encouraged to destroy such resources quickly to reduce memory pressure and
     facilitate resource reuse.</p>
    <h4 class="heading settled" data-level="9.1.3" id="raw-media-serialization-and-transfer"><span class="secno">9.1.3. </span><span class="content">Transfer and Serialization</span><a class="self-link" href="#raw-media-serialization-and-transfer"></a></h4>
@@ -2961,13 +2981,13 @@ referenced by a <code>[[resource reference]]</code>.</p>
 serialization steps are defined in <a href="#audiodata-transfer-serialization">§ 9.2.6 Transfer and Serialization</a> and <a href="#videoframe-transfer-serialization">§ 9.4.7 Transfer and Serialization</a> respectively.</p>
    <p>Transferring an <code class="idl"><a data-link-type="idl" href="#audiodata" id="ref-for-audiodata⑨">AudioData</a></code> or <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe②①">VideoFrame</a></code> moves its <code>[[resource
 reference]]</code> to the destination object and closes (as in <code class="idl"><a data-link-type="idl" href="#dom-audiodata-close" id="ref-for-dom-audiodata-close①">close()</a></code>)
-the source object. Authors may use this facility
+the source object. Authors <em class="rfc2119">MAY</em> use this facility
 to move an <code class="idl"><a data-link-type="idl" href="#audiodata" id="ref-for-audiodata①⓪">AudioData</a></code> or <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe②②">VideoFrame</a></code> between realms without copying the
 underlying <a data-link-type="dfn" href="#media-resource" id="ref-for-media-resource⑧">media resource</a>.</p>
    <p>Serializing an <code class="idl"><a data-link-type="idl" href="#audiodata" id="ref-for-audiodata①①">AudioData</a></code> or <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe②③">VideoFrame</a></code> effectively clones (as in <code class="idl"><a data-link-type="idl" href="#dom-videoframe-clone" id="ref-for-dom-videoframe-clone①">clone()</a></code>) the source object, resulting in two objects that
-reference the same <a data-link-type="dfn" href="#media-resource" id="ref-for-media-resource⑨">media resource</a>. Authors may use this facility to clone
-an <code class="idl"><a data-link-type="idl" href="#audiodata" id="ref-for-audiodata①②">AudioData</a></code> or <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe②④">VideoFrame</a></code> to another realm without copying the
-underlying <a data-link-type="dfn" href="#media-resource" id="ref-for-media-resource①⓪">media resource</a>.</p>
+reference the same <a data-link-type="dfn" href="#media-resource" id="ref-for-media-resource⑨">media resource</a>. Authors <em class="rfc2119">MAY</em> use
+this facility to clone an <code class="idl"><a data-link-type="idl" href="#audiodata" id="ref-for-audiodata①②">AudioData</a></code> or <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe②④">VideoFrame</a></code> to another realm
+without copying the underlying <a data-link-type="dfn" href="#media-resource" id="ref-for-media-resource①⓪">media resource</a>.</p>
    <h3 class="heading settled" data-level="9.2" id="audiodata-interface"><span class="secno">9.2. </span><span class="content">AudioData Interface</span><a class="self-link" href="#audiodata-interface"></a></h3>
 <pre class="idl highlight def">[<a class="idl-code" data-link-type="extended-attribute" href="https://heycam.github.io/webidl/#Exposed" id="ref-for-Exposed⑥"><c- g>Exposed</c-></a>=(<c- n>Window</c->,<c- n>DedicatedWorker</c->), <a class="idl-code" data-link-type="extended-attribute" href="https://html.spec.whatwg.org/multipage/structured-data.html#serializable" id="ref-for-serializable"><c- g>Serializable</c-></a>, <a class="idl-code" data-link-type="extended-attribute" href="https://html.spec.whatwg.org/multipage/structured-data.html#transferable" id="ref-for-transferable"><c- g>Transferable</c-></a>]
 <c- b>interface</c-> <dfn class="dfn-paneled idl-code" data-dfn-type="interface" data-export id="audiodata"><code><c- g>AudioData</c-></code></dfn> {
@@ -3433,7 +3453,7 @@ but audio content using 24-bit samples is common, so 32-bits integers are
 commonly used to hold 24-bit content.</p>
    <p><code class="idl"><a data-link-type="idl" href="#audiodata" id="ref-for-audiodata④②">AudioData</a></code> containing 24-bit samples SHOULD store those samples in <code class="idl"><a data-link-type="idl" href="#dom-audiosampleformat-s32" id="ref-for-dom-audiosampleformat-s32③">s32</a></code> or <code class="idl"><a data-link-type="idl" href="#dom-audiosampleformat-f32" id="ref-for-dom-audiosampleformat-f32③">f32</a></code>. When samples are stored in <code class="idl"><a data-link-type="idl" href="#dom-audiosampleformat-s32" id="ref-for-dom-audiosampleformat-s32④">s32</a></code>, each sample MUST be left-shifted by <code>8</code> bits. By virtue of this process, samples outside of the valid 24-bit range
 ([-8388608, +8388607]) will be clipped. To avoid clipping and ensure lossless
-transport, samples may be converted to <code class="idl"><a data-link-type="idl" href="#dom-audiosampleformat-f32" id="ref-for-dom-audiosampleformat-f32④">f32</a></code>.</p>
+transport, samples <em class="rfc2119">MAY</em> be converted to <code class="idl"><a data-link-type="idl" href="#dom-audiosampleformat-f32" id="ref-for-dom-audiosampleformat-f32④">f32</a></code>.</p>
    <p class="note" role="note"><span>NOTE:</span> While clipping is unavoidable in <code class="idl"><a data-link-type="idl" href="#dom-audiosampleformat-u8" id="ref-for-dom-audiosampleformat-u8③">u8</a></code>, <code class="idl"><a data-link-type="idl" href="#dom-audiosampleformat-s16" id="ref-for-dom-audiosampleformat-s16③">s16</a></code>, and <code class="idl"><a data-link-type="idl" href="#dom-audiosampleformat-s32" id="ref-for-dom-audiosampleformat-s32⑤">s32</a></code> samples due
 to their storage types, implementations SHOULD take care not to clip internally
 when handling <code class="idl"><a data-link-type="idl" href="#dom-audiosampleformat-f32" id="ref-for-dom-audiosampleformat-f32⑤">f32</a></code> samples.</p>
@@ -3444,7 +3464,7 @@ when handling <code class="idl"><a data-link-type="idl" href="#dom-audiosamplefo
    <p class="note" role="note"><span>NOTE:</span> The container either implies or specifies the channel mapping: the
 channel attributed to a particular channel index.</p>
    <h3 class="heading settled" data-level="9.4" id="videoframe-interface"><span class="secno">9.4. </span><span class="content">VideoFrame Interface</span><a class="self-link" href="#videoframe-interface"></a></h3>
-   <p class="note" role="note"><span>NOTE:</span> <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe②⑤">VideoFrame</a></code> is a <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/canvas.html#canvasimagesource" id="ref-for-canvasimagesource">CanvasImageSource</a></code>. A <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe②⑥">VideoFrame</a></code> may be
+   <p class="note" role="note"><span>NOTE:</span> <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe②⑤">VideoFrame</a></code> is a <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/canvas.html#canvasimagesource" id="ref-for-canvasimagesource">CanvasImageSource</a></code>. A <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe②⑥">VideoFrame</a></code> can be
     passed to any method accepting a <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/canvas.html#canvasimagesource" id="ref-for-canvasimagesource①">CanvasImageSource</a></code>, including <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/canvas.html#canvasdrawimage" id="ref-for-canvasdrawimage">CanvasDrawImage</a></code>'s <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/canvas.html#dom-context-2d-drawimage" id="ref-for-dom-context-2d-drawimage">drawImage()</a></code>.</p>
 <pre class="idl highlight def">[<a class="idl-code" data-link-type="extended-attribute" href="https://heycam.github.io/webidl/#Exposed" id="ref-for-Exposed⑦"><c- g>Exposed</c-></a>=(<c- n>Window</c->,<c- n>DedicatedWorker</c->), <a class="idl-code" data-link-type="extended-attribute" href="https://html.spec.whatwg.org/multipage/structured-data.html#serializable" id="ref-for-serializable①"><c- g>Serializable</c-></a>, <a class="idl-code" data-link-type="extended-attribute" href="https://html.spec.whatwg.org/multipage/structured-data.html#transferable" id="ref-for-transferable①"><c- g>Transferable</c-></a>]
 <c- b>interface</c-> <dfn class="dfn-paneled idl-code" data-dfn-type="interface" data-export id="videoframe"><code><c- g>VideoFrame</c-></code></dfn> {
@@ -3571,10 +3591,10 @@ exception or returns <var>bad</var>, then throw an <code class="idl"><a data-lin
          <p>If <var>image</var>’s media data has no <a data-link-type="dfn" href="https://www.w3.org/TR/css-images-3/#natural-dimensions" id="ref-for-natural-dimensions">natural dimensions</a> (e.g., it’s a vector graphic with no specified content size), then
 throw an <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#invalidstateerror" id="ref-for-invalidstateerror②⓪">InvalidStateError</a></code> <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-DOMException" id="ref-for-idl-DOMException②④">DOMException</a></code>.</p>
         <li data-md>
-         <p>Let <var>resource</var> be a new <a data-link-type="dfn" href="#media-resource" id="ref-for-media-resource①⑨">media resource</a> containing a copy of <var>image</var>’s media data. If this is an animated image, <var>image</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/imagebitmap-and-animations.html#concept-imagebitmap-bitmap-data" id="ref-for-concept-imagebitmap-bitmap-data">bitmap data</a> must only be taken from the default image of the
-animation (the one that the format defines is to be used when
-animation is not supported or is disabled), or, if there is no
-such image, the first frame of the animation.</p>
+         <p>Let <var>resource</var> be a new <a data-link-type="dfn" href="#media-resource" id="ref-for-media-resource①⑨">media resource</a> containing a copy of <var>image</var>’s media data. If this is an animated image, <var>image</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/imagebitmap-and-animations.html#concept-imagebitmap-bitmap-data" id="ref-for-concept-imagebitmap-bitmap-data">bitmap data</a> <em class="rfc2119">MUST</em> only be taken from the
+default image of the animation (the one that the format defines is
+to be used when animation is not supported or is disabled), or, if
+there is no such image, the first frame of the animation.</p>
         <li data-md>
          <p>Let <var>width</var> and <var>height</var> be the <a data-link-type="dfn" href="https://www.w3.org/TR/css-images-3/#natural-width" id="ref-for-natural-width">natural width</a> and <a data-link-type="dfn" href="https://www.w3.org/TR/css-images-3/#natural-height" id="ref-for-natural-height">natural height</a> of <var>image</var>.</p>
         <li data-md>
@@ -3603,8 +3623,8 @@ with <var>init</var>, <var>frame</var>, and <var>currentPlaybackFrame</var>.</p>
          <p>If <code class="idl"><a data-link-type="idl" href="#dom-videoframeinit-timestamp" id="ref-for-dom-videoframeinit-timestamp①">timestamp</a></code> does not <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#map-exists" id="ref-for-map-exists⑥">exist</a> in <var>init</var>, throw a <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#exceptiondef-typeerror" id="ref-for-exceptiondef-typeerror①⑤">TypeError</a></code>.</p>
         <li data-md>
          <p>Let <var>resource</var> be a new <a data-link-type="dfn" href="#media-resource" id="ref-for-media-resource②⓪">media resource</a> containing a copy of <var>image</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/imagebitmap-and-animations.html#concept-imagebitmap-bitmap-data" id="ref-for-concept-imagebitmap-bitmap-data①">bitmap data</a>.</p>
-         <p class="note" role="note"><span>NOTE:</span> Implementers should avoid a deep copy by using reference
-    counting where feasible.</p>
+         <p class="note" role="note"><span>NOTE:</span> Implementers are encouraged to avoid a deep copy by using
+    reference counting where feasible.</p>
         <li data-md>
          <p>Let <var>width</var> be <code>image.width</code> and <var>height</var> be <code>image.height</code>.</p>
         <li data-md>
@@ -3652,12 +3672,11 @@ Layout and Allocation Size</a> algorithm with <var>parsedRect</var>, <var>init</
      <p>If <code>data.byteLength</code> is less than <var>combinedLayout</var>’s <a data-link-type="dfn" href="#combined-buffer-layout-allocationsize" id="ref-for-combined-buffer-layout-allocationsize">allocationSize</a>, throw a <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#exceptiondef-typeerror" id="ref-for-exceptiondef-typeerror①⑦">TypeError</a></code>.</p>
     <li data-md>
      <p>Let <var>resource</var> be a new <a data-link-type="dfn" href="#media-resource" id="ref-for-media-resource②①">media resource</a> containing a copy <var>data</var>. Use <code class="idl"><a data-link-type="idl" href="#dom-videoframebufferinit-visiblerect" id="ref-for-dom-videoframebufferinit-visiblerect①">visibleRect</a></code> and <code class="idl"><a data-link-type="idl" href="#dom-videoframebufferinit-layout" id="ref-for-dom-videoframebufferinit-layout①">layout</a></code> to determine where in <var>data</var> the pixels for each plane reside.</p>
-     <p>The User Agent may choose to allocate <var>resource</var> with a larger coded
-    size and plane strides to improve memory alignment. Increases will be
-    reflected by <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedwidth" id="ref-for-dom-videoframe-codedwidth①">codedWidth</a></code> and <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedheight" id="ref-for-dom-videoframe-codedheight①">codedHeight</a></code>.
-    Additionally, the User Agent may use <code class="idl"><a data-link-type="idl" href="#dom-videoframebufferinit-visiblerect" id="ref-for-dom-videoframebufferinit-visiblerect②">visibleRect</a></code> to copy only the visible rectangle.
-    It may also reposition the visible rectangle within <var>resource</var>. The
-    final position will be reflected by <code class="idl"><a data-link-type="idl" href="#dom-videoframe-visiblerect" id="ref-for-dom-videoframe-visiblerect①">visibleRect</a></code>.</p>
+     <p>The User Agent <em class="rfc2119">MAY</em> choose to allocate <var>resource</var> with a larger coded size and plane strides to improve memory
+    alignment. Increases will be reflected by <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedwidth" id="ref-for-dom-videoframe-codedwidth①">codedWidth</a></code> and <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedheight" id="ref-for-dom-videoframe-codedheight①">codedHeight</a></code>.  Additionally, the User Agent <em class="rfc2119">MAY</em> use <code class="idl"><a data-link-type="idl" href="#dom-videoframebufferinit-visiblerect" id="ref-for-dom-videoframebufferinit-visiblerect②">visibleRect</a></code> to
+    copy only the visible rectangle.  It <em class="rfc2119">MAY</em> also
+    reposition the visible rectangle within <var>resource</var>. The final position
+    will be reflected by <code class="idl"><a data-link-type="idl" href="#dom-videoframe-visiblerect" id="ref-for-dom-videoframe-visiblerect①">visibleRect</a></code>.</p>
     <li data-md>
      <p>Let <var>resourceCodedWidth</var> be the coded width of <var>resource</var>.</p>
     <li data-md>
@@ -3666,8 +3685,9 @@ Layout and Allocation Size</a> algorithm with <var>parsedRect</var>, <var>init</
      <p>Let <var>resourceVisibleLeft</var> be the left offset for the visible rectangle of <var>resource</var>.</p>
     <li data-md>
      <p>Let <var>resourceVisibleTop</var> be the top offset for the visible rectangle of <var>resource</var>.</p>
-     <p class="issue" id="issue-3beeea62"><a class="self-link" href="#issue-3beeea62"></a> The spec should provide definitions (and possibly diagrams) for
-    coded size, visible rectangle, and display size. See <a href="https://github.com/w3c/webcodecs/issues/166">#166</a>.</p>
+     <p class="issue" id="issue-4948f268"><a class="self-link" href="#issue-4948f268"></a> The spec <em class="rfc2119">SHOULD</em> provide definitions (and
+  possibly diagrams) for coded size, visible rectangle, and display size.
+  See <a href="https://github.com/w3c/webcodecs/issues/166">#166</a>.</p>
     <li data-md>
      <p>Let <var>frame</var> be a new <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe③⑧">VideoFrame</a></code> object initialized as follows:</p>
      <ol>
@@ -3968,8 +3988,8 @@ and <code class="idl"><a data-link-type="idl" href="#dom-videoframe-visible-heig
      <ol>
       <li data-md>
        <p>If <var>overrideColorSpace</var> is provided, return a new <code class="idl"><a data-link-type="idl" href="#videocolorspace" id="ref-for-videocolorspace⑧">VideoColorSpace</a></code> constructed with <var>overrideColorSpace</var>.</p>
-       <p class="note" role="note"><span>NOTE:</span> User Agents may replace <code>null</code> members of the provided <var>overrideColorSpace</var> with guessed values as determined by
-    implementer defined heuristics.</p>
+       <p>User Agents MAY replace <code>null</code> members of the provided <var>overrideColorSpace</var> with guessed values as determined by implementer
+defined heuristics.</p>
       <li data-md>
        <p>Otherwise, if <code class="idl"><a data-link-type="idl" href="#dom-videoframe-format-slot" id="ref-for-dom-videoframe-format-slot⑨">[[format]]</a></code> is an <a data-link-type="dfn" href="#rgb-format" id="ref-for-rgb-format">RGB format</a> return a new
 instance of the <a data-link-type="dfn" href="#srgb-color-space" id="ref-for-srgb-color-space">sRGB Color Space</a></p>
@@ -4231,7 +4251,7 @@ return a <code class="idl"><a data-link-type="idl" href="https://heycam.github.i
         <li data-md>
          <p>Assign the maximum of <var>minAllocationSize</var> and <var>planeEnd</var> to <var>minAllocationSize</var>.</p>
          <p class="note" role="note"><span>NOTE:</span> The above step uses a maximum to allow for the
-        possibility that user specified plane offsets may reorder
+        possibility that user specified plane offsets reorder
         planes.</p>
         <li data-md>
          <p>Let <var>earlierPlaneIndex</var> be <code>0</code>.</p>
@@ -4320,9 +4340,8 @@ as the named field.</p>
      </ol>
    </dl>
    <h4 class="heading settled" data-level="9.4.8" id="videoframe-rendering"><span class="secno">9.4.8. </span><span class="content">Rendering</span><a class="self-link" href="#videoframe-rendering"></a></h4>
-   <p>When rendered, for example by <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/canvas.html#canvasdrawimage" id="ref-for-canvasdrawimage①">CanvasDrawImage</a></code> <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/canvas.html#dom-context-2d-drawimage" id="ref-for-dom-context-2d-drawimage①">drawImage()</a></code>, a <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe⑤④">VideoFrame</a></code> must be converted to a
-color space compatible with the rendering target, unless color conversion is
-explicitly disabled.</p>
+   <p>When rendered, for example by <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/canvas.html#canvasdrawimage" id="ref-for-canvasdrawimage①">CanvasDrawImage</a></code> <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/canvas.html#dom-context-2d-drawimage" id="ref-for-dom-context-2d-drawimage①">drawImage()</a></code>, a <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe⑤④">VideoFrame</a></code> <em class="rfc2119">MUST</em> be converted to a color space compatible with the rendering target, unless color
+conversion is explicitly disabled.</p>
    <p>Color space conversion during <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/imagebitmap-and-animations.html#imagebitmap" id="ref-for-imagebitmap①">ImageBitmap</a></code> construction is controlled by <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/imagebitmap-and-animations.html#imagebitmapoptions" id="ref-for-imagebitmapoptions">ImageBitmapOptions</a></code> <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/imagebitmap-and-animations.html#dom-imagebitmapoptions-colorspaceconversion" id="ref-for-dom-imagebitmapoptions-colorspaceconversion">colorSpaceConversion</a></code>. Setting this
 value to "none" disables color space conversion.</p>
    <h3 class="heading settled" data-level="9.5" id="videoframe-copyto-options"><span class="secno">9.5. </span><span class="content">VideoFrame CopyTo() Options</span><a class="self-link" href="#videoframe-copyto-options"></a></h3>
@@ -4337,10 +4356,10 @@ planes in the destination buffer.
      NOTE: The steps of <code class="idl"><a data-link-type="idl" href="#dom-videoframe-copyto" id="ref-for-dom-videoframe-copyto④">copyTo()</a></code> or <code class="idl"><a data-link-type="idl" href="#dom-videoframe-allocationsize" id="ref-for-dom-videoframe-allocationsize②">allocationSize()</a></code> will enforce the following requirements: 
     <ul>
      <li data-md>
-      <p>The coordinates of <code class="idl"><a data-link-type="idl" href="#dom-videoframecopytooptions-rect" id="ref-for-dom-videoframecopytooptions-rect②">rect</a></code> must be
+      <p>The coordinates of <code class="idl"><a data-link-type="idl" href="#dom-videoframecopytooptions-rect" id="ref-for-dom-videoframecopytooptions-rect②">rect</a></code> are
 sample-aligned as determiend by <code class="idl"><a data-link-type="idl" href="#dom-videoframe-format-slot" id="ref-for-dom-videoframe-format-slot①⑤">[[format]]</a></code>.</p>
      <li data-md>
-      <p>If <code class="idl"><a data-link-type="idl" href="#dom-videoframecopytooptions-layout" id="ref-for-dom-videoframecopytooptions-layout②">layout</a></code> <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#map-exists" id="ref-for-map-exists①⑧">exists</a>, a <code class="idl"><a data-link-type="idl" href="#dictdef-planelayout" id="ref-for-dictdef-planelayout④">PlaneLayout</a></code> must be provided for all planes.</p>
+      <p>If <code class="idl"><a data-link-type="idl" href="#dom-videoframecopytooptions-layout" id="ref-for-dom-videoframecopytooptions-layout②">layout</a></code> <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#map-exists" id="ref-for-map-exists①⑧">exists</a>, a <code class="idl"><a data-link-type="idl" href="#dictdef-planelayout" id="ref-for-dictdef-planelayout④">PlaneLayout</a></code> is provided for all planes.</p>
     </ul>
    </div>
    <dl>
@@ -4362,11 +4381,9 @@ of the coded size and visible region respectively.
    <p class="note" role="note"><span>NOTE:</span> VideoFrame pixels are only addressable by integer numbers. All floating
     point values provided to <code class="idl"><a data-link-type="idl" href="https://drafts.fxtf.org/geometry-1/#dictdef-domrectinit" id="ref-for-dictdef-domrectinit⑤">DOMRectInit</a></code> will be truncated.</p>
    <h3 class="heading settled" data-level="9.7" id="plane-layout"><span class="secno">9.7. </span><span class="content">Plane Layout</span><a class="self-link" href="#plane-layout"></a></h3>
-    A <code class="idl"><a data-link-type="idl" href="#dictdef-planelayout" id="ref-for-dictdef-planelayout⑦">PlaneLayout</a></code> is a dictionary specifying the offset and stride of a <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe⑥⓪">VideoFrame</a></code> plane once copied to a <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#BufferSource" id="ref-for-BufferSource①⑦">BufferSource</a></code>. A sequence of <code class="idl"><a data-link-type="idl" href="#dictdef-planelayout" id="ref-for-dictdef-planelayout⑧">PlaneLayout</a></code>s may be provided to <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe⑥①">VideoFrame</a></code>'s <code class="idl"><a data-link-type="idl" href="#dom-videoframe-copyto" id="ref-for-dom-videoframe-copyto⑥">copyTo()</a></code> to
-specify how the plane is laid out in the destination <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#BufferSource" id="ref-for-BufferSource①⑧">BufferSource</a></code>}.
-Alternatively, callers can inspect <code class="idl"><a data-link-type="idl" href="#dom-videoframe-copyto" id="ref-for-dom-videoframe-copyto⑦">copyTo()</a></code>'s returned sequence
-of <code class="idl"><a data-link-type="idl" href="#dictdef-planelayout" id="ref-for-dictdef-planelayout⑨">PlaneLayout</a></code>s to learn the the offset and stride for planes as decided by
-the User Agent. 
+    A <code class="idl"><a data-link-type="idl" href="#dictdef-planelayout" id="ref-for-dictdef-planelayout⑦">PlaneLayout</a></code> is a dictionary specifying the offset and stride of a <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe⑥⓪">VideoFrame</a></code> plane once copied to a <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#BufferSource" id="ref-for-BufferSource①⑦">BufferSource</a></code>. A sequence of <code class="idl"><a data-link-type="idl" href="#dictdef-planelayout" id="ref-for-dictdef-planelayout⑧">PlaneLayout</a></code>s <em class="rfc2119">MAY</em> be provided to <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe⑥①">VideoFrame</a></code>'s <code class="idl"><a data-link-type="idl" href="#dom-videoframe-copyto" id="ref-for-dom-videoframe-copyto⑥">copyTo()</a></code> to specify how the plane is laid out in the destination <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#BufferSource" id="ref-for-BufferSource①⑧">BufferSource</a></code>}.  Alternatively, callers can inspect <code class="idl"><a data-link-type="idl" href="#dom-videoframe-copyto" id="ref-for-dom-videoframe-copyto⑦">copyTo()</a></code>'s
+returned sequence of <code class="idl"><a data-link-type="idl" href="#dictdef-planelayout" id="ref-for-dictdef-planelayout⑨">PlaneLayout</a></code>s to learn the the offset and stride for
+planes as decided by the User Agent. 
 <pre class="idl highlight def"><c- b>dictionary</c-> <dfn class="dfn-paneled idl-code" data-dfn-type="dictionary" data-export id="dictdef-planelayout"><code><c- g>PlaneLayout</c-></code></dfn> {
   [<a class="idl-code" data-link-type="extended-attribute" href="https://heycam.github.io/webidl/#EnforceRange" id="ref-for-EnforceRange③①"><c- g>EnforceRange</c-></a>] <c- b>required</c-> <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-unsigned-long" id="ref-for-idl-unsigned-long⑥④"><c- b>unsigned</c-> <c- b>long</c-></a> <a class="idl-code" data-link-type="dict-member" data-type="unsigned long " href="#dom-planelayout-offset" id="ref-for-dom-planelayout-offset①"><c- g>offset</c-></a>;
   [<a class="idl-code" data-link-type="extended-attribute" href="https://heycam.github.io/webidl/#EnforceRange" id="ref-for-EnforceRange③②"><c- g>EnforceRange</c-></a>] <c- b>required</c-> <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-unsigned-long" id="ref-for-idl-unsigned-long⑥⑤"><c- b>unsigned</c-> <c- b>long</c-></a> <a class="idl-code" data-link-type="dict-member" data-type="unsigned long " href="#dom-planelayout-stride" id="ref-for-dom-planelayout-stride②"><c- g>stride</c-></a>;
@@ -4677,12 +4694,14 @@ and color coordinates.
    </dl>
    <h2 class="heading settled" data-level="10" id="image-decoding"><span class="secno">10. </span><span class="content">Image Decoding</span><a class="self-link" href="#image-decoding"></a></h2>
    <h3 class="heading settled" data-level="10.1" id="image-decoding-background"><span class="secno">10.1. </span><span class="content">Background</span><a class="self-link" href="#image-decoding-background"></a></h3>
-   <p>This section is non-normative.</p>
-   <p>Image codec definitions are typically accompanied by a definition for a
-corresponding file format. Hence image decoders often perform both duties of
-unpacking (demuxing) as well as decoding the encoded image data. The WebCodecs <code class="idl"><a data-link-type="idl" href="#imagedecoder" id="ref-for-imagedecoder">ImageDecoder</a></code> follows this pattern, which motivates an interface design that
-is notably different from that of <code class="idl"><a data-link-type="idl" href="#videodecoder" id="ref-for-videodecoder③">VideoDecoder</a></code> and <code class="idl"><a data-link-type="idl" href="#audiodecoder" id="ref-for-audiodecoder②">AudioDecoder</a></code>.</p>
-   <p>In spite of these differences, <code class="idl"><a data-link-type="idl" href="#imagedecoder" id="ref-for-imagedecoder①">ImageDecoder</a></code> uses the same <a data-link-type="dfn" href="#codec-processing-model" id="ref-for-codec-processing-model">codec processing model</a> as the other codec interfaces. Additionally, <code class="idl"><a data-link-type="idl" href="#imagedecoder" id="ref-for-imagedecoder②">ImageDecoder</a></code> uses the <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe⑥③">VideoFrame</a></code> interface to describe decoded outputs.</p>
+   <div class="non-normative">
+     This section is non-normative. 
+    <p>Image codec definitions are typically accompanied by a definition for a
+  corresponding file format. Hence image decoders often perform both duties of
+  unpacking (demuxing) as well as decoding the encoded image data. The WebCodecs <code class="idl"><a data-link-type="idl" href="#imagedecoder" id="ref-for-imagedecoder">ImageDecoder</a></code> follows this pattern, which motivates an interface design that
+  is notably different from that of <code class="idl"><a data-link-type="idl" href="#videodecoder" id="ref-for-videodecoder③">VideoDecoder</a></code> and <code class="idl"><a data-link-type="idl" href="#audiodecoder" id="ref-for-audiodecoder②">AudioDecoder</a></code>.</p>
+    <p>In spite of these differences, <code class="idl"><a data-link-type="idl" href="#imagedecoder" id="ref-for-imagedecoder①">ImageDecoder</a></code> uses the same <a data-link-type="dfn" href="#codec-processing-model" id="ref-for-codec-processing-model">codec processing model</a> as the other codec interfaces. Additionally, <code class="idl"><a data-link-type="idl" href="#imagedecoder" id="ref-for-imagedecoder②">ImageDecoder</a></code> uses the <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe⑥③">VideoFrame</a></code> interface to describe decoded outputs.</p>
+   </div>
    <h3 class="heading settled" data-level="10.2" id="imagedecoder-interface"><span class="secno">10.2. </span><span class="content">ImageDecoder Interface</span><a class="self-link" href="#imagedecoder-interface"></a></h3>
 <pre class="idl highlight def">[<a class="idl-code" data-link-type="extended-attribute" href="https://heycam.github.io/webidl/#Exposed" id="ref-for-Exposed⑨"><c- g>Exposed</c-></a>=(<c- n>Window</c->,<c- n>DedicatedWorker</c->)]
 <c- b>interface</c-> <dfn class="dfn-paneled idl-code" data-dfn-type="interface" data-export id="imagedecoder"><code><c- g>ImageDecoder</c-></code></dfn> {
@@ -4745,8 +4764,8 @@ values represent the Progressive Image Frame Generation for the <code class="idl
    <dl>
     <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="ImageDecoder" data-dfn-type="constructor" data-export data-lt="ImageDecoder(init)|constructor(init)" id="dom-imagedecoder-imagedecoder" title="ImageDecoder(init)"><code> ImageDecoder(init) </code></dfn>
     <dd data-md>
-     <p class="note" role="note"><span>NOTE:</span> Calling <code class="idl"><a data-link-type="idl" href="#dom-imagedecoder-decode" id="ref-for-dom-imagedecoder-decode②">decode()</a></code> on the constructed <code class="idl"><a data-link-type="idl" href="#imagedecoder" id="ref-for-imagedecoder③">ImageDecoder</a></code> will trigger a <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#notsupportederror" id="ref-for-notsupportederror①⓪">NotSupportedError</a></code> if the User Agent does not support <var>type</var>. Authors should first check support by calling <code class="idl"><a data-link-type="idl" href="#dom-imagedecoder-istypesupported" id="ref-for-dom-imagedecoder-istypesupported①">isTypeSupported()</a></code> with <var>type</var>. User Agents are not
-required to support any particular type.</p>
+     <p class="note" role="note"><span>NOTE:</span> Calling <code class="idl"><a data-link-type="idl" href="#dom-imagedecoder-decode" id="ref-for-dom-imagedecoder-decode②">decode()</a></code> on the constructed <code class="idl"><a data-link-type="idl" href="#imagedecoder" id="ref-for-imagedecoder③">ImageDecoder</a></code> will trigger a <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#notsupportederror" id="ref-for-notsupportederror①⓪">NotSupportedError</a></code> if the User Agent does not support <var>type</var>. Authors are encouraged to first check support by calling <code class="idl"><a data-link-type="idl" href="#dom-imagedecoder-istypesupported" id="ref-for-dom-imagedecoder-istypesupported①">isTypeSupported()</a></code> with <var>type</var>. User Agents don’t have to
+support any particular type.</p>
      <p>When invoked, run these steps:</p>
      <ol>
       <li data-md>
@@ -4994,7 +5013,7 @@ Otherwise, assign <code>false</code>.</p>
           <li data-md>
            <p>If <var>image track</var> is found to describe a frame count, assign
 that count to <var>newTrack</var>’s <code class="idl"><a data-link-type="idl" href="#dom-imagetrack-frame-count-slot" id="ref-for-dom-imagetrack-frame-count-slot">[[frame count]]</a></code> internal slot. Otherwise, assign <code>0</code>.</p>
-           <p class="note" role="note"><span>NOTE:</span> If <a data-link-type="dfn" href="https://heycam.github.io/webidl/#this" id="ref-for-this⑤">this</a> was constructed with <code class="idl"><a data-link-type="idl" href="#dom-imagedecoderinit-data" id="ref-for-dom-imagedecoderinit-data②">data</a></code> as a <code class="idl"><a data-link-type="idl" href="https://streams.spec.whatwg.org/#readablestream" id="ref-for-readablestream①">ReadableStream</a></code>, the <code class="idl"><a data-link-type="idl" href="#dom-imagetrack-framecount" id="ref-for-dom-imagetrack-framecount">frameCount</a></code> may change as additional bytes are
+           <p class="note" role="note"><span>NOTE:</span> If <a data-link-type="dfn" href="https://heycam.github.io/webidl/#this" id="ref-for-this⑤">this</a> was constructed with <code class="idl"><a data-link-type="idl" href="#dom-imagedecoderinit-data" id="ref-for-dom-imagedecoderinit-data②">data</a></code> as a <code class="idl"><a data-link-type="idl" href="https://streams.spec.whatwg.org/#readablestream" id="ref-for-readablestream①">ReadableStream</a></code>, the <code class="idl"><a data-link-type="idl" href="#dom-imagetrack-framecount" id="ref-for-dom-imagetrack-framecount">frameCount</a></code> can change as additional bytes are
   appended to <code class="idl"><a data-link-type="idl" href="#dom-imagedecoder-encoded-data-slot" id="ref-for-dom-imagedecoder-encoded-data-slot⑨">[[encoded data]]</a></code>. See the <a data-link-type="dfn" href="#imagedecoder-update-tracks" id="ref-for-imagedecoder-update-tracks①">Update Tracks</a> algorithm.</p>
           <li data-md>
            <p>If <var>image track</var> is found to describe a repetition count,
@@ -5377,17 +5396,18 @@ defined by <code class="idl"><a data-link-type="idl" href="https://html.spec.wha
     <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="ImageDecoderInit" data-dfn-type="dict-member" data-export id="dom-imagedecoderinit-desiredwidth"><code>desiredWidth</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#idl-unsigned-long" id="ref-for-idl-unsigned-long⑦②">unsigned long</a></span>
     <dd data-md>
      <p>Indicates a desired width for decoded outputs. Implementation is best
-effort; decoding to a desired width may not be supported by all formats/
-decoders.</p>
+effort; decoding to a desired width <em class="rfc2119">MAY</em> not be
+supported by all formats/ decoders.</p>
     <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="ImageDecoderInit" data-dfn-type="dict-member" data-export id="dom-imagedecoderinit-desiredheight"><code>desiredHeight</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#idl-unsigned-long" id="ref-for-idl-unsigned-long⑦③">unsigned long</a></span>
     <dd data-md>
      <p>Indicates a desired height for decoded outputs. Implementation is best
-effort; decoding to a desired height may not be supported by all
-formats/decoders.</p>
+effort; decoding to a desired height <em class="rfc2119">MAY</em> not be
+supported by all formats/decoders.</p>
     <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="ImageDecoderInit" data-dfn-type="dict-member" data-export id="dom-imagedecoderinit-preferanimation"><code>preferAnimation</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#idl-boolean" id="ref-for-idl-boolean②⓪">boolean</a></span>
     <dd data-md>
      <p>For images with multiple tracks, this indicates whether the
-initial track selection should prefer an animated track.</p>
+initial track selection <em class="rfc2119">SHOULD</em> prefer an animated
+track.</p>
      <p class="note" role="note"><span>NOTE:</span> See the <a data-link-type="dfn" href="#imagedecoder-get-default-selected-track-index" id="ref-for-imagedecoder-get-default-selected-track-index①">Get Default Selected Track Index</a> algorithm.</p>
    </dl>
    <h3 class="heading settled" data-level="10.4" id="imagedecodeoptions-interface"><span class="secno">10.4. </span><span class="content">ImageDecodeOptions Interface</span><a class="self-link" href="#imagedecodeoptions-interface"></a></h3>
@@ -5403,17 +5423,17 @@ initial track selection should prefer an animated track.</p>
      <p>The index of the frame to decode.</p>
     <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="ImageDecodeOptions" data-dfn-type="dict-member" data-export id="dom-imagedecodeoptions-completeframesonly"><code>completeFramesOnly</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#idl-boolean" id="ref-for-idl-boolean②②">boolean</a>, defaulting to <code>true</code></span>
     <dd data-md>
-     <p>For <a data-link-type="dfn" href="#progressive-image" id="ref-for-progressive-image②">Progressive Images</a>, a value of <code>false</code> indicates that the decoder
-may output an <code class="idl"><a data-link-type="idl" href="#dom-imagedecoderesult-image" id="ref-for-dom-imagedecoderesult-image②">image</a></code> with reduced detail. Each
-subsequent call to <code class="idl"><a data-link-type="idl" href="#dom-imagedecoder-decode" id="ref-for-dom-imagedecoder-decode③">decode()</a></code> for the same <code class="idl"><a data-link-type="idl" href="#dom-imagedecodeoptions-frameindex" id="ref-for-dom-imagedecodeoptions-frameindex③">frameIndex</a></code> will resolve to produce an image with a
-higher <a data-link-type="dfn" href="#progressive-image-frame-generation" id="ref-for-progressive-image-frame-generation④">Progressive Image Frame Generation</a> (more image detail) than the
+     <p>For <a data-link-type="dfn" href="#progressive-image" id="ref-for-progressive-image②">Progressive Images</a>, a value of <code>false</code> indicates that the decoder <em class="rfc2119">MAY</em> output an <code class="idl"><a data-link-type="idl" href="#dom-imagedecoderesult-image" id="ref-for-dom-imagedecoderesult-image②">image</a></code> with
+reduced detail. Each subsequent call to <code class="idl"><a data-link-type="idl" href="#dom-imagedecoder-decode" id="ref-for-dom-imagedecoder-decode③">decode()</a></code> for the
+same <code class="idl"><a data-link-type="idl" href="#dom-imagedecodeoptions-frameindex" id="ref-for-dom-imagedecodeoptions-frameindex③">frameIndex</a></code> will resolve to produce an image with
+a higher <a data-link-type="dfn" href="#progressive-image-frame-generation" id="ref-for-progressive-image-frame-generation④">Progressive Image Frame Generation</a> (more image detail) than the
 previous call, until finally the full-detail image is produced.</p>
      <p>If <code class="idl"><a data-link-type="idl" href="#dom-imagedecodeoptions-completeframesonly" id="ref-for-dom-imagedecodeoptions-completeframesonly②">completeFramesOnly</a></code> is assigned <code>true</code>, or if the
 image is not a <a data-link-type="dfn" href="#progressive-image" id="ref-for-progressive-image③">Progressive Image</a>, or if the User Agent does not support
 progressive decoding for the given image type, calls to <code class="idl"><a data-link-type="idl" href="#dom-imagedecoder-decode" id="ref-for-dom-imagedecoder-decode④">decode()</a></code> will only resolve once the full detail image is
 decoded.</p>
      <div class="note" role="note">
-       NOTE: For <a data-link-type="dfn" href="#progressive-image" id="ref-for-progressive-image④">Progressive Images</a>, setting <code class="idl"><a data-link-type="idl" href="#dom-imagedecodeoptions-completeframesonly" id="ref-for-dom-imagedecodeoptions-completeframesonly③">completeFramesOnly</a></code> to <code>false</code> may be used to
+       NOTE: For <a data-link-type="dfn" href="#progressive-image" id="ref-for-progressive-image④">Progressive Images</a>, setting <code class="idl"><a data-link-type="idl" href="#dom-imagedecodeoptions-completeframesonly" id="ref-for-dom-imagedecodeoptions-completeframesonly③">completeFramesOnly</a></code> to <code>false</code> can be used to
       offer users a preview an image that is still being buffered from the
       network (via the <code class="idl"><a data-link-type="idl" href="#dom-imagedecoderinit-data" id="ref-for-dom-imagedecoderinit-data④">data</a></code> <code class="idl"><a data-link-type="idl" href="https://streams.spec.whatwg.org/#readablestream" id="ref-for-readablestream⑤">ReadableStream</a></code>). 
       <p>Upon decoding the full detail image, the <code class="idl"><a data-link-type="idl" href="#dictdef-imagedecoderesult" id="ref-for-dictdef-imagedecoderesult③">ImageDecodeResult</a></code>'s <code class="idl"><a data-link-type="idl" href="#dom-imagedecoderesult-complete" id="ref-for-dom-imagedecoderesult-complete③">complete</a></code> will be set to true.</p>
@@ -5454,7 +5474,7 @@ output.</p>
     <dd data-md>
      <p>The promise used to signal when the <code class="idl"><a data-link-type="idl" href="#imagetracklist" id="ref-for-imagetracklist⑤">ImageTrackList</a></code> has been populated
 with <code class="idl"><a data-link-type="idl" href="#imagetrack" id="ref-for-imagetrack⑥">ImageTrack</a></code>s.</p>
-     <p class="note" role="note"><span>NOTE:</span> <code class="idl"><a data-link-type="idl" href="#imagetrack" id="ref-for-imagetrack⑦">ImageTrack</a></code> <code class="idl"><a data-link-type="idl" href="#dom-imagetrack-framecount" id="ref-for-dom-imagetrack-framecount①">frameCount</a></code> may receive subsequent
+     <p class="note" role="note"><span>NOTE:</span> <code class="idl"><a data-link-type="idl" href="#imagetrack" id="ref-for-imagetrack⑦">ImageTrack</a></code> <code class="idl"><a data-link-type="idl" href="#dom-imagetrack-framecount" id="ref-for-dom-imagetrack-framecount①">frameCount</a></code> can receive subsequent
     updates until <code class="idl"><a data-link-type="idl" href="#dom-imagedecoder-complete" id="ref-for-dom-imagedecoder-complete⑧">complete</a></code> is <code>true</code>.</p>
     <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="ImageTrackList" data-dfn-type="attribute" data-export id="dom-imagetracklist-track-list-slot"><code>[[track list]]</code></dfn>
     <dd data-md>
@@ -5619,9 +5639,8 @@ if it is:</p>
    <h2 class="heading settled" data-level="12" id="security-considerations"><span class="secno">12. </span><span class="content">Security Considerations</span><a class="self-link" href="#security-considerations"></a></h2>
    <p>The primary security impact is that features of this API make it easier for an
 attacker to exploit vulnerabilities in the underlying platform codecs.
-Additionally, new abilities to configure and control the codecs may allow for
-new exploits that rely on a specific configuration and/or sequence of control
-operations.</p>
+Additionally, new abilities to configure and control the codecs <em class="rfc2119">MAY</em> allow for new exploits that rely on a specific
+configuration and/or sequence of control operations.</p>
    <p>Platform codecs are historically an internal detail of APIs like <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/media.html#htmlmediaelement" id="ref-for-htmlmediaelement">HTMLMediaElement</a></code>, <a data-link-type="biblio" href="#biblio-webaudio">[WEBAUDIO]</a>, and <a data-link-type="biblio" href="#biblio-webrtc">[WebRTC]</a>. In this way, it has always
 been possible to attack the underlying codecs by using malformed media
 files/streams and invoking the various API control methods.</p>
@@ -5632,32 +5651,31 @@ be <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-reset" id="
 are provided and direct access to invoke the codec control methods. This also
 affords attackers the ability to invoke sequences of control methods that were
 not previously possible via the higher level APIs.</p>
-   <p>User Agents should mitigate this risk by extensively fuzzing their
-implementation with random inputs and control method invocations. Additionally,
-User Agents are encouraged to isolate their underlying codecs in processes with
-restricted privileges (sandbox) as a barrier against successful exploits being
-able to read user data.</p>
+   <p>User Agents <em class="rfc2119">SHOULD</em> mitigate this risk by extensively
+fuzzing their implementation with random inputs and control method invocations.
+Additionally, User Agents are encouraged to isolate their underlying codecs in
+processes with restricted privileges (sandbox) as a barrier against successful
+exploits being able to read user data.</p>
    <p>An additional concern is exposing the underlying codecs to input mutation race
-conditions. Specifically, it should not be possible for a site to mutate a codec
-input or output while the underlying codec may still be operating on that data.
-This concern is mitigated by ensuring that input and output interfaces are
-immutable.</p>
+conditions. Specifically, it <em class="rfc2119">SHOULD</em> not be possible for
+a site to mutate a codec input or output while the underlying codec <em class="rfc2119">MAY</em> still be operating on that data.  This concern is
+mitigated by ensuring that input and output interfaces are immutable.</p>
    <h2 class="heading settled" data-level="13" id="privacy-considerations"><span class="secno">13. </span><span class="content">Privacy Considerations</span><a class="self-link" href="#privacy-considerations"></a></h2>
    <p>The primary privacy impact is an increased ability to fingerprint users by
 querying for different codec capabilities to establish a codec feature profile.
 Much of this profile is already exposed by existing APIs. Such profiles are very
-unlikely to be uniquely identifying, but may be used with other metrics to
-create a fingerprint.</p>
-   <p>An attacker may accumulate a codec feature profile by calling <code>IsConfigSupported()</code> methods with a number of different configuration
-dictionaries. Similarly, an attacker may attempt to <code>configure()</code> a codec with
-different configuration dictionaries and observe which configurations are
-accepted.</p>
-   <p>Attackers may also use existing APIs to establish much of the codec feature
-profile. For example, the <a data-link-type="biblio" href="#biblio-media-capabilities">[media-capabilities]</a> <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/media-capabilities/#dom-mediacapabilities-decodinginfo" id="ref-for-dom-mediacapabilities-decodinginfo">decodingInfo()</a></code> API
-describes what types of decoders are supported and its <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/media-capabilities/#dom-mediacapabilitiesinfo-powerefficient" id="ref-for-dom-mediacapabilitiesinfo-powerefficient">powerEfficient</a></code> attribute may signal when a decoder uses hardware acceleration. Similarly, the <a data-link-type="biblio" href="#biblio-webrtc">[WebRTC]</a> <code class="idl"><a data-link-type="idl" href="https://www.w3.org/TR/webrtc/#dom-rtcrtpsender-getcapabilities" id="ref-for-dom-rtcrtpsender-getcapabilities">getCapabilities()</a></code> API may be used to determine what
-types of encoders are supported and the <code class="idl"><a data-link-type="idl" href="https://www.w3.org/TR/webrtc/#widl-RTCPeerConnection-getStats-Promise-RTCStatsReport--MediaStreamTrack-selector" id="ref-for-widl-RTCPeerConnection-getStats-Promise-RTCStatsReport--MediaStreamTrack-selector">getStats()</a></code> API may
-be used to determine when an encoder uses hardware acceleration. WebCodecs will
-expose some additional information in the form of low level codec features.</p>
+unlikely to be uniquely identifying, but <em class="rfc2119">MAY</em> be used
+with other metrics to create a fingerprint.</p>
+   <p>An attacker <em class="rfc2119">MAY</em> accumulate a codec feature profile by
+calling <code>IsConfigSupported()</code> methods with a number of different configuration
+dictionaries. Similarly, an attacker <em class="rfc2119">MAY</em> attempt to <code>configure()</code> a codec with different configuration dictionaries and observe
+which configurations are accepted.</p>
+   <p>Attackers <em class="rfc2119">MAY</em> also use existing APIs to establish much
+of the codec feature profile. For example, the <a data-link-type="biblio" href="#biblio-media-capabilities">[media-capabilities]</a> <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/media-capabilities/#dom-mediacapabilities-decodinginfo" id="ref-for-dom-mediacapabilities-decodinginfo">decodingInfo()</a></code> API describes what types of decoders are supported and its <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/media-capabilities/#dom-mediacapabilitiesinfo-powerefficient" id="ref-for-dom-mediacapabilitiesinfo-powerefficient">powerEfficient</a></code> attribute <em class="rfc2119">MAY</em> signal when a decoder
+uses hardware acceleration. Similarly, the <a data-link-type="biblio" href="#biblio-webrtc">[WebRTC]</a> <code class="idl"><a data-link-type="idl" href="https://www.w3.org/TR/webrtc/#dom-rtcrtpsender-getcapabilities" id="ref-for-dom-rtcrtpsender-getcapabilities">getCapabilities()</a></code> API <em class="rfc2119">MAY</em> be used to
+determine what types of encoders are supported and the <code class="idl"><a data-link-type="idl" href="https://www.w3.org/TR/webrtc/#widl-RTCPeerConnection-getStats-Promise-RTCStatsReport--MediaStreamTrack-selector" id="ref-for-widl-RTCPeerConnection-getStats-Promise-RTCStatsReport--MediaStreamTrack-selector">getStats()</a></code> API <em class="rfc2119">MAY</em> be used to
+determine when an encoder uses hardware acceleration. WebCodecs will expose some
+additional information in the form of low level codec features.</p>
    <p>A codec feature profile alone is unlikely to be uniquely identifying. Underlying
 codecs are often implemented entirely in software (be it part of the User Agent
 binary or part of the operating system), such that all users who run that
@@ -5665,30 +5683,34 @@ software will have a common set of capabilities. Additionally, underlying codecs
 are often implemented with hardware acceleration, but such hardware is mass
 produced and devices of a particular class and manufacture date (e.g. flagship
 phones manufactured in 2020) will often have common capabilities. There will be
-outliers (some users may run outdated versions of software codecs or use a rare
-mix of custom assembled hardware), but most of the time a given codec feature
-profile is shared by a large group of users.</p>
+outliers (some users <em class="rfc2119">MAY</em> run outdated versions of
+software codecs or use a rare mix of custom assembled hardware), but most of the
+time a given codec feature profile is shared by a large group of users.</p>
    <p>Segmenting groups of users by codec feature profile still amounts to a bit of
 entropy that can be combined with other metrics to uniquely identify a user.
-User Agents may partially mitigate this by returning an error whenever a site
-attempts to exhaustively probe for codec capabilities. Additionally, User Agents
-may implement a "privacy budget", which depletes as authors use WebCodecs and
-other identifying APIs. Upon exhaustion of the privacy budget, codec
-capabilities could be reduced to a common baseline or prompt for user approval.</p>
+User Agents <em class="rfc2119">MAY</em> partially mitigate this by returning an
+error whenever a site attempts to exhaustively probe for codec capabilities.
+Additionally, User Agents <em class="rfc2119">MAY</em> implement a "privacy
+budget", which depletes as authors use WebCodecs and other identifying APIs.
+Upon exhaustion of the privacy budget, codec capabilities could be reduced to a
+common baseline or prompt for user approval.</p>
    <h2 class="heading settled" data-level="14" id="best-practices-developers"><span class="secno">14. </span><span class="content">Best Practices for Authors Using WebCodecs</span><a class="self-link" href="#best-practices-developers"></a></h2>
-   <p>While WebCodecs internally operates on background threads, authors working with
-realtime media or in contended main thread environments should ensure their
-media pipelines operate in worker contexts entirely independent of the main
-thread where possible. For example, realtime media processing of <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe⑥⑨">VideoFrame</a></code>s
-should generally be done in a worker context.</p>
-   <p>The main thread has significant potential for high contention and jank that may
-go unnoticed in development, yet degrade inconsistently across devices and User
-Agents in the field -- potentially dramatically impacting the end user
-experience. Ensuring the media pipeline is decoupled from the main thread helps
-provide a smooth experience for end users.</p>
-   <p>Authors using the main thread for their media pipeline should be sure of their
-target frame rates, main thread workload, how their application will be
-embedded, and the class of devices their users will be using.</p>
+   <div class="non-normative">
+     This section is non-normative. 
+    <p>While WebCodecs internally operates on background threads, authors working with
+  realtime media or in contended main thread environments are encouraged to ensure their
+  media pipelines operate in worker contexts entirely independent of the main
+  thread where possible. For example, realtime media processing of <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe⑥⑨">VideoFrame</a></code>s
+  are generally be done in a worker context.</p>
+    <p>The main thread has significant potential for high contention and jank that can
+  go unnoticed in development, yet degrade inconsistently across devices and User
+  Agents in the field -- potentially dramatically impacting the end user
+  experience. Ensuring the media pipeline is decoupled from the main thread helps
+  provide a smooth experience for end users.</p>
+    <p>Authors using the main thread for their media pipeline ought to be sure of
+  their target frame rates, main thread workload, how their application will be
+  embedded, and the class of devices their users will be using.</p>
+   </div>
    <p id="back-to-top" role="navigation"><a href="#toc"><abbr title="Back to Top">↑</abbr></a></p>
 <script src="https://www.w3.org/scripts/TR/2016/fixup.js"></script>
   </main>
@@ -7703,7 +7725,7 @@ embedded, and the class of devices their users will be using.</p>
    <dt id="biblio-webrtc">[WebRTC]
    <dd>Cullen Jennings; Henrik Boström; Jan-Ivar Bruaroey. <a href="https://www.w3.org/TR/webrtc/"><cite>WebRTC 1.0: Real-Time Communication Between Browsers</cite></a>. 26 January 2021. REC. URL: <a href="https://www.w3.org/TR/webrtc/">https://www.w3.org/TR/webrtc/</a>
    <dt id="biblio-webrtc-svc">[WebRTC-SVC]
-   <dd>Bernard Aboba; Peter Thatcher. <a href="https://www.w3.org/TR/webrtc-svc/"><cite>Scalable Video Coding (SVC) Extension for WebRTC</cite></a>. 12 July 2021. WD. URL: <a href="https://www.w3.org/TR/webrtc-svc/">https://www.w3.org/TR/webrtc-svc/</a>
+   <dd>Bernard Aboba; Peter Thatcher. <a href="https://www.w3.org/TR/webrtc-svc/"><cite>Scalable Video Coding (SVC) Extension for WebRTC</cite></a>. 23 August 2021. WD. URL: <a href="https://www.w3.org/TR/webrtc-svc/">https://www.w3.org/TR/webrtc-svc/</a>
   </dl>
   <h3 class="no-num no-ref heading settled" id="informative"><span class="content">Informative References</span><a class="self-link" href="#informative"></a></h3>
   <dl>
@@ -7718,7 +7740,7 @@ embedded, and the class of devices their users will be using.</p>
    <dt id="biblio-webaudio">[WEBAUDIO]
    <dd>Paul Adenot; Hongchan Choi. <a href="https://www.w3.org/TR/webaudio/"><cite>Web Audio API</cite></a>. 17 June 2021. REC. URL: <a href="https://www.w3.org/TR/webaudio/">https://www.w3.org/TR/webaudio/</a>
    <dt id="biblio-webcodecs-codec-registry">[WEBCODECS-CODEC-REGISTRY]
-   <dd>Chris Cunningham; Paul Adenot; Bernard Aboba. <a href="https://www.w3.org/TR/webcodecs-codec-registry/"><cite>WebCodecs Codec Registry</cite></a>. 18 August 2021. WD. URL: <a href="https://www.w3.org/TR/webcodecs-codec-registry/">https://www.w3.org/TR/webcodecs-codec-registry/</a>
+   <dd>Chris Cunningham; Paul Adenot; Bernard Aboba. <a href="https://www.w3.org/TR/webcodecs-codec-registry/"><cite>WebCodecs Codec Registry</cite></a>. 20 August 2021. WD. URL: <a href="https://www.w3.org/TR/webcodecs-codec-registry/">https://www.w3.org/TR/webcodecs-codec-registry/</a>
   </dl>
   <h2 class="no-num no-ref heading settled" id="idl-index"><span class="content">IDL Index</span><a class="self-link" href="#idl-index"></a></h2>
 <pre class="idl highlight def">[<a class="idl-code" data-link-type="extended-attribute" href="https://heycam.github.io/webidl/#Exposed"><c- g>Exposed</c-></a>=(<c- n>Window</c->,<c- n>DedicatedWorker</c->)]
@@ -8193,8 +8215,9 @@ embedded, and the class of devices their users will be using.</p>
 </pre>
   <h2 class="no-num no-ref heading settled" id="issues-index"><span class="content">Issues Index</span><a class="self-link" href="#issues-index"></a></h2>
   <div style="counter-reset:issue">
-   <div class="issue"> The spec should provide definitions (and possibly diagrams) for
-    coded size, visible rectangle, and display size. See <a href="https://github.com/w3c/webcodecs/issues/166">#166</a>.<a href="#issue-3beeea62"> ↵ </a></div>
+   <div class="issue"> The spec <em class="rfc2119">SHOULD</em> provide definitions (and
+  possibly diagrams) for coded size, visible rectangle, and display size.
+  See <a href="https://github.com/w3c/webcodecs/issues/166">#166</a>.<a href="#issue-4948f268"> ↵ </a></div>
   </div>
   <aside class="dfn-panel" data-for="codec">
    <b><a href="#codec">#codec</a></b><b>Referenced in:</b>
