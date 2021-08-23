@@ -17,9 +17,10 @@ Abstract: This specification defines interfaces to codecs for encoding and
     This specification does not specify or require any particular codec or
     method of encoding or decoding. The purpose of this specification is to
     provide JavaScript interfaces to implementations of existing codec
-    technology developed elsewhere. Implementers may support any combination of
-    codecs or none at all.
+    technology developed elsewhere. Implementers are free to
+    support any combination of codecs or none at all.
 
+Complain About:accidental-2119 yes
 Markup Shorthands:css no, markdown yes, dfn yes
 !Participate: <a href="https://github.com/w3c/webcodecs">Git Repository.</a>
 !Participate: <a href="https://github.com/w3c/webcodecs/issues/new">File an issue.</a>
@@ -130,6 +131,11 @@ table#sample-types .even {
     background-color: lightgrey;
 }
 
+.rfc2119 {
+  text-transform: lowercase;
+  font-variant: small-caps;
+  font-style: normal;
+}
 
 </style>
 
@@ -148,16 +154,17 @@ Definitions {#definitions}
 : <dfn>Internal Pending Output</dfn>
 :: Codec outputs such as {{VideoFrame}}s that currently reside in the internal
     pipeline of the underlying codec implementation. The underlying codec
-    implementation may emit new outputs only when new inputs are provided. The
-    underlying codec implementation must emit all outputs in response to a
-    flush.
+    implementation <em class="rfc2119">MAY</em> emit new outputs only when new
+    inputs are provided. The underlying codec implementation <em
+    class="rfc2119">MUST</em> emit all outputs in response to a flush.
 
 : <dfn lt="system resources">Codec System Resources</dfn>
 :: Resources including CPU memory, GPU memory, and exclusive handles to specific
-    decoding/encoding hardware that may be allocated by the User Agent as part
-    of codec configuration or generation of {{AudioData}} and {{VideoFrame}}
-    objects. Such resources may be quickly exhausted and should be released
-    immediately when no longer in use.
+    decoding/encoding hardware that <em class="rfc2119">MAY</em> be allocated by
+    the User Agent as part of codec configuration or generation of {{AudioData}}
+    and {{VideoFrame}} objects. Such resources <em class="rfc2119">MAY</em> be
+    quickly exhausted and <em class="rfc2119">SHOULD</em> be released immediately
+    when no longer in use.
 
 : <dfn>Temporal Layer</dfn>
 :: A grouping of {{EncodedVideoChunk}}s whose timestamp cadence produces a
@@ -201,18 +208,20 @@ Definitions {#definitions}
 Background {#processing-model-background}
 -----------------------------------------
 
-This section is non-normative.
+<div class=non-normative>
+  This section is non-normative.
 
-The codec interfaces defined by the specification are designed such that new
-codec tasks may be scheduled while previous tasks are still pending. For
-example, web authors may call `decode()` without waiting for a previous
-`decode()` to complete. This is achieved by offloading underlying codec tasks to
-a separate thread for parallel execution.
+  The codec interfaces defined by the specification are designed such that new
+  codec tasks can be scheduled while previous tasks are still pending. For
+  example, web authors can call `decode()` without waiting for a previous
+  `decode()` to complete. This is achieved by offloading underlying codec tasks
+  to a separate thread for parallel execution.
 
-This section describes threading behaviors as they are visible from the
-perspective of web authors. Implementers may choose to use more or less threads
-as long as the exernally visible behaviors of blocking and sequencing are
-maintained as follows.
+  This section describes threading behaviors as they are visible from the
+  perspective of web authors. Implementers can choose to use more or less
+  threads as long as the exernally visible behaviors of blocking and sequencing
+  are maintained as follows.
+</div>
 
 Control Thread and Codec Thread {#control-thread-and-codec-thread}
 ------------------------------------------------------------------
@@ -252,7 +261,7 @@ to schedule work.
 message</dfn> means performing a sequence of steps specified by the method
 that enqueued the message.
 
-The <dfn>codec processing loop</dfn> must run these steps:
+The <dfn>codec processing loop</dfn> <em class="rfc2119">MUST</em> run these steps:
 1. While true:
     1. If the [=control message queue=] is empty, [=continue=].
     2. Dequeue |front message| from the [=control message queue=].
@@ -296,7 +305,7 @@ Internal Slots {#audiodecoder-internal-slots}
 :: Callback given at construction for decode errors.
 : <dfn attribute for=AudioDecoder>[[key chunk required]]</dfn>
 :: A boolean indicating that the next chunk passed to {{AudioDecoder/decode()}}
-    must describe a [=key chunk=] as indicated by
+    <em class="rfc2119">MUST</em> describe a [=key chunk=] as indicated by
     {{EncodedAudioChunk/[[type]]}}.
 : <dfn attribute for=AudioDecoder>\[[state]]</dfn>
 :: The current {{CodecState}} of this {{AudioDecoder}}.
@@ -342,9 +351,9 @@ Methods {#audiodecoder-methods}
     chunks as described by |config|.
 
     NOTE: This method will trigger a {{NotSupportedError}} if the User Agent
-        does not support |config|. Authors should first check support by calling
-        {{AudioDecoder/isConfigSupported()}} with |config|. User Agents are not
-        required to support any particular codec type or configuration.
+        does not support |config|. Authors are encouraged to first check support
+        by calling {{AudioDecoder/isConfigSupported()}} with |config|. User
+        Agents don't have to support any particular codec type or configuration.
 
     When invoked, run these steps:
     1. If |config| is not a [=valid AudioDecoderConfig=], throw a
@@ -375,7 +384,7 @@ Methods {#audiodecoder-methods}
     2. If {{AudioDecoder/[[key chunk required]]}} is `true`:
         1. If |chunk|.{{EncodedAudioChunk/[[type]]}} is not
             {{EncodedAudioChunkType/key}}, throw a {{DataError}}.
-        2. Implementers should inspect the |chunk|'s
+        2. Implementers <em class="rfc2119">SHOULD</em> inspect the |chunk|'s
             {{EncodedAudioChunk/[[internal data]]}} to verify that
             it is truly a [=key chunk=]. If a mismatch is detected, throw a
             {{DataError}}.
@@ -454,7 +463,7 @@ Methods {#audiodecoder-methods}
 
     NOTE: The returned {{AudioDecoderSupport}} {{AudioDecoderSupport/config}}
         will contain only the dictionary members that User Agent recognized.
-        Unrecognized dictionary members will be ignored. Authors may detect
+        Unrecognized dictionary members will be ignored. Authors can detect
         unrecognized dictionary members by comparing
         {{AudioDecoderSupport/config}} to their provided |config|.
 
@@ -564,11 +573,14 @@ Internal Slots {#videodecoder-internal-slots}
 : <dfn attribute for=VideoDecoder>[[active decoder config]]</dfn>
 :: The {{VideoDecoderConfig}} that is actively applied.
 : <dfn attribute for=VideoDecoder>[[key chunk required]]</dfn>
-:: A boolean indicating that the next chunk passed to {{VideoDecoder/decode()}} must describe a [=key chunk=] as indicated by {{EncodedVideoChunk/type}}.
+:: A boolean indicating that the next chunk passed to {{VideoDecoder/decode()}}
+    <em class="rfc2119">MUST</em> describe a [=key chunk=] as indicated by
+    {{EncodedVideoChunk/type}}.
 : <dfn attribute for=VideoDecoder>\[[state]]</dfn>
 :: The current {{CodecState}} of this {{VideoDecoder}}.
 : <dfn attribute for=VideoDecoder>\[[decodeQueueSize]]</dfn>
-:: The number of pending decode requests. This number will decrease as the underlying codec is ready to accept new input.
+:: The number of pending decode requests. This number will decrease as the
+    underlying codec is ready to accept new input.
 : <dfn attribute for=VideoDecoder>[[pending flush promises]]</dfn>
 :: A list of unresolved promises returned by calls to {{VideoDecoder/flush()}}.
 
@@ -611,9 +623,9 @@ Methods {#videodecoder-methods}
     chunks as described by |config|.
 
     NOTE: This method will trigger a {{NotSupportedError}} if the User Agent
-        does not support |config|. Authors should first check support by calling
-        {{VideoDecoder/isConfigSupported()}} with |config|. User Agents are not
-        required to support any particular codec type or configuration.
+      does not support |config|. Authors are encouraged to first check support by
+      calling {{VideoDecoder/isConfigSupported()}} with |config|. User Agents
+      don't have to support any particular codec type or configuration.
 
     When invoked, run these steps:
     1. If |config| is not a [=valid VideoDecoderConfig=], throw a
@@ -639,15 +651,15 @@ Methods {#videodecoder-methods}
   <dd>
     [=Enqueues a control message=] to decode the given |chunk|.
 
-    NOTE: Authors should call {{VideoFrame/close()}} on output
+    NOTE: Authors are encouraged to call {{VideoFrame/close()}} on output
         {{VideoFrame}}s immediately when frames are no longer needed. The
         underlying [=media resource=]s are owned by the {{VideoDecoder}} and
-        failing to release them (or waiting for garbage collection) may cause
+        failing to release them (or waiting for garbage collection) can cause
         decoding to stall.
 
     NOTE: {{VideoDecoder}} requires that frames are output in the order they
-        expect to be presented, commonly known as presentation order. Some
-        {{VideoDecoder/[[codec implementation]]}}s may require the User Agent
+        expect to be presented, commonly known as presentation order. When using
+        some {{VideoDecoder/[[codec implementation]]}}s the User Agent will have to
         to reorder outputs into presentation order.
 
     When invoked, run these steps:
@@ -656,7 +668,7 @@ Methods {#videodecoder-methods}
     2. If {{VideoDecoder/[[key chunk required]]}} is `true`:
         1. If |chunk|.{{EncodedVideoChunk/type}} is not
             {{EncodedVideoChunkType/key}}, throw a {{DataError}}.
-        2. Implementers should inspect the |chunk|'s
+        2. Implementers <em class="rfc2119">SHOULD</em> inspect the |chunk|'s
             {{EncodedVideoChunk/[[internal data]]}} to verify that
             it is truly a [=key chunk=]. If a mismatch is detected, throw a
             {{DataError}}.
@@ -734,7 +746,7 @@ Methods {#videodecoder-methods}
 
     NOTE: The returned {{VideoDecoderSupport}} {{VideoDecoderSupport/config}}
         will contain only the dictionary members that User Agent recognized.
-        Unrecognized dictionary members will be ignored. Authors may detect
+        Unrecognized dictionary members will be ignored. Authors can detect
         unrecognized dictionary members by comparing
         {{VideoDecoderSupport/config}} to their provided |config|.
 
@@ -776,10 +788,10 @@ Algorithms {#videodecoder-algorithms}
             let |colorSpace| be `undefined`.
 
             NOTE: The codec implementation can detect a {{VideoColorSpace}} by
-                analyzing the bitstream. Detection is not required and may not
-                always be feasible. The exact method of detection is implementer
-                defined and codec-specific. Authors may override the
-                detected {{VideoColorSpace}} by providing a
+                analyzing the bitstream. Detection is made on a best-effort
+                basis. The exact method of detection is implementer defined and
+                codec-specific.  Authors can override the detected
+                {{VideoColorSpace}} by providing a
                 {{VideoDecoderConfig/colorSpace}} in the {{VideoDecoderConfig}}.
 
         5. If {{VideoDecoderConfig/colorSpace}} [=map/exists=] in the
@@ -915,9 +927,9 @@ Methods {#audioencoder-methods}
     decoding chunks as described by |config|.
 
     NOTE: This method will trigger a {{NotSupportedError}} if the User Agent
-        does not support |config|. Authors should first check support by calling
-        {{AudioEncoder/isConfigSupported()}} with |config|. User Agents are not
-        required to support any particular codec type or configuration.
+        does not support |config|. Authors are encouraged to first check support
+        by calling {{AudioEncoder/isConfigSupported()}} with |config|. User
+        Agents don't have to support any particular codec type or configuration.
 
     When invoked, run these steps:
     1. If |config| is not a [=valid AudioEncoderConfig=], throw a
@@ -1019,7 +1031,7 @@ Methods {#audioencoder-methods}
 
     NOTE: The returned {{AudioEncoderSupport}} {{AudioEncoderSupport/config}}
         will contain only the dictionary members that User Agent recognized.
-        Unrecognized dictionary members will be ignored. Authors may detect
+        Unrecognized dictionary members will be ignored. Authors can detect
         unrecognized dictionary members by comparing
         {{AudioEncoderSupport/config}} to their provided |config|.
 
@@ -1076,9 +1088,9 @@ Algorithms {#audioencoder-algorithms}
                 |outputConfig|.{{AudioDecoderConfig/numberOfChannels}}.
             4. Assign |outputConfig|.{{AudioDecoderConfig/description}} with a
                 sequence of codec specific bytes as determined by the
-                {{AudioEncoder/[[codec implementation]]}}. The User Agent must
-                ensure that the provided description could be used to
-                correctly decode output.
+                {{AudioEncoder/[[codec implementation]]}}. The User Agent <em
+                class="rfc2119">MUST</em> ensure that the provided description
+                could be used to correctly decode output.
 
                 NOTE: The codec specific requirements for populating the
                     {{AudioDecoderConfig/description}} are described in the
@@ -1134,8 +1146,8 @@ dictionary EncodedAudioChunkMetadata {
 </xmp>
 
 : <dfn dict-member for=EncodedAudioChunkMetadata>decoderConfig</dfn>
-:: A {{AudioDecoderConfig}} that authors may use to decode the associated
-    {{EncodedAudioChunk}}.
+:: A {{AudioDecoderConfig}} that authors <em class="rfc2119">MAY</em> use to
+    decode the associated {{EncodedAudioChunk}}.
 
 
 VideoEncoder Interface {#videoencoder-interface}
@@ -1234,9 +1246,10 @@ Methods {#videoencoder-methods}
     decoding chunks as described by |config|.
 
     NOTE: This method will trigger a {{NotSupportedError}} if the User Agent
-        does not support |config|. Authors should first check support by calling
-        {{VideoEncoder/isConfigSupported()}} with |config|. User Agents are not
-        required to support any particular codec type or configuration.
+        does not support |config|. Authors are encouraged to first check support
+        by calling {{VideoEncoder/isConfigSupported()}} with |config|. User
+        Agents don't have to support any particular codec type or
+        configuration.
 
     When invoked, run these steps:
     1. If |config| is not a [=valid VideoEncoderConfig=], throw a
@@ -1339,7 +1352,7 @@ Methods {#videoencoder-methods}
 
     NOTE: The returned {{VideoEncoderSupport}} {{VideoEncoderSupport/config}}
         will contain only the dictionary members that User Agent recognized.
-        Unrecognized dictionary members will be ignored. Authors may detect
+        Unrecognized dictionary members will be ignored. Authors can detect
         unrecognized dictionary members by comparing
         {{VideoEncoderSupport/config}} to their provided |config|.
 
@@ -1398,9 +1411,9 @@ Algorithms {#videoencoder-algorithms}
                 `outputConfig.displayHeight`.
             6. Assign the remaining keys of `outputConfig` as determined by
                 {{VideoEncoder/[[codec implementation]]}}. The User Agent
-                must ensure that the configuration is completely described
-                such that |outputConfig| could be used to correctly decode
-                |output|.
+                <em class="rfc2119">MUST</em> ensure that the configuration is
+                completely described such that |outputConfig| could be used to
+                correctly decode |output|.
 
                 NOTE: The codec specific requirements for populating the
                     {{VideoDecoderConfig/description}} are described in the
@@ -1474,8 +1487,8 @@ dictionary SvcOutputMetadata {
 </xmp>
 
 : <dfn dict-member for=EncodedVideoChunkMetadata>decoderConfig</dfn>
-:: A {{VideoDecoderConfig}} that authors may use to decode the associated
-    {{EncodedVideoChunk}}.
+:: A {{VideoDecoderConfig}} that authors <em class="rfc2119">MAY</em> use to
+    decode the associated {{EncodedVideoChunk}}.
 
 : <dfn dict-member for=EncodedVideoChunkMetadata>svc</dfn>
 :: A collection of metadata describing this {{EncodedVideoChunk}} with respect
@@ -1519,9 +1532,9 @@ Run these steps:
         {{AudioEncoderConfig}}, and {{VideoEncoderConfig}} each define their
         respective configuration entries and defaults.
 
-    NOTE: Support for a given configuration may change dynamically if the
-        hardware is altered (e.g. external GPU unplugged) or if required
-        hardware resources are exhausted. User Agents should describe support on
+    NOTE: Support for a given configuration can change dynamically if the
+        hardware is altered (e.g. external GPU unplugged) or if essential
+        hardware resources are exhausted. User Agents describe support on
         a best-effort basis given the resources that are available at the time
         of the query.
 
@@ -1636,7 +1649,8 @@ dictionary VideoEncoderSupport {
 A codec string describes a given codec format to be used for encoding or
 decoding.
 
-A <dfn>valid codec string</dfn> must meet the following conditions.
+A <dfn>valid codec string</dfn> <em class="rfc2119">MUST</em> meet the following
+conditions.
 1. Is valid per the relevant codec specification (see examples below).
 2. It describes a single codec.
 3. It is unambiguous about codec profile, level, and constraint bits for codecs
@@ -1653,8 +1667,9 @@ NOTE: Encoders for codecs that define level and constraint bits have flexibility
     level or are less constrained than requested.
 
 The format and semantics for codec strings are defined by codec registrations
-listed in the [[WEBCODECS-CODEC-REGISTRY]]. A compliant implementation may support any
-combination of codec registrations or none at all.
+listed in the [[WEBCODECS-CODEC-REGISTRY]]. A compliant implementation <em
+class="rfc2119">MAY</em> support any combination of codec registrations or
+none at all.
 
 AudioDecoderConfig{#audio-decoder-config}
 -----------------------------------------
@@ -1733,8 +1748,8 @@ run these steps:
   <dd>
     A sequence of codec specific bytes, commonly known as extradata.
 
-    NOTE: The registrations in the [[WEBCODECS-CODEC-REGISTRY]] may describe whether/how
-        to populate this sequence, corresponding to the provided
+    NOTE: The registrations in the [[WEBCODECS-CODEC-REGISTRY]] describes
+        whether/how to populate this sequence, corresponding to the provided
         {{VideoDecoderConfig/codec}}.
   </dd>
 
@@ -1764,10 +1779,9 @@ run these steps:
   </dd>
 
   NOTE: {{VideoFrame/displayWidth}} and {{VideoFrame/displayHeight}} can both be
-  different from {{VideoDecoderConfig/displayAspectWidth}} and
-  {{VideoDecoderConfig/displayAspectHeight}}, but they should have identical
-  ratios, after scaling is applied when
-  [=create a videoframe|creating the video frame=].
+      different from {{VideoDecoderConfig/displayAspectWidth}} and
+      {{VideoDecoderConfig/displayAspectHeight}}, but have identical ratios, after scaling is applied when [=create a videoframe|creating the
+      video frame=].
 
   <dt><dfn dict-member for=VideoDecoderConfig>colorSpace</dfn></dt>
   <dd>
@@ -1790,8 +1804,8 @@ run these steps:
     is output.
 
     NOTE: In addition to User Agent and hardware limitations, some codec
-    bitstreams may require a minimum number of inputs before any output can be
-    produced.
+        bitstreams require a minimum number of inputs before any output can be
+        produced.
   </dd>
 </dl>
 
@@ -1807,8 +1821,8 @@ dictionary AudioEncoderConfig {
 };
 </xmp>
 
-NOTE: Codec-specific extensions to {{AudioEncoderConfig}} may be defined by the
-    registrations in the [[WEBCODECS-CODEC-REGISTRY]].
+NOTE: Codec-specific extensions to {{AudioEncoderConfig}} are described in
+    their registrations in the [[WEBCODECS-CODEC-REGISTRY]].
 
 To check if an {{AudioEncoderConfig}} is a <dfn>valid AudioEncoderConfig</dfn>,
 run these steps:
@@ -1852,7 +1866,7 @@ dictionary VideoEncoderConfig {
 };
 </xmp>
 
-NOTE: Codec-specific extensions to {{VideoEncoderConfig}} may be defined by the
+NOTE: Codec-specific extensions to {{VideoEncoderConfig}} are described in their
     registrations in the [[WEBCODECS-CODEC-REGISTRY]].
 
 To check if a {{VideoEncoderConfig}} is a <dfn>valid VideoEncoderConfig</dfn>,
@@ -1874,7 +1888,7 @@ To check if a {{VideoEncoderConfig}} is a <dfn>valid VideoEncoderConfig</dfn>,
     The encoded width of output {{EncodedVideoChunk}}s in pixels, prior to any
     display aspect ratio adjustments.
 
-    The encoder must scale any {{VideoFrame}} whose
+    The encoder <em class="rfc2119">MUST</em> scale any {{VideoFrame}} whose
     {{VideoFrame/[[visible width]]}} differs from this value.
   </dd>
 
@@ -1883,7 +1897,7 @@ To check if a {{VideoEncoderConfig}} is a <dfn>valid VideoEncoderConfig</dfn>,
     The encoded height of output {{EncodedVideoChunk}}s in pixels, prior to any
     display aspect ratio adjustments.
 
-    The encoder must scale any {{VideoFrame}} whose
+    The encoder <em class="rfc2119">MUST</em> scale any {{VideoFrame}} whose
     {{VideoFrame/[[visible height]]}} differs from this value.
   </dd>
 </dl>
@@ -1906,11 +1920,11 @@ To check if a {{VideoEncoderConfig}} is a <dfn>valid VideoEncoderConfig</dfn>,
   NOTE: Providing a {{VideoEncoderConfig/displayWidth}} or
       {{VideoEncoderConfig/displayHeight}} that differs from
       {{VideoEncoderConfig/width}} and {{VideoEncoderConfig/height}} signals
-      that chunks should be scaled after decoding to arrive at the final
+      that chunks are to be scaled after decoding to arrive at the final
       display aspect ratio.
 
       For many codecs this is merely pass-through information, but some codecs
-      may optionally include display sizing in the bitstream.
+      can sometimes include display sizing in the bitstream.
 </div>
 
 <dl>
@@ -1922,11 +1936,11 @@ To check if a {{VideoEncoderConfig}} is a <dfn>valid VideoEncoderConfig</dfn>,
   <dt><dfn dict-member for=VideoEncoderConfig>framerate</dfn></dt>
   <dd>
     The expected frame rate in frames per second, if known. This value, along
-    with the frame {{VideoFrame/timestamp}}, should be used by the video encoder
-    to calculate the optimal byte length for each encoded frame. Additionally,
-    the value should be considered a target deadline for outputting encoding
-    chunks when {{VideoEncoderConfig/latencyMode}} is set to
-    {{LatencyMode/realtime}}.
+    with the frame {{VideoFrame/timestamp}}, <em class="rfc2119">SHOULD</em> be
+    used by the video encoder to calculate the optimal byte length for each
+    encoded frame. Additionally, the value <em class="rfc2119">SHOULD</em> be
+    considered a target deadline for outputting encoding chunks when
+    {{VideoEncoderConfig/latencyMode}} is set to {{LatencyMode/realtime}}.
   </dd>
 
   <dt><dfn dict-member for=VideoEncoderConfig>hardwareAcceleration</dfn></dt>
@@ -1937,10 +1951,11 @@ To check if a {{VideoEncoderConfig}} is a <dfn>valid VideoEncoderConfig</dfn>,
 
 <dt><dfn dict-member for=VideoEncoderConfig>alpha</dfn></dt>
   <dd>
-    Whether the alpha component of the {{VideoFrame}} inputs should be kept
-    or discarded prior to encoding. If {{VideoEncoderConfig/alpha}} is
-    equal to {{AlphaOption/discard}}, alpha data is always discarded, regardless
-    of a {{VideoFrame}}'s {{VideoFrame/[[format]]}}.
+    Whether the alpha component of the {{VideoFrame}} inputs <em
+    class="rfc2119">SHOULD</em> be kept or discarded prior to encoding. If
+    {{VideoEncoderConfig/alpha}} is equal to {{AlphaOption/discard}}, alpha data
+    is always discarded, regardless of a {{VideoFrame}}'s
+    {{VideoFrame/[[format]]}}.
   </dd>
 
   <dt><dfn dict-member for=VideoEncoderConfig>scalabilityMode</dfn></dt>
@@ -1988,7 +2003,7 @@ User Agent does not implement [[media-capabilities]] for reasons of
 fingerprinting, they SHOULD ignore the {{HardwareAcceleration}} preference.
 
 <div class='note'>
-  NOTE: Good examples of when a User Agent may ignore
+  NOTE: Good examples of when a User Agent can ignore
   {{HardwareAcceleration/prefer-hardware}} or
   {{HardwareAcceleration/prefer-software}} are for reasons of user privacy or
   circumstances where the User Agent determines an alternative setting would
@@ -2000,15 +2015,15 @@ fingerprinting, they SHOULD ignore the {{HardwareAcceleration}} preference.
   strategy will be to prioritize hardware acceleration at higher resolutions
   with a fallback to software codecs if hardware acceleration fails.
 
-  Authors should carefully weigh the tradeoffs when setting a hardware
-  acceleration preference. The precise tradeoffs will be device-specific, but
-  authors should generally expect the following:
+  Authors are encouraged to carefully weigh the tradeoffs when setting a
+  hardware acceleration preference. The precise tradeoffs will be
+  device-specific, but authors can generally expect the following:
 
   * Setting a value of {{HardwareAcceleration/prefer-hardware}} or
-      {{HardwareAcceleration/prefer-software}} may significantly restrict what
-      configurations are supported. It may occur that the user's device does not
+      {{HardwareAcceleration/prefer-software}} can significantly restrict what
+      configurations are supported. It can occur that the user's device does not
       offer acceleration for any codec, or only for the most common profiles of
-      older codecs. It may also occur that a given User Agent lacks a software
+      older codecs. It can also occur that a given User Agent lacks a software
       based codec implementation.
   * Hardware acceleration does not simply imply faster encoding / decoding.
       Hardware acceleration often has higher startup latency but more consistent
@@ -2018,7 +2033,7 @@ fingerprinting, they SHOULD ignore the {{HardwareAcceleration}} preference.
   * Hardware acceleration will often be more power efficient than purely
       software based codecs.
   * For lower resolution content, the overhead added by hardware acceleration
-      may yield decreased performance and power efficiency compared to purely
+      can yield decreased performance and power efficiency compared to purely
       software based codecs.
 
   Given these tradeoffs, a good example of using "prefer-hardware" would be if
@@ -2033,24 +2048,26 @@ fingerprinting, they SHOULD ignore the {{HardwareAcceleration}} preference.
 <dl>
   <dt><dfn enum-value for=HardwareAcceleration>no-preference</dfn></dt>
   <dd>
-    Indicates that the User Agent may use hardware acceleration if it is
-    available and compatible with other aspects of the codec configuration.
+    Indicates that the User Agent <em class="rfc2119">MAY</em> use hardware
+    acceleration if it is available and compatible with other aspects of the
+    codec configuration.
   </dd>
   <dt><dfn enum-value for=HardwareAcceleration>prefer-software</dfn></dt>
   <dd>
-    Indicates that the User Agent SHOULD prefer a software codec implementation.
-    User Agents may ignore this value for any reason.
+    Indicates that the User Agent <em class="rfc2119">SHOULD</em> prefer a
+    software codec implementation.  User Agents may ignore this value for any
+    reason.
 
-    NOTE: This may cause the configuration to be unsupported on platforms where
+    NOTE: This can cause the configuration to be unsupported on platforms where
     an unaccelerated codec is unavailable or is incompatible with other aspects
     of the codec configuration.
   </dd>
   <dt><dfn enum-value for=HardwareAcceleration>prefer-hardware</dfn></dt>
   <dd>
-    Indicates that the User Agent SHOULD prefer hardware acceleration. User
-    Agents may ignore this value for any reason.
+    Indicates that the User Agent <em class="rfc2119">SHOULD</em> prefer
+    hardware acceleration. User Agents may ignore this value for any reason.
 
-    NOTE: This may cause the configuration to be unsupported on platforms where
+    NOTE: This can cause the configuration to be unsupported on platforms where
     an accelerated codec is unavailable or is incompatible with other aspects of
     the codec configuration.
   </dd>
@@ -2065,19 +2082,19 @@ enum AlphaOption {
 };
 </xmp>
 
-Describes how the user agent should behave when dealing with alpha channels, for
-a variety of different operations.
+Describes how the user agent <em class="rfc2119">SHOULD</em> behave when dealing
+with alpha channels, for a variety of different operations.
 
 <dl>
   <dt><dfn enum-value for=AlphaOption>keep</dfn></dt>
   <dd>
-    Indicates that the user agent should preserve alpha channel data for
-    {{VideoFrame}}s, if it is present.
+    Indicates that the user agent <em class="rfc2119">SHOULD</em> preserve alpha
+    channel data for {{VideoFrame}}s, if it is present.
   </dd>
   <dt><dfn enum-value for=AlphaOption>discard</dfn></dt>
   <dd>
-    Indicates that the user agent should ignore or remove {{VideoFrame}}'s alpha
-    channel data.
+    Indicates that the user agent <em class="rfc2119">SHOULD</em> ignore or
+    remove {{VideoFrame}}'s alpha channel data.
   </dd>
 </dl>
 
@@ -2091,22 +2108,26 @@ enum LatencyMode {
 </xmp>
 
 : <dfn enum-value for=LatencyMode>quality</dfn>
-:: Indicates that the User Agent should optimize for encoding quality. In
-    this mode:
-    * User Agents may increase encoding latency to improve quality.
-    * User Agents must not drop frames to achieve the target
-        {{VideoEncoderConfig/bitrate}} and/or {{VideoEncoderConfig/framerate}}.
-    * {{VideoEncoderConfig/framerate}} should not be used as a target deadline
-        for emitting encoded chunks.
+:: Indicates that the User Agent <em class="rfc2119">SHOULD</em> optimize for
+    encoding quality. In this mode:
+    * User Agents <em class="rfc2119">MAY</em> increase encoding latency to
+        improve quality.
+    * User Agents <em class="rfc2119">MUST</em> not drop frames to achieve the
+        target {{VideoEncoderConfig/bitrate}} and/or
+        {{VideoEncoderConfig/framerate}}.
+    * {{VideoEncoderConfig/framerate}} <em class="rfc2119">SHOULD</em> not be
+        used as a target deadline for emitting encoded chunks.
 
 : <dfn enum-value for=LatencyMode>realtime</dfn>
-:: Indicates that the User Agent should optimize for low latency. In this
+:: Indicates that the User Agent <em class="rfc2119">SHOULD</em> optimize for
+    low latency. In this
     mode:
-    * User Agents may sacrifice quality to improve latency.
-    * User Agents may drop frames to achieve the target
+    * User Agents <em class="rfc2119">MAY</em> sacrifice quality to improve
+        latency.
+    * User Agents <em class="rfc2119">MAY</em> drop frames to achieve the target
         {{VideoEncoderConfig/bitrate}} and/or {{VideoEncoderConfig/framerate}}.
-    * {{VideoEncoderConfig/framerate}} should be used as a target deadline for
-        emitting encoded chunks.
+    * {{VideoEncoderConfig/framerate}} <em class="rfc2119">SHOULD</em> be used
+        as a target deadline for emitting encoded chunks.
 
 Configuration Equivalence{#config-equivalence}
 ----------------------------------------------
@@ -2327,11 +2348,11 @@ Memory Model {#raw-media-memory-model}
 
 This section is non-normative.
 
-Decoded media data may occupy a large amount of system memory. To minimize the
-need for expensive copies, this specification defines a scheme for reference
-counting (`clone()` and `close()`).
+Decoded media data <em class="rfc2119">MAY</em> occupy a large amount of system
+memory. To minimize the need for expensive copies, this specification defines a
+scheme for reference counting (`clone()` and `close()`).
 
-NOTE: Authors should take care to invoke `close()` immediately when frames are
+NOTE: Authors are encourage to call `close()` immediately when frames are
     no longer needed.
 
 ### Reference Counting ### {#raw-media-memory-model-reference-counting}
@@ -2352,11 +2373,11 @@ object.
 will clear their [[resource reference]] slot, releasing the reference their
 [=media resource=].
 
-A [=media resource=] must remain alive at least as long as it continues to be
-referenced by a `[[resource reference]]`.
+A [=media resource=] <em class="rfc2119">MUST</em> remain alive at least as long
+as it continues to be referenced by a `[[resource reference]]`.
 
 NOTE: When a [=media resource=] is no longer referenced by a
-    `[[resource reference]]`, the resource may be destroyed. User Agents are
+    `[[resource reference]]`, the resource can be destroyed. User Agents are
     encouraged to destroy such resources quickly to reduce memory pressure and
     facilitate resource reuse.
 
@@ -2371,15 +2392,15 @@ serialization steps are defined in [[#audiodata-transfer-serialization]] and
 
 Transferring an {{AudioData}} or {{VideoFrame}} moves its `[[resource
 reference]]` to the destination object and closes (as in {{AudioData/close()}})
-the source object. Authors may use this facility
+the source object. Authors <em class="rfc2119">MAY</em> use this facility
 to move an {{AudioData}} or {{VideoFrame}} between realms without copying the
 underlying [=media resource=].
 
 Serializing an {{AudioData}} or {{VideoFrame}} effectively clones (as in
 {{VideoFrame/clone()}}) the source object, resulting in two objects that
-reference the same [=media resource=]. Authors may use this facility to clone
-an {{AudioData}} or {{VideoFrame}} to another realm without copying the
-underlying [=media resource=].
+reference the same [=media resource=]. Authors <em class="rfc2119">MAY</em> use
+this facility to clone an {{AudioData}} or {{VideoFrame}} to another realm
+without copying the underlying [=media resource=].
 
 AudioData Interface {#audiodata-interface}
 ---------------------------------------------
@@ -2840,7 +2861,7 @@ commonly used to hold 24-bit content.
 {{f32}}. When samples are stored in {{s32}}, each sample MUST be left-shifted by
 `8` bits. By virtue of this process, samples outside of the valid 24-bit range
 ([-8388608, +8388607]) will be clipped. To avoid clipping and ensure lossless
-transport, samples may be converted to {{f32}}.
+transport, samples <em class="rfc2119">MAY</em> be converted to {{f32}}.
 
 NOTE: While clipping is unavoidable in {{u8}}, {{s16}}, and {{s32}} samples due
 to their storage types, implementations SHOULD take care not to clip internally
@@ -2864,7 +2885,7 @@ channel attributed to a particular channel index.
 VideoFrame Interface {#videoframe-interface}
 --------------------------------------------
 
-NOTE: {{VideoFrame}} is a {{CanvasImageSource}}. A {{VideoFrame}} may be
+NOTE: {{VideoFrame}} is a {{CanvasImageSource}}. A {{VideoFrame}} can be
     passed to any method accepting a {{CanvasImageSource}}, including
     {{CanvasDrawImage}}'s {{CanvasDrawImage/drawImage()}}.
 
@@ -2996,10 +3017,10 @@ dictionary VideoFrameBufferInit {
             throw an {{InvalidStateError}} {{DOMException}}.
         3. Let |resource| be a new [=media resource=] containing a copy of
             |image|'s media data. If this is an animated image, |image|'s
-            [=bitmap data=] must only be taken from the default image of the
-            animation (the one that the format defines is to be used when
-            animation is not supported or is disabled), or, if there is no
-            such image, the first frame of the animation.
+            [=bitmap data=] <em class="rfc2119">MUST</em> only be taken from the
+            default image of the animation (the one that the format defines is
+            to be used when animation is not supported or is disabled), or, if
+            there is no such image, the first frame of the animation.
         4. Let |width| and |height| be the [=natural width=] and
             [=natural height=] of |image|.
         5. Run the [=VideoFrame/Initialize Frame With Resource and Size=]
@@ -3022,8 +3043,8 @@ dictionary VideoFrameBufferInit {
         2. Let |resource| be a new [=media resource=] containing a copy of
             |image|'s [=bitmap data=].
 
-            NOTE: Implementers should avoid a deep copy by using reference
-                counting where feasible.
+            NOTE: Implementers are encouraged to avoid a deep copy by using
+                reference counting where feasible.
 
         3. Let |width| be `image.width` and |height| be `image.height`.
         4. Run the [=VideoFrame/Initialize Frame With Resource and Size=]
@@ -3065,13 +3086,14 @@ dictionary VideoFrameBufferInit {
         {{VideoFrameBufferInit/visibleRect}} and {{VideoFrameBufferInit/layout}}
         to determine where in |data| the pixels for each plane reside.
 
-        The User Agent may choose to allocate |resource| with a larger coded
-        size and plane strides to improve memory alignment. Increases will be
-        reflected by {{VideoFrame/codedWidth}} and {{VideoFrame/codedHeight}}.
-        Additionally, the User Agent may use
-        {{VideoFrameBufferInit/visibleRect}} to copy only the visible rectangle.
-        It may also reposition the visible rectangle within |resource|. The
-        final position will be reflected by {{VideoFrame/visibleRect}}.
+        The User Agent <em class="rfc2119">MAY</em> choose to allocate
+        |resource| with a larger coded size and plane strides to improve memory
+        alignment. Increases will be reflected by {{VideoFrame/codedWidth}} and
+        {{VideoFrame/codedHeight}}.  Additionally, the User Agent <em
+        class="rfc2119">MAY</em> use {{VideoFrameBufferInit/visibleRect}} to
+        copy only the visible rectangle.  It <em class="rfc2119">MAY</em> also
+        reposition the visible rectangle within |resource|. The final position
+        will be reflected by {{VideoFrame/visibleRect}}.
 
 12. Let |resourceCodedWidth| be the coded width of |resource|.
 13. Let |resourceCodedHeight| be the coded height of |resource|.
@@ -3080,9 +3102,9 @@ dictionary VideoFrameBufferInit {
 15. Let |resourceVisibleTop| be the top offset for the visible rectangle of
     |resource|.
 
-    ISSUE: The spec should provide definitions (and possibly diagrams) for
-        coded size, visible rectangle, and display size. See
-        [#166](https://github.com/w3c/webcodecs/issues/166).
+    ISSUE: The spec <em class="rfc2119">SHOULD</em> provide definitions (and
+      possibly diagrams) for coded size, visible rectangle, and display size.
+      See [#166](https://github.com/w3c/webcodecs/issues/166).
 
 16. Let |frame| be a new {{VideoFrame}} object initialized as follows:
     1. Assign |resourceCodedWidth|, |resourceCodedHeight|,
@@ -3355,9 +3377,9 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
 :: 1. If |overrideColorSpace| is provided, return a new {{VideoColorSpace}}
         constructed with |overrideColorSpace|.
 
-        NOTE: User Agents may replace `null` members of the provided
-            |overrideColorSpace| with guessed values as determined by
-            implementer defined heuristics.
+        User Agents MAY replace `null` members of the provided
+        |overrideColorSpace| with guessed values as determined by implementer
+        defined heuristics.
 
     2. Otherwise, if {{VideoFrame/[[format]]}} is an [=RGB format=] return a new
         instance of the [=sRGB Color Space=]
@@ -3571,7 +3593,7 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
                 |minAllocationSize|.
 
                 NOTE: The above step uses a maximum to allow for the
-                    possibility that user specified plane offsets may reorder
+                    possibility that user specified plane offsets reorder
                     planes.
 
         18. Let |earlierPlaneIndex| be `0`.
@@ -3637,9 +3659,9 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
 ### Rendering ### {#videoframe-rendering}
 
 When rendered, for example by {{CanvasDrawImage}}
-{{CanvasDrawImage/drawImage()}}, a {{VideoFrame}} must be converted to a
-color space compatible with the rendering target, unless color conversion is
-explicitly disabled.
+{{CanvasDrawImage/drawImage()}}, a {{VideoFrame}} <em class="rfc2119">MUST</em>
+be converted to a color space compatible with the rendering target, unless color
+conversion is explicitly disabled.
 
 Color space conversion during {{ImageBitmap}} construction is controlled by
 {{ImageBitmapOptions}} {{ImageBitmapOptions/colorSpaceConversion}}. Setting this
@@ -3660,10 +3682,10 @@ dictionary VideoFrameCopyToOptions {
 <div class='note'>
 NOTE: The steps of {{VideoFrame/copyTo()}} or {{VideoFrame/allocationSize()}}
 will enforce the following requirements:
-    * The coordinates of {{VideoFrameCopyToOptions/rect}} must be
+    * The coordinates of {{VideoFrameCopyToOptions/rect}} are
         sample-aligned as determiend by {{VideoFrame/[[format]]}}.
     * If {{VideoFrameCopyToOptions/layout}} [=map/exists=], a {{PlaneLayout}}
-        must be provided for all planes.
+        is provided for all planes.
 </div>
 
 : <dfn dict-member for=VideoFrameCopyToOptions>rect</dfn>
@@ -3695,11 +3717,11 @@ Plane Layout{#plane-layout}
 ---------------------------
 A {{PlaneLayout}} is a dictionary specifying the offset and stride of a
 {{VideoFrame}} plane once copied to a {{BufferSource}}. A sequence of
-{{PlaneLayout}}s may be provided to {{VideoFrame}}'s {{VideoFrame/copyTo()}} to
-specify how the plane is laid out in the destination {{BufferSource}}}.
-Alternatively, callers can inspect {{VideoFrame/copyTo()}}'s returned sequence
-of {{PlaneLayout}}s to learn the the offset and stride for planes as decided by
-the User Agent.
+{{PlaneLayout}}s <em class="rfc2119">MAY</em> be provided to {{VideoFrame}}'s
+{{VideoFrame/copyTo()}} to specify how the plane is laid out in the destination
+{{BufferSource}}}.  Alternatively, callers can inspect {{VideoFrame/copyTo()}}'s
+returned sequence of {{PlaneLayout}}s to learn the the offset and stride for
+planes as decided by the User Agent.
 
 <xmp class='idl'>
 dictionary PlaneLayout {
@@ -4146,17 +4168,19 @@ Image Decoding {#image-decoding}
 Background {#image-decoding-background}
 -------------------------------------
 
-This section is non-normative.
+<div class=non-normative>
+  This section is non-normative.
 
-Image codec definitions are typically accompanied by a definition for a
-corresponding file format. Hence image decoders often perform both duties of
-unpacking (demuxing) as well as decoding the encoded image data. The WebCodecs
-{{ImageDecoder}} follows this pattern, which motivates an interface design that
-is notably different from that of {{VideoDecoder}} and {{AudioDecoder}}.
+  Image codec definitions are typically accompanied by a definition for a
+  corresponding file format. Hence image decoders often perform both duties of
+  unpacking (demuxing) as well as decoding the encoded image data. The WebCodecs
+  {{ImageDecoder}} follows this pattern, which motivates an interface design that
+  is notably different from that of {{VideoDecoder}} and {{AudioDecoder}}.
 
-In spite of these differences, {{ImageDecoder}} uses the same
-[=codec processing model=] as the other codec interfaces. Additionally,
-{{ImageDecoder}} uses the {{VideoFrame}} interface to describe decoded outputs.
+  In spite of these differences, {{ImageDecoder}} uses the same
+  [=codec processing model=] as the other codec interfaces. Additionally,
+  {{ImageDecoder}} uses the {{VideoFrame}} interface to describe decoded outputs.
+</div>
 
 ImageDecoder Interface {#imagedecoder-interface}
 ------------------------------------------------
@@ -4233,9 +4257,9 @@ interface ImageDecoder {
     </dfn>
 :: NOTE: Calling {{ImageDecoder/decode()}} on the constructed {{ImageDecoder}}
     will trigger a {{NotSupportedError}} if the User Agent does not support
-    |type|. Authors should first check support by calling
-    {{ImageDecoder/isTypeSupported()}} with |type|. User Agents are not
-    required to support any particular type.
+    |type|. Authors are encouraged to first check support by calling
+    {{ImageDecoder/isTypeSupported()}} with |type|. User Agents don't have to
+    support any particular type.
 
     When invoked, run these steps:
     1. If |init| is not [=valid ImageDecoderInit=], throw a {{TypeError}}.
@@ -4427,7 +4451,7 @@ interface ImageDecoder {
 
                 NOTE: If [=this=] was constructed with
                   {{ImageDecoderInit/data}} as a {{ReadableStream}}, the
-                  {{ImageTrack/frameCount}} may change as additional bytes are
+                  {{ImageTrack/frameCount}} can change as additional bytes are
                   appended to {{ImageDecoder/[[encoded data]]}}. See the
                   [=Update Tracks=] algorithm.
 
@@ -4718,17 +4742,18 @@ string=] and for which the `type`, per Section 3.1.1.1 of [[RFC7231]], is
 
 : <dfn dict-member for=ImageDecoderInit>desiredWidth</dfn>
 :: Indicates a desired width for decoded outputs. Implementation is best
-    effort; decoding to a desired width may not be supported by all formats/
-    decoders.
+    effort; decoding to a desired width <em class="rfc2119">MAY</em> not be
+    supported by all formats/ decoders.
 
 : <dfn dict-member for=ImageDecoderInit>desiredHeight</dfn>
 :: Indicates a desired height for decoded outputs. Implementation is best
-    effort; decoding to a desired height may not be supported by all
-    formats/decoders.
+    effort; decoding to a desired height <em class="rfc2119">MAY</em> not be
+    supported by all formats/decoders.
 
 : <dfn dict-member for=ImageDecoderInit>preferAnimation</dfn>
 :: For images with multiple tracks, this indicates whether the
-    initial track selection should prefer an animated track.
+    initial track selection <em class="rfc2119">SHOULD</em> prefer an animated
+    track.
 
     NOTE: See the [=ImageDecoder/Get Default Selected Track Index=] algorithm.
 
@@ -4748,10 +4773,10 @@ dictionary ImageDecodeOptions {
 
 : <dfn dict-member for=ImageDecodeOptions>completeFramesOnly</dfn>
 :: For [=Progressive Images=], a value of `false` indicates that the decoder
-    may output an {{ImageDecodeResult/image}} with reduced detail. Each
-    subsequent call to {{ImageDecoder/decode()}} for the same
-    {{ImageDecodeOptions/frameIndex}} will resolve to produce an image with a
-    higher [=Progressive Image Frame Generation=] (more image detail) than the
+    <em class="rfc2119">MAY</em> output an {{ImageDecodeResult/image}} with
+    reduced detail. Each subsequent call to {{ImageDecoder/decode()}} for the
+    same {{ImageDecodeOptions/frameIndex}} will resolve to produce an image with
+    a higher [=Progressive Image Frame Generation=] (more image detail) than the
     previous call, until finally the full-detail image is produced.
 
     If {{ImageDecodeOptions/completeFramesOnly}} is assigned `true`, or if the
@@ -4762,7 +4787,7 @@ dictionary ImageDecodeOptions {
 
     <div class='note'>
       NOTE: For [=Progressive Images=], setting
-          {{ImageDecodeOptions/completeFramesOnly}} to `false` may be used to
+          {{ImageDecodeOptions/completeFramesOnly}} to `false` can be used to
           offer users a preview an image that is still being buffered from the
           network (via the {{ImageDecoderInit/data}} {{ReadableStream}}).
 
@@ -4814,7 +4839,7 @@ interface ImageTrackList {
 :: The promise used to signal when the {{ImageTrackList}} has been populated
     with {{ImageTrack}}s.
 
-    NOTE: {{ImageTrack}} {{ImageTrack/frameCount}} may receive subsequent
+    NOTE: {{ImageTrack}} {{ImageTrack/frameCount}} can receive subsequent
         updates until {{ImageDecoder/complete}} is `true`.
 
 : <dfn attribute for=ImageTrackList>[[track list]]</dfn>
@@ -5001,9 +5026,9 @@ Security Considerations{#security-considerations}
 
 The primary security impact is that features of this API make it easier for an
 attacker to exploit vulnerabilities in the underlying platform codecs.
-Additionally, new abilities to configure and control the codecs may allow for
-new exploits that rely on a specific configuration and/or sequence of control
-operations.
+Additionally, new abilities to configure and control the codecs <em
+class="rfc2119">MAY</em> allow for new exploits that rely on a specific
+configuration and/or sequence of control operations.
 
 Platform codecs are historically an internal detail of APIs like
 {{HTMLMediaElement}}, [[WEBAUDIO]], and [[WebRTC]]. In this way, it has always
@@ -5020,17 +5045,17 @@ are provided and direct access to invoke the codec control methods. This also
 affords attackers the ability to invoke sequences of control methods that were
 not previously possible via the higher level APIs.
 
-User Agents should mitigate this risk by extensively fuzzing their
-implementation with random inputs and control method invocations. Additionally,
-User Agents are encouraged to isolate their underlying codecs in processes with
-restricted privileges (sandbox) as a barrier against successful exploits being
-able to read user data.
+User Agents <em class="rfc2119">SHOULD</em> mitigate this risk by extensively
+fuzzing their implementation with random inputs and control method invocations.
+Additionally, User Agents are encouraged to isolate their underlying codecs in
+processes with restricted privileges (sandbox) as a barrier against successful
+exploits being able to read user data.
 
 An additional concern is exposing the underlying codecs to input mutation race
-conditions. Specifically, it should not be possible for a site to mutate a codec
-input or output while the underlying codec may still be operating on that data.
-This concern is mitigated by ensuring that input and output interfaces are
-immutable.
+conditions. Specifically, it <em class="rfc2119">SHOULD</em> not be possible for
+a site to mutate a codec input or output while the underlying codec <em
+class="rfc2119">MAY</em> still be operating on that data.  This concern is
+mitigated by ensuring that input and output interfaces are immutable.
 
 Privacy Considerations{#privacy-considerations}
 ===============================================
@@ -5038,23 +5063,25 @@ Privacy Considerations{#privacy-considerations}
 The primary privacy impact is an increased ability to fingerprint users by
 querying for different codec capabilities to establish a codec feature profile.
 Much of this profile is already exposed by existing APIs. Such profiles are very
-unlikely to be uniquely identifying, but may be used with other metrics to
-create a fingerprint.
+unlikely to be uniquely identifying, but <em class="rfc2119">MAY</em> be used
+with other metrics to create a fingerprint.
 
-An attacker may accumulate a codec feature profile by calling
-`IsConfigSupported()` methods with a number of different configuration
-dictionaries. Similarly, an attacker may attempt to `configure()` a codec with
-different configuration dictionaries and observe which configurations are
-accepted.
+An attacker <em class="rfc2119">MAY</em> accumulate a codec feature profile by
+calling `IsConfigSupported()` methods with a number of different configuration
+dictionaries. Similarly, an attacker <em class="rfc2119">MAY</em> attempt to
+`configure()` a codec with different configuration dictionaries and observe
+which configurations are accepted.
 
-Attackers may also use existing APIs to establish much of the codec feature
-profile. For example, the [[media-capabilities]] {{decodingInfo()}} API
-describes what types of decoders are supported and its {{powerEfficient}}
-attribute may signal when a decoder uses hardware acceleration. Similarly, the
-[[WebRTC]] {{RTCRtpSender/getCapabilities()}} API may be used to determine what
-types of encoders are supported and the {{RTCPeerConnection/getStats()}} API may
-be used to determine when an encoder uses hardware acceleration. WebCodecs will
-expose some additional information in the form of low level codec features.
+Attackers <em class="rfc2119">MAY</em> also use existing APIs to establish much
+of the codec feature profile. For example, the [[media-capabilities]]
+{{decodingInfo()}} API describes what types of decoders are supported and its
+{{powerEfficient}} attribute <em class="rfc2119">MAY</em> signal when a decoder
+uses hardware acceleration. Similarly, the [[WebRTC]]
+{{RTCRtpSender/getCapabilities()}} API <em class="rfc2119">MAY</em> be used to
+determine what types of encoders are supported and the
+{{RTCPeerConnection/getStats()}} API <em class="rfc2119">MAY</em> be used to
+determine when an encoder uses hardware acceleration. WebCodecs will expose some
+additional information in the form of low level codec features.
 
 A codec feature profile alone is unlikely to be uniquely identifying. Underlying
 codecs are often implemented entirely in software (be it part of the User Agent
@@ -5063,33 +5090,38 @@ software will have a common set of capabilities. Additionally, underlying codecs
 are often implemented with hardware acceleration, but such hardware is mass
 produced and devices of a particular class and manufacture date (e.g. flagship
 phones manufactured in 2020) will often have common capabilities. There will be
-outliers (some users may run outdated versions of software codecs or use a rare
-mix of custom assembled hardware), but most of the time a given codec feature
-profile is shared by a large group of users.
+outliers (some users <em class="rfc2119">MAY</em> run outdated versions of
+software codecs or use a rare mix of custom assembled hardware), but most of the
+time a given codec feature profile is shared by a large group of users.
 
 Segmenting groups of users by codec feature profile still amounts to a bit of
 entropy that can be combined with other metrics to uniquely identify a user.
-User Agents may partially mitigate this by returning an error whenever a site
-attempts to exhaustively probe for codec capabilities. Additionally, User Agents
-may implement a "privacy budget", which depletes as authors use WebCodecs and
-other identifying APIs. Upon exhaustion of the privacy budget, codec
-capabilities could be reduced to a common baseline or prompt for user approval.
+User Agents <em class="rfc2119">MAY</em> partially mitigate this by returning an
+error whenever a site attempts to exhaustively probe for codec capabilities.
+Additionally, User Agents <em class="rfc2119">MAY</em> implement a "privacy
+budget", which depletes as authors use WebCodecs and other identifying APIs.
+Upon exhaustion of the privacy budget, codec capabilities could be reduced to a
+common baseline or prompt for user approval.
 
 Best Practices for Authors Using WebCodecs{#best-practices-developers}
 ======================================================================
 
-While WebCodecs internally operates on background threads, authors working with
-realtime media or in contended main thread environments should ensure their
-media pipelines operate in worker contexts entirely independent of the main
-thread where possible. For example, realtime media processing of {{VideoFrame}}s
-should generally be done in a worker context.
+<div class=non-normative>
+  This section is non-normative.
 
-The main thread has significant potential for high contention and jank that may
-go unnoticed in development, yet degrade inconsistently across devices and User
-Agents in the field -- potentially dramatically impacting the end user
-experience. Ensuring the media pipeline is decoupled from the main thread helps
-provide a smooth experience for end users.
+  While WebCodecs internally operates on background threads, authors working with
+  realtime media or in contended main thread environments are encouraged to ensure their
+  media pipelines operate in worker contexts entirely independent of the main
+  thread where possible. For example, realtime media processing of {{VideoFrame}}s
+  are generally be done in a worker context.
 
-Authors using the main thread for their media pipeline should be sure of their
-target frame rates, main thread workload, how their application will be
-embedded, and the class of devices their users will be using.
+  The main thread has significant potential for high contention and jank that can
+  go unnoticed in development, yet degrade inconsistently across devices and User
+  Agents in the field -- potentially dramatically impacting the end user
+  experience. Ensuring the media pipeline is decoupled from the main thread helps
+  provide a smooth experience for end users.
+
+  Authors using the main thread for their media pipeline ought to be sure of
+  their target frame rates, main thread workload, how their application will be
+  embedded, and the class of devices their users will be using.
+</div>
