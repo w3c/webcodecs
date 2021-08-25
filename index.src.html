@@ -195,6 +195,11 @@ Definitions {#definitions}
     "matrix" → {{VideoMatrixCoefficients/bt709}},
     "fullRange" → `false`]».
 
+: <dfn>Half Away From Zero</dfn>
+:: A rounding method where a number is rounded to the nearest integer and
+    a tie (e.g. 1.5) is broken by rounding up (away from zero) to the next
+    largest integer.
+
 <dfn>Codec Processing Model</dfn> {#codec-processing-model-section}
 ===================================================================
 
@@ -2904,7 +2909,7 @@ dictionary VideoFrameInit {
   // aspect ratio unless an explicit displayWidth and displayHeight are given.
   DOMRectInit visibleRect;
 
-  // Default matches image unless visilbeRect is provided.
+  // Default matches image unless visibleRect is provided.
   [EnforceRange] unsigned long displayWidth;
   [EnforceRange] unsigned long displayHeight;
 };
@@ -3372,21 +3377,29 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
         instance of the [=sRGB Color Space=]
     3. Otherwise, return a new instance of the [=REC709 Color Space=].
 
-: <dfn>Validate VideoFrameInit</dfn> (with |codedWidth| and |codedHeight|):
-:: 1. If |codedWidth| = 0 or |codedHeight| = 0,return `false`.
-    2. If any attribute of {{VideoFrameInit/visibleRect}} is negative or
-        not finite, return `false`.
-    3. If {{VideoFrameInit/visibleRect}}.{{DOMRectInit/y}} +
-        {{VideoFrameInit/visibleRect}}.{{DOMRectInit/height}} >=
-        |codedHeight|, return `false`.
-    4. If {{VideoFrameInit/visibleRect}}.{{DOMRectInit/x}} +
-        {{VideoFrameInit/visibleRect}}.{{DOMRectInit/width}} >=
-        |codedWidth|, return `false`.
-    5. If only one of {{VideoFrameInit/displayWidth}} or
+: <dfn>Validate VideoFrameInit</dfn> (with |format|, |codedWidth|, and |codedHeight|):
+:: 1. If {{VideoFrameInit/visibleRect}} [=map/exists=]:
+        1. Let |validAlignment| be the result of running the
+            [=VideoFrame/Verify Rect Sample Alignment=] with |format| and
+            |visibleRect|.
+        2. If |validAlignment| is `false`, return `false`.
+        3. If any attribute of {{VideoFrameInit/visibleRect}} is negative or
+            not finite, return `false`.
+        4. If {{VideoFrameInit/visibleRect}}.{{DOMRectInit/width}} == `0` or
+            {{VideoFrameInit/visibleRect}}.{{DOMRectInit/height}} == `0` return
+            `false`.
+        5. If {{VideoFrameInit/visibleRect}}.{{DOMRectInit/y}} +
+            {{VideoFrameInit/visibleRect}}.{{DOMRectInit/height}} >=
+            |codedHeight|, return `false`.
+        6. If {{VideoFrameInit/visibleRect}}.{{DOMRectInit/x}} +
+            {{VideoFrameInit/visibleRect}}.{{DOMRectInit/width}} >=
+            |codedWidth|, return `false`.
+    2. If |codedWidth| = 0 or |codedHeight| = 0,return `false`.
+    3. If only one of {{VideoFrameInit/displayWidth}} or
         {{VideoFrameInit/displayHeight}} [=map/exists=], return `false`.
-    6. If {{VideoFrameInit/displayWidth}} = 0 or
-        {{VideoFrameInit/displayHeight}} = 0, return `false`.
-    7. Return `true`.
+    4. If {{VideoFrameInit/displayWidth}} == `0` or
+        {{VideoFrameInit/displayHeight}} == `0`, return `false`.
+    5. Return `true`.
 
 : To check if a {{VideoFrameBufferInit}} is a
     <dfn>valid VideoFrameBufferInit</dfn>, run these steps:
@@ -3408,9 +3421,13 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
 
 : <dfn for=VideoFrame>Initialize Frame From Other Frame</dfn> (with |init|,
     |frame|, and |otherFrame|)
-:: 1. Let |validInit| be the result of running the [=Validate VideoFrameInit=]
-        algorithm with |otherFrame|'s {{VideoFrame/[[coded width]]}} and
-        {{VideoFrame/[[coded height]]}}.
+:: 1. Let |format| be |otherFrame|.{{VideoFrame/format}}.
+    2. If |init|.{{VideoFrameInit/alpha}} is {{AlphaOption/discard}},
+        assign |otherFrame|.{{VideoFrame/format}}'s [=equivalent opaque format=]
+        |format|
+    1. Let |validInit| be the result of running the [=Validate VideoFrameInit=]
+        algorithm with |format| and |otherFrame|'s
+        {{VideoFrame/[[coded width]]}} and {{VideoFrame/[[coded height]]}}.
     2. If |validInit| is `false`, throw a  {{TypeError}}.
     3. Let |resource| be the [=media resource=] referenced by |otherFrame|'s
         {{VideoFrame/[[resource reference]]}}.
@@ -3435,22 +3452,18 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
         |frame|.{{VideoFrame/timestamp}}. Otherwise, assign
         |otherFrame|.{{VideoFrame/timestamp}} to
         |frame|.{{VideoFrame/timestamp}}.
-    11. If |init|.{{VideoFrameInit/alpha}} is {{AlphaOption/discard}},
-        assign |otherFrame|.{{VideoFrame/format}}'s
-        [=equivalent opaque format=] to |frame|.{{VideoFrame/[[format]]}}.
-    12. Otherwise, assign |otherFrame|.{{VideoFrame/format}} to
-        |frame|.{{VideoFrame/[[format]]}}.
+    11. Assign |format| to |frame|.{{VideoFrame/[[format]]}}.
 
 : <dfn for=VideoFrame>Initialize Frame With Resource and Size</dfn> (with
     |init|,  |frame|, |resource|, |width| and |height|)
-:: 1. Let |validInit| be the result of running the [=Validate VideoFrameInit=]
-        algorithm with |width| and |height|.
-    2. If |validInit| is `false`, throw a  {{TypeError}}.
-    3. Assign a new reference for |resource| to |frame|'s
-        {{VideoFrame/[[resource reference]]}}.
-    4. Let |format| be `null`.
-    5. If |resource| uses a recognized {{VideoPixelFormat}}, assign the
+:: 1. Let |format| be `null`.
+    2. If |resource| uses a recognized {{VideoPixelFormat}}, assign the
         {{VideoPixelFormat}} of |resource| to |format|.
+    3. Let |validInit| be the result of running the [=Validate VideoFrameInit=]
+        algorithm with |format|, |width| and |height|.
+    4. If |validInit| is `false`, throw a  {{TypeError}}.
+    5. Assign a new reference for |resource| to |frame|'s
+        {{VideoFrame/[[resource reference]]}}.
     6. If |init|.{{VideoFrameInit/alpha}} is {{AlphaOption/discard}}, assign
         |format|'s [=equivalent opaque format=] to |format|.
     7. Assign |format| to {{VideoFrame/[[format]]}}
@@ -3489,10 +3502,12 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
         2. Let |heightScale| be the result of dividing |defaultDisplayHeight| by
             |defaultVisibleRect|.{{DOMRect/height}}.
         3. Multiply |frame|'s {{VideoFrame/[[visible width]]}} by |widthScale|
-            and round the result (away from zero). Assign the rounded result to
-            {{VideoFrame/[[display width]]}}.
+            and round (using [=half away from zero=]) the result . Assign the rounded
+            result to {{VideoFrame/[[display width]]}}.
         4. Multiply |frame|'s {{VideoFrame/[[visible height]]}} by
-            |heightScale| and round the result (away from zero). Assign the rounded result to |frame|'s {{VideoFrame/[[display height]]}}.
+            |heightScale| and round (using [=half away from zero=]) the
+            result. Assign the rounded result to |frame|'s
+            {{VideoFrame/[[display height]]}}.
 
 : <dfn>Clone VideoFrame</dfn> (with |frame|)
 :: 1. Let |clone| be a new {{VideoFrame}} initialized as follows:
@@ -3537,6 +3552,24 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
         {{VideoFrame/[[format]]}}, and |optLayout|.
     9. Return |combinedLayout|.
 
+: <dfn for=VideoFrame>Verify Rect Sample Alignment</dfn> (with |format| and |rect|)
+:: 1. If |format| is `null`, return `true`.
+    2. Let |planeIndex| be `0`.
+    3. Let |numPlanes| be the number of planes as defined by |format|.
+    4. While |planeIndex| is less than |numPlanes|:
+        1. Let |plane| be the Plane identified by |planeIndex| as defined by
+            |format|.
+        2. Let |sampleWidth| be the horizontal [=sub-sampling factor=] of each
+            subsample for |plane|.
+        3. Let |sampleHeight| be the vertical [=sub-sampling factor=] of each
+            subsample for |plane|.
+        4. If |rect|.{{DOMRectReadOnly/x}} and |rect|.{{DOMRectReadOnly/width}}
+            are not both multiples of |sampleWidth|, return `false`.
+        5. If |rect|.{{DOMRectReadOnly/y}} and |rect|.{{DOMRectReadOnly/height}}
+            are not both multiples of |sampleHeight|, return `false`.
+        6. Increment |planeIndex| by `1`.
+    5. Return `true`.
+
 : <dfn for=VideoFrame>Parse Visible Rect</dfn> (with |defaultRect|, |overrideRect|, |codedWidth|, |codedHeight|, and |format|)
 :: 1. Let |sourceRect| be |defaultRect|
     2. If |overrideRect| is not `undefined`:
@@ -3549,27 +3582,11 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
             |overrideRect|.{{DOMRectInit/height}} is greater than
             {{VideoFrame/[[coded height]]}}, return a {{TypeError}}.
         4. Assign |overrideRect| to |sourceRect|.
-    3. Let |planeIndex| be `0`.
-    4. Let |numPlanes| be the number of planes as defined by |format|.
-    5. While |planeIndex| is less than |numPlanes|:
-
-        NOTE: The following steps validate |rect| is sample-aligned for the
-            given |format|.
-
-        1. Let |plane| be the Plane identified by |planeIndex| as defined by
-            |format|.
-        2. Let |sampleWidth| be the horizontal [=sub-sampling factor=] of each
-            subsample for |plane|.
-        3. Let |sampleHeight| be the vertical [=sub-sampling factor=] of each subsample
-            for |plane|.
-        4. If |sourceRect|.{{DOMRectReadOnly/x}} and
-            |sourceRect|.{{DOMRectReadOnly/width}} are not both multiples of
-            |sampleWidth|, throw a {{TypeError}}.
-        5. If |sourceRect|.{{DOMRectReadOnly/y}} and
-            |sourceRect|.{{DOMRectReadOnly/height}} are not both multiples of
-            |sampleHeight|, throw a {{TypeError}}.
-        6. Increment |planeIndex| by `1`
-    6. Return |sourceRect|.
+    3. Let |validAlignment| be the result of running the
+        [=VideoFrame/Verify Rect Sample Alignment=] algorithm with |format| and
+        |sourceRect|.
+    4. If |validAlignment| is `false`, throw a {{TypeError}}.
+    5. Return |sourceRect|.
 
 : <dfn for=VideoFrame>Compute Layout and Allocation Size</dfn> (with
     |parsedRect|, |format|, and |layout|)
