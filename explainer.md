@@ -395,9 +395,9 @@ The user agent should take great care to efficiently handle expensive resources 
 
 Many codecs and encoder/decoder implementations are highly configurable. WebCodecs intends to support most of the configuration options available in codecs today to efficiently allow for advanced use cases.
 
-Configurations consist of (1) metadata required to construct a compliant bitstream (for example, the codec name and profile) as well as (2) settings that influence the behavior of the codec but do not change the type of bitstream produced (for example, the target bitrate). The codec may be reconfigured at any time while the codec state is not "closed". Chunks/Frames passed to decode() or encode() will be decoded/encoded according to most recent preceeding call to configure(). 
+A codec may be reconfigured at any time while the codec state is not "closed". Chunks/Frames passed to decode() or encode() will be decoded/encoded according to most recent preceeding call to configure(). 
 
-WebCodecs will maintain a standard definition of parameters for each supported codec. Additionally, the specification will establish common encoder settings that apply across codecs and implementation. However, we expect many settings will be implementation-specific. Supported configurations may be feature-detected using the static IsConfigSupported() methods.
+WebCodecs defines a set of configuration parameters that may be used with any codec. Codec-specific parameters are defined by the codec's registration in https://www.w3.org/TR/webcodecs-codec-registry/. Support for specific settings may be implementation-specific. Supported configurations may be feature-detected using the static IsConfigSupported() methods.
 
 ## Alternative designs considered
 
