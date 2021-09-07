@@ -2919,6 +2919,15 @@ dictionary VideoFrameInit {
   unsigned long long duration;  // microseconds
   long long timestamp;          // microseconds
   AlphaOption alpha = "keep";
+
+  // Default matches image. May be used to efficiently crop. Will trigger
+  // new computation of displayWidth and displayHeight using image's pixel
+  // aspect ratio unless an explicit displayWidth and displayHeight are given.
+  DOMRectInit visibleRect;
+
+  // Default matches image unless visibleRect is provided.
+  [EnforceRange] unsigned long displayWidth;
+  [EnforceRange] unsigned long displayHeight;
 };
 
 dictionary VideoFrameBufferInit {
@@ -3385,13 +3394,36 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
         instance of the [=sRGB Color Space=]
     3. Otherwise, return a new instance of the [=REC709 Color Space=].
 
+: <dfn>Validate VideoFrameInit</dfn> (with |format|, |codedWidth|, and |codedHeight|):
+:: 1. If {{VideoFrameInit/visibleRect}} [=map/exists=]:
+        1. Let |validAlignment| be the result of running the
+            [=VideoFrame/Verify Rect Sample Alignment=] with |format| and
+            |visibleRect|.
+        2. If |validAlignment| is `false`, return `false`.
+        3. If any attribute of {{VideoFrameInit/visibleRect}} is negative or
+            not finite, return `false`.
+        4. If {{VideoFrameInit/visibleRect}}.{{DOMRectInit/width}} == `0` or
+            {{VideoFrameInit/visibleRect}}.{{DOMRectInit/height}} == `0` return
+            `false`.
+        5. If {{VideoFrameInit/visibleRect}}.{{DOMRectInit/y}} +
+            {{VideoFrameInit/visibleRect}}.{{DOMRectInit/height}} >=
+            |codedHeight|, return `false`.
+        6. If {{VideoFrameInit/visibleRect}}.{{DOMRectInit/x}} +
+            {{VideoFrameInit/visibleRect}}.{{DOMRectInit/width}} >=
+            |codedWidth|, return `false`.
+    2. If |codedWidth| = 0 or |codedHeight| = 0,return `false`.
+    3. If only one of {{VideoFrameInit/displayWidth}} or
+        {{VideoFrameInit/displayHeight}} [=map/exists=], return `false`.
+    4. If {{VideoFrameInit/displayWidth}} == `0` or
+        {{VideoFrameInit/displayHeight}} == `0`, return `false`.
+    5. Return `true`.
+
 : To check if a {{VideoFrameBufferInit}} is a
     <dfn>valid VideoFrameBufferInit</dfn>, run these steps:
 :: 1. If {{VideoFrameBufferInit/codedWidth}} = 0 or
         {{VideoFrameBufferInit/codedHeight}} = 0,return `false`.
-    2. If {{VideoFrameBufferInit/visibleRect}}.{{DOMRectInit/width}} = 0
-        or {{VideoFrameBufferInit/visibleRect}}.{{DOMRectInit/height}} =
-        0, return `false`.
+    2. If any attribute of {{VideoFrameBufferInit/visibleRect}} is negative or
+        not finite, return `false`.
     3. If {{VideoFrameBufferInit/visibleRect}}.{{DOMRectInit/y}} +
         {{VideoFrameBufferInit/visibleRect}}.{{DOMRectInit/height}} >=
         {{VideoFrameBufferInit/codedHeight}}, return `false`.
@@ -3406,52 +3438,92 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
 
 : <dfn for=VideoFrame>Initialize Frame From Other Frame</dfn> (with |init|,
     |frame|, and |otherFrame|)
-:: 1. Let |resource| be the [=media resource=] referenced by |otherFrame|'s
+:: 1. Let |format| be |otherFrame|.{{VideoFrame/format}}.
+    2. If |init|.{{VideoFrameInit/alpha}} is {{AlphaOption/discard}},
+        assign |otherFrame|.{{VideoFrame/format}}'s [=equivalent opaque format=]
+        |format|
+    1. Let |validInit| be the result of running the [=Validate VideoFrameInit=]
+        algorithm with |format| and |otherFrame|'s
+        {{VideoFrame/[[coded width]]}} and {{VideoFrame/[[coded height]]}}.
+    2. If |validInit| is `false`, throw a  {{TypeError}}.
+    3. Let |resource| be the [=media resource=] referenced by |otherFrame|'s
         {{VideoFrame/[[resource reference]]}}.
-    2. Assign a new reference for |resource| to |frame|'s
+    4. Assign a new reference for |resource| to |frame|'s
         {{VideoFrame/[[resource reference]]}}.
-    3. Assign the following attributes from |otherFrame| to |frame|:
+    5. Assign the following attributes from |otherFrame| to |frame|:
         {{VideoFrame/codedWidth}}, {{VideoFrame/codedHeight}},
-        {{VideoFrame/visibleRect}}, {{VideoFrame/displayWidth}},
-        {{VideoFrame/displayHeight}}, {{VideoFrame/colorSpace}}.
-    4. If {{VideoFrameInit/duration}} [=map/exists=] in |init|, assign it to
+        {{VideoFrame/colorSpace}}.
+    6. Let |defaultVisibleRect| be the result of performing the getter steps
+        for {{VideoFrame/visibleRect}} on |otherFrame|.
+    7. Let |defaultDisplayWidth|, and |defaultDisplayHeight| be |otherFrame|'s
+        {{VideoFrame/[[display width]]}}, and {{VideoFrame/[[display height]]}}
+        respectively.
+    8. Run the [=VideoFrame/Initialize Visible Rect and Display Size=]
+        algorithm with |init|, |frame|, |defaultVisibleRect|,
+        |defaultDisplayWidth|, and |defaultDisplayHeight|.
+    9. If {{VideoFrameInit/duration}} [=map/exists=] in |init|, assign it to
         |frame|.{{VideoFrame/duration}}. Otherwise, assign
         |otherFrame|.{{VideoFrame/duration}} to
         |frame|.{{VideoFrame/duration}}.
-    5. If {{VideoFrameInit/timestamp}} [=map/exists=] in |init|, assign it to
+    10. If {{VideoFrameInit/timestamp}} [=map/exists=] in |init|, assign it to
         |frame|.{{VideoFrame/timestamp}}. Otherwise, assign
         |otherFrame|.{{VideoFrame/timestamp}} to
         |frame|.{{VideoFrame/timestamp}}.
-    7. If |init|.{{VideoFrameInit/alpha}} is {{AlphaOption/discard}},
-        assign |otherFrame|.{{VideoFrame/format}}'s
-        [=equivalent opaque format=] to |frame|.{{VideoFrame/[[format]]}}.
-    8. Otherwise, assign |otherFrame|.{{VideoFrame/format}} to
-        |frame|.{{VideoFrame/[[format]]}}.
+    11. Assign |format| to |frame|.{{VideoFrame/[[format]]}}.
 
 : <dfn for=VideoFrame>Initialize Frame With Resource and Size</dfn> (with
     |init|,  |frame|, |resource|, |width| and |height|)
-:: 1. Assign a new reference for |resource| to |frame|'s
-        {{VideoFrame/[[resource reference]]}}.
-    2. Let |format| be `null`.
-    3. If |resource| uses a recognized {{VideoPixelFormat}}, assign the
+:: 1. Let |format| be `null`.
+    2. If |resource| uses a recognized {{VideoPixelFormat}}, assign the
         {{VideoPixelFormat}} of |resource| to |format|.
-    4. If |init|.{{VideoFrameInit/alpha}} is {{AlphaOption/discard}}, assign
+    3. Let |validInit| be the result of running the [=Validate VideoFrameInit=]
+        algorithm with |format|, |width| and |height|.
+    4. If |validInit| is `false`, throw a  {{TypeError}}.
+    5. Assign a new reference for |resource| to |frame|'s
+        {{VideoFrame/[[resource reference]]}}.
+    6. If |init|.{{VideoFrameInit/alpha}} is {{AlphaOption/discard}}, assign
         |format|'s [=equivalent opaque format=] to |format|.
-    5. Assign |format| to {{VideoFrame/[[format]]}}
-    6. Assign |width| to the following attributes of |frame|:
-        {{VideoFrame/codedWidth}}, {{VideoFrame/displayWidth}}.
-    7. Assign |height| to the following attributes of |frame|:
-        {{VideoFrame/codedHeight}}, {{VideoFrame/displayHeight}}.
-    8. Assign «[ "x:" → `0`, "y" → `0`, "width" → |width|, "height" →
-        |height| ]» to |frame|.{{VideoFrame/visibleRect}}.
-    9. Assign `init`.{{VideoFrameInit/duration}} to
+    7. Assign |format| to {{VideoFrame/[[format]]}}
+    8. Assign |width| and |height| to |frame|'s {{VideoFrame/[[coded width]]}}
+        and {{VideoFrame/[[coded height]]}} respectively.
+    9. Let |defaultVisibleRect| be a new {{DOMRect}} constructed with
+        «[ "x:" → `0`, "y" → `0`, "width" → |width|, "height" → |height| ]»
+    10. Run the [=VideoFrame/Initialize Visible Rect and Display Size=]
+        algorithm with |init|, |frame|, |defaultVisibleRect|, |width|, and
+        |height|.
+    11. Assign `init`.{{VideoFrameInit/duration}} to
         |frame|.{{VideoFrame/duration}}.
-    10. Assign `init`.{{VideoFrameInit/timestamp}} to
+    12. Assign `init`.{{VideoFrameInit/timestamp}} to
         |frame|.{{VideoFrame/timestamp}}.
-    9. If |resource| has a known {{VideoColorSpace}}, assign its value to
+    13. If |resource| has a known {{VideoColorSpace}}, assign its value to
         {{VideoFrame/[[color space]]}}.
-    10. Otherwise, assign a new {{VideoColorSpace}}, constructed with an empty
+    14. Otherwise, assign a new {{VideoColorSpace}}, constructed with an empty
         {{VideoColorSpaceInit}}, to {{VideoFrame/[[color space]]}}.
+
+: <dfn for=VideoFrame>Initialize Visible Rect and Display Size</dfn> (with
+    |init|, |frame|, |defaultVisibleRect|, |defaultDisplayWidth| and
+    |defaultDisplayHeight|)
+:: 1. Let |visibleRect| be |defaultVisibleRect|.
+    2. If |init|.{{VideoFrameInit/visibleRect}} [=map/exists=], assign it to
+        |visibleRect|.
+    3. Assign |visibleRect|'s {{DOMRect/x}}, {{DOMRect/y}}, {{DOMRect/width}},
+        and {{DOMRect/height}}, to |frame|'s {{VideoFrame/[[visible left]]}},
+        {{VideoFrame/[[visible top]]}}, {{VideoFrame/[[visible width]]}}, and
+        {{VideoFrame/[[visible height]]}} respectively.
+    4. If {{VideoFrameInit/displayWidth}} and {{VideoFrameInit/displayHeight}}
+        [=map/exist=] in |init|, assign them to {{VideoFrame/[[display width]]}}
+        and {{VideoFrame/[[display height]]}} respectively.
+    5. Otherwise:
+        1. Let |widthScale| be the result of dividing |defaultDisplayWidth| by
+            |defaultVisibleRect|.{{DOMRect/width}}.
+        2. Let |heightScale| be the result of dividing |defaultDisplayHeight| by
+            |defaultVisibleRect|.{{DOMRect/height}}.
+        3. Multiply |frame|'s {{VideoFrame/[[visible width]]}} by |widthScale|
+            and round the result. Assign the rounded result to
+            {{VideoFrame/[[display width]]}}.
+        4. Multiply |frame|'s {{VideoFrame/[[visible height]]}} by
+            |heightScale| and round the result. Assign the rounded result to
+            |frame|'s {{VideoFrame/[[display height]]}}.
 
 : <dfn>Clone VideoFrame</dfn> (with |frame|)
 :: 1. Let |clone| be a new {{VideoFrame}} initialized as follows:
@@ -3496,6 +3568,24 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
         {{VideoFrame/[[format]]}}, and |optLayout|.
     9. Return |combinedLayout|.
 
+: <dfn for=VideoFrame>Verify Rect Sample Alignment</dfn> (with |format| and |rect|)
+:: 1. If |format| is `null`, return `true`.
+    2. Let |planeIndex| be `0`.
+    3. Let |numPlanes| be the number of planes as defined by |format|.
+    4. While |planeIndex| is less than |numPlanes|:
+        1. Let |plane| be the Plane identified by |planeIndex| as defined by
+            |format|.
+        2. Let |sampleWidth| be the horizontal [=sub-sampling factor=] of each
+            subsample for |plane|.
+        3. Let |sampleHeight| be the vertical [=sub-sampling factor=] of each
+            subsample for |plane|.
+        4. If |rect|.{{DOMRectReadOnly/x}} and |rect|.{{DOMRectReadOnly/width}}
+            are not both multiples of |sampleWidth|, return `false`.
+        5. If |rect|.{{DOMRectReadOnly/y}} and |rect|.{{DOMRectReadOnly/height}}
+            are not both multiples of |sampleHeight|, return `false`.
+        6. Increment |planeIndex| by `1`.
+    5. Return `true`.
+
 : <dfn for=VideoFrame>Parse Visible Rect</dfn> (with |defaultRect|, |overrideRect|, |codedWidth|, |codedHeight|, and |format|)
 :: 1. Let |sourceRect| be |defaultRect|
     2. If |overrideRect| is not `undefined`:
@@ -3508,27 +3598,11 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
             |overrideRect|.{{DOMRectInit/height}} is greater than
             {{VideoFrame/[[coded height]]}}, return a {{TypeError}}.
         4. Assign |overrideRect| to |sourceRect|.
-    3. Let |planeIndex| be `0`.
-    4. Let |numPlanes| be the number of planes as defined by |format|.
-    5. While |planeIndex| is less than |numPlanes|:
-
-        NOTE: The following steps validate |rect| is sample-aligned for the
-            given |format|.
-
-        1. Let |plane| be the Plane identified by |planeIndex| as defined by
-            |format|.
-        2. Let |sampleWidth| be the horizontal [=sub-sampling factor=] of each
-            subsample for |plane|.
-        3. Let |sampleHeight| be the vertical [=sub-sampling factor=] of each subsample
-            for |plane|.
-        4. If |sourceRect|.{{DOMRectReadOnly/x}} and
-            |sourceRect|.{{DOMRectReadOnly/width}} are not both multiples of
-            |sampleWidth|, throw a {{TypeError}}.
-        5. If |sourceRect|.{{DOMRectReadOnly/y}} and
-            |sourceRect|.{{DOMRectReadOnly/height}} are not both multiples of
-            |sampleHeight|, throw a {{TypeError}}.
-        6. Increment |planeIndex| by `1`
-    6. Return |sourceRect|.
+    3. Let |validAlignment| be the result of running the
+        [=VideoFrame/Verify Rect Sample Alignment=] algorithm with |format| and
+        |sourceRect|.
+    4. If |validAlignment| is `false`, throw a {{TypeError}}.
+    5. Return |sourceRect|.
 
 : <dfn for=VideoFrame>Compute Layout and Allocation Size</dfn> (with
     |parsedRect|, |format|, and |layout|)
