@@ -195,11 +195,6 @@ Definitions {#definitions}
     "matrix" → {{VideoMatrixCoefficients/bt709}},
     "fullRange" → `false`]».
 
-: <dfn>Half Away From Zero</dfn>
-:: A rounding method where a number is rounded to the nearest integer and
-    a tie (e.g. 1.5) is broken by rounding up (away from zero) to the next
-    largest integer.
-
 <dfn>Codec Processing Model</dfn> {#codec-processing-model-section}
 ===================================================================
 
@@ -3502,12 +3497,11 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
         2. Let |heightScale| be the result of dividing |defaultDisplayHeight| by
             |defaultVisibleRect|.{{DOMRect/height}}.
         3. Multiply |frame|'s {{VideoFrame/[[visible width]]}} by |widthScale|
-            and round (using [=half away from zero=]) the result . Assign the rounded
-            result to {{VideoFrame/[[display width]]}}.
+            and round the result. Assign the rounded result to
+            {{VideoFrame/[[display width]]}}.
         4. Multiply |frame|'s {{VideoFrame/[[visible height]]}} by
-            |heightScale| and round (using [=half away from zero=]) the
-            result. Assign the rounded result to |frame|'s
-            {{VideoFrame/[[display height]]}}.
+            |heightScale| and round the result. Assign the rounded result to
+            |frame|'s {{VideoFrame/[[display height]]}}.
 
 : <dfn>Clone VideoFrame</dfn> (with |frame|)
 :: 1. Let |clone| be a new {{VideoFrame}} initialized as follows:
