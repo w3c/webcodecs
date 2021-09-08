@@ -2532,8 +2532,11 @@ dictionary AudioDataInit {
         {{InvalidStateError}} {{DOMException}}.
     2. Let |copyElementCount| be the result of running the
         [=Compute Copy Element Count=] algorithm with |options|.
-    3. Let |bytesPerSample| be the number of bytes per sample, as defined by
-        the {{AudioData/[[format]]}}.
+    3. Let |destFormat| be the value of {{AudioData/[[format]]}}.
+    4. If |options|.{{AudioDataCopyToOptions/format}} [=map/exists=], assign
+        |options|.{{AudioDataCopyToOptions/format}} to |destFormat|.
+    5. Let |bytesPerSample| be the number of bytes per sample, as defined by
+        the |destFormat|.
     4. Return the product of multiplying |bytesPerSample| by
         |copyElementCount|.
 
@@ -2546,25 +2549,22 @@ dictionary AudioDataInit {
         {{InvalidStateError}} {{DOMException}}.
     2. Let |copyElementCount| be the result of running the
         [=Compute Copy Element Count=] algorithm with |options|.
-    3. Let |bytesPerSample| be the number of bytes per sample, as defined by
-        the {{AudioData/[[format]]}}.
-    4. If the product of multiplying |bytesPerSample| by |copyElementCount| is
+    3. Let |destFormat| be the value of {{AudioData/[[format]]}}.
+    4. If |options|.{{AudioDataCopyToOptions/format}} [=map/exists=], assign
+        |options|.{{AudioDataCopyToOptions/format}} to |destFormat|.
+    5. Let |bytesPerSample| be the number of bytes per sample, as defined by
+        the |destFormat|.
+    6. If the product of multiplying |bytesPerSample| by |copyElementCount| is
         greater than `destination.byteLength`, throw a {{RangeError}}.
-    5. Let |format| be the value of {{AudioData/[[format]]}}.
-        1. If |format| describes an [=interleaved=] {{AudioSampleFormat}} and
-            |options|.{{AudioDataCopyToOptions/planeIndex}} is greater than `0`,
-            throw a {{RangeError}}.
-        2. Otherwise, if |format| describes a [=planar=] {{AudioSampleFormat}}
-            and if |options|.{{AudioDataCopyToOptions/planeIndex}} is greater or
-            equal to {{AudioData/[[number of channels]]}}, throw a
-            {{RangeError}}.
-    6. Let |resource| be the [=media resource=] referenced by
+    7. Let |resource| be the [=media resource=] referenced by
         {{AudioData/[[resource reference]]}}.
-    7. Let |planeFrames| be the region of |resource| corresponding to
+    8. Let |planeFrames| be the region of |resource| corresponding to
         |options|.{{AudioDataCopyToOptions/planeIndex}}.
-    8. Copy elements of |planeFrames| into |destination|, starting with the
+    9. Copy elements of |planeFrames| into |destination|, starting with the
         [=frame=] positioned at |options|.{{AudioDataCopyToOptions/frameOffset}}
-        and stopping after |copyElementCount| samples have been copied.
+        and stopping after |copyElementCount| samples have been copied. If
+        |destFormat| does not equal {{AudioData/[[format]]}}, convert elements
+        to the |destFormat| {{AudioSampleFormat}} while making the copy.
 
 : <dfn method for=AudioData>clone()</dfn>
 :: Creates a new AudioData with a reference to the same [=media resource=].
@@ -2585,22 +2585,37 @@ dictionary AudioDataInit {
 
 : <dfn>Compute Copy Element Count</dfn> (with |options|)
 :: Run these steps:
-    1. Let |frameCount| be the number of frames in the plane identified by
+    1. Let |destFormat| be the value of {{AudioData/[[format]]}}.
+    2. If |options|.{{AudioDataCopyToOptions/format}} [=map/exists=], assign
+        |options|.{{AudioDataCopyToOptions/format}} to |destFormat|.
+    3. If |destFormat| describes an [=interleaved=] {{AudioSampleFormat}} and
+        |options|.{{AudioDataCopyToOptions/planeIndex}} is greater than `0`,
+        throw a {{RangeError}}.
+    4. Otherwise, if |destFormat| describes a [=planar=] {{AudioSampleFormat}}
+        and if |options|.{{AudioDataCopyToOptions/planeIndex}} is greater or
+        equal to {{AudioData/[[number of channels]]}}, throw a
+        {{RangeError}}.
+    5. If {{AudioData/[[format]]}} does not equal |destFormat| and the User
+        Agent does not support the requested {{AudioSampleFormat}} conversion,
+        throw a {{NotSupportedError}} {{DOMException}}.
+        Conversion to {{f32-planar}} <em class="rfc2119">MUST</em> always be
+        supported.
+    6. Let |frameCount| be the number of frames in the plane identified by
         |options|.{{AudioDataCopyToOptions/planeIndex}}.
-    2. If |options|.{{AudioDataCopyToOptions/frameOffset}} is greater than or
+    7. If |options|.{{AudioDataCopyToOptions/frameOffset}} is greater than or
         equal to |frameCount|, throw a {{RangeError}}.
-    3. Let |copyFrameCount| be the difference of subtracting
+    8. Let |copyFrameCount| be the difference of subtracting
         |options|.{{AudioDataCopyToOptions/frameOffset}} from |frameCount|.
-    4. If |options|.{{AudioDataCopyToOptions/frameCount}} [=map/exists=]:
+    9. If |options|.{{AudioDataCopyToOptions/frameCount}} [=map/exists=]:
         1. If |options|.{{AudioDataCopyToOptions/frameCount}} is greater than
             |copyFrameCount|, throw a {{RangeError}}.
         2. Otherwise, assign |options|.{{AudioDataCopyToOptions/frameCount}}
             to |copyFrameCount|.
-    5. Let |elementCount| be |copyFrameCount|.
-    6. If {{AudioData/[[format]]}} describes an [=interleaved=]
+    10. Let |elementCount| be |copyFrameCount|.
+    11. If |destFormat| describes an [=interleaved=]
         {{AudioSampleFormat}}, mutliply |elementCount| by
         {{AudioData/[[number of channels]]}}
-    7. return |elementCount|.
+    12. return |elementCount|.
 
 : <dfn>Clone AudioData</dfn> (with |data|)
 :: Run these steps:
@@ -2695,6 +2710,7 @@ dictionary AudioDataCopyToOptions {
   [EnforceRange] required unsigned long planeIndex;
   [EnforceRange] unsigned long frameOffset = 0;
   [EnforceRange] unsigned long frameCount;
+  AudioSampleFormat format;
 };
 </xmp>
 
@@ -2708,6 +2724,18 @@ dictionary AudioDataCopyToOptions {
 : <dfn dict-member for=AudioDataCopyToOptions>frameCount</dfn>
 :: The number of [=frames=] to copy. If not provided, the copy will include all
     [=frames=] in the plane beginning with {{AudioDataCopyToOptions/frameOffset}}.
+
+: <dfn dict-member for=AudioDataCopyToOptions>format</dfn>
+:: The output {{AudioSampleFormat}} for the destination data. If not provided,
+    the resulting copy will use [=this=] AudioData's {{AudioData/[[format]]}}.
+    Invoking {{AudioData/copyTo()}} will throw a {{NotSupportedError}} if
+    conversion to the requested format is not supported. Conversion from any
+    {{AudioSampleFormat}} to {{f32-planar}} <em class="rfc2119">MUST</em> always
+    be supported.
+
+    NOTE: Authors seeking to integrate with [[WEBAUDIO]] can request
+        {{f32-planar}} and use the resulting copy to create and {{AudioBuffer}}
+        or render via {{AudioWorklet}}.
 
 ## Audio Sample Format ##{#audio-sample-formats}
 
