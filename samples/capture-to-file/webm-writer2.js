@@ -1113,8 +1113,10 @@ let WebMWriter = function(ArrayBufferDataStream, BlobBuffer) {
           writeHeader();
         }
         if (frame.constructor.name == 'EncodedVideoChunk') {
+          let frameData = new Uint8Array(frame.byteLength);
+          frame.copyTo(frameData);
           addFrameToCluster({
-            frame: new Uint8Array(frame.data),
+            frame: frameData,
             intime: frame.timestamp,
             type: frame.type,
           });
