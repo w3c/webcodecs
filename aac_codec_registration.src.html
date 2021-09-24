@@ -12,10 +12,11 @@ Editor: Paul Adenot, w3cid 62410, Mozilla https://www.mozilla.org/
 Editor: Bernard Aboba, w3cid 65611, Microsoft Corporation https://www.microsoft.com/
 
 Abstract: This registration is entered into the [[webcodecs-codec-registry]].
-    It describes, for AAC, (1) the fully qualified codec strings, (2)
-    the {{AudioDecoderConfig.description}} bytes, (3) the codec-specific
-    {{EncodedAudioChunk}} [=EncodedAudioChunk/[[internal data]]=] bytes, and (4)
-    the values of {{EncodedAudioChunk}} [=EncodedAudioChunk/[[type]]=].
+    It describes, for AAC, the (1) fully qualified codec strings, (2) the
+    codec-specific {{EncodedAudioChunk}} [=EncodedAudioChunk/[[internal data]]=]
+    bytes, (3) the {{AudioDecoderConfig.description}} bytes, (4) the values of
+    {{EncodedAudioChunk}} [=EncodedAudioChunk/[[type]]=], and (5) the
+    codec-specific extensions to {{AudioEncoderConfig}}
 
     The registration is not intended to include any information on whether a
     codec format is encumbered by intellectual property claims. Implementers and
@@ -71,6 +72,18 @@ This codec has multiple possible codec strings:
 - `"mp4a.40.29"` — MPEG-4 HE-AAC v2 (AAC LC + SBR + PS)
 - `"mp4a.67"` — MPEG-2 AAC LC
 
+EncodedAudioChunk data {#encodedaudiochunk-data}
+================================================
+
+If the bitstream is in {{AacBitstreamFormat/adts}} format, the
+[=EncodedAudioChunk/[[internal data]]=] of {{EncodedAudioChunk}}s are expected
+to be an ADTS frame, as described in section 1.A.3.2 of [[iso14496-3]].
+
+If the bitstream is in {{AacBitstreamFormat/aac}} format, the
+[=EncodedAudioChunk/[[internal data]]=] of {{EncodedAudioChunk}}s are expected
+to be a raw AAC frame (syntax element `raw_data_block()`), as described in
+section 4.4.2.1 of [[iso14496-3]].
+
 AudioDecoderConfig description {#audiodecoderconfig-description}
 ================================================================
 
@@ -84,82 +97,6 @@ assumed to be in {{AacBitstreamFormat/adts}} format.
 The {{AudioDecoderConfig.sampleRate}} and {{AudioDecoderConfig.channelCount}}
 members are ignored.
 
-AudioEncoderConfig extensions {#audioencoderconfig-extensions}
-==============================================================
-
-<pre class='idl'>
-<xmp>
-partial dictionary AudioEncoderConfig {
-  AacEncoderConfig aac;
-};
-</xmp>
-</pre>
-
-<dl>
-  <dt><dfn dict-member for=AudioEncoderConfig>aac</dfn></dt>
-  <dd>
-    Contains codec specific configuration options for the AAC codec.
-  </dd>
-</dl>
-
-AacEncoderConfig {#aac-encoder-config}
---------------------------------------
-
-<pre class='idl'>
-<xmp>
-dictionary AacEncoderConfig {
-  AacBitstreamFormat format = "aac";
-};
-</xmp>
-</pre>
-
-<dl>
-  <dt><dfn dict-member for=AacEncoderConfig>format</dfn></dt>
-  <dd>
-    Configures the format of output {{EncodedAudioChunk}}s. See
-    {{AacBitstreamFormat}}.
-  </dd>
-</dl>
-
-AacBitstreamFormat {#aac-bitstream-format}
-------------------------------------------
-<pre class='idl'>
-<xmp>
-enum AacBitstreamFormat {
-  "aac",
-  "adts",
-};
-</xmp>
-</pre>
-
-The {{AacBitstreamFormat}} determines the location of the metadata necessary to decode the encoded audio stream.
-
-<dl>
-  <dt><dfn enum-value for=AacBitstreamFormat>aac</dfn></dt>
-  <dd>
-    The metadata of the encoded audio stream are provided at configuration via
-    {{AudioDecoderConfig.description}}.
-  </dd>
-  <dt><dfn enum-value for=AacBitstreamFormat>adts</dfn></dt>
-  <dd>
-    The metadata of the encoded audio stream are provided in each ADTS frame,
-    and therefore no {{AudioDecoderConfig.description}} is necessary.
-</dl>
-
-
-EncodedAudioChunk data {#encodedaudiochunk-data}
-================================================
-
-If the bitstream is in {{AacBitstreamFormat/adts}} format, the
-[=EncodedAudioChunk/[[internal data]]=] of {{EncodedAudioChunk}}s are expected
-to be an ADTS frame, as described in section 1.A.3.2 of [[iso14496-3]].
-
-If the bitstream is in {{AacBitstreamFormat/aac}} format, the
-[=EncodedAudioChunk/[[internal data]]=] of {{EncodedAudioChunk}}s are expected
-to be a raw AAC frame (syntax element `raw_data_block()`), as described in
-section 4.4.2.1 of [[iso14496-3]].
-
-
 EncodedAudioChunk type {#encodedaudiochunk-type}
 ================================================
 
@@ -169,6 +106,68 @@ AAC is always "[=EncodedAudioChunkType/key=]".
 NOTE: Once the initialization has succeeded, any AAC packet can be decoded at
     any time without error, but this might not result in the expected audio
     output.
+
+    AudioEncoderConfig extensions {#audioencoderconfig-extensions}
+    ==============================================================
+
+    <pre class='idl'>
+    <xmp>
+    partial dictionary AudioEncoderConfig {
+      AacEncoderConfig aac;
+    };
+    </xmp>
+    </pre>
+
+    <dl>
+      <dt><dfn dict-member for=AudioEncoderConfig>aac</dfn></dt>
+      <dd>
+        Contains codec specific configuration options for the AAC codec.
+      </dd>
+    </dl>
+
+    AacEncoderConfig {#aac-encoder-config}
+    --------------------------------------
+
+    <pre class='idl'>
+    <xmp>
+    dictionary AacEncoderConfig {
+      AacBitstreamFormat format = "aac";
+    };
+    </xmp>
+    </pre>
+
+    <dl>
+      <dt><dfn dict-member for=AacEncoderConfig>format</dfn></dt>
+      <dd>
+        Configures the format of output {{EncodedAudioChunk}}s. See
+        {{AacBitstreamFormat}}.
+      </dd>
+    </dl>
+
+    AacBitstreamFormat {#aac-bitstream-format}
+    ------------------------------------------
+    <pre class='idl'>
+    <xmp>
+    enum AacBitstreamFormat {
+      "aac",
+      "adts",
+    };
+    </xmp>
+    </pre>
+
+    The {{AacBitstreamFormat}} determines the location of the metadata necessary to decode the encoded audio stream.
+
+    <dl>
+      <dt><dfn enum-value for=AacBitstreamFormat>aac</dfn></dt>
+      <dd>
+        The metadata of the encoded audio stream are provided at configuration via
+        {{AudioDecoderConfig.description}}.
+      </dd>
+      <dt><dfn enum-value for=AacBitstreamFormat>adts</dfn></dt>
+      <dd>
+        The metadata of the encoded audio stream are provided in each ADTS frame,
+        and therefore no {{AudioDecoderConfig.description}} is necessary.
+    </dl>
 
 Privacy and Security Considerations {#privacy-and-security-considerations}
 ==========================================================================

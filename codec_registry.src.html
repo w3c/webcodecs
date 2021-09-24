@@ -39,37 +39,49 @@ spec: WEBCODECS; urlPrefix: https://w3c.github.io/webcodecs/#
     type: attribute
         text: AudioDecoderConfig.description; url: dom-audiodecoderconfig-description
         text: VideoDecoderConfig.description; url: dom-videodecoderconfig-description
-        text: VideoEncoderConfig; url: video-encoder-config
-        text: AudioEncoderConfig; url: audio-encoder-config
+    type: dfn
+        for: EncodedVideoChunk; text: [[type]]; url: dom-encodedaudiochunk-type-slot
+    type: interface
+        text: EncodedAudioChunk; url: encodedaudiochunk
+        text: EncodedVideoChunk; url: encodedvideochunk
+    type: dictionary
+        text: AudioDecoderConfig; url: dictdef-audiodecoderconfig
+        text: AudioEncoderConfig; url: dictdef-audioencoderconfig
+        text: VideoDecoderConfig; url: dictdef-videodecoderconfig
+        text: VideoEncoderConfig; url: dictdef-videoencoderconfig
 </pre>
 
 
 Organization {#organization}
 ============================
 
-This registry maintains a mapping between codec strings and definitions for (1)
-fully qualified codec string values, (2) codec-specific values for
-{{VideoDecoderConfig.description}} and
-{{AudioDecoderConfig.description}}, and (3) codec-specific members of
-the {{VideoEncoderConfig}} and {{AudioEncoderConfig}}
-dictionaries.
+This registry maintains a mapping between codec strings and registration
+specifications as described below.
 
 Registration Entry Requirements {#registration-entry-requirements}
 ==================================================================
 
-1. Each entry must include a unique codec string and a common name string.
-2. If the codec string contains a fixed prefix with variable suffix values, the
-    suffix must be represented by an asterisk and the registration must link to
-    a public specification describing how to fully qualify the variable portion
-    of the string.
-3. If the described codec requires that codec-specific bytes be provided as
-    part of the {{VideoDecoderConfig.description}} or the
-    {{AudioDecoderConfig.description}}, the registration must link to
-    a public specification describing how to populate these fields.
-4. If the {{AudioEncoderConfig}} or {{VideoEncoderConfig}}
-    dictionaries are extended with members specific to the described codec, the
-    registration must link to a public specification describing how to populate
-    these fields.
+1. Each entry must include a unique codec string, a common name string, and a
+    link to a public specification.
+2. The codec string must be crafted as follows:
+    1. If the codec string contains a fixed prefix with variable suffix values,
+        the suffix must be represented by an asterisk and the registration's
+        public specification must describe how to fully qualify the variable
+        portion of the string.
+    2. Otherwise, if the codec is recognized by multiple strings, a single
+        preferred string should be listed and the registration's specification
+        must list the other allowed strings.
+    3. Otherwise, the codec is identified by a simple fixed string.
+3. Each registration's specification must include a sequence of sections
+    describing:
+    1. Recognized codec strings
+    2. {{EncodedAudioChunk}} or {{EncodedVideoChunk}} internal data
+    3. {{AudioDecoderConfig}} or {{VideoDecoderConfig}} description bytes
+    4. Expectations for {{EncodedAudioChunk}} or {{EncodedVideoChunk}}
+        [=EncodedVideoChunk/[[type]]=]
+3. Where applicable, a registration specification may include a section
+    describing extensions to {{VideoEncoderConfig}} or {{AudioEncoderConfig}}
+    dictionaries.
 4. Candidate entries must be announced by filing an issue in the
     [WebCodecs GitHub issue tracker](https://github.com/w3c/webcodecs/issues/)
     so they can be discussed and evaluated for compliance before being added to
