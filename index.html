@@ -6,7 +6,7 @@
   <link href="https://www.w3.org/StyleSheets/TR/2016/W3C-ED" rel="stylesheet" type="text/css">
   <meta content="Bikeshed version a210b7d86, updated Thu Sep 16 13:45:19 2021 -0700" name="generator">
   <link href="https://www.w3.org/TR/webcodecs/" rel="canonical">
-  <meta content="d0a207831c6850b12eee873839ebb034e3ddf185" name="document-revision">
+  <meta content="206b9913ec0e834021ae7b82f8ee0750ffa050a7" name="document-revision">
 <style>
 main > dl > dd {
   margin-bottom: 1em;
@@ -591,7 +591,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
   <div class="head">
    <p data-fill-with="logo"><a class="logo" href="https://www.w3.org/"> <img alt="W3C" height="48" src="https://www.w3.org/StyleSheets/TR/2016/logos/W3C" width="72"> </a> </p>
    <h1 class="p-name no-ref" id="title">WebCodecs</h1>
-   <h2 class="no-num no-toc no-ref heading settled" id="profile-and-date"><span class="content">Editor’s Draft, <time class="dt-updated" datetime="2021-09-24">24 September 2021</time></span></h2>
+   <h2 class="no-num no-toc no-ref heading settled" id="profile-and-date"><span class="content">Editor’s Draft, <time class="dt-updated" datetime="2021-09-28">28 September 2021</time></span></h2>
    <div data-fill-with="spec-metadata">
     <dl>
      <dt>This version:
@@ -2582,7 +2582,9 @@ run these steps:</p>
    </div>
    <dl>
     <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoEncoderConfig" data-dfn-type="dict-member" data-export id="dom-videoencoderconfig-bitrate"><code>bitrate</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#idl-unsigned-long-long" id="ref-for-idl-unsigned-long-long③">unsigned long long</a></span>
-    <dd> The average bitrate of the encoded video given in units of bits per second. 
+    <dd>
+      The average bitrate of the encoded video given in units of bits per second. 
+     <p class="note" role="note"><span>NOTE:</span> Authors are encouraged to additionally provide a <code class="idl"><a data-link-type="idl" href="#dom-videoencoderconfig-framerate" id="ref-for-dom-videoencoderconfig-framerate①">framerate</a></code> to inform rate control.</p>
     <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoEncoderConfig" data-dfn-type="dict-member" data-export id="dom-videoencoderconfig-framerate"><code>framerate</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#idl-double" id="ref-for-idl-double①">double</a></span>
     <dd> The expected frame rate in frames per second, if known. This value, along
     with the frame <code class="idl"><a data-link-type="idl" href="#dom-videoframe-timestamp" id="ref-for-dom-videoframe-timestamp">timestamp</a></code>, <em class="rfc2119">SHOULD</em> be
@@ -2714,9 +2716,9 @@ encoding quality. In this mode:</p>
 improve quality.</p>
       <li data-md>
        <p>User Agents <em class="rfc2119">MUST</em> not drop frames to achieve the
-target <code class="idl"><a data-link-type="idl" href="#dom-videoencoderconfig-bitrate" id="ref-for-dom-videoencoderconfig-bitrate①">bitrate</a></code> and/or <code class="idl"><a data-link-type="idl" href="#dom-videoencoderconfig-framerate" id="ref-for-dom-videoencoderconfig-framerate①">framerate</a></code>.</p>
+target <code class="idl"><a data-link-type="idl" href="#dom-videoencoderconfig-bitrate" id="ref-for-dom-videoencoderconfig-bitrate①">bitrate</a></code> and/or <code class="idl"><a data-link-type="idl" href="#dom-videoencoderconfig-framerate" id="ref-for-dom-videoencoderconfig-framerate②">framerate</a></code>.</p>
       <li data-md>
-       <p><code class="idl"><a data-link-type="idl" href="#dom-videoencoderconfig-framerate" id="ref-for-dom-videoencoderconfig-framerate②">framerate</a></code> <em class="rfc2119">SHOULD</em> not be
+       <p><code class="idl"><a data-link-type="idl" href="#dom-videoencoderconfig-framerate" id="ref-for-dom-videoencoderconfig-framerate③">framerate</a></code> <em class="rfc2119">SHOULD</em> not be
 used as a target deadline for emitting encoded chunks.</p>
      </ul>
     <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="LatencyMode" data-dfn-type="enum-value" data-export data-lt="&quot;realtime&quot;|realtime" id="dom-latencymode-realtime"><code>realtime</code></dfn>
@@ -2729,9 +2731,9 @@ mode:</p>
        <p>User Agents <em class="rfc2119">MAY</em> sacrifice quality to improve
 latency.</p>
       <li data-md>
-       <p>User Agents <em class="rfc2119">MAY</em> drop frames to achieve the target <code class="idl"><a data-link-type="idl" href="#dom-videoencoderconfig-bitrate" id="ref-for-dom-videoencoderconfig-bitrate②">bitrate</a></code> and/or <code class="idl"><a data-link-type="idl" href="#dom-videoencoderconfig-framerate" id="ref-for-dom-videoencoderconfig-framerate③">framerate</a></code>.</p>
+       <p>User Agents <em class="rfc2119">MAY</em> drop frames to achieve the target <code class="idl"><a data-link-type="idl" href="#dom-videoencoderconfig-bitrate" id="ref-for-dom-videoencoderconfig-bitrate②">bitrate</a></code> and/or <code class="idl"><a data-link-type="idl" href="#dom-videoencoderconfig-framerate" id="ref-for-dom-videoencoderconfig-framerate④">framerate</a></code>.</p>
       <li data-md>
-       <p><code class="idl"><a data-link-type="idl" href="#dom-videoencoderconfig-framerate" id="ref-for-dom-videoencoderconfig-framerate④">framerate</a></code> <em class="rfc2119">SHOULD</em> be used
+       <p><code class="idl"><a data-link-type="idl" href="#dom-videoencoderconfig-framerate" id="ref-for-dom-videoencoderconfig-framerate⑤">framerate</a></code> <em class="rfc2119">SHOULD</em> be used
 as a target deadline for emitting encoded chunks.</p>
      </ul>
    </dl>
@@ -7896,7 +7898,7 @@ common baseline or prompt for user approval.</p>
    <dt id="biblio-webaudio">[WEBAUDIO]
    <dd>Paul Adenot; Hongchan Choi. <a href="https://www.w3.org/TR/webaudio/"><cite>Web Audio API</cite></a>. 17 June 2021. REC. URL: <a href="https://www.w3.org/TR/webaudio/">https://www.w3.org/TR/webaudio/</a>
    <dt id="biblio-webcodecs-codec-registry">[WEBCODECS-CODEC-REGISTRY]
-   <dd>Chris Cunningham; Paul Adenot; Bernard Aboba. <a href="https://www.w3.org/TR/webcodecs-codec-registry/"><cite>WebCodecs Codec Registry</cite></a>. 23 September 2021. WD. URL: <a href="https://www.w3.org/TR/webcodecs-codec-registry/">https://www.w3.org/TR/webcodecs-codec-registry/</a>
+   <dd>Chris Cunningham; Paul Adenot; Bernard Aboba. <a href="https://www.w3.org/TR/webcodecs-codec-registry/"><cite>WebCodecs Codec Registry</cite></a>. 24 September 2021. WD. URL: <a href="https://www.w3.org/TR/webcodecs-codec-registry/">https://www.w3.org/TR/webcodecs-codec-registry/</a>
   </dl>
   <h2 class="no-num no-ref heading settled" id="idl-index"><span class="content">IDL Index</span><a class="self-link" href="#idl-index"></a></h2>
 <pre class="idl highlight def">[<a class="idl-code" data-link-type="extended-attribute" href="https://heycam.github.io/webidl/#Exposed"><c- g>Exposed</c-></a>=(<c- n>Window</c->,<c- n>DedicatedWorker</c->), <a class="idl-code" data-link-type="extended-attribute" href="https://heycam.github.io/webidl/#SecureContext"><c- g>SecureContext</c-></a>]
@@ -9581,8 +9583,8 @@ common baseline or prompt for user approval.</p>
   <aside class="dfn-panel" data-for="dom-videoencoderconfig-framerate">
    <b><a href="#dom-videoencoderconfig-framerate">#dom-videoencoderconfig-framerate</a></b><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-dom-videoencoderconfig-framerate">7.8. VideoEncoderConfig</a>
-    <li><a href="#ref-for-dom-videoencoderconfig-framerate①">7.11. Latency Mode</a> <a href="#ref-for-dom-videoencoderconfig-framerate②">(2)</a> <a href="#ref-for-dom-videoencoderconfig-framerate③">(3)</a> <a href="#ref-for-dom-videoencoderconfig-framerate④">(4)</a>
+    <li><a href="#ref-for-dom-videoencoderconfig-framerate">7.8. VideoEncoderConfig</a> <a href="#ref-for-dom-videoencoderconfig-framerate①">(2)</a>
+    <li><a href="#ref-for-dom-videoencoderconfig-framerate②">7.11. Latency Mode</a> <a href="#ref-for-dom-videoencoderconfig-framerate③">(2)</a> <a href="#ref-for-dom-videoencoderconfig-framerate④">(3)</a> <a href="#ref-for-dom-videoencoderconfig-framerate⑤">(4)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dom-videoencoderconfig-hardwareacceleration">
