@@ -2931,7 +2931,7 @@ interface VideoFrame {
   readonly attribute unsigned long displayWidth;
   readonly attribute unsigned long displayHeight;
   readonly attribute unsigned long long? duration;  // microseconds
-  readonly attribute long long? timestamp;          // microseconds
+  readonly attribute long long timestamp;           // microseconds
   readonly attribute VideoColorSpace colorSpace;
 
   unsigned long allocationSize(
@@ -3047,20 +3047,18 @@ dictionary VideoFrameBufferInit {
 5. Switch on |image|:
     - {{HTMLImageElement}}
     - {{SVGImageElement}}
-        1. If {{VideoFrameInit/timestamp}} does not [=map/exist=] in
-            |init|, throw a {{TypeError}}.
-        2. If |image|'s media data has no [=natural dimensions=]
+        1. If |image|'s media data has no [=natural dimensions=]
             (e.g., it's a vector graphic with no specified content size), then
             throw an {{InvalidStateError}} {{DOMException}}.
-        3. Let |resource| be a new [=media resource=] containing a copy of
+        2. Let |resource| be a new [=media resource=] containing a copy of
             |image|'s media data. If this is an animated image, |image|'s
             [=bitmap data=] <em class="rfc2119">MUST</em> only be taken from the
             default image of the animation (the one that the format defines is
             to be used when animation is not supported or is disabled), or, if
             there is no such image, the first frame of the animation.
-        4. Let |width| and |height| be the [=natural width=] and
+        3. Let |width| and |height| be the [=natural width=] and
             [=natural height=] of |image|.
-        5. Run the [=VideoFrame/Initialize Frame With Resource and Size=]
+        4. Run the [=VideoFrame/Initialize Frame With Resource and Size=]
             algorithm with |init|, |frame|, |resource|, |width|, and |height|
 
     - {{HTMLVideoElement}}
@@ -3075,16 +3073,14 @@ dictionary VideoFrameBufferInit {
     - {{HTMLCanvasElement}}
     - {{ImageBitmap}}
     - {{OffscreenCanvas}}
-        1. If {{VideoFrameInit/timestamp}} does not [=map/exist=] in
-            |init|, throw a {{TypeError}}.
-        2. Let |resource| be a new [=media resource=] containing a copy of
+        1. Let |resource| be a new [=media resource=] containing a copy of
             |image|'s [=bitmap data=].
 
             NOTE: Implementers are encouraged to avoid a deep copy by using
                 reference counting where feasible.
 
-        3. Let |width| be `image.width` and |height| be `image.height`.
-        4. Run the [=VideoFrame/Initialize Frame With Resource and Size=]
+        2. Let |width| be `image.width` and |height| be `image.height`.
+        3. Run the [=VideoFrame/Initialize Frame With Resource and Size=]
             algorithm with |init|, |frame|, |resource|, |width|, and |height|.
 
     - {{VideoFrame}}
@@ -3519,10 +3515,12 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
     10. Run the [=VideoFrame/Initialize Visible Rect and Display Size=]
         algorithm with |init|, |frame|, |defaultVisibleRect|, |width|, and
         |height|.
-    11. Assign `init`.{{VideoFrameInit/duration}} to
-        |frame|.{{VideoFrame/duration}}.
-    12. Assign `init`.{{VideoFrameInit/timestamp}} to
-        |frame|.{{VideoFrame/timestamp}}.
+    11. If {{VideoFrameInit/duration}} [=map/exists=] in |init|, assign it to
+        |frame|'s {{VideoFrame/[[duration]]}}. Otherwise, assign
+        `null` to |frame|'s {{VideoFrame/[[duration]]}}.
+    12. If {{VideoFrameInit/timestamp}} [=map/exists=] in |init|, assign it to
+        |frame|'s {{VideoFrame/[[timestamp]]}}. Otherwise, assign
+        `0` to |frame|'s {{VideoFrame/[[timestamp]]}}.
     13. If |resource| has a known {{VideoColorSpace}}, assign its value to
         {{VideoFrame/[[color space]]}}.
     14. Otherwise, assign a new {{VideoColorSpace}}, constructed with an empty
@@ -4673,8 +4671,9 @@ interface ImageDecoder {
         1. Assign 'true' to {{ImageDecodeResult/complete}}.
         2. Let |timestamp| and |duration| be the presentation timestamp and
             duration for |output| as described by |encodedFrame|. If
-            |encodedFrame| does not describe a timestamp or
-            duration, assign `null` to the corresponding variable.
+            |encodedFrame| does not describe a timestamp, assign `0` to
+            |timestamp|. If |encodedFrame| does not describe a |duration|,
+            assign `null` to duration.
         3. Assign {{ImageDecodeResult/image}} with the result of running the
             [=Create a VideoFrame=] algorithm with |output|, |timestamp|, and
             |duration|.
