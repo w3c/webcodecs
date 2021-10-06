@@ -74,7 +74,7 @@ Core interfaces include
 
 WebCodecs will also define mechanisms for importing content from getUserMedia().
 
--   An [**MediaStreamTrackProcessor**](https://w3c.github.io/mediacapture-transform/#track-processor) converts an audio/video MediaStreamTrack into a ReadableStream of AudioFrame/VideoFrame.
+-   A [**MediaStreamTrackProcessor**](https://w3c.github.io/mediacapture-transform/#track-processor) converts an audio/video MediaStreamTrack into a ReadableStream of AudioFrame/VideoFrame.
 
 ## Examples
 
