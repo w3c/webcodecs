@@ -74,9 +74,18 @@ Core interfaces include
 
 WebCodecs will also define mechanisms for importing content from getUserMedia().
 
--   An [**MediaStreamTrackProcessor**](https://w3c.github.io/mediacapture-transform/#track-processor) converts an audio/video MediaStreamTrack into a ReadableStream of AudioFrame/VideoFrame. 
+-   A [**MediaStreamTrackProcessor**](https://w3c.github.io/mediacapture-transform/#track-processor) converts an audio/video MediaStreamTrack into a ReadableStream of AudioFrame/VideoFrame.
 
 ## Examples
+
+### Working demos
+
+Please note that the examples outlined below are merely sketches with several
+methods left unimplemented for brevity. For complete working samples, please
+see:
+* https://w3c.github.io/webcodecs/samples/
+* https://web.dev/webcodecs/
+
 ### Example of video rendering to Canvas for extremely low-latency streaming (e.g. cloud gaming)
 
 ```javascript
@@ -98,7 +107,7 @@ function paintFrameToCanvas(videoFrame) {
   // Alternaviely, paint using tex(Sub)Image(2D|3D).
   // See https://github.com/web-platform-tests/wpt/blob/master/webcodecs/videoFrame-texImage.any.js for more examples.
   canvasContext.drawImage(frame, 0, 0);
-  
+
   // IMPORTANT: Release the frame to avoid stalling the decoder.
   frame.close();
 }
@@ -344,43 +353,6 @@ streamEncodedChunks(audioDecoder.decode.bind(audioDecoder),
           videoDecoder.decode.bind(videoDecoder));
 ```
 
-### Example of real-time communication using SVC
-
-The same as above, but with fancier codec parameters:
-
-```javascript
-videoEncoder.configure({
-  codec : 'vp9',
-  tuning: {
-    bitrate: 1_000_000,
-    framerate: 24,
-    width: 1024,
-    height: 768
-  }
-  // Two spatial layers with two temporal layers each
-  layers: [{
-      // Quarter size base layer
-      id: 'p0',
-      temporalSlots: [0],
-      scaleDownBy: 2,
-      dependsOn: ['p0'],
-    }, {
-      id: 'p1'
-      temporalSlots: [1],
-      scaleDownBy: 2,
-      dependsOn: ['p0'],
-    }, {
-      id: 's0',
-      temporalSlots: [0],
-      dependsOn: ['p0', 's0'],
-    }, {
-      id: 's1',
-      temporalSlots: [1],
-      dependsOn: ['p1', 's0', 's1'],
-    }],
-});
-```
-
 ## Detailed design discussion
 
 ### Execution environment
@@ -395,7 +367,7 @@ The user agent should take great care to efficiently handle expensive resources 
 
 Many codecs and encoder/decoder implementations are highly configurable. WebCodecs intends to support most of the configuration options available in codecs today to efficiently allow for advanced use cases.
 
-A codec may be reconfigured at any time while the codec state is not "closed". Chunks/Frames passed to decode() or encode() will be decoded/encoded according to most recent preceeding call to configure(). 
+A codec may be reconfigured at any time while the codec state is not "closed". Chunks/Frames passed to decode() or encode() will be decoded/encoded according to most recent preceeding call to configure().
 
 WebCodecs defines a set of configuration parameters that may be used with any codec. Codec-specific parameters are defined by the codec's registration in https://www.w3.org/TR/webcodecs-codec-registry/. Support for specific settings may be implementation-specific. Supported configurations may be feature-detected using the static IsConfigSupported() methods.
 
