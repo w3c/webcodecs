@@ -15,11 +15,8 @@
   <canvas></canvas>
 </body>
 
-<script src="mp4box.all.min.js"></script>
-
 <script type="module">
-  import {MP4Demuxer} from "./mp4_demuxer.js";
-  let demuxer = new MP4Demuxer("/webcodecs/samples/media/bbb.mp4");
+  var demuxDecodeWorker;
 
   var canvas = document.querySelector("canvas");
   var ctx = canvas.getContext('2d');
@@ -28,7 +25,17 @@
   var frameCount = 0;
   var startTime;
 
-  async function onFrame(frame) {
+  async function onMessage(e) {
+    if (e.data.type == "config") {
+      let config = e.data.config;
+      canvas.height = config.codedHeight;
+      canvas.width = config.codedwidth;
+      return;
+    }
+
+    console.assert(e.data.type == "frame");
+
+    let frame = e.data.frame;
     let now = performance.now();
 
     ctx.drawImage(frame, 0, 0, canvas.width, canvas.height);
@@ -46,22 +53,10 @@
     document.getElementById("frameStats").innerText = frameCount + fps;
   }
 
-  let decoder = new VideoDecoder({
-    output: onFrame,
-    error: e => console.error(e),
-  });
+  demuxDecodeWorker = new Worker("./demux_decode_worker.js");
 
-  demuxer.getConfig().then((config) => {
-    canvas.height = config.codedHeight;
-    canvas.width = config.codedWidth;
-
-    decoder.configure(config);
-    demuxer.start((chunk) => {
-      decoder.decode(chunk);
-    })
-  });
-
-  window.decoder = decoder;
+  demuxDecodeWorker.addEventListener('message', onMessage);
+  window.demuxDecodeWorker = demuxDecodeWorker;
 </script>
 
 </html>
