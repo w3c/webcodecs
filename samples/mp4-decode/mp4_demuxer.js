@@ -111,7 +111,7 @@ class Writer {
   }
 }
 
-export class MP4Demuxer {
+class MP4Demuxer {
   constructor(uri) {
     this.source = new MP4Source(uri);
   }
@@ -140,7 +140,6 @@ export class MP4Demuxer {
     for (i = 0; i < avccBox.SPS.length; i++) {
       writer.writeUint16(avccBox.SPS[i].length);
       writer.writeUint8Array(avccBox.SPS[i].nalu);
-      window.temp = avccBox.SPS[i].nalu;
     }
 
     writer.writeUint8(avccBox.nb_PPS_nalus);
