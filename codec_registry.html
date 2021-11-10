@@ -6,7 +6,7 @@
   <link href="https://www.w3.org/StyleSheets/TR/2016/W3C-ED" rel="stylesheet" type="text/css">
   <meta content="Bikeshed version 83b904c2e, updated Wed Nov 3 17:20:53 2021 -0700" name="generator">
   <link href="https://www.w3.org/TR/webcodecs-codec-registry/" rel="canonical">
-  <meta content="a73b13464aca937719d2cf62891e44aaf13a09c5" name="document-revision">
+  <meta content="3081b7fcd2dc216ced2246048be425677455cdcd" name="document-revision">
 <style>/* style-autolinks */
 
 .css.css, .property.property, .descriptor.descriptor {
@@ -530,26 +530,44 @@ dfn > a.self-link::before      { content: "#"; }
   </nav>
   <main>
    <h2 class="heading settled" data-level="1" id="organization"><span class="secno">1. </span><span class="content">Organization</span><a class="self-link" href="#organization"></a></h2>
-   <p>This registry maintains a mapping between codec strings and definitions for (1)
-fully qualified codec string values, (2) codec-specific values for <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webcodecs/#dom-videodecoderconfig-description" id="ref-for-dom-videodecoderconfig-description">VideoDecoderConfig.description</a></code> and <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webcodecs/#dom-audiodecoderconfig-description" id="ref-for-dom-audiodecoderconfig-description">AudioDecoderConfig.description</a></code>, and (3) codec-specific members of
-the <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webcodecs/#video-encoder-config" id="ref-for-video-encoder-config">VideoEncoderConfig</a></code> and <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webcodecs/#audio-encoder-config" id="ref-for-audio-encoder-config">AudioEncoderConfig</a></code> dictionaries.</p>
+   <p>This registry maintains a mapping between codec strings and registration
+specifications as described below.</p>
    <h2 class="heading settled" data-level="2" id="registration-entry-requirements"><span class="secno">2. </span><span class="content">Registration Entry Requirements</span><a class="self-link" href="#registration-entry-requirements"></a></h2>
    <ol>
     <li data-md>
-     <p>Each entry must include a unique codec string and a common name string.</p>
+     <p>Each entry must include a unique codec string, a common name string, and a
+link to a public specification.</p>
     <li data-md>
-     <p>If the codec string contains a fixed prefix with variable suffix values, the
-suffix must be represented by an asterisk and the registration must link to
-a public specification describing how to fully qualify the variable portion
-of the string.</p>
+     <p>The codec string must be crafted as follows:</p>
+     <ol>
+      <li data-md>
+       <p>If the codec string contains a fixed prefix with variable suffix values,
+the suffix must be represented by an asterisk and the registration’s
+public specification must describe how to fully qualify the variable
+portion of the string.</p>
+      <li data-md>
+       <p>Otherwise, if the codec is recognized by multiple strings, a single
+preferred string should be listed and the registration’s specification
+must list the other allowed strings.</p>
+      <li data-md>
+       <p>Otherwise, the codec is identified by a simple fixed string.</p>
+     </ol>
     <li data-md>
-     <p>If the described codec requires that codec-specific bytes be provided as
-part of the <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webcodecs/#dom-videodecoderconfig-description" id="ref-for-dom-videodecoderconfig-description①">VideoDecoderConfig.description</a></code> or the <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webcodecs/#dom-audiodecoderconfig-description" id="ref-for-dom-audiodecoderconfig-description①">AudioDecoderConfig.description</a></code>, the registration must link to
-a public specification describing how to populate these fields.</p>
+     <p>Each registration’s specification must include a sequence of sections
+describing:</p>
+     <ol>
+      <li data-md>
+       <p>Recognized codec strings</p>
+      <li data-md>
+       <p><code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webcodecs/#encodedaudiochunk" id="ref-for-encodedaudiochunk">EncodedAudioChunk</a></code> or <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webcodecs/#encodedvideochunk" id="ref-for-encodedvideochunk">EncodedVideoChunk</a></code> internal data</p>
+      <li data-md>
+       <p><code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webcodecs/#dictdef-audiodecoderconfig" id="ref-for-dictdef-audiodecoderconfig">AudioDecoderConfig</a></code> or <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webcodecs/#dictdef-videodecoderconfig" id="ref-for-dictdef-videodecoderconfig">VideoDecoderConfig</a></code> description bytes</p>
+      <li data-md>
+       <p>Expectations for <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webcodecs/#encodedaudiochunk" id="ref-for-encodedaudiochunk①">EncodedAudioChunk</a></code> or <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webcodecs/#encodedvideochunk" id="ref-for-encodedvideochunk①">EncodedVideoChunk</a></code> <a data-link-type="dfn" href="https://w3c.github.io/webcodecs/#dom-encodedaudiochunk-type-slot" id="ref-for-dom-encodedaudiochunk-type-slot">[[type]]</a></p>
+     </ol>
     <li data-md>
-     <p>If the <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webcodecs/#audio-encoder-config" id="ref-for-audio-encoder-config①">AudioEncoderConfig</a></code> or <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webcodecs/#video-encoder-config" id="ref-for-video-encoder-config①">VideoEncoderConfig</a></code> dictionaries are extended with members specific to the described codec, the
-registration must link to a public specification describing how to populate
-these fields.</p>
+     <p>Where applicable, a registration specification may include a section
+describing extensions to <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webcodecs/#dictdef-videoencoderconfig" id="ref-for-dictdef-videoencoderconfig">VideoEncoderConfig</a></code> or <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webcodecs/#dictdef-audioencoderconfig" id="ref-for-dictdef-audioencoderconfig">AudioEncoderConfig</a></code> dictionaries.</p>
     <li data-md>
      <p>Candidate entries must be announced by filing an issue in the <a href="https://github.com/w3c/webcodecs/issues/">WebCodecs GitHub issue tracker</a> so they can be discussed and evaluated for compliance before being added to
 the registry. If registry editors reach consensus to accept the candidate,
@@ -634,32 +652,46 @@ registry editors will review and merge the pull request.</p>
 <script src="https://www.w3.org/scripts/TR/2016/fixup.js"></script>
   </main>
   <h2 class="no-num no-ref heading settled" id="index"><span class="content">Index</span><a class="self-link" href="#index"></a></h2>
-  <aside class="dfn-panel" data-for="term-for-dom-audiodecoderconfig-description">
-   <a href="https://w3c.github.io/webcodecs/#dom-audiodecoderconfig-description">https://w3c.github.io/webcodecs/#dom-audiodecoderconfig-description</a><b>Referenced in:</b>
+  <aside class="dfn-panel" data-for="term-for-dictdef-audiodecoderconfig">
+   <a href="https://w3c.github.io/webcodecs/#dictdef-audiodecoderconfig">https://w3c.github.io/webcodecs/#dictdef-audiodecoderconfig</a><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-dom-audiodecoderconfig-description">1. Organization</a>
-    <li><a href="#ref-for-dom-audiodecoderconfig-description①">2. Registration Entry Requirements</a>
+    <li><a href="#ref-for-dictdef-audiodecoderconfig">2. Registration Entry Requirements</a>
    </ul>
   </aside>
-  <aside class="dfn-panel" data-for="term-for-audio-encoder-config">
-   <a href="https://w3c.github.io/webcodecs/#audio-encoder-config">https://w3c.github.io/webcodecs/#audio-encoder-config</a><b>Referenced in:</b>
+  <aside class="dfn-panel" data-for="term-for-dictdef-audioencoderconfig">
+   <a href="https://w3c.github.io/webcodecs/#dictdef-audioencoderconfig">https://w3c.github.io/webcodecs/#dictdef-audioencoderconfig</a><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-audio-encoder-config">1. Organization</a>
-    <li><a href="#ref-for-audio-encoder-config①">2. Registration Entry Requirements</a>
+    <li><a href="#ref-for-dictdef-audioencoderconfig">2. Registration Entry Requirements</a>
    </ul>
   </aside>
-  <aside class="dfn-panel" data-for="term-for-dom-videodecoderconfig-description">
-   <a href="https://w3c.github.io/webcodecs/#dom-videodecoderconfig-description">https://w3c.github.io/webcodecs/#dom-videodecoderconfig-description</a><b>Referenced in:</b>
+  <aside class="dfn-panel" data-for="term-for-encodedaudiochunk">
+   <a href="https://w3c.github.io/webcodecs/#encodedaudiochunk">https://w3c.github.io/webcodecs/#encodedaudiochunk</a><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-dom-videodecoderconfig-description">1. Organization</a>
-    <li><a href="#ref-for-dom-videodecoderconfig-description①">2. Registration Entry Requirements</a>
+    <li><a href="#ref-for-encodedaudiochunk">2. Registration Entry Requirements</a> <a href="#ref-for-encodedaudiochunk①">(2)</a>
    </ul>
   </aside>
-  <aside class="dfn-panel" data-for="term-for-video-encoder-config">
-   <a href="https://w3c.github.io/webcodecs/#video-encoder-config">https://w3c.github.io/webcodecs/#video-encoder-config</a><b>Referenced in:</b>
+  <aside class="dfn-panel" data-for="term-for-encodedvideochunk">
+   <a href="https://w3c.github.io/webcodecs/#encodedvideochunk">https://w3c.github.io/webcodecs/#encodedvideochunk</a><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-video-encoder-config">1. Organization</a>
-    <li><a href="#ref-for-video-encoder-config①">2. Registration Entry Requirements</a>
+    <li><a href="#ref-for-encodedvideochunk">2. Registration Entry Requirements</a> <a href="#ref-for-encodedvideochunk①">(2)</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="term-for-dictdef-videodecoderconfig">
+   <a href="https://w3c.github.io/webcodecs/#dictdef-videodecoderconfig">https://w3c.github.io/webcodecs/#dictdef-videodecoderconfig</a><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-dictdef-videodecoderconfig">2. Registration Entry Requirements</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="term-for-dictdef-videoencoderconfig">
+   <a href="https://w3c.github.io/webcodecs/#dictdef-videoencoderconfig">https://w3c.github.io/webcodecs/#dictdef-videoencoderconfig</a><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-dictdef-videoencoderconfig">2. Registration Entry Requirements</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="term-for-dom-encodedaudiochunk-type-slot">
+   <a href="https://w3c.github.io/webcodecs/#dom-encodedaudiochunk-type-slot">https://w3c.github.io/webcodecs/#dom-encodedaudiochunk-type-slot</a><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-dom-encodedaudiochunk-type-slot">2. Registration Entry Requirements</a>
    </ul>
   </aside>
   <h3 class="no-num no-ref heading settled" id="index-defined-elsewhere"><span class="content">Terms defined by reference</span><a class="self-link" href="#index-defined-elsewhere"></a></h3>
@@ -667,10 +699,13 @@ registry editors will review and merge the pull request.</p>
    <li>
     <a data-link-type="biblio">[WEBCODECS]</a> defines the following terms:
     <ul>
-     <li><span class="dfn-paneled" id="term-for-dom-audiodecoderconfig-description">AudioDecoderConfig.description</span>
-     <li><span class="dfn-paneled" id="term-for-audio-encoder-config">AudioEncoderConfig</span>
-     <li><span class="dfn-paneled" id="term-for-dom-videodecoderconfig-description">VideoDecoderConfig.description</span>
-     <li><span class="dfn-paneled" id="term-for-video-encoder-config">VideoEncoderConfig</span>
+     <li><span class="dfn-paneled" id="term-for-dictdef-audiodecoderconfig">AudioDecoderConfig</span>
+     <li><span class="dfn-paneled" id="term-for-dictdef-audioencoderconfig">AudioEncoderConfig</span>
+     <li><span class="dfn-paneled" id="term-for-encodedaudiochunk">EncodedAudioChunk</span>
+     <li><span class="dfn-paneled" id="term-for-encodedvideochunk">EncodedVideoChunk</span>
+     <li><span class="dfn-paneled" id="term-for-dictdef-videodecoderconfig">VideoDecoderConfig</span>
+     <li><span class="dfn-paneled" id="term-for-dictdef-videoencoderconfig">VideoEncoderConfig</span>
+     <li><span class="dfn-paneled" id="term-for-dom-encodedaudiochunk-type-slot">[[type]]</span>
     </ul>
   </ul>
   <h2 class="no-num no-ref heading settled" id="references"><span class="content">References</span><a class="self-link" href="#references"></a></h2>
