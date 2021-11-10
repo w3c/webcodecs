@@ -6,7 +6,7 @@
   <link href="https://www.w3.org/StyleSheets/TR/2016/W3C-ED" rel="stylesheet" type="text/css">
   <meta content="Bikeshed version 83b904c2e, updated Wed Nov 3 17:20:53 2021 -0700" name="generator">
   <link href="https://www.w3.org/TR/webcodecs-aac-codec-registration/" rel="canonical">
-  <meta content="a73b13464aca937719d2cf62891e44aaf13a09c5" name="document-revision">
+  <meta content="3081b7fcd2dc216ced2246048be425677455cdcd" name="document-revision">
 <style>/* style-autolinks */
 
 .css.css, .property.property, .descriptor.descriptor {
@@ -605,9 +605,9 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
    <h2 class="no-num no-toc no-ref heading settled" id="abstract"><span class="content">Abstract</span></h2>
    <p>This registration is entered into the <a data-link-type="biblio" href="#biblio-webcodecs-codec-registry">[webcodecs-codec-registry]</a>.
 
-    It describes, for AAC, (1) the fully qualified codec strings, (2)
-    the <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webcodecs/#dom-audiodecoderconfig-description" id="ref-for-dom-audiodecoderconfig-description">AudioDecoderConfig.description</a></code> bytes, (3) the codec-specific <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webcodecs/#encodedaudiochunk" id="ref-for-encodedaudiochunk">EncodedAudioChunk</a></code> <a data-link-type="dfn" href="https://w3c.github.io/webcodecs/#dom-encodedaudiochunk-internal-data-slot" id="ref-for-dom-encodedaudiochunk-internal-data-slot">[[internal data]]</a> bytes, and (4)
-    the values of <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webcodecs/#encodedaudiochunk" id="ref-for-encodedaudiochunk①">EncodedAudioChunk</a></code> <a data-link-type="dfn" href="https://w3c.github.io/webcodecs/#dom-encodedaudiochunk-type-slot" id="ref-for-dom-encodedaudiochunk-type-slot">[[type]]</a>.</p>
+    It describes, for AAC, the (1) fully qualified codec strings, (2) the
+    codec-specific <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webcodecs/#encodedaudiochunk" id="ref-for-encodedaudiochunk">EncodedAudioChunk</a></code> <a data-link-type="dfn" href="https://w3c.github.io/webcodecs/#dom-encodedaudiochunk-internal-data-slot" id="ref-for-dom-encodedaudiochunk-internal-data-slot">[[internal data]]</a> bytes, (3) the <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webcodecs/#dom-audiodecoderconfig-description" id="ref-for-dom-audiodecoderconfig-description">AudioDecoderConfig.description</a></code> bytes, (4) the values of <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webcodecs/#encodedaudiochunk" id="ref-for-encodedaudiochunk①">EncodedAudioChunk</a></code> <a data-link-type="dfn" href="https://w3c.github.io/webcodecs/#dom-encodedaudiochunk-type-slot" id="ref-for-dom-encodedaudiochunk-type-slot">[[type]]</a>, and (5) the
+    codec-specific extensions to <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webcodecs/#dictdef-audioencoderconfig" id="ref-for-dictdef-audioencoderconfig">AudioEncoderConfig</a></code></p>
    <p>The registration is not intended to include any information on whether a
 
     codec format is encumbered by intellectual property claims. Implementers and
@@ -636,15 +636,15 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
    <h2 class="no-num no-toc no-ref" id="contents">Table of Contents</h2>
    <ol class="toc" role="directory">
     <li><a href="#fully-qualified-codec-strings"><span class="secno">1</span> <span class="content">Fully qualified codec strings</span></a>
-    <li><a href="#audiodecoderconfig-description"><span class="secno">2</span> <span class="content">AudioDecoderConfig description</span></a>
+    <li><a href="#encodedaudiochunk-data"><span class="secno">2</span> <span class="content">EncodedAudioChunk data</span></a>
+    <li><a href="#audiodecoderconfig-description"><span class="secno">3</span> <span class="content">AudioDecoderConfig description</span></a>
+    <li><a href="#encodedaudiochunk-type"><span class="secno">4</span> <span class="content">EncodedAudioChunk type</span></a>
     <li>
-     <a href="#audioencoderconfig-extensions"><span class="secno">3</span> <span class="content">AudioEncoderConfig extensions</span></a>
+     <a href="#audioencoderconfig-extensions"><span class="secno">5</span> <span class="content">AudioEncoderConfig extensions</span></a>
      <ol class="toc">
-      <li><a href="#aac-encoder-config"><span class="secno">3.1</span> <span class="content">AacEncoderConfig</span></a>
-      <li><a href="#aac-bitstream-format"><span class="secno">3.2</span> <span class="content">AacBitstreamFormat</span></a>
+      <li><a href="#aac-encoder-config"><span class="secno">5.1</span> <span class="content">AacEncoderConfig</span></a>
+      <li><a href="#aac-bitstream-format"><span class="secno">5.2</span> <span class="content">AacBitstreamFormat</span></a>
      </ol>
-    <li><a href="#encodedaudiochunk-data"><span class="secno">4</span> <span class="content">EncodedAudioChunk data</span></a>
-    <li><a href="#encodedaudiochunk-type"><span class="secno">5</span> <span class="content">EncodedAudioChunk type</span></a>
     <li><a href="#privacy-and-security-considerations"><span class="secno">6</span> <span class="content">Privacy and Security Considerations</span></a>
     <li>
      <a href="#index"><span class="secno"></span> <span class="content">Index</span></a>
@@ -678,14 +678,26 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
     <li data-md>
      <p><code>"mp4a.67"</code> — MPEG-2 AAC LC</p>
    </ul>
-   <h2 class="heading settled" data-level="2" id="audiodecoderconfig-description"><span class="secno">2. </span><span class="content">AudioDecoderConfig description</span><a class="self-link" href="#audiodecoderconfig-description"></a></h2>
+   <h2 class="heading settled" data-level="2" id="encodedaudiochunk-data"><span class="secno">2. </span><span class="content">EncodedAudioChunk data</span><a class="self-link" href="#encodedaudiochunk-data"></a></h2>
+   <p>If the bitstream is in <code class="idl"><a data-link-type="idl" href="#dom-aacbitstreamformat-adts" id="ref-for-dom-aacbitstreamformat-adts">adts</a></code> format, the <a data-link-type="dfn" href="https://w3c.github.io/webcodecs/#dom-encodedaudiochunk-internal-data-slot" id="ref-for-dom-encodedaudiochunk-internal-data-slot①">[[internal data]]</a> of <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webcodecs/#encodedaudiochunk" id="ref-for-encodedaudiochunk②">EncodedAudioChunk</a></code>s are expected
+to be an ADTS frame, as described in section 1.A.3.2 of <a data-link-type="biblio" href="#biblio-iso14496-3">[iso14496-3]</a>.</p>
+   <p>If the bitstream is in <code class="idl"><a data-link-type="idl" href="#dom-aacbitstreamformat-aac" id="ref-for-dom-aacbitstreamformat-aac">aac</a></code> format, the <a data-link-type="dfn" href="https://w3c.github.io/webcodecs/#dom-encodedaudiochunk-internal-data-slot" id="ref-for-dom-encodedaudiochunk-internal-data-slot②">[[internal data]]</a> of <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webcodecs/#encodedaudiochunk" id="ref-for-encodedaudiochunk③">EncodedAudioChunk</a></code>s are expected
+to be a raw AAC frame (syntax element <code>raw_data_block()</code>), as described in
+section 4.4.2.1 of <a data-link-type="biblio" href="#biblio-iso14496-3">[iso14496-3]</a>.</p>
+   <h2 class="heading settled" data-level="3" id="audiodecoderconfig-description"><span class="secno">3. </span><span class="content">AudioDecoderConfig description</span><a class="self-link" href="#audiodecoderconfig-description"></a></h2>
    <p>If <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webcodecs/#dom-audiodecoderconfig-description" id="ref-for-dom-audiodecoderconfig-description①">AudioDecoderConfig.description</a></code> is present, it is assumed to a <code>AudioSpecificConfig</code> as defined in <a data-link-type="biblio" href="#biblio-iso14496-3">[iso14496-3]</a> section 1.6.2.1, Table 1.15,
-and the bitstream is assumed to be in <code class="idl"><a data-link-type="idl" href="#dom-aacbitstreamformat-aac" id="ref-for-dom-aacbitstreamformat-aac">aac</a></code>.</p>
+and the bitstream is assumed to be in <code class="idl"><a data-link-type="idl" href="#dom-aacbitstreamformat-aac" id="ref-for-dom-aacbitstreamformat-aac①">aac</a></code>.</p>
    <p>If the <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webcodecs/#dom-audiodecoderconfig-description" id="ref-for-dom-audiodecoderconfig-description②">AudioDecoderConfig.description</a></code> is not present, the bitstream is
-assumed to be in <code class="idl"><a data-link-type="idl" href="#dom-aacbitstreamformat-adts" id="ref-for-dom-aacbitstreamformat-adts">adts</a></code> format.</p>
+assumed to be in <code class="idl"><a data-link-type="idl" href="#dom-aacbitstreamformat-adts" id="ref-for-dom-aacbitstreamformat-adts①">adts</a></code> format.</p>
    <p>The <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webcodecs/#dom-audiodecoderconfig-samplerate" id="ref-for-dom-audiodecoderconfig-samplerate">AudioDecoderConfig.sampleRate</a></code> and <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webcodecs/#dom-audiodecoderconfig-channelcount" id="ref-for-dom-audiodecoderconfig-channelcount">AudioDecoderConfig.channelCount</a></code> members are ignored.</p>
-   <h2 class="heading settled" data-level="3" id="audioencoderconfig-extensions"><span class="secno">3. </span><span class="content">AudioEncoderConfig extensions</span><a class="self-link" href="#audioencoderconfig-extensions"></a></h2>
-<pre class="idl highlight def"><c- b>partial</c-> <c- b>dictionary</c-> <a class="idl-code" data-link-type="dictionary" href="https://w3c.github.io/webcodecs/#dictdef-audioencoderconfig" id="ref-for-dictdef-audioencoderconfig"><c- g>AudioEncoderConfig</c-></a> {
+   <h2 class="heading settled" data-level="4" id="encodedaudiochunk-type"><span class="secno">4. </span><span class="content">EncodedAudioChunk type</span><a class="self-link" href="#encodedaudiochunk-type"></a></h2>
+   <p>The <a data-link-type="dfn" href="https://w3c.github.io/webcodecs/#dom-encodedaudiochunk-type-slot" id="ref-for-dom-encodedaudiochunk-type-slot①">[[type]]</a> for an <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webcodecs/#encodedaudiochunk" id="ref-for-encodedaudiochunk④">EncodedAudioChunk</a></code> containing
+AAC is always "<a data-link-type="dfn" href="https://w3c.github.io/webcodecs/#dom-encodedaudiochunktype-key" id="ref-for-dom-encodedaudiochunktype-key">key</a>".</p>
+   <p class="note" role="note"><span>NOTE:</span> Once the initialization has succeeded, any AAC packet can be decoded at
+    any time without error, but this might not result in the expected audio
+    output.</p>
+   <h2 class="heading settled" data-level="5" id="audioencoderconfig-extensions"><span class="secno">5. </span><span class="content">AudioEncoderConfig extensions</span><a class="self-link" href="#audioencoderconfig-extensions"></a></h2>
+<pre class="idl highlight def"><c- b>partial</c-> <c- b>dictionary</c-> <a class="idl-code" data-link-type="dictionary" href="https://w3c.github.io/webcodecs/#dictdef-audioencoderconfig" id="ref-for-dictdef-audioencoderconfig①"><c- g>AudioEncoderConfig</c-></a> {
   <a data-link-type="idl-name" href="#dictdef-aacencoderconfig" id="ref-for-dictdef-aacencoderconfig"><c- n>AacEncoderConfig</c-></a> <a class="idl-code" data-link-type="dict-member" data-type="AacEncoderConfig " href="#dom-audioencoderconfig-aac" id="ref-for-dom-audioencoderconfig-aac"><c- g>aac</c-></a>;
 };
 
@@ -694,7 +706,7 @@ assumed to be in <code class="idl"><a data-link-type="idl" href="#dom-aacbitstre
     <dt><dfn class="dfn-paneled idl-code" data-dfn-for="AudioEncoderConfig" data-dfn-type="dict-member" data-export id="dom-audioencoderconfig-aac"><code>aac</code></dfn>, <span> of type <a data-link-type="idl-name" href="#dictdef-aacencoderconfig" id="ref-for-dictdef-aacencoderconfig①">AacEncoderConfig</a></span>
     <dd> Contains codec specific configuration options for the AAC codec. 
    </dl>
-   <h3 class="heading settled" data-level="3.1" id="aac-encoder-config"><span class="secno">3.1. </span><span class="content">AacEncoderConfig</span><a class="self-link" href="#aac-encoder-config"></a></h3>
+   <h3 class="heading settled" data-level="5.1" id="aac-encoder-config"><span class="secno">5.1. </span><span class="content">AacEncoderConfig</span><a class="self-link" href="#aac-encoder-config"></a></h3>
 <pre class="idl highlight def"><c- b>dictionary</c-> <dfn class="dfn-paneled idl-code" data-dfn-type="dictionary" data-export id="dictdef-aacencoderconfig"><code><c- g>AacEncoderConfig</c-></code></dfn> {
   <a data-link-type="idl-name" href="#enumdef-aacbitstreamformat" id="ref-for-enumdef-aacbitstreamformat"><c- n>AacBitstreamFormat</c-></a> <a class="idl-code" data-default="&quot;aac&quot;" data-link-type="dict-member" data-type="AacBitstreamFormat " href="#dom-aacencoderconfig-format" id="ref-for-dom-aacencoderconfig-format"><c- g>format</c-></a> = "aac";
 };
@@ -702,12 +714,12 @@ assumed to be in <code class="idl"><a data-link-type="idl" href="#dom-aacbitstre
 </pre>
    <dl>
     <dt><dfn class="dfn-paneled idl-code" data-dfn-for="AacEncoderConfig" data-dfn-type="dict-member" data-export id="dom-aacencoderconfig-format"><code>format</code></dfn>, <span> of type <a data-link-type="idl-name" href="#enumdef-aacbitstreamformat" id="ref-for-enumdef-aacbitstreamformat①">AacBitstreamFormat</a>, defaulting to <code>"aac"</code></span>
-    <dd> Configures the format of output <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webcodecs/#encodedaudiochunk" id="ref-for-encodedaudiochunk②">EncodedAudioChunk</a></code>s. See <code class="idl"><a data-link-type="idl" href="#enumdef-aacbitstreamformat" id="ref-for-enumdef-aacbitstreamformat②">AacBitstreamFormat</a></code>. 
+    <dd> Configures the format of output <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webcodecs/#encodedaudiochunk" id="ref-for-encodedaudiochunk⑤">EncodedAudioChunk</a></code>s. See <code class="idl"><a data-link-type="idl" href="#enumdef-aacbitstreamformat" id="ref-for-enumdef-aacbitstreamformat②">AacBitstreamFormat</a></code>. 
    </dl>
-   <h3 class="heading settled" data-level="3.2" id="aac-bitstream-format"><span class="secno">3.2. </span><span class="content">AacBitstreamFormat</span><a class="self-link" href="#aac-bitstream-format"></a></h3>
+   <h3 class="heading settled" data-level="5.2" id="aac-bitstream-format"><span class="secno">5.2. </span><span class="content">AacBitstreamFormat</span><a class="self-link" href="#aac-bitstream-format"></a></h3>
 <pre class="idl highlight def"><c- b>enum</c-> <dfn class="dfn-paneled idl-code" data-dfn-type="enum" data-export id="enumdef-aacbitstreamformat"><code><c- g>AacBitstreamFormat</c-></code></dfn> {
-  <a class="idl-code" data-link-type="enum-value" href="#dom-aacbitstreamformat-aac" id="ref-for-dom-aacbitstreamformat-aac①"><c- s>"aac"</c-></a>,
-  <a class="idl-code" data-link-type="enum-value" href="#dom-aacbitstreamformat-adts" id="ref-for-dom-aacbitstreamformat-adts①"><c- s>"adts"</c-></a>,
+  <a class="idl-code" data-link-type="enum-value" href="#dom-aacbitstreamformat-aac" id="ref-for-dom-aacbitstreamformat-aac②"><c- s>"aac"</c-></a>,
+  <a class="idl-code" data-link-type="enum-value" href="#dom-aacbitstreamformat-adts" id="ref-for-dom-aacbitstreamformat-adts②"><c- s>"adts"</c-></a>,
 };
 
 </pre>
@@ -717,20 +729,8 @@ assumed to be in <code class="idl"><a data-link-type="idl" href="#dom-aacbitstre
     <dd> The metadata of the encoded audio stream are provided at configuration via <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webcodecs/#dom-audiodecoderconfig-description" id="ref-for-dom-audiodecoderconfig-description③">AudioDecoderConfig.description</a></code>. 
     <dt><dfn class="dfn-paneled idl-code" data-dfn-for="AacBitstreamFormat" data-dfn-type="enum-value" data-export data-lt="&quot;adts&quot;|adts" id="dom-aacbitstreamformat-adts"><code>adts</code></dfn>
     <dd> The metadata of the encoded audio stream are provided in each ADTS frame,
-    and therefore no <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webcodecs/#dom-audiodecoderconfig-description" id="ref-for-dom-audiodecoderconfig-description④">AudioDecoderConfig.description</a></code> is necessary. 
+        and therefore no <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webcodecs/#dom-audiodecoderconfig-description" id="ref-for-dom-audiodecoderconfig-description④">AudioDecoderConfig.description</a></code> is necessary. 
    </dl>
-   <h2 class="heading settled" data-level="4" id="encodedaudiochunk-data"><span class="secno">4. </span><span class="content">EncodedAudioChunk data</span><a class="self-link" href="#encodedaudiochunk-data"></a></h2>
-   <p>If the bitstream is in <code class="idl"><a data-link-type="idl" href="#dom-aacbitstreamformat-adts" id="ref-for-dom-aacbitstreamformat-adts②">adts</a></code> format, the <a data-link-type="dfn" href="https://w3c.github.io/webcodecs/#dom-encodedaudiochunk-internal-data-slot" id="ref-for-dom-encodedaudiochunk-internal-data-slot①">[[internal data]]</a> of <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webcodecs/#encodedaudiochunk" id="ref-for-encodedaudiochunk③">EncodedAudioChunk</a></code>s are expected
-to be an ADTS frame, as described in section 1.A.3.2 of <a data-link-type="biblio" href="#biblio-iso14496-3">[iso14496-3]</a>.</p>
-   <p>If the bitstream is in <code class="idl"><a data-link-type="idl" href="#dom-aacbitstreamformat-aac" id="ref-for-dom-aacbitstreamformat-aac②">aac</a></code> format, the <a data-link-type="dfn" href="https://w3c.github.io/webcodecs/#dom-encodedaudiochunk-internal-data-slot" id="ref-for-dom-encodedaudiochunk-internal-data-slot②">[[internal data]]</a> of <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webcodecs/#encodedaudiochunk" id="ref-for-encodedaudiochunk④">EncodedAudioChunk</a></code>s are expected
-to be a raw AAC frame (syntax element <code>raw_data_block()</code>), as described in
-section 4.4.2.1 of <a data-link-type="biblio" href="#biblio-iso14496-3">[iso14496-3]</a>.</p>
-   <h2 class="heading settled" data-level="5" id="encodedaudiochunk-type"><span class="secno">5. </span><span class="content">EncodedAudioChunk type</span><a class="self-link" href="#encodedaudiochunk-type"></a></h2>
-   <p>The <a data-link-type="dfn" href="https://w3c.github.io/webcodecs/#dom-encodedaudiochunk-type-slot" id="ref-for-dom-encodedaudiochunk-type-slot①">[[type]]</a> for an <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webcodecs/#encodedaudiochunk" id="ref-for-encodedaudiochunk⑤">EncodedAudioChunk</a></code> containing
-AAC is always "<a data-link-type="dfn" href="https://w3c.github.io/webcodecs/#dom-encodedaudiochunktype-key" id="ref-for-dom-encodedaudiochunktype-key">key</a>".</p>
-   <p class="note" role="note"><span>NOTE:</span> Once the initialization has succeeded, any AAC packet can be decoded at
-    any time without error, but this might not result in the expected audio
-    output.</p>
    <h2 class="heading settled" data-level="6" id="privacy-and-security-considerations"><span class="secno">6. </span><span class="content">Privacy and Security Considerations</span><a class="self-link" href="#privacy-and-security-considerations"></a></h2>
    <p>Please refer to the <a href="https://www.w3.org/TR/webcodecs/#privacy-considerations">Privacy Considerations</a> and <a href="https://www.w3.org/TR/webcodecs/#security-considerations">Security Considerations</a> sections in <a data-link-type="biblio" href="#biblio-webcodecs">[WEBCODECS]</a>.</p>
    <p id="back-to-top" role="navigation"><a href="#toc"><abbr title="Back to Top">↑</abbr></a></p>
@@ -739,72 +739,73 @@ AAC is always "<a data-link-type="dfn" href="https://w3c.github.io/webcodecs/#do
   <h2 class="no-num no-ref heading settled" id="index"><span class="content">Index</span><a class="self-link" href="#index"></a></h2>
   <h3 class="no-num no-ref heading settled" id="index-defined-here"><span class="content">Terms defined by this specification</span><a class="self-link" href="#index-defined-here"></a></h3>
   <ul class="index">
-   <li><a href="#dom-aacbitstreamformat-aac">"aac"</a><span>, in § 3.2</span>
+   <li><a href="#dom-aacbitstreamformat-aac">"aac"</a><span>, in § 5.2</span>
    <li>
     aac
     <ul>
-     <li><a href="#dom-audioencoderconfig-aac">dict-member for AudioEncoderConfig</a><span>, in § 3</span>
-     <li><a href="#dom-aacbitstreamformat-aac">enum-value for AacBitstreamFormat</a><span>, in § 3.2</span>
+     <li><a href="#dom-audioencoderconfig-aac">dict-member for AudioEncoderConfig</a><span>, in § 5</span>
+     <li><a href="#dom-aacbitstreamformat-aac">enum-value for AacBitstreamFormat</a><span>, in § 5.2</span>
     </ul>
-   <li><a href="#enumdef-aacbitstreamformat">AacBitstreamFormat</a><span>, in § 3.2</span>
-   <li><a href="#dictdef-aacencoderconfig">AacEncoderConfig</a><span>, in § 3.1</span>
-   <li><a href="#dom-aacbitstreamformat-adts">"adts"</a><span>, in § 3.2</span>
-   <li><a href="#dom-aacbitstreamformat-adts">adts</a><span>, in § 3.2</span>
-   <li><a href="#dom-aacencoderconfig-format">format</a><span>, in § 3.1</span>
+   <li><a href="#enumdef-aacbitstreamformat">AacBitstreamFormat</a><span>, in § 5.2</span>
+   <li><a href="#dictdef-aacencoderconfig">AacEncoderConfig</a><span>, in § 5.1</span>
+   <li><a href="#dom-aacbitstreamformat-adts">"adts"</a><span>, in § 5.2</span>
+   <li><a href="#dom-aacbitstreamformat-adts">adts</a><span>, in § 5.2</span>
+   <li><a href="#dom-aacencoderconfig-format">format</a><span>, in § 5.1</span>
   </ul>
   <aside class="dfn-panel" data-for="term-for-dom-audiodecoderconfig-channelcount">
    <a href="https://w3c.github.io/webcodecs/#dom-audiodecoderconfig-channelcount">https://w3c.github.io/webcodecs/#dom-audiodecoderconfig-channelcount</a><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-dom-audiodecoderconfig-channelcount">2. AudioDecoderConfig description</a>
+    <li><a href="#ref-for-dom-audiodecoderconfig-channelcount">3. AudioDecoderConfig description</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-dom-audiodecoderconfig-description">
    <a href="https://w3c.github.io/webcodecs/#dom-audiodecoderconfig-description">https://w3c.github.io/webcodecs/#dom-audiodecoderconfig-description</a><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-dom-audiodecoderconfig-description">Unnumbered Section</a>
-    <li><a href="#ref-for-dom-audiodecoderconfig-description①">2. AudioDecoderConfig description</a> <a href="#ref-for-dom-audiodecoderconfig-description②">(2)</a>
-    <li><a href="#ref-for-dom-audiodecoderconfig-description③">3.2. AacBitstreamFormat</a> <a href="#ref-for-dom-audiodecoderconfig-description④">(2)</a>
+    <li><a href="#ref-for-dom-audiodecoderconfig-description①">3. AudioDecoderConfig description</a> <a href="#ref-for-dom-audiodecoderconfig-description②">(2)</a>
+    <li><a href="#ref-for-dom-audiodecoderconfig-description③">5.2. AacBitstreamFormat</a> <a href="#ref-for-dom-audiodecoderconfig-description④">(2)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-dom-audiodecoderconfig-samplerate">
    <a href="https://w3c.github.io/webcodecs/#dom-audiodecoderconfig-samplerate">https://w3c.github.io/webcodecs/#dom-audiodecoderconfig-samplerate</a><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-dom-audiodecoderconfig-samplerate">2. AudioDecoderConfig description</a>
+    <li><a href="#ref-for-dom-audiodecoderconfig-samplerate">3. AudioDecoderConfig description</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-dictdef-audioencoderconfig">
    <a href="https://w3c.github.io/webcodecs/#dictdef-audioencoderconfig">https://w3c.github.io/webcodecs/#dictdef-audioencoderconfig</a><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-dictdef-audioencoderconfig">3. AudioEncoderConfig extensions</a>
+    <li><a href="#ref-for-dictdef-audioencoderconfig">Unnumbered Section</a>
+    <li><a href="#ref-for-dictdef-audioencoderconfig①">5. AudioEncoderConfig extensions</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-encodedaudiochunk">
    <a href="https://w3c.github.io/webcodecs/#encodedaudiochunk">https://w3c.github.io/webcodecs/#encodedaudiochunk</a><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-encodedaudiochunk">Unnumbered Section</a> <a href="#ref-for-encodedaudiochunk①">(2)</a>
-    <li><a href="#ref-for-encodedaudiochunk②">3.1. AacEncoderConfig</a>
-    <li><a href="#ref-for-encodedaudiochunk③">4. EncodedAudioChunk data</a> <a href="#ref-for-encodedaudiochunk④">(2)</a>
-    <li><a href="#ref-for-encodedaudiochunk⑤">5. EncodedAudioChunk type</a>
+    <li><a href="#ref-for-encodedaudiochunk②">2. EncodedAudioChunk data</a> <a href="#ref-for-encodedaudiochunk③">(2)</a>
+    <li><a href="#ref-for-encodedaudiochunk④">4. EncodedAudioChunk type</a>
+    <li><a href="#ref-for-encodedaudiochunk⑤">5.1. AacEncoderConfig</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-dom-encodedaudiochunk-internal-data-slot">
    <a href="https://w3c.github.io/webcodecs/#dom-encodedaudiochunk-internal-data-slot">https://w3c.github.io/webcodecs/#dom-encodedaudiochunk-internal-data-slot</a><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-dom-encodedaudiochunk-internal-data-slot">Unnumbered Section</a>
-    <li><a href="#ref-for-dom-encodedaudiochunk-internal-data-slot①">4. EncodedAudioChunk data</a> <a href="#ref-for-dom-encodedaudiochunk-internal-data-slot②">(2)</a>
+    <li><a href="#ref-for-dom-encodedaudiochunk-internal-data-slot①">2. EncodedAudioChunk data</a> <a href="#ref-for-dom-encodedaudiochunk-internal-data-slot②">(2)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-dom-encodedaudiochunk-type-slot">
    <a href="https://w3c.github.io/webcodecs/#dom-encodedaudiochunk-type-slot">https://w3c.github.io/webcodecs/#dom-encodedaudiochunk-type-slot</a><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-dom-encodedaudiochunk-type-slot">Unnumbered Section</a>
-    <li><a href="#ref-for-dom-encodedaudiochunk-type-slot①">5. EncodedAudioChunk type</a>
+    <li><a href="#ref-for-dom-encodedaudiochunk-type-slot①">4. EncodedAudioChunk type</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-dom-encodedaudiochunktype-key">
    <a href="https://w3c.github.io/webcodecs/#dom-encodedaudiochunktype-key">https://w3c.github.io/webcodecs/#dom-encodedaudiochunktype-key</a><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-dom-encodedaudiochunktype-key">5. EncodedAudioChunk type</a>
+    <li><a href="#ref-for-dom-encodedaudiochunktype-key">4. EncodedAudioChunk type</a>
    </ul>
   </aside>
   <h3 class="no-num no-ref heading settled" id="index-defined-elsewhere"><span class="content">Terms defined by reference</span><a class="self-link" href="#index-defined-elsewhere"></a></h3>
@@ -856,42 +857,42 @@ AAC is always "<a data-link-type="dfn" href="https://w3c.github.io/webcodecs/#do
   <aside class="dfn-panel" data-for="dom-audioencoderconfig-aac">
    <b><a href="#dom-audioencoderconfig-aac">#dom-audioencoderconfig-aac</a></b><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-dom-audioencoderconfig-aac">3. AudioEncoderConfig extensions</a>
+    <li><a href="#ref-for-dom-audioencoderconfig-aac">5. AudioEncoderConfig extensions</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dictdef-aacencoderconfig">
    <b><a href="#dictdef-aacencoderconfig">#dictdef-aacencoderconfig</a></b><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-dictdef-aacencoderconfig">3. AudioEncoderConfig extensions</a> <a href="#ref-for-dictdef-aacencoderconfig①">(2)</a>
+    <li><a href="#ref-for-dictdef-aacencoderconfig">5. AudioEncoderConfig extensions</a> <a href="#ref-for-dictdef-aacencoderconfig①">(2)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dom-aacencoderconfig-format">
    <b><a href="#dom-aacencoderconfig-format">#dom-aacencoderconfig-format</a></b><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-dom-aacencoderconfig-format">3.1. AacEncoderConfig</a>
+    <li><a href="#ref-for-dom-aacencoderconfig-format">5.1. AacEncoderConfig</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="enumdef-aacbitstreamformat">
    <b><a href="#enumdef-aacbitstreamformat">#enumdef-aacbitstreamformat</a></b><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-enumdef-aacbitstreamformat">3.1. AacEncoderConfig</a> <a href="#ref-for-enumdef-aacbitstreamformat①">(2)</a> <a href="#ref-for-enumdef-aacbitstreamformat②">(3)</a>
-    <li><a href="#ref-for-enumdef-aacbitstreamformat③">3.2. AacBitstreamFormat</a>
+    <li><a href="#ref-for-enumdef-aacbitstreamformat">5.1. AacEncoderConfig</a> <a href="#ref-for-enumdef-aacbitstreamformat①">(2)</a> <a href="#ref-for-enumdef-aacbitstreamformat②">(3)</a>
+    <li><a href="#ref-for-enumdef-aacbitstreamformat③">5.2. AacBitstreamFormat</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dom-aacbitstreamformat-aac">
    <b><a href="#dom-aacbitstreamformat-aac">#dom-aacbitstreamformat-aac</a></b><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-dom-aacbitstreamformat-aac">2. AudioDecoderConfig description</a>
-    <li><a href="#ref-for-dom-aacbitstreamformat-aac①">3.2. AacBitstreamFormat</a>
-    <li><a href="#ref-for-dom-aacbitstreamformat-aac②">4. EncodedAudioChunk data</a>
+    <li><a href="#ref-for-dom-aacbitstreamformat-aac">2. EncodedAudioChunk data</a>
+    <li><a href="#ref-for-dom-aacbitstreamformat-aac①">3. AudioDecoderConfig description</a>
+    <li><a href="#ref-for-dom-aacbitstreamformat-aac②">5.2. AacBitstreamFormat</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dom-aacbitstreamformat-adts">
    <b><a href="#dom-aacbitstreamformat-adts">#dom-aacbitstreamformat-adts</a></b><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-dom-aacbitstreamformat-adts">2. AudioDecoderConfig description</a>
-    <li><a href="#ref-for-dom-aacbitstreamformat-adts①">3.2. AacBitstreamFormat</a>
-    <li><a href="#ref-for-dom-aacbitstreamformat-adts②">4. EncodedAudioChunk data</a>
+    <li><a href="#ref-for-dom-aacbitstreamformat-adts">2. EncodedAudioChunk data</a>
+    <li><a href="#ref-for-dom-aacbitstreamformat-adts①">3. AudioDecoderConfig description</a>
+    <li><a href="#ref-for-dom-aacbitstreamformat-adts②">5.2. AacBitstreamFormat</a>
    </ul>
   </aside>
 <script>/* script-dfn-panel */
