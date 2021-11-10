@@ -9,9 +9,6 @@
   <p>
     This demo extracts all frames from an MP4 file and renders them to a canvas as fast as possible. It uses <a href="https://github.com/gpac/mp4box.js/">mp4box.js</a> to parse and demux the file.
   </p>
-  <p>
-    Frames extracted: <span id="frameStats"></span>
-  </p>
   <canvas></canvas>
 </body>
 
@@ -19,44 +16,14 @@
   var demuxDecodeWorker;
 
   var canvas = document.querySelector("canvas");
-  var ctx = canvas.getContext('2d');
+  var offscreen = canvas.transferControlToOffscreen();
   document.body.appendChild(canvas);
 
   var frameCount = 0;
   var startTime;
 
-  async function onMessage(e) {
-    if (e.data.type == "config") {
-      let config = e.data.config;
-      canvas.height = config.codedHeight;
-      canvas.width = config.codedWidth;
-      return;
-    }
-
-    console.assert(e.data.type == "frame");
-
-    let frame = e.data.frame;
-    let now = performance.now();
-
-    ctx.drawImage(frame, 0, 0, canvas.width, canvas.height);
-    frame.close();
-
-    let fps = "";
-    if(frameCount++) {
-      let elapsed = now - startTime;
-      fps = " (" + (1000.0*frameCount/(elapsed)).toFixed(0) + " fps)"
-    } else {
-      // This is the first frame.
-      startTime = now;
-    }
-
-    document.getElementById("frameStats").innerText = frameCount + fps;
-  }
-
   demuxDecodeWorker = new Worker("./demux_decode_worker.js");
-
-  demuxDecodeWorker.addEventListener('message', onMessage);
-  window.demuxDecodeWorker = demuxDecodeWorker;
+  demuxDecodeWorker.postMessage({ canvas: offscreen}, [offscreen]);
 </script>
 
 </html>
