@@ -28,7 +28,7 @@ Markup Shorthands:css no, markdown yes, dfn yes
 </pre>
 
 <pre class=link-defaults>
-spec:webidl; type:interface; text:Promise
+spec: webidl; type: interface; text: Promise
 </pre>
 
 <pre class='anchors'>
@@ -37,6 +37,8 @@ spec: media-source; urlPrefix: https://www.w3.org/TR/media-source/
         for: MediaSource; text: isTypeSupported(); url: #dom-mediasource-istypesupported
 
 spec: html; urlPrefix: https://html.spec.whatwg.org/multipage/;
+    for: Document;
+        type: attribute; text: hidden; url: interaction.html#dom-document-hidden
     for: HTMLMediaElement;
         type: method; text: canPlayType(); url: #dom-navigator-canplaytype
     for: PlatformObject;
@@ -3111,7 +3113,7 @@ dictionary VideoFrameBufferInit {
         Rect=] algorithm with |defaultRect|, |overrideRect|,
         |init|.{{VideoFrameBufferInit/codedWidth}},
         |init|.{{VideoFrameBufferInit/codedHeight}},
-        |init|.{{VideoFrameBufferInit/format}}.
+        |init|.{{VideoFrameBufferInit/format}}, and `false`.
 5. If |parsedRect| is an exception, return |parsedRect|.
 6. Let |optLayout| be `undefined`.
 7. If |options|.{{VideoFrameBufferInit/layout}} [=map/exists=], assign its value
@@ -3428,8 +3430,8 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
 : <dfn>Validate VideoFrameInit</dfn> (with |format|, |codedWidth|, and |codedHeight|):
 :: 1. If {{VideoFrameInit/visibleRect}} [=map/exists=]:
         1. Let |validAlignment| be the result of running the
-            [=VideoFrame/Verify Rect Sample Alignment=] with |format| and
-            |visibleRect|.
+            [=VideoFrame/Verify Rect Sample Alignment=] with |format|,
+            |visibleRect|, and `false`.
         2. If |validAlignment| is `false`, return `false`.
         3. If any attribute of {{VideoFrameInit/visibleRect}} is negative or
             not finite, return `false`.
@@ -3588,8 +3590,8 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
         value to |overrideRect|.
     4. Let |parsedRect| be the result of running the [=VideoFrame/Parse Visible
         Rect=] algorithm with |defaultRect|, |overrideRect|,
-        {{VideoFrame/[[coded width]]}}, {{VideoFrame/[[coded height]]}}, and
-        {{VideoFrame/[[format]]}}.
+        {{VideoFrame/[[coded width]]}}, {{VideoFrame/[[coded height]]}},
+        {{VideoFrame/[[format]]}}, and `true`.
     5. If |parsedRect| is an exception, return |parsedRect|.
     6. Let |optLayout| be `undefined`.
     7. If |options|.{{VideoFrameCopyToOptions/layout}} [=map/exists=], assign
@@ -3599,7 +3601,8 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
         {{VideoFrame/[[format]]}}, and |optLayout|.
     9. Return |combinedLayout|.
 
-: <dfn for=VideoFrame>Verify Rect Sample Alignment</dfn> (with |format| and |rect|)
+: <dfn for=VideoFrame>Verify Rect Sample Alignment</dfn> (with |format|, |rect|,
+    and |requireAlignedSize|)
 :: 1. If |format| is `null`, return `true`.
     2. Let |planeIndex| be `0`.
     3. Let |numPlanes| be the number of planes as defined by |format|.
@@ -3610,14 +3613,22 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
             subsample for |plane|.
         3. Let |sampleHeight| be the vertical [=sub-sampling factor=] of each
             subsample for |plane|.
-        4. If |rect|.{{DOMRectReadOnly/x}} and |rect|.{{DOMRectReadOnly/width}}
-            are not both multiples of |sampleWidth|, return `false`.
-        5. If |rect|.{{DOMRectReadOnly/y}} and |rect|.{{DOMRectReadOnly/height}}
-            are not both multiples of |sampleHeight|, return `false`.
-        6. Increment |planeIndex| by `1`.
+        4. If |rect|.{{DOMRectReadOnly/x}} is not a multiple of |sampleWidth|,
+            return `false`.
+        5. If |rect|.{{DOMRectReadOnly/y}} is not a multiple of |sampleHeight|, 
+            eturn `false`.
+        6. If |requireAlignedSize| is `true` and
+            |rect|.{{DOMRectReadOnly/width}} is not a multiple of |sampleWidth|,
+            return `false`.
+        7. If |requireAlignedSize| is `true` and
+            |rect|.{{DOMRectReadOnly/height}} is not a multiple of
+            |sampleHeight|, return `false`.
+        8. Increment |planeIndex| by `1`.
     5. Return `true`.
 
-: <dfn for=VideoFrame>Parse Visible Rect</dfn> (with |defaultRect|, |overrideRect|, |codedWidth|, |codedHeight|, and |format|)
+: <dfn for=VideoFrame>Parse Visible Rect</dfn> (with |defaultRect|,
+    |overrideRect|, |codedWidth|, |codedHeight|, |format|, and
+    |requireAlignedSize|)
 :: 1. Let |sourceRect| be |defaultRect|
     2. If |overrideRect| is not `undefined`:
         1. If either of |overrideRect|.{{DOMRectInit/width}} or
@@ -3630,8 +3641,8 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
             {{VideoFrame/[[coded height]]}}, return a {{TypeError}}.
         4. Assign |overrideRect| to |sourceRect|.
     3. Let |validAlignment| be the result of running the
-        [=VideoFrame/Verify Rect Sample Alignment=] algorithm with |format| and
-        |sourceRect|.
+        [=VideoFrame/Verify Rect Sample Alignment=] algorithm with |format|,
+        |sourceRect|, and |requireAlignedSize|.
     4. If |validAlignment| is `false`, throw a {{TypeError}}.
     5. Return |sourceRect|.
 
@@ -3800,6 +3811,9 @@ will enforce the following requirements:
     NOTE: The coded rectangle can be specified by passing {{VideoFrame}}'s
         {{VideoFrame/codedRect}}.
 
+    NOTE: The default {{VideoFrameCopyToOptions/rect}} does not necessarily meet
+        the sample-alignment requirement and can result in
+        {{VideoFrame/copyTo()}} or {{VideoFrame/allocationSize()}} rejecting.
 : <dfn dict-member for=VideoFrameCopyToOptions>layout</dfn>
 :: The {{PlaneLayout}} for each plane in {{VideoFrame}}, affording the option
     to specify an offset and stride for each plane in the destination
@@ -3913,8 +3927,9 @@ is its own [=equivalent opaque format=].
     {{VideoFrame/codedWidth}} / 2 samples.
 
     The {{VideoFrame/codedWidth}} and {{VideoFrame/codedHeight}} MUST be even.
-    Similarly, the visible rectangle ({{VideoFrame/displayWidth}} and
-    {{VideoFrame/displayHeight}}) MUST be even.
+    Similarly, the visible rectangle offset
+    ({{VideoFrame/visibleRect}}.{{DOMRectInit/x}} and
+    {{VideoFrame/visibleRect}}.{{DOMRectInit/y}}) MUST be even.
   </dd>
   <dt><dfn enum-value for=VideoPixelFormat>I420A</dfn></dt>
   <dd>
@@ -3940,8 +3955,9 @@ is its own [=equivalent opaque format=].
     {{VideoFrame/codedWidth}} / 2 samples.
 
     The {{VideoFrame/codedWidth}} and {{VideoFrame/codedHeight}} MUST be even.
-    Similarly, the visible rectangle ({{VideoFrame/displayWidth}} and
-    {{VideoFrame/displayHeight}}) MUST be even.
+    Similarly, the visible rectangle offset
+    ({{VideoFrame/visibleRect}}.{{DOMRectInit/x}} and
+    {{VideoFrame/visibleRect}}.{{DOMRectInit/y}}) MUST be even.
 
     {{I420A}}'s [=equivalent opaque format=] is {{I420}}.
   </dd>
@@ -3967,9 +3983,9 @@ is its own [=equivalent opaque format=].
     top left in the image, in {{VideoFrame/codedHeight}} / 2 lines of
     {{VideoFrame/codedWidth}} samples.
 
-    The {{VideoFrame/codedHeight}} MUST be even.  Similarly, the crop
-    coordinates ({{VideoFrame/displayWidth}} and {{VideoFrame/displayHeight}})
-    MUST be even.
+    The {{VideoFrame/codedHeight}} MUST be even. Similarly, the visible
+    rectangle offset ({{VideoFrame/visibleRect}}.{{DOMRectInit/x}} and
+    {{VideoFrame/visibleRect}}.{{DOMRectInit/y}}) MUST be even.
   </dd>
   <dt><dfn enum-value for=VideoPixelFormat>I444</dfn></dt>
   <dd>
@@ -4011,8 +4027,9 @@ is its own [=equivalent opaque format=].
     value, in this order.
 
     The {{VideoFrame/codedWidth}} and {{VideoFrame/codedHeight}} MUST be even.
-    Similarly, the visible rectangle ({{VideoFrame/displayWidth}} and
-    {{VideoFrame/displayHeight}}) MUST be even.
+    Similarly, the visible rectangle offset
+    ({{VideoFrame/visibleRect}}.{{DOMRectInit/x}} and
+    {{VideoFrame/visibleRect}}.{{DOMRectInit/y}}) MUST be even.
 
     <div class=example>
     An image in the NV12 pixel format that is 16 pixels wide and 9 pixels tall
@@ -5105,7 +5122,7 @@ not meet the definition of an [=active codec=].
 
 A <dfn lt="background codec|background">background codec</dfn> is a codec whose
 {{ownerDocument}} (or [=owner set=]'s {{Document}}, for codecs in workers) has a
-{{Document/hidden}} attribute equal to {{hidden|"hidden"}}.
+{{Document/hidden}} attribute equal to <a enum-value lt=hidden>"hidden"</a>.
 
 A User Agent MUST only [=reclaim a codec=] that is either an
 [=inactive codec=], a [=background codec=], or both. A User Agent MUST NOT
