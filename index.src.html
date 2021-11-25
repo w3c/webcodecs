@@ -101,6 +101,14 @@ spec: webrtc-svc; urlPrefix: https://w3c.github.io/webrtc-svc/
 
 spec: visibility-state; urlPrefix: https://www.w3.org/TR/page-visibility/#
     type: enum-value; text: hidden; url: dom-visibilitystate-hidden
+
+spec: webgpu; urlPrefix: https://www.w3.org/TR/webgpu/#
+    type: interface; text: GPUExternalTexture; url: gpuexternaltexture
+    type: dictionary; text: GPUExternalTextureDescriptor; url: dictdef-gpuexternaltexturedescriptor
+    for: GPUExternalTextureDescriptor;
+        type: dict-member; text: source; url: dom-gpuexternaltexturedescriptor-source
+    for: GPUDevice;
+        type: method; text: importExternalTexture(); url: dom-gpudevice-importexternaltexture
 </pre>
 
 <pre class='biblio'>
@@ -3771,6 +3779,26 @@ conversion is explicitly disabled.
 Color space conversion during {{ImageBitmap}} construction is controlled by
 {{ImageBitmapOptions}} {{ImageBitmapOptions/colorSpaceConversion}}. Setting this
 value to "none" disables color space conversion.
+
+### WebGPU ### {#videoframe-webgpu}
+
+WebCodecs extends [[WebGPU]] to allow importing {{VideoFrame}} objects via
+{{GPUDevice/importExternalTexture()}}, producing opaque {{GPUExternalTexture}}
+objects, which can be read from WebGPU shaders.
+The definition of the {{GPUExternalTextureDescriptor/source}} member of
+{{GPUExternalTextureDescriptor}} is modified to allow {{VideoFrame}}:
+
+<xmp>
+partial dictionary GPUExternalTextureDescriptor {
+    required (HTMLVideoElement or VideoFrame) source;
+};
+</xmp>
+
+The lifetime of such a {{GPUExternalTexture}} object is implicitly tied to the
+lifetime of the source {{VideoFrame}} object.
+When the {{VideoFrame}} is [=Close VideoFrame|closed=] (implicitly or
+explicitly), the {{GPUExternalTexture}} is *destroyed*, so no further operations
+using it can be issued.
 
 VideoFrame CopyTo() Options {#videoframe-copyto-options}
 ------------------------------------------------------------
