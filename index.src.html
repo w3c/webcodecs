@@ -274,7 +274,7 @@ interface AudioDecoder {
   constructor(AudioDecoderInit init);
 
   readonly attribute CodecState state;
-  readonly attribute long decodeQueueSize;
+  readonly attribute unsigned long decodeQueueSize;
 
   undefined configure(AudioDecoderConfig config);
   undefined decode(EncodedAudioChunk chunk);
@@ -541,7 +541,7 @@ interface VideoDecoder {
   constructor(VideoDecoderInit init);
 
   readonly attribute CodecState state;
-  readonly attribute long decodeQueueSize;
+  readonly attribute unsigned long decodeQueueSize;
 
   undefined configure(VideoDecoderConfig config);
   undefined decode(EncodedVideoChunk chunk);
@@ -836,7 +836,7 @@ interface AudioEncoder {
   constructor(AudioEncoderInit init);
 
   readonly attribute CodecState state;
-  readonly attribute long encodeQueueSize;
+  readonly attribute unsigned long encodeQueueSize;
 
   undefined configure(AudioEncoderConfig config);
   undefined encode(AudioData data);
@@ -1157,7 +1157,7 @@ interface VideoEncoder {
   constructor(VideoEncoderInit init);
 
   readonly attribute CodecState state;
-  readonly attribute long encodeQueueSize;
+  readonly attribute unsigned long encodeQueueSize;
 
   undefined configure(VideoEncoderConfig config);
   undefined encode(VideoFrame frame, optional VideoEncoderEncodeOptions options = {});
@@ -4180,17 +4180,17 @@ enum VideoColorPrimaries {
 </xmp>
 
 <dl>
-  <dt><dfn enum-value for=VideoColorPrimaries>bt709</dfn</dt>
+  <dt><dfn enum-value for=VideoColorPrimaries>bt709</dfn></dt>
   <dd>
     Color primaries used by BT.709 and sRGB, as described by [[H.273]]
     section 8.1 table 2 value 1.
   </dd>
-  <dt><dfn enum-value for=VideoColorPrimaries>bt470bg</dfn</dt>
+  <dt><dfn enum-value for=VideoColorPrimaries>bt470bg</dfn></dt>
   <dd>
     Color primaries used by BT.601 PAL, as described by [[H.273]]
     section 8.1 table 2 value 5.
   </dd>
-  <dt><dfn enum-value for=VideoColorPrimaries>smpte170m</dfn</dt>
+  <dt><dfn enum-value for=VideoColorPrimaries>smpte170m</dfn></dt>
   <dd>
     Color primaries used by BT.601 NTSC, as described by [[H.273]]
     section 8.1 table 2 value 6.
@@ -4211,17 +4211,17 @@ enum VideoTransferCharacteristics {
 </xmp>
 
 <dl>
-  <dt><dfn enum-value for=VideoTransferCharacteristics>bt709</dfn</dt>
+  <dt><dfn enum-value for=VideoTransferCharacteristics>bt709</dfn></dt>
   <dd>
     Transfer characteristics used by BT.709, as described by [[H.273]]
     section 8.2 table 3 value 1.
   </dd>
-  <dt><dfn enum-value for=VideoTransferCharacteristics>smpte170m</dfn</dt>
+  <dt><dfn enum-value for=VideoTransferCharacteristics>smpte170m</dfn></dt>
   <dd>
     Transfer characteristics used by BT.601, as described by [[H.273]]
     section 8.2 table 3 value 6.
   </dd>
-  <dt><dfn enum-value for=VideoTransferCharacteristics>iec61966-2-1</dfn</dt>
+  <dt><dfn enum-value for=VideoTransferCharacteristics>iec61966-2-1</dfn></dt>
   <dd>
     Transfer characteristics used by sRGB, as described by [[H.273]]
     section 8.2 table 3 value 13.
@@ -4243,27 +4243,28 @@ enum VideoMatrixCoefficients {
 </xmp>
 
 <dl>
-  <dt><dfn enum-value for=VideoMatrixCoefficients>rgb</dfn</dt>
+  <dt><dfn enum-value for=VideoMatrixCoefficients>rgb</dfn></dt>
   <dd>
     Matrix coefficients used by sRGB, as described by [[H.273]]
     section 8.3 table 4 value 0.
   </dd>
-  <dt><dfn enum-value for=VideoMatrixCoefficients>bt709</dfn</dt>
+  <dt><dfn enum-value for=VideoMatrixCoefficients>bt709</dfn></dt>
   <dd>
     Matrix coefficients used by BT.709, as described by [[H.273]]
     section 8.3 table 4 value 1.
   </dd>
-  <dt><dfn enum-value for=VideoMatrixCoefficients>bt470bg</dfn</dt>
+  <dt><dfn enum-value for=VideoMatrixCoefficients>bt470bg</dfn></dt>
   <dd>
     Matrix coefficients used by BT.601 PAL, as described by [[H.273]]
     section 8.3 table 4 value 5.
   </dd>
-  <dt><dfn enum-value for=VideoMatrixCoefficients>smpte170m</dfn</dt>
+  <dt><dfn enum-value for=VideoMatrixCoefficients>smpte170m</dfn></dt>
   <dd>
     Matrix coefficients used by BT.601 NTSC, as described by [[H.273]]
     section 8.3 table 4 value 6.
   </dd>
 </dl>
+
 
 Image Decoding {#image-decoding}
 ====================================
@@ -4294,6 +4295,7 @@ ImageDecoder Interface {#imagedecoder-interface}
 interface ImageDecoder {
   constructor(ImageDecoderInit init);
 
+  readonly attribute DOMString type;
   readonly attribute boolean complete;
   readonly attribute Promise<undefined> completed;
   readonly attribute ImageTrackList tracks;
@@ -4312,6 +4314,10 @@ interface ImageDecoder {
 : <dfn attribute for=ImageDecoder>\[[ImageTrackList]]</dfn>
 :: An {{ImageTrackList}} describing the tracks found in
     {{ImageDecoder/[[encoded data]]}}
+
+: <dfn attribute for=ImageDecoder>\[[type]]</dfn>
+:: A string reflecting the value of the MIME {{ImageDecoderInit/type}} given at
+    construction.
 
 : <dfn attribute for=ImageDecoder>\[[complete]]</dfn>
 :: A boolean indicating whether {{ImageDecoder/[[encoded data]]}} is completely
@@ -4373,8 +4379,9 @@ interface ImageDecoder {
         initialized as follows:
         1. Assign a new [=list=] to {{ImageTrackList/[[track list]]}}.
         2. Assign `-1` to {{ImageTrackList/[[selected index]]}}.
-    4. Assign `null` to {{ImageDecoder/[[codec implementation]]}}.
-    5. If `init.preferAnimation` [=map/exists=], assign `init.preferAnimation`
+    4. Assign {{ImageDecoderInit/type}} to {{ImageDecoder/[[type]]}}.
+    5. Assign `null` to {{ImageDecoder/[[codec implementation]]}}.
+    6. If `init.preferAnimation` [=map/exists=], assign `init.preferAnimation`
         to the {{ImageDecoder/[[prefer animation]]}} internal slot. Otherwise,
         assign 'null' to {{ImageDecoder/[[prefer animation]]}} internal slot.
     7. Assign a new [=list=] to {{ImageDecoder/[[pending decode promises]]}}.
@@ -4425,6 +4432,13 @@ interface ImageDecoder {
     1. Run the [=ImageDecoder/Establish Tracks=] algorithm.
 
 ### Attributes ### {#imagedecoder-attributes}
+: <dfn attribute for=ImageDecoder>type</dfn>
+:: A string reflecting the value of the MIME {{ImageDecoderInit/type}} given at
+    construction.
+
+    The {{ImageDecoder/type}} getter steps are to return
+    {{ImageDecoder/[[type]]}}.
+
 : <dfn attribute for=ImageDecoder>complete</dfn>
 :: Indicates whether {{ImageDecoder/[[encoded data]]}} is completely buffered.
 
@@ -4934,8 +4948,8 @@ interface ImageTrackList {
   getter ImageTrack (unsigned long index);
 
   readonly attribute Promise<undefined> ready;
-  [EnforceRange] readonly attribute unsigned long length;
-  [EnforceRange] readonly attribute long selectedIndex;
+  readonly attribute unsigned long length;
+  readonly attribute long selectedIndex;
   readonly attribute ImageTrack? selectedTrack;
 };
 </xmp>
@@ -4982,8 +4996,8 @@ ImageTrack Interface {#imagetrack-interface}
 [Exposed=(Window,DedicatedWorker)]
 interface ImageTrack : EventTarget {
   readonly attribute boolean animated;
-  [EnforceRange] readonly attribute unsigned long frameCount;
-  [EnforceRange] readonly attribute unrestricted float repetitionCount;
+  readonly attribute unsigned long frameCount;
+  readonly attribute unrestricted float repetitionCount;
   attribute EventHandler onchange;
   attribute boolean selected;
 };
