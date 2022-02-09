@@ -2932,7 +2932,7 @@ interface VideoFrame {
   readonly attribute unsigned long displayWidth;
   readonly attribute unsigned long displayHeight;
   readonly attribute unsigned long long? duration;  // microseconds
-  readonly attribute long long? timestamp;          // microseconds
+  readonly attribute long long timestamp;           // microseconds
   readonly attribute VideoColorSpace colorSpace;
 
   unsigned long allocationSize(
@@ -3491,13 +3491,13 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
         algorithm with |init|, |frame|, |defaultVisibleRect|,
         |defaultDisplayWidth|, and |defaultDisplayHeight|.
     9. If {{VideoFrameInit/duration}} [=map/exists=] in |init|, assign it to
-        |frame|.{{VideoFrame/duration}}. Otherwise, assign
+        |frame|'s {{VideoFrame/[[duration]]}}. Otherwise, assign
         |otherFrame|.{{VideoFrame/duration}} to
-        |frame|.{{VideoFrame/duration}}.
+        |frame|'s {{VideoFrame/[[duration]]}}.
     10. If {{VideoFrameInit/timestamp}} [=map/exists=] in |init|, assign it to
-        |frame|.{{VideoFrame/timestamp}}. Otherwise, assign
-        |otherFrame|.{{VideoFrame/timestamp}} to
-        |frame|.{{VideoFrame/timestamp}}.
+        |frame|'s {{VideoFrame/[[timestamp]]}}. Otherwise, assign
+        |otherFrame|'s {{VideoFrame/timestamp}} to
+        |frame|'s {{VideoFrame/[[timestamp]]}}.
     11. Assign |format| to |frame|.{{VideoFrame/[[format]]}}.
 
 : <dfn for=VideoFrame>Initialize Frame With Resource and Size</dfn> (with
@@ -3521,9 +3521,9 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
         algorithm with |init|, |frame|, |defaultVisibleRect|, |width|, and
         |height|.
     11. Assign `init`.{{VideoFrameInit/duration}} to
-        |frame|.{{VideoFrame/duration}}.
+        |frame|'s {{VideoFrame/[[duration]]}}.
     12. Assign `init`.{{VideoFrameInit/timestamp}} to
-        |frame|.{{VideoFrame/timestamp}}.
+        |frame|'s {{VideoFrame/[[timestamp]]}}.
     13. If |resource| has a known {{VideoColorSpace}}, assign its value to
         {{VideoFrame/[[color space]]}}.
     14. Otherwise, assign a new {{VideoColorSpace}}, constructed with an empty
@@ -4672,11 +4672,13 @@ interface ImageDecoder {
     11. Let |decodeResult| be a new {{ImageDecodeResult}} initialized as
         follows:
         1. Assign 'true' to {{ImageDecodeResult/complete}}.
-        2. Let |timestamp| and |duration| be the presentation timestamp and
-            duration for |output| as described by |encodedFrame|. If
-            |encodedFrame| does not describe a timestamp or
-            duration, assign `null` to the corresponding variable.
-        3. Assign {{ImageDecodeResult/image}} with the result of running the
+        2. Let |timestamp| be the presentation timestamp for |output| as
+            described by |encodedFrame|. If |encodedFrame| does not describe a
+            timestamp, assign `0` to |timestamp|.
+        3. Let |duration| be the presentation duration for |output| as
+            described by |encodedFrame|. If |encodedFrame| does not describe a
+            duration, assign `null` to |duration|.
+        4. Assign {{ImageDecodeResult/image}} with the result of running the
             [=Create a VideoFrame=] algorithm with |output|, |timestamp|, and
             |duration|.
     12. Run the [=ImageDecoder/Resolve Decode=] algorithm with |promise| and
@@ -4729,15 +4731,17 @@ interface ImageDecoder {
             for |output|.
         3. Add a new entry to {{ImageDecoder/[[progressive frame
             generations]]}} with key |frameIndex| and value |frameGeneration|.
-    15. Let |timestamp| and |duration| be the presentation timestamp and
-            duration for |output| as described by |encodedFrame|. If
-            |encodedFrame| does not describe a timestamp or
-            duration, assign `null` to the corresponding variable.
-    16. Assign {{ImageDecodeResult/image}} with the result of running the
-            [=Create a VideoFrame=] algorithm with |output|, |timestamp|, and
-            |duration|.
-    17. Remove |promise| from {{ImageDecoder/[[pending decode promises]]}}.
-    18. Resolve |promise| with |decodeResult|.
+    15. Let |timestamp| be the presentation timestamp for |output| as
+        described by |encodedFrame|. If |encodedFrame| does not describe a
+        timestamp, assign `0` to |timestamp|.
+    16. Let |duration| be the presentation duration for |output| as
+        described by |encodedFrame|. If |encodedFrame| does not describe a
+        duration, assign `null` to |duration|.
+    17. Assign {{ImageDecodeResult/image}} with the result of running the
+        [=Create a VideoFrame=] algorithm with |output|, |timestamp|, and
+        |duration|.
+    18. Remove |promise| from {{ImageDecoder/[[pending decode promises]]}}.
+    19. Resolve |promise| with |decodeResult|.
 
 : <dfn for=ImageDecoder>Resolve Decode</dfn> (with |promise| and |result|)
 :: 1. Queue a task on the [=control thread=] event loop to run these steps:
