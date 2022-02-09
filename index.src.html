@@ -4265,6 +4265,7 @@ enum VideoMatrixCoefficients {
   </dd>
 </dl>
 
+
 Image Decoding {#image-decoding}
 ====================================
 
@@ -4294,6 +4295,7 @@ ImageDecoder Interface {#imagedecoder-interface}
 interface ImageDecoder {
   constructor(ImageDecoderInit init);
 
+  readonly attribute DOMString type;
   readonly attribute boolean complete;
   readonly attribute Promise<undefined> completed;
   readonly attribute ImageTrackList tracks;
@@ -4312,6 +4314,10 @@ interface ImageDecoder {
 : <dfn attribute for=ImageDecoder>\[[ImageTrackList]]</dfn>
 :: An {{ImageTrackList}} describing the tracks found in
     {{ImageDecoder/[[encoded data]]}}
+
+: <dfn attribute for=ImageDecoder>\[[type]]</dfn>
+:: A string reflecting the value of the MIME {{ImageDecoderInit/type}} given at
+    construction.
 
 : <dfn attribute for=ImageDecoder>\[[complete]]</dfn>
 :: A boolean indicating whether {{ImageDecoder/[[encoded data]]}} is completely
@@ -4373,8 +4379,9 @@ interface ImageDecoder {
         initialized as follows:
         1. Assign a new [=list=] to {{ImageTrackList/[[track list]]}}.
         2. Assign `-1` to {{ImageTrackList/[[selected index]]}}.
-    4. Assign `null` to {{ImageDecoder/[[codec implementation]]}}.
-    5. If `init.preferAnimation` [=map/exists=], assign `init.preferAnimation`
+    4. Assign {{ImageDecoderInit/type}} to {{ImageDecoder/[[type]]}}.
+    5. Assign `null` to {{ImageDecoder/[[codec implementation]]}}.
+    6. If `init.preferAnimation` [=map/exists=], assign `init.preferAnimation`
         to the {{ImageDecoder/[[prefer animation]]}} internal slot. Otherwise,
         assign 'null' to {{ImageDecoder/[[prefer animation]]}} internal slot.
     7. Assign a new [=list=] to {{ImageDecoder/[[pending decode promises]]}}.
@@ -4425,6 +4432,13 @@ interface ImageDecoder {
     1. Run the [=ImageDecoder/Establish Tracks=] algorithm.
 
 ### Attributes ### {#imagedecoder-attributes}
+: <dfn attribute for=ImageDecoder>type</dfn>
+:: A string reflecting the value of the MIME {{ImageDecoderInit/type}} given at
+    construction.
+
+    The {{ImageDecoder/type}} getter steps are to return
+    {{ImageDecoder/[[type]]}}.
+
 : <dfn attribute for=ImageDecoder>complete</dfn>
 :: Indicates whether {{ImageDecoder/[[encoded data]]}} is completely buffered.
 
