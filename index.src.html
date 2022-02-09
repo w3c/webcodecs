@@ -275,6 +275,7 @@ interface AudioDecoder {
 
   readonly attribute CodecState state;
   readonly attribute long decodeQueueSize;
+  attribute EventHandler ondequeue;
 
   undefined configure(AudioDecoderConfig config);
   undefined decode(EncodedAudioChunk chunk);
@@ -327,18 +328,20 @@ Constructors {#audiodecoder-constructors}
 
 Attributes {#audiodecoder-attributes}
 -------------------------------------
-<dl>
-  <dt>
-    <dfn attribute for=AudioDecoder>state</dfn>
-  </dt>
-  <dd>Returns the value of {{AudioDecoder/[[state]]}}.</dd>
-  <dt>
-    <dfn attribute for=AudioDecoder>decodeQueueSize</dfn>
-  </dt>
-  <dd>
-    Returns the value of {{AudioDecoder/[[decodeQueueSize]]}}.
-  </dd>
-</dl>
+: <dfn attribute for=AudioDecoder>state</dfn>
+:: Returns the value of {{AudioDecoder/[[state]]}}.
+: <dfn attribute for=AudioDecoder>decodeQueueSize</dfn>
+:: Returns the value of {{AudioDecoder/[[decodeQueueSize]]}}.
+: <dfn attribute for=AudioDecoder>ondequeue</dfn>
+:: An [=event handler IDL attribute=] whose [=event handler event type=] is
+    {{AudioDecoder/dequeue}}.
+
+Event Summary {#audiodecoder-event-summary}
+-------------------------------------------
+: <dfn event for=AudioDecoder>dequeue</dfn>
+:: Fired at the {{AudioDecoder}} when the {{AudioDecoder/decodeQueueSize}} has
+    decreased.
+
 
 Methods {#audiodecoder-methods}
 -------------------------------
@@ -399,7 +402,8 @@ Methods {#audiodecoder-methods}
         event loop to run the [=Close AudioDecoder=] algorithm with
         {{EncodingError}}.
     3. Queue a task on the [=control thread=] event loop to decrement
-        {{AudioDecoder/[[decodeQueueSize]]}}.
+        {{AudioDecoder/[[decodeQueueSize]]}} and fire a simple event named
+        {{AudioDecoder/dequeue}} at [=this=].
     4. Let |decoded outputs| be a [=list=] of decoded audio data outputs emitted
         by {{AudioDecoder/[[codec implementation]]}}.
     5. If |decoded outputs| is not empty, queue a task on the [=control thread=]
@@ -516,7 +520,8 @@ Algorithms {#audiodecoder-algorithms}
         output for the previous configuration.
     4. Remove all [=control messages=] from the [=control message queue=].
     5. Set {{AudioDecoder/[[decodeQueueSize]]}} to zero.
-    6. For each |promise| in {{AudioDecoder/[[pending flush promises]]}}:
+    6. Fire a simple event named {{AudioDecoder/dequeue}} at [=this=].
+    7. For each |promise| in {{AudioDecoder/[[pending flush promises]]}}:
         1. Reject |promise| with |exception|.
         2. Remove |promise| from {{AudioDecoder/[[pending flush promises]]}}.
   </dd>
