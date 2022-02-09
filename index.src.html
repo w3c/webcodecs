@@ -3256,6 +3256,13 @@ dictionary VideoFrameBufferInit {
     The {{VideoFrame/timestamp}} getter steps are to return
     {{VideoFrame/[[timestamp]]}}.
 
+    NOTE: Authors are encouraged to provide a meaningful timestamp unless it is
+        implicitly provided by the {{CanvasImageSource}} at construction.
+        Interfaces that consume {{VideoFrame}}s can rely on this value for
+        timing decesions. For example, {{VideoEncoder}} can use
+        {{VideoFrame/timestamp}} values to guide rate control (see
+        {{VideoEncoderConfig/framerate}}).
+
 : <dfn attribute for=VideoFrame>duration</dfn>
 :: The presentation duration, given in microseconds. The duration is copied
     from the {{EncodedVideoChunk}} corresponding to this VideoFrame.
@@ -4689,6 +4696,14 @@ interface ImageDecoder {
         2. Let |timestamp| be the presentation timestamp for |output| as
             described by |encodedFrame|. If |encodedFrame| does not describe a
             timestamp, assign `0` to |timestamp|.
+
+            NOTE: For animated images, the timestamp of a given frame will
+                generally equal the sum of durations from preceeding frames.
+                However, implementers are not expected to decode earlier frames
+                to compute this timestamp. If it is infeasible to dermine a
+                imestamp by simply inspecing |encodedFrame|, timestamp can
+                instead be `0`.
+
         3. Let |duration| be the presentation duration for |output| as
             described by |encodedFrame|. If |encodedFrame| does not describe a
             duration, assign `null` to |duration|.
@@ -4748,6 +4763,14 @@ interface ImageDecoder {
     15. Let |timestamp| be the presentation timestamp for |output| as
         described by |encodedFrame|. If |encodedFrame| does not describe a
         timestamp, assign `0` to |timestamp|.
+
+        NOTE: For animated images, the timestamp of a given frame will
+            generally equal the sum of durations from preceeding frames.
+            However, implementers are not expected to decode earlier frames
+            to compute this timestamp. If it is infeasible to dermine a
+            imestamp by simply inspecing |encodedFrame|, timestamp can
+            instead be `0`.
+
     16. Let |duration| be the presentation duration for |output| as
         described by |encodedFrame|. If |encodedFrame| does not describe a
         duration, assign `null` to |duration|.
