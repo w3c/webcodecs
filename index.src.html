@@ -3110,8 +3110,8 @@ dictionary VideoFrameBufferInit {
 4. Let |parsedRect| be the result of running the [=VideoFrame/Parse Visible
         Rect=] algorithm with |defaultRect|, |overrideRect|,
         |init|.{{VideoFrameBufferInit/codedWidth}},
-        |init|.{{VideoFrameBufferInit/codedHeight}},
-        |init|.{{VideoFrameBufferInit/format}}, and `false`.
+        |init|.{{VideoFrameBufferInit/codedHeight}}, and
+        |init|.{{VideoFrameBufferInit/format}}.
 5. If |parsedRect| is an exception, return |parsedRect|.
 6. Let |optLayout| be `undefined`.
 7. If |options|.{{VideoFrameBufferInit/layout}} [=map/exists=], assign its value
@@ -3122,7 +3122,7 @@ dictionary VideoFrameBufferInit {
 9. If |combinedLayout| is an exception, throw |combinedLayout|.
 10. If `data.byteLength` is less than |combinedLayout|’s
     [=combined buffer layout/allocationSize=], throw a {{TypeError}}.
-11. Let |resource| be a new [=media resource=] containing a copy |data|. Use
+11. Let |resource| be a new [=media resource=] containing a copy of |data|. Use
         {{VideoFrameBufferInit/visibleRect}} and {{VideoFrameBufferInit/layout}}
         to determine where in |data| the pixels for each plane reside.
 
@@ -3425,11 +3425,12 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
         instance of the [=sRGB Color Space=]
     3. Otherwise, return a new instance of the [=REC709 Color Space=].
 
-: <dfn>Validate VideoFrameInit</dfn> (with |format|, |codedWidth|, and |codedHeight|):
+: <dfn>Validate VideoFrameInit</dfn> (with |format|, |codedWidth|, and
+    |codedHeight|):
 :: 1. If {{VideoFrameInit/visibleRect}} [=map/exists=]:
         1. Let |validAlignment| be the result of running the
-            [=VideoFrame/Verify Rect Sample Alignment=] with |format|,
-            |visibleRect|, and `false`.
+            [=VideoFrame/Verify Rect Offset Alignment=] with |format| and
+            |visibleRect|.
         2. If |validAlignment| is `false`, return `false`.
         3. If any attribute of {{VideoFrameInit/visibleRect}} is negative or
             not finite, return `false`.
@@ -3472,7 +3473,7 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
 :: 1. Let |format| be |otherFrame|.{{VideoFrame/format}}.
     2. If |init|.{{VideoFrameInit/alpha}} is {{AlphaOption/discard}},
         assign |otherFrame|.{{VideoFrame/format}}'s [=equivalent opaque format=]
-        |format|
+        |format|.
     1. Let |validInit| be the result of running the [=Validate VideoFrameInit=]
         algorithm with |format| and |otherFrame|'s
         {{VideoFrame/[[coded width]]}} and {{VideoFrame/[[coded height]]}}.
@@ -3584,12 +3585,17 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
 ::  1. Let |defaultRect| be the result of performing the getter steps for
         {{VideoFrame/visibleRect}}.
     2. Let |overrideRect| be `undefined`.
-    3. If |options|.{{VideoFrameCopyToOptions/rect}} [=map/exists=], assign its
-        value to |overrideRect|.
+    3. If |options|.{{VideoFrameCopyToOptions/rect}} [=map/exists=]:
+        1. Assign the value of |options|.{{VideoFrameCopyToOptions/rect}} to
+            |overrideRect|.
+        2. Let |validAlignment| be the result of running the
+            [=VideoFrame/Verify Rect Size Alignment=] algorithm with
+            |overrideRect| and {{VideoFrame/[[format]]}}.
+        3. If |validAlignment| is `false`, throw a {{TypeError}}.
     4. Let |parsedRect| be the result of running the [=VideoFrame/Parse Visible
         Rect=] algorithm with |defaultRect|, |overrideRect|,
-        {{VideoFrame/[[coded width]]}}, {{VideoFrame/[[coded height]]}},
-        {{VideoFrame/[[format]]}}, and `true`.
+        {{VideoFrame/[[coded width]]}}, {{VideoFrame/[[coded height]]}}, and
+        {{VideoFrame/[[format]]}}.
     5. If |parsedRect| is an exception, return |parsedRect|.
     6. Let |optLayout| be `undefined`.
     7. If |options|.{{VideoFrameCopyToOptions/layout}} [=map/exists=], assign
@@ -3599,8 +3605,8 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
         {{VideoFrame/[[format]]}}, and |optLayout|.
     9. Return |combinedLayout|.
 
-: <dfn for=VideoFrame>Verify Rect Sample Alignment</dfn> (with |format|, |rect|,
-    and |requireAlignedSize|)
+: <dfn for=VideoFrame>Verify Rect Offset Alignment</dfn> (with |format| and
+    |rect|)
 :: 1. If |format| is `null`, return `true`.
     2. Let |planeIndex| be `0`.
     3. Let |numPlanes| be the number of planes as defined by |format|.
@@ -3614,33 +3620,45 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
         4. If |rect|.{{DOMRectReadOnly/x}} is not a multiple of |sampleWidth|,
             return `false`.
         5. If |rect|.{{DOMRectReadOnly/y}} is not a multiple of |sampleHeight|, 
-            eturn `false`.
-        6. If |requireAlignedSize| is `true` and
-            |rect|.{{DOMRectReadOnly/width}} is not a multiple of |sampleWidth|,
             return `false`.
-        7. If |requireAlignedSize| is `true` and
-            |rect|.{{DOMRectReadOnly/height}} is not a multiple of
+        8. Increment |planeIndex| by `1`.
+    5. Return `true`.
+
+: <dfn for=VideoFrame>Verify Rect Size Alignment</dfn> (with |format| and
+    |rect|)
+:: 1. If |format| is `null`, return `true`.
+    2. Let |planeIndex| be `0`.
+    3. Let |numPlanes| be the number of planes as defined by |format|.
+    4. While |planeIndex| is less than |numPlanes|:
+        1. Let |plane| be the Plane identified by |planeIndex| as defined by
+            |format|.
+        2. Let |sampleWidth| be the horizontal [=sub-sampling factor=] of each
+            subsample for |plane|.
+        3. Let |sampleHeight| be the vertical [=sub-sampling factor=] of each
+            subsample for |plane|.
+        6. If |rect|.{{DOMRectReadOnly/width}} is not a multiple of
+            |sampleWidth|, return `false`.
+        7. If |rect|.{{DOMRectReadOnly/height}} is not a multiple of
             |sampleHeight|, return `false`.
         8. Increment |planeIndex| by `1`.
     5. Return `true`.
 
 : <dfn for=VideoFrame>Parse Visible Rect</dfn> (with |defaultRect|,
-    |overrideRect|, |codedWidth|, |codedHeight|, |format|, and
-    |requireAlignedSize|)
+    |overrideRect|, |codedWidth|, |codedHeight|, and |format|)
 :: 1. Let |sourceRect| be |defaultRect|
     2. If |overrideRect| is not `undefined`:
         1. If either of |overrideRect|.{{DOMRectInit/width}} or
             {{DOMRectInit/height}} is `0`, return a {{TypeError}}.
         2. If the sum of |overrideRect|.{{DOMRectInit/x}} and
             |overrideRect|.{{DOMRectInit/width}} is greater than
-            {{VideoFrame/[[coded width]]}}, return a {{TypeError}}.
+            |codedWidth|, return a {{TypeError}}.
         3. If the sum of |overrideRect|.{{DOMRectInit/y}} and
             |overrideRect|.{{DOMRectInit/height}} is greater than
-            {{VideoFrame/[[coded height]]}}, return a {{TypeError}}.
+            |codedHeight|, return a {{TypeError}}.
         4. Assign |overrideRect| to |sourceRect|.
     3. Let |validAlignment| be the result of running the
-        [=VideoFrame/Verify Rect Sample Alignment=] algorithm with |format|,
-        |sourceRect|, and |requireAlignedSize|.
+        [=VideoFrame/Verify Rect Offset Alignment=] algorithm with |format| and
+        |sourceRect|.
     4. If |validAlignment| is `false`, throw a {{TypeError}}.
     5. Return |sourceRect|.
 
