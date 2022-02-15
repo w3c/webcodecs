@@ -320,8 +320,8 @@ async function buildAndConfigureEncoders() {
 // Decoded outputs rendered immediately.
 async function buildAndConfigureDecoders(audioEncoder, videoEncoder) {
   // Build decoders.
-  const audioDecoder = new AudioDecoder({ output: paintToCanvas, error: onCodecError });
-  const videoDecoder = new VideoDecoder({ output: renderInAudioWorklet, error: onCodecError });
+  const audioDecoder = new AudioDecoder({ output: renderInAudioWorklet, error: onCodecError });
+  const videoDecoder = new VideoDecoder({ output: paintToCanvas, error: onCodecError });
 
   // Rest matches earlier example.
   ...

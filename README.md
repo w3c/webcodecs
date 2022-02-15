@@ -23,6 +23,10 @@ It's great for:
 
 See the [explainer](https://github.com/w3c/webcodecs/blob/main/explainer.md) for more info.
 
-# Code samples
+## Code samples
 
 Please see https://w3c.github.io/webcodecs/samples/
+
+## WebCodecs Codec Registry
+
+This repository also contains the [WebCodecs Codec Registry](https://w3c.github.com/webcodecs/codec_registry.html), which provides the means to identify and avoid collisions among codec strings used in WebCodecs and provides a mechanism to define codec-specific members of WebCodecs codec configuration dictionaries. Codec-specific registrations entered in the registry are also maintained in the repository, please refer to the registry for a comprehensive list.
