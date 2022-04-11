@@ -23,7 +23,7 @@ async function startRecording(fileHandle, frameStream, trackSettings) {
     },
     error: (e) => {
       console.log(e.message);
-      vtr.stop();
+      stopRecording();
     }
   };
 
