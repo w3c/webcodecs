@@ -213,57 +213,80 @@ Background {#processing-model-background}
   codec tasks can be scheduled while previous tasks are still pending. For
   example, web authors can call `decode()` without waiting for a previous
   `decode()` to complete. This is achieved by offloading underlying codec tasks
-  to a separate thread for parallel execution.
+  to a separate [=parallel queue=] for parallel execution.
 
   This section describes threading behaviors as they are visible from the
-  perspective of web authors. Implementers can choose to use more or less
-  threads as long as the exernally visible behaviors of blocking and sequencing
-  are maintained as follows.
+  perspective of web authors. Implementers can choose to use more threads, as
+  long as the exernally visible behaviors of blocking and sequencing are
+  maintained as follows.
 </div>
 
-Control Thread and Codec Thread {#control-thread-and-codec-thread}
-------------------------------------------------------------------
+Control Messages {#control-messages}
+------------------------------------
 
-All steps in this specification will run on either a [=control thread=] or
-a [=codec thread=].
+A <dfn>control message</dfn> defines a sequence of steps corresponding to a
+method invocation on a [=codec=] instance (e.g. `encode()`).
 
-The <dfn>control thread</dfn> is the thread from which authors will construct
-a [=codec=] and invoke its methods. Invoking a codec's methods will typically
-result in the creation of [=control messages=] which are later executed on the
-[=codec thread=]. Each [=webappapis/global object=] has a separate control
-thread.
-
-The <dfn>codec thread</dfn> is the thread from which a [=codec=] will
-[=dequeue=] [=control messages=] and execute their steps. Each [=codec=]
-instance has a separate codec thread. The lifetime of a codec thread matches
-that of its associated [=codec=] instance.
-
-The [=control thread=] uses a traditional event loop, as described in
-[[!HTML]].
-
-The [=codec thread=] uses a specialized [=codec processing loop=].
-
-Communication from the [=control thread=] to the [=codec thread=] is done using
-[=control message=] passing. Communication in the other direction is done using
-regular event loop tasks.
-
-Each [=codec=] instance has a single <dfn>control message queue</dfn> that is
-a [=queue=] of <dfn>control messages</dfn>.
+A <dfn>control message queue</dfn> is a a [=queue=] of
+[=control messages=]. Each [=codec=] instance has a control message queue
+stored in an internal slot named
+<dfn id='control-message-queue-slot'>[[control message queue]]</dfn>.
 
 <dfn lt="Enqueues a control message|Queue a control message">Queuing a control
-message</dfn> means [=enqueuing=] the message to a [=codec=]’s [=control
-message queue=]. Invoking codec methods will often queue a control message
+message</dfn> means [=enqueuing=] the message to a [=codec=]’s [=[[control
+message queue]]=]. Invoking codec methods will generally queue a control message
 to schedule work.
 
 <dfn lt="running a control message|control message steps">Running a control
 message</dfn> means performing a sequence of steps specified by the method
 that enqueued the message.
 
-The <dfn>codec processing loop</dfn> <em class="rfc2119">MUST</em> run these steps:
-1. While true:
-    1. If the [=control message queue=] is empty, [=continue=].
-    2. Dequeue |front message| from the [=control message queue=].
-    3. Run [=control message steps=] described by |front message|.
+The steps of a given control message can block processing later messages in the
+control message queue. Each [=codec=] instance has a boolean internal slot named
+<dfn>[[message queue blocked]]</dfn> that is set to `true` when this occurs. A
+blocking message will conclude by setting [=[[message queue blocked]]=] to
+`false` and rerunning the [=Process the control message queue=] steps.
+
+All control messages will return either `"processed"` or `"not processed"`.
+Returning `"processed"` indicates the message steps are being (or have been)
+executed and the message may be removed from the [=control message queue=].
+`"not processed"` indicates the message must could not be processed at this time
+and should remain in the [=control message queue=] to be retried later.
+
+To <dfn>Process the control message queue</dfn>, run these steps:
+1. While [=[[message queue blocked]]=] is `false` and
+    [=[[message queue blocked]]=] is `false`:
+    1. Let |front message| be the first message in
+        [=[[control message queue]]=].
+    2. Let |outcome| be the result of running the [=control message steps=]
+        described by |front message|.
+    3. If |outcome| equals `"not processed"`, break.
+    4. Otherwise, dequeue |front message| from the
+        [=[[control message queue]]=].
+
+Codec Work Parallel Queue {#codec-work-parallel-queue}
+------------------------------------------------------
+
+Each [=codec=] instance has an internal slot named
+<dfn>[[codec work queue]]</dfn> that is a [=parallel queue=].
+
+Each [=codec=] instance has an internal slot named
+<dfn>[[codec implementation]]</dfn> that refers to the underlying platform
+encoder or decoder. Except for assignment, any steps that reference
+[=[[codec implementation]]=] will be enqueued to the [=[[codec work queue]]=].
+
+Each [=codec=] instance has a unique <dfn>codec task source</dfn>. Tasks
+[=queue a task|queued=] from the [=[[codec work queue]]=] to the [=/event loop=]
+will use the [=codec task source=].
+
+DELETE ME {#delete-me}
+----------------------
+These dfns should be removed by the final commit in this PR. I've placed them
+here while I iterate to avoid breaking their references.
+
+<dfn>control thread</dfn>,
+<dfn>codec thread</dfn>
+
 
 AudioDecoder Interface {#audiodecoder-interface}
 ================================================
@@ -297,6 +320,12 @@ Internal Slots {#audiodecoder-internal-slots}
 ---------------------------------------------
 : <dfn attribute for=AudioDecoder>[[codec implementation]]</dfn>
 :: Underlying decoder implementation provided by the User Agent.
+: <dfn attribute for=AudioDecoder>[[message queue blocked]]</dfn>
+:: A boolean indicating when processing the [=control message queue=] is blocked
+    by a pending [=control message=]. See [=[[message queue blocked]]=].
+: <dfn attribute for=AudioDecoder>[[codec work queue]]</dfn>
+:: A [=parallel queue=] used for running parallel steps that reference the
+    {{AudioDecoder/[[codec implementation]]}}. See [=[[codec work queue]]=].
 : <dfn attribute for=AudioDecoder>[[output callback]]</dfn>
 :: Callback given at construction for decoded outputs.
 : <dfn attribute for=AudioDecoder>[[error callback]]</dfn>
@@ -319,11 +348,16 @@ Constructors {#audiodecoder-constructors}
   AudioDecoder(init)
 </dfn>
 1. Let d be a new {{AudioDecoder}} object.
-2. Assign init.output to {{AudioDecoder/[[output callback]]}}.
-3. Assign init.error to {{AudioDecoder/[[error callback]]}}.
-4. Assign `true` to {{AudioDecoder/[[key chunk required]]}}.
-5. Assign `"unconfigured"` to {{AudioDecoder/[[state]]}}
-6. Return d.
+2. Assign `null` to {{AudioDecoder/[[codec implementation]]}}.
+3. Assign `false` to {{AudioDecoder/[[message queue blocked]]}}.
+4. Assign the result of starting a new [=parallel queue=] to {{AudioDecoder/[[codec work queue]]}}.
+5. Assign init.output to {{AudioDecoder/[[output callback]]}}.
+6. Assign init.error to {{AudioDecoder/[[error callback]]}}.
+7. Assign `true` to {{AudioDecoder/[[key chunk required]]}}.
+8. Assign `"unconfigured"` to {{AudioDecoder/[[state]]}}
+9. Assign `0` to {{AudioDecoder/[[decodeQueueSize]]}}.
+10. Assign a new [=list=] to {{AudioDecoder/[[pending flush promises]]}}.
+11. Return d.
 
 Attributes {#audiodecoder-attributes}
 -------------------------------------
@@ -360,6 +394,7 @@ Methods {#audiodecoder-methods}
     3. Set {{AudioDecoder/[[state]]}} to `"configured"`.
     4. Set {{AudioDecoder/[[key chunk required]]}} to `true`.
     5. [=Queue a control message=] to configure the decoder with |config|.
+    6. [=Process the control message queue=].
 
     [=Running a control message=] to configure the decoder means running
     these steps:
@@ -369,7 +404,13 @@ Methods {#audiodecoder-methods}
         {{AudioDecoder/[[codec implementation]]}} with an implementation
         supporting |config|.
     3. Otherwise, run the <a>Close AudioDecoder</a> algorithm with
-        {{NotSupportedError}}.
+        {{NotSupportedError}} and return `"processed"`.
+    4. Assign `true` to {{AudioDecoder/[[message queue blocked]]}}.
+    5. Enqueue the following steps to {{AudioDecoder/[[codec work queue]]}}:
+        1. Configure {{AudioDecoder/[[codec implementation]]}} with |config|.
+        2. Assign `false` to {{AudioDecoder/[[message queue blocked]]}}.
+        3. [=Queue a task=] to [=Process the control message queue=].
+    6. Return `"processed"`.
   </dd>
 
   <dt><dfn method for=AudioDecoder>decode(chunk)</dfn></dt>
@@ -390,21 +431,25 @@ Methods {#audiodecoder-methods}
             {{AudioDecoder/[[key chunk required]]}}.
     3. Increment {{AudioDecoder/[[decodeQueueSize]]}}.
     4. [=Queue a control message=] to decode the |chunk|.
+    5. [=Process the control message queue=].
 
     [=Running a control message=] to decode the chunk means performing these
     steps:
-    1. Attempt to use {{AudioDecoder/[[codec implementation]]}} to decode the
-        chunk.
-    2. If decoding results in an error, queue a task on the [=control thread=]
-        event loop to run the [=Close AudioDecoder=] algorithm with
-        {{EncodingError}}.
-    3. Queue a task on the [=control thread=] event loop to decrement
-        {{AudioDecoder/[[decodeQueueSize]]}}.
-    4. Let |decoded outputs| be a [=list=] of decoded audio data outputs emitted
-        by {{AudioDecoder/[[codec implementation]]}}.
-    5. If |decoded outputs| is not empty, queue a task on the [=control thread=]
-        event loop to run the [=Output AudioData=] algorithm with
-        |decoded outputs|.
+    1. If the {{AudioDecoder/[[codec implementation]]}} is unable to accept
+        additional work at this time (saturated by prior calls to `decode()`),
+        return `"not processed"`.
+    2. Decrement {{AudioDecoder/[[decodeQueueSize]]}}.
+    3. Enqueue the following steps to the {{AudioDecoder/[[codec work queue]]}}:
+        1. Attempt to use {{AudioDecoder/[[codec implementation]]}} to decode
+            the chunk.
+        2. If decoding results in an error, [=queue a task=] to run the
+            [=Close AudioDecoder=] algorithm with {{EncodingError}}.
+        3. Let |decoded outputs| be a [=list=] of decoded audio data outputs
+            emitted by {{AudioDecoder/[[codec implementation]]}}.
+        4. If |decoded outputs| is not empty, [=queue a task=] to run the
+            [=Output AudioData=] algorithm with |decoded outputs|.
+        5. [=Queue a task=] to [=process the control message queue=].
+    4. Return `"processed"`.
   </dd>
 
   <dt><dfn method for=AudioDecoder>flush()</dfn></dt>
