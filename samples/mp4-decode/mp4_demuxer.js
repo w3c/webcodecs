@@ -159,8 +159,8 @@ class MP4Demuxer {
 
     let config = {
       codec: this.track.codec,
-      codedHeight: this.track.track_height,
-      codedWidth: this.track.track_width,
+      codedHeight: this.track.video.height,
+      codedWidth: this.track.video.width,
       description: extradata,
     }
 
