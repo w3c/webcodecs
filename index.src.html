@@ -200,6 +200,17 @@ Definitions {#definitions}
     "matrix" → {{VideoMatrixCoefficients/bt709}},
     "fullRange" → `false`]».
 
+: <dfn lt="saturated">Codec Saturation</dfn>
+:: The state of an underlying codec implementation where the number of active
+    decoding or encoding requests has reached an implementation specific
+    maximum such that it is temporarily unable to accept more work. The maximum
+    may be any value greater than 1, including infinity (no maximum). While
+    saturated, additional calls to `decode()` or `encode()` will be buffered
+    in the [=control message queue=], and will increment the respective
+    `decodeQueuSize` and `encodeQueueSize` attributes. The codec implementation
+    will become unsaturated after making sufficient progress on the current
+    workload.
+
 <dfn>Codec Processing Model</dfn> {#codec-processing-model-section}
 ===================================================================
 
@@ -326,6 +337,9 @@ Internal Slots {#audiodecoder-internal-slots}
 : <dfn attribute for=AudioDecoder>[[codec work queue]]</dfn>
 :: A [=parallel queue=] used for running parallel steps that reference the
     {{AudioDecoder/[[codec implementation]]}}. See [=[[codec work queue]]=].
+: <dfn attribute for=AudioDecoder>[[codec saturated]]</dfn>
+:: A boolean indicating when the [[codec implementation]] is unable to accept
+    additional decoding work.
 : <dfn attribute for=AudioDecoder>[[output callback]]</dfn>
 :: Callback given at construction for decoded outputs.
 : <dfn attribute for=AudioDecoder>[[error callback]]</dfn>
@@ -351,13 +365,14 @@ Constructors {#audiodecoder-constructors}
 2. Assign `null` to {{AudioDecoder/[[codec implementation]]}}.
 3. Assign `false` to {{AudioDecoder/[[message queue blocked]]}}.
 4. Assign the result of starting a new [=parallel queue=] to {{AudioDecoder/[[codec work queue]]}}.
-5. Assign init.output to {{AudioDecoder/[[output callback]]}}.
-6. Assign init.error to {{AudioDecoder/[[error callback]]}}.
-7. Assign `true` to {{AudioDecoder/[[key chunk required]]}}.
-8. Assign `"unconfigured"` to {{AudioDecoder/[[state]]}}
-9. Assign `0` to {{AudioDecoder/[[decodeQueueSize]]}}.
-10. Assign a new [=list=] to {{AudioDecoder/[[pending flush promises]]}}.
-11. Return d.
+5. Assign `false` to {{AudioDecoder/[[codec saturated]]}}.
+6. Assign init.output to {{AudioDecoder/[[output callback]]}}.
+7. Assign init.error to {{AudioDecoder/[[error callback]]}}.
+8. Assign `true` to {{AudioDecoder/[[key chunk required]]}}.
+9. Assign `"unconfigured"` to {{AudioDecoder/[[state]]}}
+10. Assign `0` to {{AudioDecoder/[[decodeQueueSize]]}}.
+11. Assign a new [=list=] to {{AudioDecoder/[[pending flush promises]]}}.
+12. Return d.
 
 Attributes {#audiodecoder-attributes}
 -------------------------------------
@@ -435,21 +450,27 @@ Methods {#audiodecoder-methods}
 
     [=Running a control message=] to decode the chunk means performing these
     steps:
-    1. If the {{AudioDecoder/[[codec implementation]]}} is unable to accept
-        additional work at this time (saturated by prior calls to `decode()`),
-        return `"not processed"`.
-    2. Decrement {{AudioDecoder/[[decodeQueueSize]]}}.
-    3. Enqueue the following steps to the {{AudioDecoder/[[codec work queue]]}}:
+    1. If {{AudioDecoder/[[codec saturated]]}} equals `true`, return `"not
+        processed"`.
+    2. If decoding chunk will cause the
+        {{AudioDecoder/[[codec implementation]]}} to become [=saturated=],
+        assign `true` to {{AudioDecoder/[[codec saturated]]}}.
+    3. Decrement {{AudioDecoder/[[decodeQueueSize]]}}.
+    4. Enqueue the following steps to the {{AudioDecoder/[[codec work queue]]}}:
         1. Attempt to use {{AudioDecoder/[[codec implementation]]}} to decode
             the chunk.
         2. If decoding results in an error, [=queue a task=] to run the
-            [=Close AudioDecoder=] algorithm with {{EncodingError}}.
-        3. Let |decoded outputs| be a [=list=] of decoded audio data outputs
+            [=Close AudioDecoder=] algorithm with {{EncodingError}} and return.
+        3. If {{AudioDecoder/[[codec saturated]]}} equals `true` and
+            {{AudioDecoder/[[codec implementation]]}} is no longer
+            [=saturated=], [=queue a task=] to perform the following steps:
+                1. Assign `false` to {{AudioDecoder/[[codec saturated]]}}.
+                2. [=Process the control message queue=].
+        4. Let |decoded outputs| be a [=list=] of decoded audio data outputs
             emitted by {{AudioDecoder/[[codec implementation]]}}.
-        4. If |decoded outputs| is not empty, [=queue a task=] to run the
+        5. If |decoded outputs| is not empty, [=queue a task=] to run the
             [=Output AudioData=] algorithm with |decoded outputs|.
-        5. [=Queue a task=] to [=process the control message queue=].
-    4. Return `"processed"`.
+    5. Return `"processed"`.
   </dd>
 
   <dt><dfn method for=AudioDecoder>flush()</dfn></dt>
