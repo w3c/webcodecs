@@ -5023,11 +5023,10 @@ ImageTrack Interface {#imagetrack-interface}
 <pre class='idl'>
 <xmp>
 [Exposed=(Window,DedicatedWorker)]
-interface ImageTrack : EventTarget {
+interface ImageTrack {
   readonly attribute boolean animated;
   readonly attribute unsigned long frameCount;
   readonly attribute unrestricted float repetitionCount;
-  attribute EventHandler onchange;
   attribute boolean selected;
 };
 </xmp>
@@ -5072,10 +5071,6 @@ interface ImageTrack : EventTarget {
 :: The {{ImageTrack/repetitionCount}} getter steps are to return the value of
     {{ImageTrack/[[repetition count]]}}.
 
-: <dfn attribute for=ImageTrack>onchange</dfn>
-:: An [=event handler IDL attribute=] whose [=event handler event type=] is
-    {{ImageTrack/change}}.
-
 : <dfn attribute for=ImageTrack>selected</dfn>
 :: The {{ImageTrack/selected}} getter steps are to return the value of
     {{ImageTrack/[[selected]]}}.
@@ -5113,12 +5108,6 @@ interface ImageTrack : EventTarget {
         {{ImageDecoder/[[internal selected track index]]}}.
     2. Remove all entries from
         {{ImageDecoder/[[progressive frame generations]]}}.
-
-
-### Event Summary ### {#imagetracklist-eventsummary}
-
-: <dfn event for=ImageTrack>change</dfn>
-:: Fired at the {{ImageTrack}} when the {{ImageTrack/frameCount}} is altered.
 
 Resource Reclamation{#resource-reclamation}
 ==============================================
