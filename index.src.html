@@ -2410,6 +2410,7 @@ AudioData Interface {#audiodata-interface}
 [Exposed=(Window,DedicatedWorker), Serializable, Transferable]
 interface AudioData {
   constructor(AudioDataInit init);
+  constructor(AudioData source, AudioDataCopyInit init);
 
   readonly attribute AudioSampleFormat? format;
   readonly attribute float sampleRate;
@@ -2431,6 +2432,10 @@ dictionary AudioDataInit {
   [EnforceRange] required unsigned long numberOfChannels;
   [EnforceRange] required long long timestamp;  // microseconds
   required BufferSource data;
+};
+
+dictionary AudioDataCopyInit {
+  [EnforceRange] required long long timestamp;  // microseconds
 };
 </xmp>
 
@@ -2462,7 +2467,7 @@ dictionary AudioDataInit {
   AudioData(init)
 </dfn>
 1. If |init| is not a [=valid AudioDataInit=], throw a {{TypeError}}.
-2. Let |frame| be a new {{AudioData}} object, initialized as follows:
+2. Let |audio| be a new {{AudioData}} object, initialized as follows:
     1. Assign `false` to {{platform object/[[Detached]]}}.
     2. Assign |init|.{{AudioDataInit/format}} to
         {{AudioData/[[format]]}}.
@@ -2478,7 +2483,30 @@ dictionary AudioDataInit {
         |init|.{{AudioDataInit/data}}.
     8. Let |resourceReference| be a reference to |resource|.
     9. Assign |resourceReference| to {{AudioData/[[resource reference]]}}.
-3. Return |frame|.
+3. Return |audio|.
+
+<dfn constructor for=AudioData title="AudioData(source, init)">
+  AudioData(source, init)
+</dfn>
+1. If |source|.{{platform object/[[Detached]]}} is `true`, throw an
+    {{InvalidStateError}} {{DOMException}}.
+2. Let |copy| be a new {{AudioData}} object, initialized as follows:
+    1. Assign `false` to {{platform object/[[Detached]]}}.
+    2. Assign |source|.{{AudioDataInit/format}} to
+        {{AudioData/[[format]]}}.
+    3. Assign |source|.{{AudioDataInit/sampleRate}} to
+        {{AudioData/[[sample rate]]}}.
+    4. Assign |source|.{{AudioDataInit/numberOfFrames}} to
+        {{AudioData/[[number of frames]]}}.
+    5. Assign |source|.{{AudioDataInit/numberOfChannels}} to
+        {{AudioData/[[number of channels]]}}.
+    6. Assign |init|.{{AudioDataInit/timestamp}} to
+        {{AudioData/[[timestamp]]}}.
+    7. Let |resource| be a [=media resource=] containing a copy of
+        |source|.{{AudioDataInit/data}}.
+    8. Let |resourceReference| be a reference to |resource|.
+    9. Assign |resourceReference| to {{AudioData/[[resource reference]]}}.
+3. Return |copy|.
 
 ### Attributes ###{#audiodata-attributes}
 
