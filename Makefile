@@ -12,7 +12,7 @@ ifdef WEBCODECS_IGNORE_WARNINGS
 	bikeshed -f spec $< $@
 else
 	@ echo "Building $@"
-	bikeshed --die-on=warning spec $< $@
+	bikeshed -f spec $< $@
 endif
 else
 	@ echo "Building $@ remotely"
