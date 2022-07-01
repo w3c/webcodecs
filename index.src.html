@@ -329,11 +329,15 @@ callback AudioDataOutputCallback = undefined(AudioData output);
 
 Internal Slots {#audiodecoder-internal-slots}
 ---------------------------------------------
+: <dfn attribute for=AudioDecoder>[[control message queue]]</dfn>
+:: A [=queue=] of [=control messages=] to be performed upon this [=codec=]
+    instance. See [=[[control message queue]]=].
+: <dfn attribute for=AudioDecoder>[[message queue blocked]]</dfn>
+:: A boolean indicating when processing the
+    {{AudioDecoder/[[control message queue]]}} is blocked by a pending
+    [=control message=]. See [=[[message queue blocked]]=].
 : <dfn attribute for=AudioDecoder>[[codec implementation]]</dfn>
 :: Underlying decoder implementation provided by the User Agent.
-: <dfn attribute for=AudioDecoder>[[message queue blocked]]</dfn>
-:: A boolean indicating when processing the [=control message queue=] is blocked
-    by a pending [=control message=]. See [=[[message queue blocked]]=].
 : <dfn attribute for=AudioDecoder>[[codec work queue]]</dfn>
 :: A [=parallel queue=] used for running parallel steps that reference the
     {{AudioDecoder/[[codec implementation]]}}. See [=[[codec work queue]]=].
@@ -483,22 +487,24 @@ Methods {#audiodecoder-methods}
         [=a promise rejected with=] {{InvalidStateError}} {{DOMException}}.
     2. Set {{AudioDecoder/[[key chunk required]]}} to `true`.
     3. Let |promise| be a new Promise.
-    4. [=Queue a control message=] to flush the codec with |promise|.
-    5. Append |promise| to {{AudioDecoder/[[pending flush promises]]}}.
-    6. Return |promise|.
+    4. Append |promise| to {{AudioDecoder/[[pending flush promises]]}}.
+    5. [=Queue a control message=] to flush the codec with |promise|.
+    6. [=Process the control message queue=].
+    7. Return |promise|.
 
-    [=Running a control message=] to flush the codec means performing these steps
-        with |promise|.
-    1. Signal {{AudioDecoder/[[codec implementation]]}} to emit all [=internal
-        pending outputs=].
-    2. Let |decoded outputs| be a [=list=] of decoded audio data outputs emitted
-        by {{AudioDecoder/[[codec implementation]]}}.
-    3. If |decoded outputs| is not empty, queue a task on the [=control thread=]
-        event loop to run the [=Output AudioData=] algorithm with
-        |decoded outputs|.
-    4. Queue a task on the [=control thread=] event loop to run these steps:
-        1. Remove |promise| from {{AudioDecoder/[[pending flush promises]]}}.
-        2. Resolve |promise|.
+    [=Running a control message=] to flush the codec means performing these
+    steps with |promise|.
+    1. Enqueue the following steps to the {{AudioDecoder/[[codec work queue]]}}:
+        1. Signal {{AudioDecoder/[[codec implementation]]}} to emit all
+            [=internal pending outputs=].
+        2. Let |decoded outputs| be a [=list=] of decoded audio data outputs
+            emitted by {{AudioDecoder/[[codec implementation]]}}.
+        3. [=Queue a task=] to perform these steps:
+            1. If |decoded outputs| is not empty, run the [=Output AudioData=]
+                algorithm with |decoded outputs|.
+            2. Remove |promise| from
+                {{AudioDecoder/[[pending flush promises]]}}.
+            3. Resolve |promise|.
   </dd>
 
   <dt><dfn method for=AudioDecoder>reset()</dfn></dt>
@@ -580,7 +586,8 @@ Algorithms {#audiodecoder-algorithms}
     2. Set {{AudioDecoder/[[state]]}} to `"unconfigured"`.
     3. Signal {{AudioDecoder/[[codec implementation]]}} to cease producing
         output for the previous configuration.
-    4. Remove all [=control messages=] from the [=control message queue=].
+    4. Remove all [=control messages=] from the
+        {{AudioDecoder/[[control message queue]]}}.
     5. Set {{AudioDecoder/[[decodeQueueSize]]}} to zero.
     6. For each |promise| in {{AudioDecoder/[[pending flush promises]]}}:
         1. Reject |promise| with |exception|.
@@ -593,8 +600,8 @@ Algorithms {#audiodecoder-algorithms}
     2. Set {{AudioDecoder/[[state]]}} to `"closed"`.
     3. Clear {{AudioDecoder/[[codec implementation]]}} and release associated
         [=system resources=].
-    4. If |exception| is not an {{AbortError}} {{DOMException}}, queue a task on
-        the [=control thread=] event loop to invoke the {{AudioDecoder/[[error callback]]}} with |exception|.
+    4. If |exception| is not an {{AbortError}} {{DOMException}},
+        [=queue a task=] to invoke the {{AudioDecoder/[[error callback]]}} with |exception|.
   </dd>
 </dl>
 
