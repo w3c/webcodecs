@@ -1104,7 +1104,7 @@ Methods {#audioencoder-methods}
     steps:
     1. If {{AudioEncoder/[[codec saturated]]}} equals `true`, return `"not
         processed"`.
-    2. If encoding chunk will cause the
+    2. If encoding |data| will cause the
         {{AudioEncoder/[[codec implementation]]}} to become [=saturated=],
         assign `true` to {{AudioEncoder/[[codec saturated]]}}.
     3. Decrement {{AudioEncoder/[[encodeQueueSize]]}}.
@@ -1332,45 +1332,58 @@ callback EncodedVideoChunkOutputCallback =
 
 Internal Slots {#videoencoder-internal-slots}
 ---------------------------------------------
-<dl>
-<dt><dfn attribute for=VideoEncoder>[[codec implementation]]</dfn></dt>
-<dd>Underlying encoder implementation provided by the User Agent.</dd>
-<dt><dfn attribute for=VideoEncoder>[[output callback]]</dfn></dt>
-<dd>Callback given at construction for encoded outputs.</dd>
-<dt><dfn attribute for=VideoEncoder>[[error callback]]</dfn></dt>
-<dd>Callback given at construction for encode errors.</dd>
-<dt><dfn attribute for=VideoEncoder>[[active encoder config]]</dfn></dt>
-<dd>The {{VideoEncoderConfig}} that is actively applied.</dd>
-<dt><dfn attribute for=VideoEncoder>[[active output config]]</dfn></dt>
-<dd>
-  The {{VideoDecoderConfig}} that describes how to decode the most recently
-  emitted {{EncodedVideoChunk}}.
-</dd>
-<dt><dfn attribute for=VideoEncoder>\[[state]]</dfn></dt>
-<dd>
-  The current {{CodecState}} of this {{VideoEncoder}}.
-</dd>
-<dt><dfn attribute for=VideoEncoder>\[[encodeQueueSize]]</dfn></dt>
-<dd>
-  The number of pending encode requests. This number will decrease as the
-  underlying codec is ready to accept new input.
-</dd>
-<dt><dfn attribute for=VideoEncoder>[[pending flush promises]]</dfn></dt>
-<dd>
-  A list of unresolved promises returned by calls to {{VideoEncoder/flush()}}.
-</dd>
-</dl>
+: <dfn attribute for=VideoEncoder>[[control message queue]]</dfn>
+:: A [=queue=] of [=control messages=] to be performed upon this [=codec=]
+    instance. See [=[[control message queue]]=].
+: <dfn attribute for=VideoEncoder>[[message queue blocked]]</dfn>
+:: A boolean indicating when processing the
+    {{VideoEncoder/[[control message queue]]}} is blocked by a pending
+    [=control message=]. See [=[[message queue blocked]]=].
+: <dfn attribute for=VideoEncoder>[[codec implementation]]</dfn>
+:: Underlying encoder implementation provided by the User Agent.
+: <dfn attribute for=VideoEncoder>[[codec work queue]]</dfn>
+:: A [=parallel queue=] used for running parallel steps that reference the
+    {{VideoEncoder/[[codec implementation]]}}. See [=[[codec work queue]]=].
+: <dfn attribute for=VideoEncoder>[[codec saturated]]</dfn>
+:: A boolean indicating when the [[codec implementation]] is unable to accept
+    additional encoding work.
+: <dfn attribute for=VideoEncoder>[[output callback]]</dfn>
+:: Callback given at construction for encoded outputs.
+: <dfn attribute for=VideoEncoder>[[error callback]]</dfn>
+:: Callback given at construction for encode errors.
+: <dfn attribute for=VideoEncoder>[[active encoder config]]</dfn>
+:: The {{VideoEncoderConfig}} that is actively applied.
+: <dfn attribute for=VideoEncoder>[[active output config]]</dfn>
+:: The {{VideoDecoderConfig}} that describes how to decode the most recently
+    emitted {{EncodedVideoChunk}}.
+: <dfn attribute for=VideoEncoder>\[[state]]</dfn>
+:: The current {{CodecState}} of this {{VideoEncoder}}.
+: <dfn attribute for=VideoEncoder>\[[encodeQueueSize]]</dfn>
+:: The number of pending encode requests. This number will decrease as the
+    underlying codec is ready to accept new input.
+: <dfn attribute for=VideoEncoder>[[pending flush promises]]</dfn>
+:: A list of unresolved promises returned by calls to {{VideoEncoder/flush()}}.
 
 Constructors {#videoencoder-constructors}
 -----------------------------------------
 <dfn constructor for=VideoEncoder title="VideoEncoder(init)">
   VideoEncoder(init)
 </dfn>
-1. Let e be a new VideoEncoder object.
-2. Assign `init.output` to the {{VideoEncoder/[[output callback]]}} internal slot.
-3. Assign `init.error` to the {{VideoEncoder/[[error callback]]}} internal slot.
-4. Assign "unconfigured" to {{VideoEncoder/[[state]]}}.
-5. Return e.
+1. Let e be a new {{VideoEncoder}} object.
+2. Assign a new [=queue=] to {{VideoEncoder/[[control message queue]]}}.
+3. Assign `false` to {{VideoEncoder/[[message queue blocked]]}}.
+4. Assign `null` to {{VideoEncoder/[[codec implementation]]}}.
+5. Assign the result of starting a new [=parallel queue=] to
+    {{VideoEncoder/[[codec work queue]]}}.
+6. Assign `false` to {{VideoEncoder/[[codec saturated]]}}.
+7. Assign init.output to {{VideoEncoder/[[output callback]]}}.
+8. Assign init.error to {{VideoEncoder/[[error callback]]}}.
+9. Assign `null` to {{VideoEncoder/[[active encoder config]]}}.
+10. Assign `null` to {{VideoEncoder/[[active output config]]}}.
+11. Assign `"unconfigured"` to {{VideoEncoder/[[state]]}}
+12. Assign `0` to {{VideoEncoder/[[encodeQueueSize]]}}.
+13. Assign a new [=list=] to {{VideoEncoder/[[pending flush promises]]}}.
+14. Return e.
 
 Attributes {#videoencoder-attributes}
 -------------------------------------
@@ -1404,20 +1417,28 @@ Methods {#videoencoder-methods}
     When invoked, run these steps:
     1. If |config| is not a [=valid VideoEncoderConfig=], throw a
         {{TypeError}}.
-    2. If {{VideoEncoder/[[state]]}} is `"closed"`, throw an {{InvalidStateError}}.
+    2. If {{VideoEncoder/[[state]]}} is `"closed"`, throw an
+        {{InvalidStateError}}.
     3. Set {{VideoEncoder/[[state]]}} to `"configured"`.
     4. [=Queue a control message=] to configure the encoder using |config|.
+    5. [=Process the control message queue=].
 
-    [=Running a control message=] to configure the encoder means performing these
-    steps:
+    [=Running a control message=] to configure the encoder means performing
+    these steps:
     1. Let |supported| be the result of running the <a>Check Configuration
         Support</a> algorithm with |config|.
     2. If |supported| is `true`, assign
         {{VideoEncoder/[[codec implementation]]}} with an implementation
         supporting |config|.
     3. Otherwise, run the <a>Close VideoEncoder</a> algorithm with
-        {{NotSupportedError}} and abort these steps.
-    4. Assign |config| to {{VideoEncoder/[[active encoder config]]}}.
+        {{NotSupportedError}} and return `"processed"`.
+    4. Assign `true` to {{VideoEncoder/[[message queue blocked]]}}.
+    5. Enqueue the following steps to {{VideoEncoder/[[codec work queue]]}}:
+        1. Configure {{VideoEncoder/[[codec implementation]]}} with |config|.
+        2. Set {{VideoEncoder/[[active encoder config]]}} to `config`.
+        3. Assign `false` to {{VideoEncoder/[[message queue blocked]]}}.
+        4. [=Queue a task=] to [=Process the control message queue=].
+    6. Return `"processed"`.
   </dd>
 
   <dt><dfn method for=VideoEncoder>encode(|frame|, |options|)</dfn></dt>
@@ -1425,28 +1446,39 @@ Methods {#videoencoder-methods}
     [=Enqueues a control message=] to encode the given |frame|.
 
     When invoked, run these steps:
-    1. If the value of |frame|'s {{platform object/[[Detached]]}} internal slot is
-        `true`, throw a {{TypeError}}.
+    1. If the value of |frame|'s {{platform object/[[Detached]]}} internal slot
+        is `true`, throw a {{TypeError}}.
     2. If {{VideoEncoder/[[state]]}} is not `"configured"`, throw an
         {{InvalidStateError}}.
     3. Let |frameClone| hold the result of running the [=Clone VideoFrame=]
         algorithm with |frame|.
     4. Increment {{VideoEncoder/[[encodeQueueSize]]}}.
     5. [=Queue a control message=] to encode |frameClone|.
+    6. [=Process the control message queue=].
 
-    [=Running a control message=] to encode the frame means performing these steps.
-    1. Attempt to use {{VideoEncoder/[[codec implementation]]}} to encode
-        |frameClone| according to |options|.
-    2. If encoding results in an error, queue a task on the [=control thread=]
-        event loop to run the [=Close VideoEncoder=] algorithm with
-        {{EncodingError}}.
-    3. Queue a task on the [=control thread=] event loop to decrement
-        {{VideoEncoder/[[encodeQueueSize]]}}.
-    4. Let |encoded outputs| be a [=list=] of encoded video data outputs
-        emitted by {{VideoEncoder/[[codec implementation]]}}.
-    5. If |encoded outputs| is not empty, queue a task on the [=control thread=]
-        event loop to run the [=Output EncodedVideoChunks=] algorithm with
-        |encoded outputs|.
+    [=Running a control message=] to encode the frame means performing these
+    steps:
+    1. If {{VideoEncoder/[[codec saturated]]}} equals `true`, return `"not
+        processed"`.
+    2. If encoding |frame| will cause the
+        {{VideoEncoder/[[codec implementation]]}} to become [=saturated=],
+        assign `true` to {{VideoEncoder/[[codec saturated]]}}.
+    3. Decrement {{VideoEncoder/[[encodeQueueSize]]}}.
+    4. Enqueue the following steps to the {{VideoEncoder/[[codec work queue]]}}:
+        1. Attempt to use {{VideoEncoder/[[codec implementation]]}} to encode
+            the |frameClone| according to |options|.
+        2. If encoding results in an error, [=queue a task=] to run the
+            [=Close VideoEncoder=] algorithm with {{EncodingError}} and return.
+        3. If {{VideoEncoder/[[codec saturated]]}} equals `true` and
+            {{VideoEncoder/[[codec implementation]]}} is no longer
+            [=saturated=], [=queue a task=] to perform the following steps:
+                1. Assign `false` to {{VideoEncoder/[[codec saturated]]}}.
+                2. [=Process the control message queue=].
+        4. Let |encoded outputs| be a [=list=] of encoded video data outputs
+            emitted by {{VideoEncoder/[[codec implementation]]}}.
+        5. If |encoded outputs| is not empty, [=queue a task=] to run the
+            [=Output EncodedVideoChunks=] algorithm with |encoded outputs|.
+    5. Return `"processed"`.
   </dd>
 
   <dt><dfn method for=VideoEncoder>flush()</dfn></dt>
@@ -1458,22 +1490,24 @@ Methods {#videoencoder-methods}
     1. If {{VideoEncoder/[[state]]}} is not `"configured"`, return
         [=a promise rejected with=] {{InvalidStateError}} {{DOMException}}.
     2. Let |promise| be a new Promise.
-    3. [=Queue a control message=] to flush the codec with |promise|.
-    4. Append |promise| to {{VideoEncoder/[[pending flush promises]]}}.
-    5. Return |promise|.
+    3. Append |promise| to {{VideoEncoder/[[pending flush promises]]}}.
+    4. [=Queue a control message=] to flush the codec with |promise|.
+    5. [=Process the control message queue=].
+    6. Return |promise|.
 
-    [=Running a control message=] to flush the codec means performing these steps
-        with |promise|.
-    1. Signal {{VideoEncoder/[[codec implementation]]}} to emit all [=internal
-        pending outputs=].
-    2. Let |encoded outputs| be a [=list=] of encoded video data outputs
-        emitted by {{VideoEncoder/[[codec implementation]]}}.
-    3. If |encoded outputs| is not empty, queue a task on the [=control thread=]
-        event loop to run the [=Output EncodedVideoChunks=] algorithm with
-        |encoded outputs|.
-    4. Queue a task on the [=control thread=] event loop to run these steps:
-        1. Remove |promise| from {{VideoEncoder/[[pending flush promises]]}}.
-        2. Resolve |promise|.
+    [=Running a control message=] to flush the codec means performing these
+    steps with |promise|:
+    1. Enqueue the following steps to the {{VideoEncoder/[[codec work queue]]}}:
+        1. Signal {{VideoEncoder/[[codec implementation]]}} to emit all
+            [=internal pending outputs=].
+        2. Let |encoded outputs| be a [=list=] of encoded video data outputs
+            emitted by {{VideoEncoder/[[codec implementation]]}}.
+        3. [=Queue a task=] to perform these steps:
+            1. If |encoded outputs| is not empty, run the
+                [=Output EncodedVideoChunks=] algorithm with |encoded outputs|.
+            2. Remove |promise| from
+                {{VideoEncoder/[[pending flush promises]]}}.
+            3. Resolve |promise|.
   </dd>
 
   <dt><dfn method for=VideoEncoder>reset()</dfn></dt>
@@ -1600,7 +1634,8 @@ Algorithms {#videoencoder-algorithms}
     4. Set {{VideoEncoder/[[active output config]]}} to `null`.
     5. Signal {{VideoEncoder/[[codec implementation]]}} to cease producing
         output for the previous configuration.
-    6. Remove all [=control messages=] from the [=control message queue=].
+    6. Remove all [=control messages=] from the
+        {{VideoEncoder/[[control message queue]]}}.
     7. Set {{VideoEncoder/[[encodeQueueSize]]}} to zero.
     8. For each |promise| in {{VideoEncoder/[[pending flush promises]]}}:
         1. Reject |promise| with |exception|.
@@ -1613,8 +1648,9 @@ Algorithms {#videoencoder-algorithms}
     2. Set {{VideoEncoder/[[state]]}} to `"closed"`.
     3. Clear {{VideoEncoder/[[codec implementation]]}} and release associated
         [=system resources=].
-    4. If |exception| is not an {{AbortError}} {{DOMException}}, queue a task on
-        the [=control thread=] event loop to invoke the {{AudioDecoder/[[error callback]]}} with |exception|.
+    4. If |exception| is not an {{AbortError}} {{DOMException}},
+        [=queue a task=] to invoke the {{VideoEncoder/[[error callback]]}} with
+        |exception|.
   </dd>
 </dl>
 
