@@ -352,6 +352,9 @@ Internal Slots {#audiodecoder-internal-slots}
     underlying codec is ready to accept new input.
 : <dfn attribute for=AudioDecoder>[[pending flush promises]]</dfn>
 :: A list of unresolved promises returned by calls to {{AudioDecoder/flush()}}.
+: <dfn attribute for=AudioDecoder>[[dequeue event scheduled]]</dfn>
+:: A boolean indicating whether a {{AudioDecoder/dequeue}} event is already
+    scheduled to fire. Used to avoid event spam.
 
 Constructors {#audiodecoder-constructors}
 -----------------------------------------
@@ -371,6 +374,7 @@ Constructors {#audiodecoder-constructors}
 10. Assign `"unconfigured"` to {{AudioDecoder/[[state]]}}
 11. Assign `0` to {{AudioDecoder/[[decodeQueueSize]]}}.
 12. Assign a new [=list=] to {{AudioDecoder/[[pending flush promises]]}}.
+13. Assign `false` to {{AudioDecoder/[[dequeue event scheduled]]}}.
 13. Return d.
 
 Attributes {#audiodecoder-attributes}
@@ -456,8 +460,8 @@ Methods {#audiodecoder-methods}
     2. If decoding chunk will cause the
         {{AudioDecoder/[[codec implementation]]}} to become [=saturated=],
         assign `true` to {{AudioDecoder/[[codec saturated]]}}.
-    3. Decrement {{AudioDecoder/[[decodeQueueSize]]}} and fire a simple event named
-        {{AudioDecoder/dequeue}} at [=this=].
+    3. Decrement {{AudioDecoder/[[decodeQueueSize]]}} and run the
+        [=Schedule Dequeue Event=] algorithm.
     4. Enqueue the following steps to the {{AudioDecoder/[[codec work queue]]}}:
         1. Attempt to use {{AudioDecoder/[[codec implementation]]}} to decode
             the chunk.
@@ -556,6 +560,14 @@ Methods {#audiodecoder-methods}
 Algorithms {#audiodecoder-algorithms}
 -------------------------------------
 <dl>
+  <dt><dfn>Schedule Dequeue Event</dfn>
+  <dd>
+    1. If {{AudioDecoder/[[dequeue event scheduled]]}} equals `true`, return.
+    2. Assign `true` to {{AudioDecoder/[[dequeue event scheduled]]}}.
+    3. [=Queue a task=] to run the following steps:
+        1. Fire a simple event named {{AudioDecoder/dequeue}} at [=this=].
+        2. Assign `false` to {{AudioDecoder/[[dequeue event scheduled]]}}.
+  </dd>
   <dt><dfn>Output AudioData</dfn> (with |outputs|)</dt>
   <dd>
     Run these steps:
@@ -586,8 +598,9 @@ Algorithms {#audiodecoder-algorithms}
         output for the previous configuration.
     4. Remove all [=control messages=] from the
         {{AudioDecoder/[[control message queue]]}}.
-    5. Set {{AudioDecoder/[[decodeQueueSize]]}} to zero.
-    6. Fire a simple event named {{AudioDecoder/dequeue}} at [=this=].
+    5. If {{AudioDecoder/[[decodeQueueSize]]}} is greater than zero:
+        1. Set {{AudioDecoder/[[decodeQueueSize]]}} to zero.
+        2. Run the [=Schedule Dequeue Event=] algorithm.
     7. For each |promise| in {{AudioDecoder/[[pending flush promises]]}}:
         1. Reject |promise| with |exception|.
         2. Remove |promise| from {{AudioDecoder/[[pending flush promises]]}}.
