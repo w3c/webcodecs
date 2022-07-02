@@ -290,14 +290,6 @@ Each [=codec=] instance has a unique <dfn>codec task source</dfn>. Tasks
 [=queue a task|queued=] from the [=[[codec work queue]]=] to the [=/event loop=]
 will use the [=codec task source=].
 
-DELETE ME {#delete-me}
-----------------------
-These dfns should be removed by the final commit in this PR. I've placed them
-here while I iterate to avoid breaking their references.
-
-<dfn>control thread</dfn>,
-<dfn>codec thread</dfn>
-
 
 AudioDecoder Interface {#audiodecoder-interface}
 ================================================
@@ -4532,6 +4524,19 @@ interface ImageDecoder {
 
 ### Internal Slots ### {#imagedecoder-internal-slots}
 
+: <dfn attribute for=ImageDecoder>[[control message queue]]</dfn>
+:: A [=queue=] of [=control messages=] to be performed upon this [=codec=]
+    instance. See [=[[control message queue]]=].
+
+: <dfn attribute for=ImageDecoder>[[message queue blocked]]</dfn>
+:: A boolean indicating when processing the
+    {{ImageDecoder/[[control message queue]]}} is blocked by a pending
+    [=control message=]. See [=[[message queue blocked]]=].
+
+: <dfn attribute for=ImageDecoder>[[codec work queue]]</dfn>
+:: A [=parallel queue=] used for running parallel steps that reference the
+    {{ImageDecoder/[[codec implementation]]}}. See [=[[codec work queue]]=].
+
 : <dfn attribute for=ImageDecoder>\[[ImageTrackList]]</dfn>
 :: An {{ImageTrackList}} describing the tracks found in
     {{ImageDecoder/[[encoded data]]}}
@@ -4563,7 +4568,7 @@ interface ImageDecoder {
 
 : <dfn attribute for=ImageDecoder>[[internal selected track index]]</dfn>
 :: Identifies the image track within {{ImageDecoder/[[encoded data]]}} that is
-    used by decoding algorithms on the [=codec thread=].
+    used by decoding algorithms.
 
 : <dfn attribute for=ImageDecoder>[[tracks established]]</dfn>
 :: A boolean indicating whether the track list has been established in
@@ -4596,32 +4601,37 @@ interface ImageDecoder {
     2. Let |d| be a new {{ImageDecoder}} object. In the steps below, all
         mentions of {{ImageDecoder}} members apply to |d| unless stated
         otherwise.
-    3. Assign {{ImageDecoder/[[ImageTrackList]]}} a new {{ImageTrackList}}
+    3. Assign a new [=queue=] to {{ImageDecoder/[[control message queue]]}}.
+    4. Assign `false` to {{ImageDecoder/[[message queue blocked]]}}.
+    5. Assign the result of starting a new [=parallel queue=] to
+        {{ImageDecoder/[[codec work queue]]}}.
+    6. Assign {{ImageDecoder/[[ImageTrackList]]}} a new {{ImageTrackList}}
         initialized as follows:
         1. Assign a new [=list=] to {{ImageTrackList/[[track list]]}}.
         2. Assign `-1` to {{ImageTrackList/[[selected index]]}}.
-    4. Assign {{ImageDecoderInit/type}} to {{ImageDecoder/[[type]]}}.
-    5. Assign `null` to {{ImageDecoder/[[codec implementation]]}}.
-    6. If `init.preferAnimation` [=map/exists=], assign `init.preferAnimation`
+    7. Assign {{ImageDecoderInit/type}} to {{ImageDecoder/[[type]]}}.
+    8. Assign `null` to {{ImageDecoder/[[codec implementation]]}}.
+    9. If `init.preferAnimation` [=map/exists=], assign `init.preferAnimation`
         to the {{ImageDecoder/[[prefer animation]]}} internal slot. Otherwise,
         assign 'null' to {{ImageDecoder/[[prefer animation]]}} internal slot.
-    7. Assign a new [=list=] to {{ImageDecoder/[[pending decode promises]]}}.
-    8. Assign `-1` to {{ImageDecoder/[[internal selected track index]]}}.
-    9. Assign `false` to {{ImageDecoder/[[tracks established]]}}.
-    10. Assign `false` to {{ImageDecoder/[[closed]]}}.
-    11. Assign a new [=map=] to {{ImageDecoder/[[progressive frame
+    10. Assign a new [=list=] to {{ImageDecoder/[[pending decode promises]]}}.
+    11. Assign `-1` to {{ImageDecoder/[[internal selected track index]]}}.
+    12. Assign `false` to {{ImageDecoder/[[tracks established]]}}.
+    13. Assign `false` to {{ImageDecoder/[[closed]]}}.
+    14. Assign a new [=map=] to {{ImageDecoder/[[progressive frame
         generations]]}}.
-    12. If |init|'s {{ImageDecoderInit/data}} member is of type
+    15. If |init|'s {{ImageDecoderInit/data}} member is of type
         {{ReadableStream}}:
         1. Assign a new [=list=] to {{ImageDecoder/[[encoded data]]}}.
         2. Assign `false` to {{ImageDecoder/[[complete]]}}
         3. [=Queue a control message=] to [=configure the image decoder=] with
             |init|.
-        4. Let |reader| be the result of [=getting a reader=] for
+        4. [=Process the control message queue=].
+        5. Let |reader| be the result of [=getting a reader=] for
             {{ImageDecoderInit/data}}.
-        5. In parallel, perform the [=Fetch Stream Data Loop=] on |d| with
+        6. In parallel, perform the [=Fetch Stream Data Loop=] on |d| with
             |reader|.
-    13. Otherwise:
+    16. Otherwise:
         1. Assert that `init.data` is of type {{BufferSource}}.
         2. Assign a copy of `init.data` to  {{ImageDecoder/[[encoded data]]}}.
         3. Assign `true` to {{ImageDecoder/[[complete]]}}.
@@ -4629,28 +4639,33 @@ interface ImageDecoder {
         5. Queue a control message to [=configure the image decoder=] with
             |init|.
         6. Queue a control message to [=decode track metadata=].
-    14. return |d|.
+        7. [=Process the control message queue=].
+    17. return |d|.
 
     [=Running a control message=] to <dfn>configure the image decoder</dfn>
     means running these steps:
     1. Let |supported| be the result of running the [=ImageDecoder/Check Type
         Support=] algorithm with `init.type`.
-    2. If |supported| is `false`, queue a task on the [=control thread=] event
-        loop to run the [=ImageDecoder/Close ImageDecoder=] algorithm
-        with a {{NotSupportedError}} {{DOMException}} and abort
-        these steps.
-    3. If |supported| is `true`, assign the
-        {{ImageDecoder/[[codec implementation]]}} internal slot with an
-        implementation supporting `init.type`
-    4. Configure {{ImageDecoder/[[codec implementation]]}} in accordance with
-        the values given for {{ImageDecoderInit/premultiplyAlpha}},
-        {{ImageDecoderInit/colorSpaceConversion}},
-        {{ImageDecoderInit/desiredWidth}}, and
-        {{ImageDecoderInit/desiredHeight}}.
+    2. If |supported| is `false`, run the [=ImageDecoder/Close ImageDecoder=]
+        algorithm with a {{NotSupportedError}} {{DOMException}} and return
+        `"processed"`.
+    3. Otherwise, assign the {{ImageDecoder/[[codec implementation]]}} internal
+        slot with an implementation supporting `init.type`
+    3. Assign `true` to {{ImageDecoder/[[message queue blocked]]}}.
+    3. Enqueue the following steps to the {{ImageDecoder/[[codec work queue]]}}:
+        1. Configure {{ImageDecoder/[[codec implementation]]}} in accordance
+            with the values given for {{ImageDecoderInit/premultiplyAlpha}},
+            {{ImageDecoderInit/colorSpaceConversion}},
+            {{ImageDecoderInit/desiredWidth}}, and
+            {{ImageDecoderInit/desiredHeight}}.
+        2. Assign `false` to {{ImageDecoder/[[message queue blocked]]}}.
+        3. [=Queue a task=] to [=Process the control message queue=].
+    4. Return `"processed"`.
 
     [=Running a control message=] to <dfn>decode track metadata</dfn> means
     running these steps:
-    1. Run the [=ImageDecoder/Establish Tracks=] algorithm.
+    1. Enqueue the following steps to the {{ImageDecoder/[[codec work queue]]}}:
+        1. Run the [=ImageDecoder/Establish Tracks=] algorithm.
 
 ### Attributes ### {#imagedecoder-attributes}
 : <dfn attribute for=ImageDecoder>type</dfn>
@@ -4692,19 +4707,23 @@ interface ImageDecoder {
     3. If |options| is `undefined`, assign a new {{ImageDecodeOptions}} to
         |options|.
     4. Let |promise| be a new {{Promise}}.
-    5. [=Queue a control message=] to decode the image with |options|, and
+    5. Append |promise| to {{ImageDecoder/[[pending decode promises]]}}.
+    6. [=Queue a control message=] to decode the image with |options|, and
         |promise|.
-    6. Append |promise| to {{ImageDecoder/[[pending decode promises]]}}.
-    7. Return |promise|.
+    7. [=Process the control message queue=].
+    8. Return |promise|.
 
     [=Running a control message=] to decode the image means running these
     steps:
-    1. Wait for {{ImageDecoder/[[tracks established]]}} to become `true`.
-    2. If |options|.{{ImageDecodeOptions/completeFramesOnly}} is `false` and
-        the image is a [=Progressive Image=] for which the User Agent supports
-        progressive decoding, run the [=Decode Progressive Frame=] algorithm with |options|.{{ImageDecodeOptions/frameIndex}} and |promise|.
-    3. Otherwise, run the [=Decode Complete Frame=] algorithm with
-        |options|.{{ImageDecodeOptions/frameIndex}} and |promise|.
+    1. Enqueue the following steps to the {{ImageDecoder/[[codec work queue]]}}:
+        1. Wait for {{ImageDecoder/[[tracks established]]}} to become `true`.
+        2. If |options|.{{ImageDecodeOptions/completeFramesOnly}} is `false` and
+            the image is a [=Progressive Image=] for which the User Agent
+            supports progressive decoding, run the [=Decode Progressive Frame=]
+            algorithm with |options|.{{ImageDecodeOptions/frameIndex}} and
+            |promise|.
+        3. Otherwise, run the [=Decode Complete Frame=] algorithm with
+            |options|.{{ImageDecodeOptions/frameIndex}} and |promise|.
 
 : <dfn method for=ImageDecoder>reset()</dfn>
 :: Immediately aborts all pending work.
@@ -4739,9 +4758,8 @@ interface ImageDecoder {
 
         : [=read request/chunk steps=], given |chunk|
         :: 1. If {{ImageDecoder/[[closed]]}} is `true`, abort these steps.
-            2. If |chunk| is not a Uint8Array object, queue a task on the
-                [=control thread=] event loop to run the
-                [=ImageDecoder/Close ImageDecoder=] algorithm with a
+            2. If |chunk| is not a Uint8Array object, [=queue a task=] to run
+                the [=ImageDecoder/Close ImageDecoder=] algorithm with a
                 {{DataError}} {{DOMException}} and abort these steps.
             3. Let |bytes| be the byte sequence represented by the Uint8Array
                 object.
@@ -4757,9 +4775,8 @@ interface ImageDecoder {
             2. Resolve {{ImageDecoder/[[completed promise]]}}.
 
         : [=read request/error steps=]
-        :: 1. Queue a task on the [=control thread=] event loop to run the
-                [=ImageDecoder/Close ImageDecoder=] algorithm with a
-                {{NotReadableError}} {{DOMException}}
+        :: 1. [=Queue a task=] to run the [=ImageDecoder/Close ImageDecoder=]
+                algorithm with a {{NotReadableError}} {{DOMException}}
 
     2. Read a chunk from |reader| given |readRequest|.
 
@@ -4768,11 +4785,10 @@ interface ImageDecoder {
     1. Assert {{ImageDecoder/[[tracks established]]}} is `false`.
     2. If {{ImageDecoder/[[encoded data]]}} does not contain enough data to
         determine the number of tracks:
-        1. If {{ImageDecoder/complete}} is `true`, queue a task on the
-            [=control thread=] event loop to run the [=ImageDecoder/Close ImageDecoder=] algorithm.
+        1. If {{ImageDecoder/complete}} is `true`, [=queue a task=] to run the
+            [=ImageDecoder/Close ImageDecoder=] algorithm.
         2. Abort these steps.
-    3. If the number of tracks is found to be `0`, queue a task on the
-        [=control thread=] event loop to run the
+    3. If the number of tracks is found to be `0`, [=queue a task=] to run the
         [=ImageDecoder/Close ImageDecoder=] algorithm and abort these steps.
     4. Let |newTrackList| be a new [=list=].
     5. For each |image track| found in {{ImageDecoder/[[encoded data]]}}:
@@ -4812,8 +4828,7 @@ interface ImageDecoder {
     8. Assign |selectedTrackIndex| to {{ImageDecoder/[[internal selected track
         index]]}}.
     9. Assign `true` to {{ImageDecoder/[[tracks established]]}}.
-    10. Queue a task on the [=control thread=] event loop to perform the
-        following steps:
+    10. [=Queue a task=] to perform the following steps:
         1. Assign |newTrackList| to the {{ImageDecoder/tracks}}
             {{ImageTrackList/[[track list]]}} internal slot.
         2. Assign |selectedTrackIndex| to {{ImageDecoder/tracks}}
@@ -4862,8 +4877,7 @@ interface ImageDecoder {
                 [=track update struct/frame count=] is |latestFrameCount|.
             2. Append |change| to |tracksChanges|.
     5. If |tracksChanges| is [=list/empty=], abort these steps.
-    6. Queue a task on the [=control thread=] event loop to perform the
-        following steps:
+    6. [=Queue a task=] to perform the following steps:
         1. For each <var ignore=''>update</var> in |trackChanges|:
             1. Let |updateTrack| be the {{ImageTrack}} at position
                 `update.trackIndex` within {{ImageDecoder/tracks}}'
@@ -4975,7 +4989,7 @@ interface ImageDecoder {
     18. Resolve |promise| with |decodeResult|.
 
 : <dfn for=ImageDecoder>Resolve Decode</dfn> (with |promise| and |result|)
-:: 1. Queue a task on the [=control thread=] event loop to run these steps:
+:: 1. [=Queue a task=] to perform these steps:
         1. If {{ImageDecoder/[[closed]]}}, abort these steps.
         2. Assert that |promise| is an element of
             {{ImageDecoder/[[pending decode promises]]}}.
@@ -4988,7 +5002,7 @@ interface ImageDecoder {
     2. If {{ImageDecoder/complete}} is `true`, let |exception| be a
             {{RangeError}}. Otherwise, let |exception| be an
             {{InvalidStateError}} {{DOMException}}.
-    3. Queue a task on the [=control thread=] event loop to run these steps:
+    3. [=Queue a task=] to perform these steps:
         1. If {{ImageDecoder/[[closed]]}}, abort these steps.
         2. Assert that |promise| is an element of
             {{ImageDecoder/[[pending decode promises]]}}.
@@ -4996,7 +5010,7 @@ interface ImageDecoder {
         4. Reject |promise| with |exception|.
 
 : <dfn for=ImageDecoder>Fatally Reject Bad Data</dfn>
-:: 1. Queue a task on the [=control thread=] event loop to run these steps:
+:: 1. [=Queue a task=] to perform these steps:
         1. If {{ImageDecoder/[[closed]]}}, abort these steps.
         2. Run the [=ImageDecoder/Close ImageDecoder=] algorithm with an
             {{EncodingError}} {{DOMException}}.
@@ -5294,13 +5308,17 @@ interface ImageTrack : EventTarget {
     11. [=Queue a control message=] to {{ImageTrack/[[ImageDecoder]]}}'s
         [=control message queue=] to update the internal selected track
         index with |selectedIndex|.
+    12. [=Process the control message queue=] belonging to
+        {{ImageTrack/[[ImageDecoder]]}}.
 
     [=Running a control message=] to update the internal selected track index
     means running these steps:
-    1. Assign |selectedIndex| to
-        {{ImageDecoder/[[internal selected track index]]}}.
-    2. Remove all entries from
-        {{ImageDecoder/[[progressive frame generations]]}}.
+    1. Enqueue the following steps to {{ImageTrack/[[ImageDecoder]]}}'s
+        {{ImageDecoder/[[codec work queue]]}}:
+        1. Assign |selectedIndex| to
+            {{ImageDecoder/[[internal selected track index]]}}.
+        2. Remove all entries from
+            {{ImageDecoder/[[progressive frame generations]]}}.
 
 
 ### Event Summary ### {#imagetracklist-eventsummary}
