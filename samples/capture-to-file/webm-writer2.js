@@ -218,7 +218,7 @@ ArrayBufferDataStream.prototype.getAsDataArray = function() {
 if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
   module.exports = ArrayBufferDataStream;
 } else {
-  window.ArrayBufferDataStream = ArrayBufferDataStream;
+  self.ArrayBufferDataStream = ArrayBufferDataStream;
 }
 }());
 'use strict';
@@ -451,7 +451,7 @@ let BlobBuffer = function(fs) {
 if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
   module.exports = BlobBuffer(require('fs'));
 } else {
-  window.BlobBuffer = BlobBuffer(null);
+  self.BlobBuffer = BlobBuffer(null);
 }
 })();
 /**
@@ -1159,7 +1159,7 @@ let WebMWriter = function(ArrayBufferDataStream, BlobBuffer) {
     module.exports =
         WebMWriter(require('./ArrayBufferDataStream'), require('./BlobBuffer'));
 } else {
-  window.WebMWriter =
-      WebMWriter(window.ArrayBufferDataStream, window.BlobBuffer);
+  self.WebMWriter =
+      WebMWriter(self.ArrayBufferDataStream, self.BlobBuffer);
 }
 })();
