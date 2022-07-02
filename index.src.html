@@ -977,47 +977,58 @@ callback EncodedAudioChunkOutputCallback =
 
 Internal Slots {#audioencoder-internal-slots}
 ---------------------------------------------
-<dl>
-<dt><dfn attribute for=AudioEncoder>[[codec implementation]]</dfn></dt>
-<dd>Underlying encoder implementation provided by the User Agent.</dd>
-<dt><dfn attribute for=AudioEncoder>[[output callback]]</dfn></dt>
-<dd>Callback given at construction for encoded outputs.</dd>
-<dt><dfn attribute for=AudioEncoder>[[error callback]]</dfn></dt>
-<dd>Callback given at construction for encode errors.</dd>
-<dt><dfn attribute for=AudioEncoder>[[active encoder config]]</dfn></dt>
-<dd>The {{AudioEncoderConfig}} that is actively applied.</dd>
-<dt><dfn attribute for=AudioEncoder>[[active output config]]</dfn></dt>
-<dd>
-  The {{AudioDecoderConfig}} that describes how to decode the most recently
-  emitted {{EncodedAudioChunk}}.
-</dd>
-<dt><dfn attribute for=AudioEncoder>\[[state]]</dfn></dt>
-<dd>
-  The current {{CodecState}} of this {{AudioEncoder}}.
-</dd>
-<dt><dfn attribute for=AudioEncoder>\[[encodeQueueSize]]</dfn></dt>
-<dd>
-  The number of pending encode requests. This number will decrease as the
-  underlying codec is ready to accept new input.
-</dd>
-<dt><dfn attribute for=AudioEncoder>[[pending flush promises]]</dfn></dt>
-<dd>
-  A list of unresolved promises returned by calls to {{AudioEncoder/flush()}}.
-</dd>
-</dl>
+: <dfn attribute for=AudioEncoder>[[control message queue]]</dfn>
+:: A [=queue=] of [=control messages=] to be performed upon this [=codec=]
+    instance. See [=[[control message queue]]=].
+: <dfn attribute for=AudioEncoder>[[message queue blocked]]</dfn>
+:: A boolean indicating when processing the
+    {{AudioEncoder/[[control message queue]]}} is blocked by a pending
+    [=control message=]. See [=[[message queue blocked]]=].
+: <dfn attribute for=AudioEncoder>[[codec implementation]]</dfn>
+:: Underlying encoder implementation provided by the User Agent.
+: <dfn attribute for=AudioEncoder>[[codec work queue]]</dfn>
+:: A [=parallel queue=] used for running parallel steps that reference the
+    {{AudioEncoder/[[codec implementation]]}}. See [=[[codec work queue]]=].
+: <dfn attribute for=AudioEncoder>[[codec saturated]]</dfn>
+:: A boolean indicating when the [[codec implementation]] is unable to accept
+    additional encoding work.
+: <dfn attribute for=AudioEncoder>[[output callback]]</dfn>
+:: Callback given at construction for encoded outputs.
+: <dfn attribute for=AudioEncoder>[[error callback]]</dfn>
+:: Callback given at construction for encode errors.
+: <dfn attribute for=AudioEncoder>[[active encoder config]]</dfn>
+:: The {{AudioEncoderConfig}} that is actively applied.
+: <dfn attribute for=AudioEncoder>[[active output config]]</dfn>
+:: The {{AudioDecoderConfig}} that describes how to decode the most recently
+    emitted {{EncodedAudioChunk}}.
+: <dfn attribute for=AudioEncoder>\[[state]]</dfn>
+:: The current {{CodecState}} of this {{AudioEncoder}}.
+: <dfn attribute for=AudioEncoder>\[[encodeQueueSize]]</dfn>
+:: The number of pending encode requests. This number will decrease as the
+    underlying codec is ready to accept new input.
+: <dfn attribute for=AudioEncoder>[[pending flush promises]]</dfn>
+:: A list of unresolved promises returned by calls to {{AudioEncoder/flush()}}.
 
 Constructors {#audioencoder-constructors}
 -----------------------------------------
 <dfn constructor for=AudioEncoder title="AudioEncoder(init)">
   AudioEncoder(init)
 </dfn>
-1. Let e be a new AudioEncoder object.
-2. Assign `init.output` to the {{AudioEncoder/[[output callback]]}} internal slot.
-3. Assign `init.error` to the {{AudioEncoder/[[error callback]]}} internal slot.
-4. Assign `"unconfigured"` to {{AudioEncoder/[[state]]}}.
-5. Assign `null` to {{AudioEncoder/[[active encoder config]]}}.
-6. Assign `null` to {{AudioEncoder/[[active output config]]}}.
-7. Return e.
+1. Let e be a new {{AudioEncoder}} object.
+2. Assign a new [=queue=] to {{AudioEncoder/[[control message queue]]}}.
+3. Assign `false` to {{AudioEncoder/[[message queue blocked]]}}.
+4. Assign `null` to {{AudioEncoder/[[codec implementation]]}}.
+5. Assign the result of starting a new [=parallel queue=] to
+    {{AudioEncoder/[[codec work queue]]}}.
+6. Assign `false` to {{AudioEncoder/[[codec saturated]]}}.
+7. Assign init.output to {{AudioEncoder/[[output callback]]}}.
+8. Assign init.error to {{AudioEncoder/[[error callback]]}}.
+9. Assign `null` to {{AudioEncoder/[[active encoder config]]}}.
+10. Assign `null` to {{AudioEncoder/[[active output config]]}}.
+11. Assign `"unconfigured"` to {{AudioEncoder/[[state]]}}
+12. Assign `0` to {{AudioEncoder/[[encodeQueueSize]]}}.
+13. Assign a new [=list=] to {{AudioEncoder/[[pending flush promises]]}}.
+14. Return e.
 
 Attributes {#audioencoder-attributes}
 -------------------------------------
@@ -1050,20 +1061,28 @@ Methods {#audioencoder-methods}
     When invoked, run these steps:
     1. If |config| is not a [=valid AudioEncoderConfig=], throw a
         {{TypeError}}.
-    2. If {{AudioEncoder/[[state]]}} is `"closed"`, throw an {{InvalidStateError}}.
+    2. If {{AudioEncoder/[[state]]}} is `"closed"`, throw an
+        {{InvalidStateError}}.
     3. Set {{AudioEncoder/[[state]]}} to `"configured"`.
     4. [=Queue a control message=] to configure the encoder using |config|.
+    5. [=Process the control message queue=].
 
-    [=Running a control message=] to configure the encoder means performing these
-    steps:
+    [=Running a control message=] to configure the encoder means performing
+    these steps:
     1. Let |supported| be the result of running the <a>Check Configuration
         Support</a> algorithm with |config|.
     2. If |supported| is `true`, assign
         {{AudioEncoder/[[codec implementation]]}} with an implementation
         supporting |config|.
     3. Otherwise, run the <a>Close AudioEncoder</a> algorithm with
-        {{NotSupportedError}} and abort these steps.
-    4. Assign |config| to {{AudioEncoder/[[active encoder config]]}}
+        {{NotSupportedError}} and return `"processed"`.
+    4. Assign `true` to {{AudioEncoder/[[message queue blocked]]}}.
+    5. Enqueue the following steps to {{AudioEncoder/[[codec work queue]]}}:
+        1. Configure {{AudioEncoder/[[codec implementation]]}} with |config|.
+        2. Set {{AudioEncoder/[[active encoder config]]}} to `config`.
+        3. Assign `false` to {{AudioEncoder/[[message queue blocked]]}}.
+        4. [=Queue a task=] to [=Process the control message queue=].
+    6. Return `"processed"`.
   </dd>
 
   <dt><dfn method for=AudioEncoder>encode(data)</dfn></dt>
@@ -1071,27 +1090,39 @@ Methods {#audioencoder-methods}
     [=Enqueues a control message=] to encode the given |data|.
 
     When invoked, run these steps:
-    1. If the value of |data|'s {{platform object/[[Detached]]}} internal slot is
-        `true`, throw a {{TypeError}}.
+    1. If the value of |data|'s {{platform object/[[Detached]]}} internal slot
+        is `true`, throw a {{TypeError}}.
     2. If {{AudioEncoder/[[state]]}} is not `"configured"`, throw an
         {{InvalidStateError}}.
     3. Let |dataClone| hold the result of running the [=Clone AudioData=]
         algorithm with |data|.
     4. Increment {{AudioEncoder/[[encodeQueueSize]]}}.
     5. [=Queue a control message=] to encode |dataClone|.
+    6. [=Process the control message queue=].
 
-    [=Running a control message=] to encode the data means performing these steps.
-    1. Attempt to use {{AudioEncoder/[[codec implementation]]}} to encode
-        the [=media resource=] described by |dataClone|.
-    2. If encoding results in an error, queue a task on the [=control thread=]
-        event loop to run the [=Close AudioEncoder=] algorithm with
-        {{EncodingError}}.
-    3. Queue a task on the [=control thread=] event loop to decrement
-        {{AudioEncoder/[[encodeQueueSize]]}}.
-    4. Let |encoded outputs| be a [=list=] of encoded audio data outputs
-        emitted by {{AudioEncoder/[[codec implementation]]}}.
-    5. If |encoded outputs| is not empty, queue a task on the
-        [=control thread=] event loop to run the [=Output EncodedAudioChunks=] algorithm with |encoded outputs|.
+    [=Running a control message=] to encode the data means performing these
+    steps:
+    1. If {{AudioEncoder/[[codec saturated]]}} equals `true`, return `"not
+        processed"`.
+    2. If encoding chunk will cause the
+        {{AudioEncoder/[[codec implementation]]}} to become [=saturated=],
+        assign `true` to {{AudioEncoder/[[codec saturated]]}}.
+    3. Decrement {{AudioEncoder/[[encodeQueueSize]]}}.
+    4. Enqueue the following steps to the {{AudioEncoder/[[codec work queue]]}}:
+        1. Attempt to use {{AudioEncoder/[[codec implementation]]}} to encode
+            the [=media resource=] described by |dataClone|.
+        2. If encoding results in an error, [=queue a task=] to run the
+            [=Close AudioEncoder=] algorithm with {{EncodingError}} and return.
+        3. If {{AudioEncoder/[[codec saturated]]}} equals `true` and
+            {{AudioEncoder/[[codec implementation]]}} is no longer
+            [=saturated=], [=queue a task=] to perform the following steps:
+                1. Assign `false` to {{AudioEncoder/[[codec saturated]]}}.
+                2. [=Process the control message queue=].
+        4. Let |encoded outputs| be a [=list=] of encoded audio data outputs
+            emitted by {{AudioEncoder/[[codec implementation]]}}.
+        5. If |encoded outputs| is not empty, [=queue a task=] to run the
+            [=Output EncodedAudioChunks=] algorithm with |encoded outputs|.
+    5. Return `"processed"`.
   </dd>
 
   <dt><dfn method for=AudioEncoder>flush()</dfn></dt>
@@ -1103,22 +1134,24 @@ Methods {#audioencoder-methods}
     1. If {{AudioEncoder/[[state]]}} is not `"configured"`, return
         [=a promise rejected with=] {{InvalidStateError}} {{DOMException}}.
     2. Let |promise| be a new Promise.
-    3. [=Queue a control message=] to flush the codec with |promise|.
-    4. Append |promise| to {{AudioEncoder/[[pending flush promises]]}}.
-    5. Return |promise|.
+    3. Append |promise| to {{AudioEncoder/[[pending flush promises]]}}.
+    4. [=Queue a control message=] to flush the codec with |promise|.
+    5. [=Process the control message queue=].
+    6. Return |promise|.
 
-    [=Running a control message=] to flush the codec means performing these steps
-        with |promise|.
-    1. Signal {{AudioEncoder/[[codec implementation]]}} to emit all [=internal
-        pending outputs=].
-    2. Let |encoded outputs| be a [=list=] of encoded audio data outputs
-        emitted by {{AudioEncoder/[[codec implementation]]}}.
-    3. If |encoded outputs| is not empty, queue a task on the [=control thread=]
-        event loop to run the [=Output EncodedAudioChunks=] algorithm with
-        |encoded outputs|.
-    4. Queue a task on the [=control thread=] event loop to run these steps:
-        1. Remove |promise| from {{AudioEncoder/[[pending flush promises]]}}.
-        2. Resolve |promise|.
+    [=Running a control message=] to flush the codec means performing these
+    steps with |promise|.
+    1. Enqueue the following steps to the {{AudioEncoder/[[codec work queue]]}}:
+        1. Signal {{AudioEncoder/[[codec implementation]]}} to emit all
+            [=internal pending outputs=].
+        2. Let |encoded outputs| be a [=list=] of encoded audio data outputs
+            emitted by {{AudioEncoder/[[codec implementation]]}}.
+        3. [=Queue a task=] to perform these steps:
+            1. If |encoded outputs| is not empty, run the
+                [=Output EncodedAudioChunks=] algorithm with |encoded outputs|.
+            2. Remove |promise| from
+                {{AudioEncoder/[[pending flush promises]]}}.
+            3. Resolve |promise|.
   </dd>
 
   <dt><dfn method for=AudioEncoder>reset()</dfn></dt>
@@ -1230,7 +1263,8 @@ Algorithms {#audioencoder-algorithms}
     4. Set {{AudioEncoder/[[active output config]]}} to `null`.
     5. Signal {{AudioEncoder/[[codec implementation]]}} to cease producing
         output for the previous configuration.
-    6. Remove all [=control messages=] from the [=control message queue=].
+    6. Remove all [=control messages=] from the
+        {{AudioEncoder/[[control message queue]]}}.
     7. Set {{AudioEncoder/[[encodeQueueSize]]}} to zero.
     8. For each |promise| in {{AudioEncoder/[[pending flush promises]]}}:
         1. Reject |promise| with |exception|.
@@ -1243,9 +1277,9 @@ Algorithms {#audioencoder-algorithms}
     2. Set {{AudioEncoder/[[state]]}} to `"closed"`.
     3. Clear {{AudioEncoder/[[codec implementation]]}} and release associated
         [=system resources=].
-    4. If |exception| is not an {{AbortError}} {{DOMException}}, queue a task on
-        the [=control thread=] event loop to invoke the
-        {{AudioDecoder/[[error callback]]}} with |exception|.
+    4. If |exception| is not an {{AbortError}} {{DOMException}},
+        [=queue a task=] to invoke the
+        {{AudioEncoder/[[error callback]]}} with |exception|.
   </dd>
 </dl>
 
