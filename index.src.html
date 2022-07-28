@@ -461,7 +461,7 @@ Methods {#audiodecoder-methods}
         {{AudioDecoder/[[codec implementation]]}} to become [=saturated=],
         assign `true` to {{AudioDecoder/[[codec saturated]]}}.
     3. Decrement {{AudioDecoder/[[decodeQueueSize]]}} and run the
-        [=Schedule Dequeue Event=] algorithm.
+        [=AudioDecoder/Schedule Dequeue Event=] algorithm.
     4. Enqueue the following steps to the {{AudioDecoder/[[codec work queue]]}}:
         1. Attempt to use {{AudioDecoder/[[codec implementation]]}} to decode
             the chunk.
@@ -560,7 +560,7 @@ Methods {#audiodecoder-methods}
 Algorithms {#audiodecoder-algorithms}
 -------------------------------------
 <dl>
-  <dt><dfn>Schedule Dequeue Event</dfn>
+  <dt><dfn for=AudioDecoder>Schedule Dequeue Event</dfn>
   <dd>
     1. If {{AudioDecoder/[[dequeue event scheduled]]}} equals `true`, return.
     2. Assign `true` to {{AudioDecoder/[[dequeue event scheduled]]}}.
@@ -600,8 +600,8 @@ Algorithms {#audiodecoder-algorithms}
         {{AudioDecoder/[[control message queue]]}}.
     5. If {{AudioDecoder/[[decodeQueueSize]]}} is greater than zero:
         1. Set {{AudioDecoder/[[decodeQueueSize]]}} to zero.
-        2. Run the [=Schedule Dequeue Event=] algorithm.
-    7. For each |promise| in {{AudioDecoder/[[pending flush promises]]}}:
+        2. Run the [=AudioDecoder/Schedule Dequeue Event=] algorithm.
+    6. For each |promise| in {{AudioDecoder/[[pending flush promises]]}}:
         1. Reject |promise| with |exception|.
         2. Remove |promise| from {{AudioDecoder/[[pending flush promises]]}}.
   </dd>
@@ -627,6 +627,7 @@ interface VideoDecoder {
 
   readonly attribute CodecState state;
   readonly attribute unsigned long decodeQueueSize;
+  attribute EventHandler ondequeue;
 
   undefined configure(VideoDecoderConfig config);
   undefined decode(EncodedVideoChunk chunk);
@@ -679,6 +680,9 @@ Internal Slots {#videodecoder-internal-slots}
     underlying codec is ready to accept new input.
 : <dfn attribute for=VideoDecoder>[[pending flush promises]]</dfn>
 :: A list of unresolved promises returned by calls to {{VideoDecoder/flush()}}.
+: <dfn attribute for=VideoDecoder>[[dequeue event scheduled]]</dfn>
+:: A boolean indicating whether a {{VideoDecoder/dequeue}} event is already
+    scheduled to fire. Used to avoid event spam.
 
 
 Constructors {#videodecoder-constructors}
@@ -700,24 +704,24 @@ Constructors {#videodecoder-constructors}
 11. Assign `"unconfigured"` to {{VideoDecoder/[[state]]}}
 12. Assign `0` to {{VideoDecoder/[[decodeQueueSize]]}}.
 13. Assign a new [=list=] to {{VideoDecoder/[[pending flush promises]]}}.
-14. Return d.
+14. Assign `false` to {{VideoDecoder/[[dequeue event scheduled]]}}.
+15. Return d.
 
 Attributes {#videodecoder-attributes}
 -------------------------------------
-<dl>
-  <dt>
-    <dfn attribute for=VideoDecoder>state</dfn>
-  </dt>
-  <dd>
-    Returns the value of {{VideoDecoder/[[state]]}}.
-  </dd>
-  <dt>
-    <dfn attribute for=VideoDecoder>decodeQueueSize</dfn>
-  </dt>
-  <dd>
-    Returns the value of {{VideoDecoder/[[decodeQueueSize]]}}.
-  </dd>
-</dl>
+: <dfn attribute for=VideoDecoder>state</dfn>
+:: Returns the value of {{VideoDecoder/[[state]]}}.
+: <dfn attribute for=VideoDecoder>decodeQueueSize</dfn>
+:: Returns the value of {{VideoDecoder/[[decodeQueueSize]]}}.
+: <dfn attribute for=VideoDecoder>ondequeue</dfn>
+:: An [=event handler IDL attribute=] whose [=event handler event type=] is
+    {{VideoDecoder/dequeue}}.
+
+Event Summary {#videodecoder-event-summary}
+-------------------------------------------
+: <dfn event for=VideoDecoder>dequeue</dfn>
+:: Fired at the {{VideoDecoder}} when the {{VideoDecoder/decodeQueueSize}} has
+    decreased.
 
 Methods {#videodecoder-methods}
 -------------------------------
@@ -797,7 +801,8 @@ Methods {#videodecoder-methods}
     2. If decoding chunk will cause the
         {{VideoDecoder/[[codec implementation]]}} to become [=saturated=],
         assign `true` to {{VideoDecoder/[[codec saturated]]}}.
-    3. Decrement {{VideoDecoder/[[decodeQueueSize]]}}.
+    3. Decrement {{VideoDecoder/[[decodeQueueSize]]}} and run the
+        [=VideoDecoder/Schedule Dequeue Event=] algorithm.
     4. Enqueue the following steps to the {{VideoDecoder/[[codec work queue]]}}:
         1. Attempt to use {{VideoDecoder/[[codec implementation]]}} to decode
             the chunk.
@@ -897,6 +902,14 @@ Methods {#videodecoder-methods}
 Algorithms {#videodecoder-algorithms}
 -------------------------------------
 <dl>
+  <dt><dfn for=VideoDecoder>Schedule Dequeue Event</dfn>
+  <dd>
+    1. If {{VideoDecoder/[[dequeue event scheduled]]}} equals `true`, return.
+    2. Assign `true` to {{VideoDecoder/[[dequeue event scheduled]]}}.
+    3. [=Queue a task=] to run the following steps:
+        1. Fire a simple event named {{VideoDecoder/dequeue}} at [=this=].
+        2. Assign `false` to {{VideoDecoder/[[dequeue event scheduled]]}}.
+  </dd>
   <dt><dfn>Output VideoFrames</dfn> (with |outputs|)</dt>
   <dd>
     Run these steps:
@@ -937,7 +950,9 @@ Algorithms {#videodecoder-algorithms}
         output for the previous configuration.
     4. Remove all [=control messages=] from the
         {{VideoDecoder/[[control message queue]]}}.
-    5. Set {{VideoDecoder/[[decodeQueueSize]]}} to zero.
+    5. If {{VideoDecoder/[[decodeQueueSize]]}} is greater than zero:
+        1. Set {{VideoDecoder/[[decodeQueueSize]]}} to zero.
+        2. Run the [=VideoDecoder/Schedule Dequeue Event=] algorithm.
     6. For each |promise| in {{VideoDecoder/[[pending flush promises]]}}:
         1. Reject |promise| with |exception|.
         2. Remove |promise| from {{VideoDecoder/[[pending flush promises]]}}.
