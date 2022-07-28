@@ -1335,6 +1335,7 @@ interface VideoEncoder {
 
   readonly attribute CodecState state;
   readonly attribute unsigned long encodeQueueSize;
+  attribute EventHandler ondequeue;
 
   undefined configure(VideoEncoderConfig config);
   undefined encode(VideoFrame frame, optional VideoEncoderEncodeOptions options = {});
@@ -1388,6 +1389,9 @@ Internal Slots {#videoencoder-internal-slots}
     underlying codec is ready to accept new input.
 : <dfn attribute for=VideoEncoder>[[pending flush promises]]</dfn>
 :: A list of unresolved promises returned by calls to {{VideoEncoder/flush()}}.
+: <dfn attribute for=VideoEncoder>[[dequeue event scheduled]]</dfn>
+:: A boolean indicating whether a {{VideoEncoder/dequeue}} event is already
+    scheduled to fire. Used to avoid event spam.
 
 Constructors {#videoencoder-constructors}
 -----------------------------------------
@@ -1408,22 +1412,24 @@ Constructors {#videoencoder-constructors}
 11. Assign `"unconfigured"` to {{VideoEncoder/[[state]]}}
 12. Assign `0` to {{VideoEncoder/[[encodeQueueSize]]}}.
 13. Assign a new [=list=] to {{VideoEncoder/[[pending flush promises]]}}.
-14. Return e.
+14. Assign `false` to {{VideoEncoder/[[dequeue event scheduled]]}}.
+15. Return e.
 
 Attributes {#videoencoder-attributes}
 -------------------------------------
-<dl>
-  <dt>
-    <dfn attribute for=VideoEncoder>state</dfn>
-  </dt>
-  <dd>Returns the value of {{VideoEncoder/[[state]]}}.</dd>
-  <dt>
-    <dfn attribute for=VideoEncoder>encodeQueueSize</dfn>
-  </dt>
-  <dd>
-    Returns the value of {{VideoEncoder/[[encodeQueueSize]]}}.
-  </dd>
-</dl>
+: <dfn attribute for=VideoEncoder>state</dfn>
+:: Returns the value of {{VideoEncoder/[[state]]}}.
+: <dfn attribute for=VideoEncoder>encodeQueueSize</dfn>
+:: Returns the value of {{VideoEncoder/[[encodeQueueSize]]}}.
+: <dfn attribute for=VideoEncoder>ondequeue</dfn>
+:: An [=event handler IDL attribute=] whose [=event handler event type=] is
+    {{VideoEncoder/dequeue}}.
+
+Event Summary {#videoencoder-event-summary}
+-------------------------------------------
+: <dfn event for=VideoEncoder>dequeue</dfn>
+:: Fired at the {{VideoEncoder}} when the {{VideoEncoder/encodeQueueSize}} has
+    decreased.
 
 Methods {#videoencoder-methods}
 -------------------------------
@@ -1488,7 +1494,8 @@ Methods {#videoencoder-methods}
     2. If encoding |frame| will cause the
         {{VideoEncoder/[[codec implementation]]}} to become [=saturated=],
         assign `true` to {{VideoEncoder/[[codec saturated]]}}.
-    3. Decrement {{VideoEncoder/[[encodeQueueSize]]}}.
+    3. Decrement {{VideoEncoder/[[encodeQueueSize]]}} and run the
+        [=VideoEncoder/Schedule Dequeue Event=] algorithm.
     4. Enqueue the following steps to the {{VideoEncoder/[[codec work queue]]}}:
         1. Attempt to use {{VideoEncoder/[[codec implementation]]}} to encode
             the |frameClone| according to |options|.
@@ -1586,6 +1593,14 @@ Methods {#videoencoder-methods}
 Algorithms {#videoencoder-algorithms}
 -------------------------------------
 <dl>
+  <dt><dfn for=VideoEncoder>Schedule Dequeue Event</dfn>
+  <dd>
+    1. If {{VideoEncoder/[[dequeue event scheduled]]}} equals `true`, return.
+    2. Assign `true` to {{VideoEncoder/[[dequeue event scheduled]]}}.
+    3. [=Queue a task=] to run the following steps:
+        1. Fire a simple event named {{VideoEncoder/dequeue}} at [=this=].
+        2. Assign `false` to {{VideoEncoder/[[dequeue event scheduled]]}}.
+  </dd>
   <dt><dfn>Output EncodedVideoChunks</dfn> (with |outputs|)</dt>
   <dd>
     Run these steps:
@@ -1661,7 +1676,9 @@ Algorithms {#videoencoder-algorithms}
         output for the previous configuration.
     6. Remove all [=control messages=] from the
         {{VideoEncoder/[[control message queue]]}}.
-    7. Set {{VideoEncoder/[[encodeQueueSize]]}} to zero.
+    7. If {{VideoEncoder/[[encodeQueueSize]]}} is greater than zero:
+        1. Set {{VideoEncoder/[[encodeQueueSize]]}} to zero.
+        2. Run the [=VideoEncoder/Schedule Dequeue Event=] algorithm.
     8. For each |promise| in {{VideoEncoder/[[pending flush promises]]}}:
         1. Reject |promise| with |exception|.
         2. Remove |promise| from {{VideoEncoder/[[pending flush promises]]}}.
