@@ -980,6 +980,7 @@ interface AudioEncoder {
 
   readonly attribute CodecState state;
   readonly attribute unsigned long encodeQueueSize;
+  attribute EventHandler ondequeue;
 
   undefined configure(AudioEncoderConfig config);
   undefined encode(AudioData data);
@@ -1033,6 +1034,9 @@ Internal Slots {#audioencoder-internal-slots}
     underlying codec is ready to accept new input.
 : <dfn attribute for=AudioEncoder>[[pending flush promises]]</dfn>
 :: A list of unresolved promises returned by calls to {{AudioEncoder/flush()}}.
+: <dfn attribute for=AudioEncoder>[[dequeue event scheduled]]</dfn>
+:: A boolean indicating whether a {{AudioEncoder/dequeue}} event is already
+    scheduled to fire. Used to avoid event spam.
 
 Constructors {#audioencoder-constructors}
 -----------------------------------------
@@ -1053,22 +1057,24 @@ Constructors {#audioencoder-constructors}
 11. Assign `"unconfigured"` to {{AudioEncoder/[[state]]}}
 12. Assign `0` to {{AudioEncoder/[[encodeQueueSize]]}}.
 13. Assign a new [=list=] to {{AudioEncoder/[[pending flush promises]]}}.
-14. Return e.
+14. Assign `false` to {{AudioEncoder/[[dequeue event scheduled]]}}.
+15. Return e.
 
 Attributes {#audioencoder-attributes}
 -------------------------------------
-<dl>
-  <dt>
-    <dfn attribute for=AudioEncoder>state</dfn>
-  </dt>
-  <dd>Returns the value of {{AudioEncoder/[[state]]}}.</dd>
-  <dt>
-    <dfn attribute for=AudioEncoder>encodeQueueSize</dfn>
-  </dt>
-  <dd>
-    Returns the value of {{AudioEncoder/[[encodeQueueSize]]}}.
-  </dd>
-</dl>
+: <dfn attribute for=AudioEncoder>state</dfn>
+:: Returns the value of {{AudioEncoder/[[state]]}}.
+: <dfn attribute for=AudioEncoder>encodeQueueSize</dfn>
+:: Returns the value of {{AudioEncoder/[[encodeQueueSize]]}}.
+: <dfn attribute for=AudioEncoder>ondequeue</dfn>
+:: An [=event handler IDL attribute=] whose [=event handler event type=] is
+    {{AudioEncoder/dequeue}}.
+
+Event Summary {#audioencoder-event-summary}
+-------------------------------------------
+: <dfn event for=AudioEncoder>dequeue</dfn>
+:: Fired at the {{AudioEncoder}} when the {{AudioEncoder/encodeQueueSize}} has
+    decreased.
 
 Methods {#audioencoder-methods}
 -------------------------------
@@ -1132,7 +1138,8 @@ Methods {#audioencoder-methods}
     2. If encoding |data| will cause the
         {{AudioEncoder/[[codec implementation]]}} to become [=saturated=],
         assign `true` to {{AudioEncoder/[[codec saturated]]}}.
-    3. Decrement {{AudioEncoder/[[encodeQueueSize]]}}.
+    3. Decrement {{AudioEncoder/[[encodeQueueSize]]}} and run the
+        [=AudioEncoder/Schedule Dequeue Event=] algorithm.
     4. Enqueue the following steps to the {{AudioEncoder/[[codec work queue]]}}:
         1. Attempt to use {{AudioEncoder/[[codec implementation]]}} to encode
             the [=media resource=] described by |dataClone|.
@@ -1230,6 +1237,14 @@ Methods {#audioencoder-methods}
 Algorithms {#audioencoder-algorithms}
 -------------------------------------
 <dl>
+  <dt><dfn for=AudioEncoder>Schedule Dequeue Event</dfn>
+  <dd>
+    1. If {{AudioEncoder/[[dequeue event scheduled]]}} equals `true`, return.
+    2. Assign `true` to {{AudioEncoder/[[dequeue event scheduled]]}}.
+    3. [=Queue a task=] to run the following steps:
+        1. Fire a simple event named {{AudioEncoder/dequeue}} at [=this=].
+        2. Assign `false` to {{AudioEncoder/[[dequeue event scheduled]]}}.
+  </dd>
   <dt><dfn>Output EncodedAudioChunks</dfn> (with |outputs|)</dt>
   <dd>
     Run these steps:
@@ -1290,7 +1305,9 @@ Algorithms {#audioencoder-algorithms}
         output for the previous configuration.
     6. Remove all [=control messages=] from the
         {{AudioEncoder/[[control message queue]]}}.
-    7. Set {{AudioEncoder/[[encodeQueueSize]]}} to zero.
+    7. If {{AudioEncoder/[[encodeQueueSize]]}} is greater than zero:
+        1. Set {{AudioEncoder/[[encodeQueueSize]]}} to zero.
+        2. Run the [=AudioEncoder/Schedule Dequeue Event=] algorithm.
     8. For each |promise| in {{AudioEncoder/[[pending flush promises]]}}:
         1. Reject |promise| with |exception|.
         2. Remove |promise| from {{AudioEncoder/[[pending flush promises]]}}.
