@@ -52,7 +52,8 @@ class MP4Source {
 
   getAvccBox() {
     // TODO: make sure this is coming from the right track.
-    return this.file.moov.traks[0].mdia.minf.stbl.stsd.entries[0].avcC
+    const traks = this.file.moov.traks.filter(trak => trak.mdia.minf.stbl.stsd.entries[0].avcC);
+    return traks[0].mdia.minf.stbl.stsd.entries[0].avcC;
   }
 
   start(track, onChunk) {
