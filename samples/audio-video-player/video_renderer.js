@@ -80,11 +80,10 @@ export class VideoRenderer {
     if (frameIndex > 0)
       debugLog('dropping %d stale frames', frameIndex);
 
-
-      for (let i = 0; i < frameIndex; i++) {
-        let staleFrame = this.frameBuffer.shift();
-        staleFrame.close();
-      }
+    for (let i = 0; i < frameIndex; i++) {
+      let staleFrame = this.frameBuffer.shift();
+      staleFrame.close();
+    }
 
     let chosenFrame = this.frameBuffer[0];
     debugLog('frame time delta = %dms (%d vs %d)', minTimeDelta/1000, timestamp, chosenFrame.timestamp)

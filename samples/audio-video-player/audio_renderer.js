@@ -60,18 +60,6 @@ export class AudioRenderer {
     return promise;
   }
 
-  setVolume(volume) {
-    if (volume < 0.0 && volume > 1.0) {
-      return;
-    }
-    // Smooth exponential volume ramps on change
-    this.volume.gain.setTargetAtTime(
-      volume,
-      this.audioContext.currentTime,
-      0.3
-    );
-  }
-
   play() {
     // resolves when audio has effectively started: this can take some time if using
     // bluetooth, for example.
@@ -149,12 +137,12 @@ export class AudioRenderer {
     // Decode up to the buffering target or until decoder is saturated.
     while (usedBufferSecs < DATA_BUFFER_DECODE_TARGET_DURATION &&
       this.decoder.decodeQueueSize < DECODER_QUEUE_SIZE_MAX) {
-      debugLog(`\tmoar samples. usedBufferSecs:${usedBufferSecs} < target:${DATA_BUFFER_DECODE_TARGET_DURATION}.`);
+      debugLog(`\tMore samples. usedBufferSecs:${usedBufferSecs} < target:${DATA_BUFFER_DECODE_TARGET_DURATION}.`);
       let sample = await this.demuxer.readSample();
       this.decoder.decode(this.makeChunk(sample));
 
       // NOTE: awaiting the demuxer.readSample() above will also give the
-      // decoder output callbacka a chance to run, so we may see usedBufferSecs
+      // decoder output callbacks a chance to run, so we may see usedBufferSecs
       // increase.
       usedBufferElements = this.ringbuffer.capacity() - this.ringbuffer.available_write();
       usedBufferSecs = usedBufferElements / (this.channelCount * this.sampleRate);

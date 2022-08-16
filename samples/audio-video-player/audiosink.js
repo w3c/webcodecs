@@ -4,7 +4,9 @@ registerProcessor("AudioSink", class AudioSink extends AudioWorkletProcessor {
     let sab = options.processorOptions.sab;
     this.consumerSide = new RingBuffer(sab, Float32Array);
     this.mediaChannelCount = options.processorOptions.mediaChannelCount;
-    this.deinterleaveBuffer = new Float32Array(this.mediaChannelCount * 128);
+    // https://www.w3.org/TR/webaudio/#render-quantum-size
+    const RENDER_QUANTUM_SIZE = 128;
+    this.deinterleaveBuffer = new Float32Array(this.mediaChannelCount * RENDER_QUANTUM_SIZE);
     this.s = 0;
   }
 

@@ -16,16 +16,6 @@ const http = require('http'),
 const serverPort = parseInt(port, 10);
 
 http.createServer({}, function(request, response) {
-
-  // This server is insecure. Only listen for conncections on localhost.
-  if (request.headers.host != `localhost:${serverPort}`) {
-    console.log('Rejecting request for non-localhost');
-    response.writeHead(502, { "Content-Type": "text/plain" });
-    response.write("502 Connection Refused\n");
-    response.end();
-    return;
-  }
-
   var uri = url.parse(request.url).pathname,
     filename = path.join(process.cwd(), uri);
 
@@ -67,6 +57,8 @@ http.createServer({}, function(request, response) {
       response.end();
     });
   });
-}).listen(serverPort);
+
+// This server is insecure. Only listen for conncections on localhost.
+}).listen(serverPort, 'localhost');
 
 console.log("Static file server running at\n  => http://localhost:" + port + "/\nCTRL + C to shutdown");

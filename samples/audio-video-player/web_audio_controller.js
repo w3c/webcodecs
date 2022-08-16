@@ -87,6 +87,4 @@ export class WebAudioController {
 
     return Math.max(this.audioContext.currentTime - totalOutputLatency, 0.0);
   }
-
-
 }
