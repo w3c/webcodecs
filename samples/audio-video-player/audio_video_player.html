@@ -15,6 +15,9 @@
   #loading {
     font-size: 2em;
   }
+  .monospace {
+    font-family: monospace;
+  }
   div#container {
     margin: 0 auto 0 auto;
     max-width: 60em;
@@ -25,13 +28,6 @@
   }
 </style>
 <div id=container>
-  <div id=controls>
-    <p id=loading>Loading...</p>
-    <button disabled=true>Play</button>
-    <label for=volume>Volume</label>
-    <input id=volume type=range value=0.8 min=0 max=1.0 step=0.01></input>
-  </div>
-  <canvas width=1280 height=720></canvas>
   <p>
     This sample combines WebCodecs and WebAudio to create a media player that
     renders synchronized audio and video.
@@ -44,9 +40,18 @@
   </p>
   <p>
     This sample requires <a href='https://web.dev/cross-origin-isolation-guide'>
-    cross origin isolation</a> to use `SharedArrayBuffer`. You may use `node
-    server.js` to host this sample locally with the appropriate HTTP headers.
+    cross origin isolation</a> to use
+    <span class='monospace'>SharedArrayBuffer</span>. You may use
+    <span class='monospace'>node server.js</span> to host this sample locally
+    with the appropriate HTTP headers.
   </p>
+  <div id=controls>
+    <p id=loading>Loading...</p>
+    <button disabled=true>Play</button>
+    <label for=volume>Volume</label>
+    <input id=volume type=range value=0.8 min=0 max=1.0 step=0.01></input>
+  </div>
+  <canvas width=1280 height=720></canvas>
 </div>
 <script type="module">
 import { WebAudioController } from "./web_audio_controller.js";
