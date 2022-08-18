@@ -7,7 +7,6 @@ registerProcessor("AudioSink", class AudioSink extends AudioWorkletProcessor {
     // https://www.w3.org/TR/webaudio/#render-quantum-size
     const RENDER_QUANTUM_SIZE = 128;
     this.deinterleaveBuffer = new Float32Array(this.mediaChannelCount * RENDER_QUANTUM_SIZE);
-    this.s = 0;
   }
 
   // Deinterleave audio data from input (linear Float32Array) to output, an
