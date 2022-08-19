@@ -1,5 +1,5 @@
 import { MP4PullDemuxer } from "./mp4_pull_demuxer.js";
-import { RingBuffer } from "./third_party/ringbufjs/ringbuf.js";
+import { RingBuffer } from "../third_party/ringbufjs/ringbuf.js";
 
 const DATA_BUFFER_DECODE_TARGET_DURATION = 0.3;
 const DATA_BUFFER_DURATION = 0.6;

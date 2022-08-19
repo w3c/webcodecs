@@ -6,7 +6,7 @@ console.info(`Worker started`);
 // and the modules below. But presently mp4box.js does not use ES6 modules,
 // so we import it as an old-style script and use the dynamic import() to load
 // our modules below.
-importScripts('./third_party/mp4boxjs/mp4box.all.min.js');
+importScripts('../third_party/mp4boxjs/mp4box.all.min.js');
 let moduleLoadedResolver = null;
 let modulesReady = new Promise(resolver => (moduleLoadedResolver = resolver));
 let playing = false;
