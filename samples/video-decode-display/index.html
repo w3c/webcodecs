@@ -10,6 +10,11 @@
   </p>
 
   <p>
+    Note: The WebGPU rendering mode is not yet available in all browsers.
+    As of M108, Chrome requires the <code>--enable-unsafe-webgpu</code> flag.
+  </p>
+
+  <p>
     Renderer:
     <label for="renderer_2d">
       <input id="renderer_2d" type="radio" name="renderer" value="2d"> 2D
@@ -42,6 +47,7 @@
     // Play button.
     const startButton = document.querySelector("#start");
     startButton.addEventListener("click", () => {
+      document.querySelectorAll("input").forEach(input => input.disabled = true);
       startButton.disabled = true;
       start();
     }, {once: true});
@@ -56,9 +62,7 @@
 
     function setStatus(message) {
       for (const key in message.data) {
-        if (status.hasOwnProperty(key)) {
-          status[key].innerText = message.data[key];
-        }
+        status[key].innerText = message.data[key];
       }
     }
 

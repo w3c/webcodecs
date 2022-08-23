@@ -7,7 +7,7 @@ function setStatus(type, message) {
   if (pendingStatus) {
     pendingStatus[type] = message;
   } else {
-    pendingStatus = {type: message};
+    pendingStatus = {[type]: message};
     self.requestAnimationFrame(statusAnimationFrame);
   }
 }
