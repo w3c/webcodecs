@@ -16,8 +16,8 @@ let lastMediaTimeSecs = 0;
 let lastMediaTimeCapturePoint = 0;
 
 (async () => {
-    let audioImport = import('./audio_renderer.js');
-    let videoImport = import('./video_renderer.js');
+    let audioImport = import('../library/audio_renderer.js');
+    let videoImport = import('../library/video_renderer.js');
     Promise.all([audioImport, videoImport]).then((modules) => {
       audioRenderer = new modules[0].AudioRenderer();
       videoRenderer = new modules[1].VideoRenderer();

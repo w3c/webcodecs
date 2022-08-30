@@ -31,7 +31,7 @@ http.createServer({}, function(request, response) {
       if (filename[filename.length-1] != '/') {
         filename += '/';
       }
-      filename += 'audio_video_player.html';
+      filename += 'index.html';
     }
 
     fs.readFile(filename, "binary", function(err, file) {
