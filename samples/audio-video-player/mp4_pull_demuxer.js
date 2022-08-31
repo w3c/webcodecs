@@ -1,3 +1,5 @@
+import {PullDemuxerBase, AUDIO_STREAM_TYPE, VIDEO_STREAM_TYPE} from '../library/pull_demuxer_base.js'
+
 const ENABLE_DEBUG_LOGGING = false;
 
 function debugLog(msg) {
@@ -9,66 +11,78 @@ function debugLog(msg) {
 
 // Wrapper around MP4Box.js that shims pull-based demuxing on top their
 // push-based API.
-export class MP4PullDemuxer {
-  constructor(uri) {
-    this.source = new MP4Source(uri);
-    this.readySamples = [];
-    this._pending_read_resolver = null;
+export class MP4PullDemuxer extends PullDemuxerBase {
+  constructor(fileUri) {
+    super();
+    this.fileUri = fileUri;
   }
 
-  getAvcDescription(avccBox) {
+  async initialize(streamType) {
+    this.source = new MP4Source(this.fileUri);
+    this.readySamples = [];
+    this._pending_read_resolver = null;
+    this.streamType = streamType;
+
+    await this._tracksReady();
+
+    if (this.streamType == AUDIO_STREAM_TYPE) {
+      this._selectTrack(this.audioTrack);
+    } else {
+      this._selectTrack(this.videoTrack);
+    }
+  }
+
+  getDecoderConfig() {
+    if (this.streamType == AUDIO_STREAM_TYPE) {
+      return {
+        codec: this.audioTrack.codec,
+        sampleRate: this.audioTrack.audio.sample_rate,
+        numberOfChannels: this.audioTrack.audio.channel_count,
+        description: this.source.getAudioSpecificConfig()
+      };
+    } else {
+      return {
+        codec: this.videoTrack.codec,
+        displayWidth: this.videoTrack.track_width,
+        displayHeight: this.videoTrack.track_height,
+        description: this._getAvcDescription(this.source.getAvccBox())
+      }
+    }
+  }
+
+  async getNextChunk() {
+    let sample = await this._readSample();
+    const type = sample.is_sync ? "key" : "delta";
+    const pts_us = (sample.cts * 1000000) / sample.timescale;
+    const duration_us = (sample.duration * 1000000) / sample.timescale;
+    const ChunkType = this.streamType == AUDIO_STREAM_TYPE ? EncodedAudioChunk : EncodedVideoChunk;
+    return new ChunkType({
+      type: type,
+      timestamp: pts_us,
+      duration: duration_us,
+      data: sample.data
+    });
+  }
+
+  _getAvcDescription(avccBox) {
     const stream = new DataStream(undefined, 0, DataStream.BIG_ENDIAN);
     avccBox.write(stream);
     return new Uint8Array(stream.buffer, 8);  // Remove the box header.
   }
 
-  async ready() {
+  async _tracksReady() {
     let info = await this.source.getInfo();
     this.videoTrack = info.videoTracks[0];
     this.audioTrack = info.audioTracks[0];
   }
 
-  async getAudioTrackInfo() {
-    await this.ready();
-
-    let info = {
-      codec: this.audioTrack.codec,
-      numberOfChannels: this.audioTrack.audio.channel_count,
-      sampleRate: this.audioTrack.audio.sample_rate,
-      extradata: this.source.getAudioSpecificConfig()
-    };
-
-    return info;
-  }
-
-  async getVideoTrackInfo() {
-    await this.ready();
-
-    let info = {
-      codec: this.videoTrack.codec,
-      displayWidth: this.videoTrack.track_width,
-      displayHeight: this.videoTrack.track_height,
-      extradata: this.getAvcDescription(this.source.getAvccBox())
-    }
-
-    return Promise.resolve(info);
-  }
-
-  selectTrack(track) {
+  _selectTrack(track) {
     console.assert(!this.selectedTrack, "changing tracks is not implemented");
     this.selectedTrack = track;
     this.source.selectTrack(track);
   }
 
-  selectVideo() {
-    this.selectTrack(this.videoTrack);
-  }
-
-  selectAudio() {
-    this.selectTrack(this.audioTrack);
-  }
-
-  async readSample() {
+  async _readSample() {
     console.assert(this.selectedTrack);
     console.assert(!this._pending_read_resolver);
 
@@ -78,12 +92,12 @@ export class MP4PullDemuxer {
 
     let promise = new Promise((resolver) => { this._pending_read_resolver = resolver; });
     console.assert(this._pending_read_resolver);
-    this.source.start(this.onSamples.bind(this));
+    this.source.start(this._onSamples.bind(this));
     return promise;
 
   }
 
-  onSamples(samples) {
+  _onSamples(samples) {
     const SAMPLE_BUFFER_TARGET_SIZE = 50;
 
     this.readySamples.push(...samples);

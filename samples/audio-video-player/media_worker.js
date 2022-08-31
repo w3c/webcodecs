@@ -47,8 +47,13 @@ self.addEventListener('message', async function(e) {
 
   switch (e.data.command) {
     case 'initialize':
-      let audioReady = audioRenderer.initialize(e.data.audioFile);
-      let videoReady = videoRenderer.initialize(e.data.videoFile, e.data.canvas);
+      let demuxerModule = await import('./mp4_pull_demuxer.js');
+
+      let audioDemuxer = new demuxerModule.MP4PullDemuxer(e.data.audioFile);
+      let audioReady = audioRenderer.initialize(audioDemuxer);
+
+      let videoDemuxer = new demuxerModule.MP4PullDemuxer(e.data.videoFile);
+      let videoReady = videoRenderer.initialize(videoDemuxer, e.data.canvas);
       await Promise.all([audioReady, videoReady]);
       postMessage({command: 'initialize-done',
                    sampleRate: audioRenderer.sampleRate,
