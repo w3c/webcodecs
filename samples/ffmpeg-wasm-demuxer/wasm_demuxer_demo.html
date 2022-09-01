@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang='en'>
+<title>FFmpeg WASM Demuxer WebCodecs Demo</title>
+<style>
+  body {
+    background-color: hsl(212deg 15% 22%);
+    color: #fff;
+    font-family: sans-serif;
+    max-width: 800px;
+    margin: 40px auto;
+    line-height: 1.3em;
+  }
+  li {
+    line-height: 1.3em;
+  }
+  a {
+   color: #8ab4f8;
+  }
+  a:visited {
+   color: #c58af9;
+  }
+  h1 {
+    margin-top: 40px;
+  }
+  .code {
+    background: #565656;
+    font-family: monospace;
+    padding: 1em;
+    color: #b3ff00;
+  }
+  .mono {
+    font-family: monospace;
+    font-weight: bold;
+    color: #b3dd50;
+  }
+
+</style>
+<section>
+  <h1>Demo</h1>
+  <div id=controls>
+    <button disabled>Play</button>
+    <label for=volume>Volume</label>
+    <input id=volume disabled type=range value=0.8 min=0 max=1.0 step=0.01>
+  </div>
+</section>
+<section id='overview'>
+  <h1>Overview</h1>
+  <p>
+    The WebCodecs API is focused on encoding and decoding "chunks" of media,
+    but media is often stored in "containers" (e.g. song.mp4). To decode such
+    media, apps must first "demux" the file to extract the chunks. The reverse
+    operation (combining chunks into a container file) is known as "muxing".
+  </p>
+  <p>
+    This demo uses <a href='https://ffmpeg.org/'>FFmpeg</a> (compiled to
+    WebAssembly) to demux an MP4 file.
+  </p>
+  <p>
+    <u>The main advantage of using FFmpeg</u> is its support for muxing and
+    demuxing across a large (perhaps the largest) breadth of container formats.
+    This support is well tested, actively maintained, and includes numerous
+    options for customization.
+  </p>
+  <p>
+    <u>The main disadvanatages of using FFmpeg</u> are <a href=#javascript>app
+    complexity</a> and slighlty larger <a href=#binary-size>binary size</a> vs
+    a demuxer written purely in JavaScript. For MP4 in partcular,
+    <a href='https://github.com/gpac/mp4box.js'>MP4Box.js</a> is an excellent
+    JavaScript library that should generally be preferred if all you need is an
+    MP4 demuxer.
+  </p>
+  <p>
+    The guide below shows how to configure FFmpeg for MP4 demuxing and compile
+    it using WebAssembly.
+  </p>
+</section>
+<section>
+  <h1>Building the FFmpeg demuxer</h1>
+  <h3>Preparation</h3>
+  <div>
+    The basic ingredients are
+    <ul>
+      <li>
+        Emscripten (WASM toolchain)
+      </li>
+      <li>
+        FFmpeg (C library we're porting)
+      </li>
+      <li>
+        And some common compiler tools: gcc and llvm (sepcifically llvm-nm).<br>
+        Installation for these is not covered below; obtain however you like.
+      </li>
+    </ul>
+  </div>
+
+  <div>
+    Steps
+    <ol>
+      <li>
+        Make a project directory
+        <p class='code'>
+          mkdir wasm_demuxer<br>
+          cd wasm_demuxer
+        </p>
+      </li>
+      <li>
+        Get emsdk (per their docs, NOTE: slight modifications needed on Windows)
+
+        <p class='code'>
+          git clone https://github.com/emscripten-core/emsdk<br>
+          cd emsdk<br>
+          ./emsdk install latest<br>
+          ./emsdk activate latest<br>
+          source ./emsdk_env.sh<br>
+          cd ..<br>
+        </p>
+      </li>
+      <li>
+        Get FFmpeg
+        <p class='code'>
+          git clone https://git.ffmpeg.org/ffmpeg.git ffmpeg<br>
+          cd ffmpeg
+        </p>
+      </li>
+    </ol>
+  </div>
+
+  <h3>FFmpeg Configuration</h3>
+  <p>
+    Before getting started with WASM it's helpful to configure and "make" a
+    native build to debug any underlying issues (e.g. things missing from your
+    toolchain). While in your <span class='mono'>ffmpeg/</span> directory, run:
+  </p>
+  <p class=code>
+    mkdir out_native<br>
+    cd out_native<br>
+  </p>
+  <p>
+    The following command configures the build to our specification. While in
+    <span class='mono'>out_native/</span>, run:
+  </p>
+  <p class=code>
+    ../configure
+    --disable-everything
+    --disable-all
+    --disable-doc
+    --disable-htmlpages
+    --disable-manpages
+    --disable-podpages
+    --disable-txtpages
+    --disable-debug
+    --disable-bzlib
+    --disable-error-resilience
+    --disable-iconv
+    --disable-lzo
+    --disable-network
+    --disable-schannel
+    --disable-sdl2
+    --disable-symver
+    --disable-xlib
+    --disable-zlib
+    --disable-securetransport
+    --disable-faan
+    --disable-alsa
+    --disable-autodetect
+    --disable-linux-perf
+    --disable-asm
+    --enable-small
+    --enable-static
+    --enable-avformat
+    --enable-avutil
+    --enable-avcodec
+    --enable-demuxer=mov
+    --arch=x86_32
+    --target-os=none
+    --enable-cross-compile
+  </p>
+  <p>
+    If the above step fails, check <span class='mono'>ffbuild/config.log</span>
+    to see what went wrong.
+  </p>
+
+  <div>
+    Arguments explained:
+    <ul>
+      <li>
+        Generally these options disable everything and turn on only features
+        needed for MP4 demuxing.
+      </li>
+      <li>
+        <span class='mono'>--enable-small</span> optimizes for size instead of
+        speed. Demuxing isn't performance intensive, so prefer a smaller
+        download.
+      </li>
+      <li>
+        <span class='mono'>--enable-demuxer=mov</span> enables MP4 demuxing. Change this value (or append to it) to enable support for other
+        formats. Similarly, use <span class='mono'>--enable-muxer=</span> to
+        enable support for various muxing formats (not demonstrated here).
+      </li>
+      <li>
+        <span class='mono'>--enable-avformat</span> enables the library that
+        will contain the mp4 demuxer.
+      </li>
+      <li>
+        <span class='mono'>--enable-avcodec</span> and <span class='mono'>
+        --enable-avutil</span> are required by avformat.
+      </li>
+      <li>
+        <span class='mono'>--enable-protocol=file</span> is needed for reading
+        files.
+      </li>
+      <li>
+        For additional explanation, see
+        <a href='https://itnext.io/build-ffmpeg-webassembly-version-ffmpeg-js-part-2-compile-with-emscripten-4c581e8c9a16'>this excellent article</a>
+        or run <span class='mono'>../configure --help</span>
+      </li>
+    </ul>
+  </div>
+  <p>
+    Assuming configure passed, run the following command to ensure your
+    configuration compiles:
+  </p>
+  <p class=code>
+    make -j4
+  </p>
+  <p>
+    Assuming that passed, you're ready to prepare a WASM build! Let's make a
+    new directory to hold the wasm build artifacts.
+  </p>
+  <p class=code>
+    cd ..<br>
+    mkdir out_wasm<br>
+    cd out_wasm<br>
+  </p>
+  <p>
+    Set <span class='mono'>CFLAGS</span> to use <span class='mono'>Oz</span>
+    (recognized by emcc, but not gcc) to have the emscripten compiler optimize
+    for size.
+  </p>
+  <p class=code>
+    CFLAGS="-Oz"
+  </p>
+  <p>
+    Now, from the <span class='mono'>out_wasm</span> directory, run
+    <span class='mono'>configure</span> wrapped by Emscripten's
+    <span class='mono'>emconfigure</span> command. Note this command appends a
+    handful arguments specific to building with Emscripten.
+  </p>
+  <p class=code>
+    emconfigure ../configure
+    --disable-everything
+    --disable-all
+    --disable-doc
+    --disable-htmlpages
+    --disable-manpages
+    --disable-podpages
+    --disable-txtpages
+    --disable-debug
+    --disable-bzlib
+    --disable-error-resilience
+    --disable-iconv
+    --disable-lzo
+    --disable-network
+    --disable-schannel
+    --disable-sdl2
+    --disable-symver
+    --disable-xlib
+    --disable-zlib
+    --disable-securetransport
+    --disable-faan
+    --disable-alsa
+    --disable-autodetect
+    --disable-linux-perf
+    --disable-asm
+    --enable-small
+    --enable-static
+    --enable-avformat
+    --enable-avutil
+    --enable-avcodec
+    --enable-demuxer=mov
+    --enable-protocol=file
+    --arch=x86_32
+    --target-os=none
+    --enable-cross-compile
+    --extra-cflags="$CFLAGS"
+    --extra-cxxflags="$CFLAGS"
+    --ar=emar
+    --ranlib=emranlib
+    --cc=emcc
+    --cxx=em++
+    --objcc=emcc
+    --dep-cc=emcc
+  </p>
+  <h2>Compiling</h2>
+  <p>
+    Now generate the FFmpeg libraries by running the make command, this time
+    wrapped by Emscripten's <span class='mono'>emmake</span> utillity.
+  </p>
+  <p class=code>
+    emmake make -j4
+  </p>
+  <p>
+    Finally, it's time to put it all together and build the WASM component!
+  </p>
+  <p>
+    Copy the following files into your <span class='mono'>ffmpeg/out_wasm</span>
+    directory:
+  </p>
+  <ul>
+    <li>
+      <a href='./glue.c'>glue.c</a> -
+      Glue code to help Javascript navigate FFmpeg's C-structures
+    </li>
+    <li>
+      <a href='./exported_functions.txt'>exported_functions.txt</a> -
+      C functions to export for javascript to call
+    </li>
+    <li>
+      <a href='./exported_runtime_methods.txt'>exported_runtime_methods.txt</a>
+      - Emscripten methods to export for javascript to call.
+    </li>
+  </ul>
+  <p>
+    Now run the following to build the WASM module:
+  </p>
+  <p class=code>
+    emcc "$CFLAGS" -s INITIAL_MEMORY=33554432  --closure=1 -s WASM_BIGINT -s ASSERTIONS=0 -s ALLOW_TABLE_GROWTH -s MODULARIZE=1 -s EXPORT_ES6=1 -s 'EXPORT_NAME=createWasmModule' -s EXPORTED_FUNCTIONS=@exported_functions.txt -s EXPORTED_RUNTIME_METHODS=@exported_runtime_methods.txt -I. -Isrc/ -Llibavformat -Llibavcodec -Llibavutil -lavformat -lavcodec -lavutil glue.c -o ffmpeg_wasm.out.js
+  </p>
+  <p>
+    Arguments explained
+  </p>
+  <ul>
+    <li>
+      <span class='mono'>-s INITIAL_MEMORY=33554432</span> sets the amount of
+      memory for the WASM library. Found by trial and error to be a safe value
+      for this use case. You can alternatively set <span class='mono'>
+      ALLOW_MEMORY_GROWTH=1</span> to allow dynamic growth.
+    </li>
+    <li>
+      <span class='mono'>--closure=1</span> uses the closure compiler to
+      minify ffmpeg_wasm.out.js (reducing binary size)
+    </li>
+    <li>
+      <span class='mono'>-s WASM_BIGINT</span> adds 64bit integer support
+    </li>
+    <li>
+      <span class='mono'>-s ASSERTIONS=0</span> turns off assertions to save
+      binary size. It's a good idea to leave these on during development and
+      only disable upon deploying.
+    </li>
+    <li>
+      <span class='mono'>-s ALLOW_TABLE_GROWTH</span> allows us to call
+      Emscripten's addFunction() to create function in JavaScript which we pass
+      into C code.
+    </li>
+    <li>
+      <span class='mono'>-s MODULARIZE=1 -s EXPORT_ES6=1</span> makes .js
+      into an es6 module.
+    </li>
+    <li>
+      <span class='mono'>-s 'EXPORT_NAME=createWasmModule'</span> exports
+      async <span class='mono'>createWasmModule()</span> function which we'll
+      call to initialize the wasm library
+    </li>
+  </ul>
+  <p>
+    You should now see <span class='mono'>ffmpeg_wasm.out.js</span> and <span
+    class='mono'>ffmpeg_wasm.out.wasm</span> in your
+    <span class='mono'>out_wasm</span> folder. All that's left to do is invoke
+    FFmpeg APIs from Javscript.
+  </p>
+</section>
+<section id='javascript'>
+  <h1>Javascript</h1>
+  <p>
+    This is regrettably a bit complex. In particular, using FFmpeg's AVIO to
+    facilitate streaming demuxing requires a number of DedicatedWorkers and
+    extra signalling. Here we go...
+  </p>
+  <p>
+    The root of demuxing code lives in
+    <a href='./ffmpeg_demuxer.js'>ffmpeg_demuxer.js</a>. This class creates a
+    new <a href='./blocking_demuxer_worker.js'>blocking_demuxer_worker.js</a>
+    and proxies all API calls to that worker.
+  </p>
+  <p>
+    Those proxied calls are passed to the
+    <a href='./ffmpeg_demuxer_blocking_helper.js'>
+    ffmpeg_demuxer_blocking_helper.js</a>, which is where FFmpeg APIs are
+    actually invoked (i.e. where demuxing actually occurs). This class uses
+    FFmpeg's <a href='https://ffmpeg.org/doxygen/trunk/avio_8h.html'>AVIO</a>
+    interfaces to facilitate streaming demuxing. The tricky bit is that the
+    AVIO "read" callbacks are synchronous, so we use Atomics.wait() to block
+    them while we fetch the media file from the network. This motivates us to
+    do network downloading on another worker! Enter:
+    <a href='./download_worker.js'>download_worker.js</a>.
+  </p>
+  <p>
+    The download worker runs the
+    <a href='./download_reader.js'>download_reader.js</a> to fetch and buffer
+    the download and respond to read requests from the
+    ffmpeg_demuxer_blocking_helper.js. The read's are passed between the
+    workers using a SharedArrayBuffer wrapped by
+    <a href='./shared_read_buffer.js'>shared_read_buffer.js</a>.
+  </p>
+  <p>
+    Demuxed chunks are ultimately fed into WebCodecs
+    <a href='https://www.w3.org/TR/webcodecs/#audiodecoder'>AudioDecoder</a>
+    for decoding. Decoded <a href='https://www.w3.org/TR/webcodecs/#audiodata'>
+    AudioData</a> outputs are then buffered and rendered using WebAudio's
+    <a href='https://www.w3.org/TR/webaudio/#AudioWorklet'>AudioWorklet</a>. All
+    of this is orchestrated by the <a href='../library/audio_renderer.js'>AudioRenderer (
+    audio_renderer.js)</a> component. The details of this component are covered
+    in more depth <a href='https://youtu.be/U8T5U8sN5d4?t=1564'>in this
+    talk</a>.
+  </p>
+  <p>
+    Each of the modules mentioned above include verbose debug logs that are
+    disabled by default. Enable their logs using the flags near the top of
+    each file.
+  </p>
+</section>
+<section>
+  <h1>Running locally</h1>
+  <p>
+    The audio rendering features of this demo requires <a href='https://web.dev/cross-origin-isolation-guide/'>cross origin isolation</a> to use <a href='https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/SharedArrayBuffer'>SharedArrayBuffer</a>. Use the provided <a href='../server.js'>server.js</a> node script to serve the files with the required http headers for local testing (requires <a href='https://nodejs.org'>node.js</a>).
+  </p>
+  <p class='code'>
+    node sever.js
+  </p>
+</section>
+<section>
+  <h1>Demuxer performance</h1>
+  <p>
+    Local profiling shows average demuxer reads generally take less than a tenth
+    of a millisecond with occasional outliers in the realm of 1 millisecond.
+    It's plenty fast.
+  </p>
+  <p>
+    Perormance is great, but not unique to this approach. You should expect
+    similar performance from any muxer or demuxer implementation, including
+    purely javascript based demuxers. Muxing and demuxing are not resource
+    intensive.
+  </p>
+</section>
+<section id='binary-size'>
+  <h1>Demuxer binary size</h1>
+  <p>
+    The total size is 144 KB after
+    <a href='https://en.wikipedia.org/wiki/Brotli'>brotli compression</a>. This
+    should work fine for most use cases. Media applications will often download
+    media assets with much larger sizes. For example, a typical 3.5 minute song
+    using AAC in MP4 will be at least 3 MB, or ~20x the size of this demuxer.
+  </p>
+  <p>
+    Adding additional formats to FFmpeg WASM demuxer only increases the size by
+    a small amount. For example, adding webm, mp3, and ogg support to our
+    configuration
+    (<span class='mono'>--enable-demuxer=mov,matroska,mp3,ogg</span>) adds 28
+    KB after brotli compression.
+  </p>
+  <p>
+    For applications that are especially sensitive to binary size, a
+    purely-javascript demuxer (or perhaps a lighter wasm library) may be
+    preferred. For example, <a href='https://github.com/gpac/mp4box.js/'>
+    mp4box.js</a> brotli compressed size totals 26 KB, or 1/5 the size of the
+    FFmpeg WASM demuxer.
+  </p>
+  <p>File size break down</p>
+  <ol>
+    <li>
+      <span class='mono'>ffmpeg_wasm.out.wasm</span>: 130 KB
+      brotli compressed (349 KB raw)
+    </li>
+    <li>
+      <span class='mono'>ffmpeg_wasm.out.js</span>: 14 KB brotli
+      compressed (46 KB raw)
+    </li>
+  </ol>
+
+</section>
+<section>
+  <h1>Licensing</h1>
+
+  <section>
+    <h3>FFmpeg</h3>
+    <p>Copyright (c) 2000-2022 the FFmpeg developers.</p>
+    <p>
+      <a href='http://ffmpeg.org'>FFmpeg</a> is licensed
+      under the
+      <a href='./third_party/ffmpeg_wasm/LICENSE'>LGPLv2.1 license</a>
+      and its source can be downloaded
+      <a href='https://github.com/chcunningham/ffmpeg-mirror-for-webcodecs-wasm-demuxer-demo'>here</a>.
+      See <a href='http://ffmpeg.org/legal.html'>FFmpeg's "Legal" page</a>
+      for additional info.
+    </p>
+  </section>
+  <section>
+    <h3>Emscripten</h3>
+    <p>
+      Copyright (c) 2010-2014 Emscripten authors, see
+      <a href='https://github.com/emscripten-core/emscripten/blob/main/AUTHORS'>AUTHORS</a> file.
+    </p>
+    <p>
+      <a href='https://emscripten.org/'>Emscripten</a> is licensed under the
+      <a href='./third_party/emscripten_generated/LICENSE'>MIT license and the University of Illinois/NCSA Open Source License</a>.
+    </p>
+  </section>
+  <section>
+    <h3>ringbuf.js</h3>
+    <p>
+      <a href='https://github.com/padenot/ringbuf.js'>ringbuf.js</a> is
+      licensed under the
+      <a href='./third_party/ringbufjs/LICENSE'>Mozilla Public License 2.0</a>.
+    </p>
+  </section>
+  <section>
+    <h3>Original files</h3>
+    <p>
+      Code authored specifically for this demo is licensed under the
+      <a href='https://www.w3.org/Consortium/Legal/2015/copyright-software-and-document'>W3C software and document license</a>.
+    </p>
+  </section>
+</section>
+<section>
+  <h1>Other references</h1>
+  <p>
+    This demo was my first time using WebAssembly. I found
+    these resources extremely helpful!
+  </p>
+  <ul>
+    <li>
+      <a href='https://developer.mozilla.org/en-US/docs/WebAssembly/existing_C_to_wasm'>https://developer.mozilla.org/en-US/docs/WebAssembly/existing_C_to_wasm</a>
+    </li>
+    <li>
+      <a href='https://emscripten.org/docs/compiling/Building-Projects.html#building-projects'>
+      https://emscripten.org/docs/compiling/Building-Projects.html#building-projects
+      </a>
+    </li>
+    <li>
+      <a href='https://itnext.io/build-ffmpeg-webassembly-version-ffmpeg-js-part-1-preparation-ed12bf4c8fac'>https://emscripten.org/docs/compiling/Building-Projects.html#building-projects</a>
+    </li>
+    <li>
+      <a href='https://github.com/Yahweasel/libav.js/'>https://github.com/Yahweasel/libav.js/</a>
+    </li>
+  </ul>
+</section>
+<script type="module">
+import { WebAudioController } from "../library/web_audio_controller.js";
+
+self.debugLog = function(msg) {
+  console.debug('[main window] ' + msg);
+}
+
+// Instantiate the "media worker" and start loading the files. The worker will
+// house and drive the demuxers and decoders. It will also spawn various helper
+// workers for demuxing and downloading.
+let mediaWorker = new Worker('./media_worker.js', {type: 'module'});
+mediaWorker.postMessage({command: 'initialize',
+                         audioFile: '../data/bbb_audio_aac_frag.mp4'});
+
+
+// Wait for worker initialization. Use metadata to init the WebAudioController.
+let initResolver = null;
+let initDone = new Promise(resolver => (initResolver = resolver));
+let audioController = new WebAudioController();
+mediaWorker.addEventListener('message', (e) => {
+  console.assert(e.data.command == 'initialize-done');
+  audioController.initialize(e.data.sampleRate, e.data.channelCount,
+                      e.data.sharedArrayBuffer);
+  initResolver();
+  initResolver = null;
+});
+await initDone;
+
+window.$ = document.querySelector.bind(document);
+let playButton = $('button');
+playButton.onclick = () => {
+  if (playButton.innerText == "Play") {
+    debugLog("playback start");
+    // Audio can only start in reaction to a user-gesture.
+    audioController.play().then(() => debugLog('playback started'));
+    mediaWorker.postMessage({command: 'play'});
+    playButton.innerText = "Pause";
+  } else {
+    debugLog("playback pause");
+    // Resolves when audio has effectively stopped, this can take some time if
+    // using bluetooth, for example.
+    audioController.pause().then(() => { debugLog("playback paused");
+      // Wait to pause worker until context suspended to ensure we continue
+      // filling audio buffer while audio is playing.
+      mediaWorker.postMessage({command: 'pause'});
+    });
+    playButton.innerText = "Play"
+  }
+}
+
+// Set up volume slider.
+$('#volume').onchange = (e) => { audioController.setVolume(e.target.value); }
+
+$('button').disabled = false;
+$('#volume').disabled = false;
+</script>
+</html>

@@ -7,6 +7,7 @@ registerProcessor("AudioSink", class AudioSink extends AudioWorkletProcessor {
     // https://www.w3.org/TR/webaudio/#render-quantum-size
     const RENDER_QUANTUM_SIZE = 128;
     this.deinterleaveBuffer = new Float32Array(this.mediaChannelCount * RENDER_QUANTUM_SIZE);
+    this.consecutiveUnderruns = 0;
   }
 
   // Deinterleave audio data from input (linear Float32Array) to output, an
@@ -22,7 +23,12 @@ registerProcessor("AudioSink", class AudioSink extends AudioWorkletProcessor {
   }
   process(inputs, outputs, params) {
     if (this.consumerSide.pop(this.deinterleaveBuffer) != this.deinterleaveBuffer.length) {
-      console.log("Warning: audio underrun");
+      this.consecutiveUnderruns++;
+      if (this.consecutiveUnderruns < 10) {
+        console.log(`Warning: audio underrun #${this.consecutiveUnderruns}`);
+      }
+    } else {
+      this.consecutiveUnderruns = 0;
     }
     this.deinterleave(this.deinterleaveBuffer, outputs[0]);
     return true;
