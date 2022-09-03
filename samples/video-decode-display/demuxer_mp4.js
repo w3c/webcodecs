@@ -60,17 +60,21 @@ class MP4Demuxer {
   }
 
   // Get the appropriate `description` for a specific track. Assumes that the
-  // track is H.264.
+  // track is H.264 or H.265.
   #description(track) {
     const trak = this.#file.getTrackById(track.id);
     for (const entry of trak.mdia.minf.stbl.stsd.entries) {
-      if (entry.avcC) {
+      if (entry.avcC || entry.hvcC) {
         const stream = new DataStream(undefined, 0, DataStream.BIG_ENDIAN);
-        entry.avcC.write(stream);
+        if (entry.avcC) {
+          entry.avcC.write(stream);
+        } else {
+          entry.hvcC.write(stream);
+        }
         return new Uint8Array(stream.buffer, 8);  // Remove the box header.
       }
     }
-    throw "avcC not found";
+    throw "avcC or hvcC not found";
   }
 
   #onReady(info) {
