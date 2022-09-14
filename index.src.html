@@ -99,6 +99,9 @@ spec: css-images-3; urlPrefix: https://www.w3.org/TR/css-images-3/
 
 spec: webrtc-svc; urlPrefix: https://w3c.github.io/webrtc-svc/
     type: dfn; text: scalability mode identifier; url:#scalabilitymodes*
+
+spec: ECMASCRIPT; urlPrefix: https://tc39.es/ecma262/
+    type: dfn; text: the current Realm; url: #current-realm
 </pre>
 
 <pre class='biblio'>
@@ -3221,6 +3224,8 @@ interface VideoFrame {
   readonly attribute long long timestamp;           // microseconds
   readonly attribute VideoColorSpace colorSpace;
 
+  VideoFrameMetadata getMetadata();
+
   unsigned long allocationSize(
       optional VideoFrameCopyToOptions options = {});
   Promise<sequence<PlaneLayout>> copyTo(
@@ -3243,6 +3248,8 @@ dictionary VideoFrameInit {
   // Default matches image unless visibleRect is provided.
   [EnforceRange] unsigned long displayWidth;
   [EnforceRange] unsigned long displayHeight;
+
+  VideoFrameMetadata metadata;
 };
 
 dictionary VideoFrameBufferInit {
@@ -3263,6 +3270,9 @@ dictionary VideoFrameBufferInit {
   [EnforceRange] unsigned long displayHeight;
 
   VideoColorSpaceInit colorSpace;
+};
+
+dictionary VideoFrameMetadata {
 };
 </xmp>
 
@@ -3317,6 +3327,14 @@ dictionary VideoFrameBufferInit {
 
 : <dfn attribute for=VideoFrame>[[color space]]</dfn>
 :: The {{VideoColorSpace}} associated with this frame.
+
+: <dfn attribute for=VideoFrame>\[[metadata]]</dfn>
+:: The {{VideoFrameMetadata}} associated with this frame.
+<div class='note'>
+{{VideoFrameMetadata}} is designed to be extended by other specifications.
+Specifications that do extend {{VideoFrameMetadata}} need to make sure that
+added properties are serializable.
+</div>
 
 ### Constructors ###{#videoframe-constructors}
 
@@ -3465,6 +3483,8 @@ dictionary VideoFrameBufferInit {
     9. Assign the result of running the [=VideoFrame/Pick Color Space=]
         algorithm, with |colorSpace| and {{VideoFrame/[[format]]}}, to
         {{VideoFrame/[[color space]]}}.
+    10. Assign the result of calling [=Copy VideoFrame metadata=]
+        with |init|'s {{VideoFrameInit/metadata}} to {{VideoFrame/[[metadata]]}}.
 17. Return |frame|.
 
 ### Attributes ###{#videoframe-attributes}
@@ -3670,6 +3690,12 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
 
     When invoked, run the [=Close VideoFrame=] algorithm with [=this=].
 
+: <dfn method for=VideoFrame>getMetadata()</dfn>
+:: Gets the {{VideoFrameMetadata}} associated with this frame.
+
+    When invoked, return the result of calling [=Copy VideoFrame metadata=]
+    with [=this=] {{VideoFrame/[[metadata]]}}.
+
 ### Algorithms ###{#videoframe-algorithms}
 : <dfn>Create a VideoFrame</dfn> (with |output|, |timestamp|, |duration|, |displayAspectWidth|, |displayAspectHeight|, and |colorSpace|)
 :: 1. Let |frame| be a new {{VideoFrame}}, constructed as follows:
@@ -3793,6 +3819,8 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
         |otherFrame|'s {{VideoFrame/timestamp}} to
         |frame|'s {{VideoFrame/[[timestamp]]}}.
     11. Assign |format| to |frame|.{{VideoFrame/[[format]]}}.
+    12. Assign the result of calling [=Copy VideoFrame metadata=]
+        with |init|'s {{VideoFrameInit/metadata}} to {{VideoFrame/metadata}}.
 
 : <dfn for=VideoFrame>Initialize Frame With Resource and Size</dfn> (with
     |init|,  |frame|, |resource|, |width| and |height|)
@@ -3871,6 +3899,7 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
         and {{VideoFrame/[[display height]]}}.
     5. Assign `null` to |frame|'s {{VideoFrame/[[duration]]}} and
         {{VideoFrame/[[timestamp]]}}.
+    6. Assign a new {{VideoFrameMetadata}} to |frame|'s {{VideoFrame/[[metadata]]}}.
 
 : <dfn for=VideoFrame>Parse VideoFrameCopyToOptions</dfn> (with |options|)
 ::  1. Let |defaultRect| be the result of performing the getter steps for
@@ -4043,6 +4072,13 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
         2. Assign |minAllocationSize| to
             [=combined buffer layout/allocationSize=].
     9. Return |combinedLayout|.
+
+: <dfn for=VideoFrame>Copy VideoFrame metadata</dfn> (with |metadata|)
+:: 1. Let |metadataCopySerialized| be [$StructuredSerialize$](|metadata|).
+    2. Let |metadataCopy| be [$StructuredDeserialize$](|metadataCopySerialized|, [=the current Realm=]).
+    3. return |metadataCopy|.
+
+The goal of this algorithm is to ensure that metadata owned by a {{VideoFrame}} is immutable.
 
 ### Transfer and Serialization ###{#videoframe-transfer-serialization}
 
