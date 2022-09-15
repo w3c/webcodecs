@@ -3332,7 +3332,7 @@ dictionary VideoFrameMetadata {
 :: The {{VideoFrameMetadata}} associated with this frame.
 <div class='note'>
 {{VideoFrameMetadata}} is designed to be extended by other specifications.
-Specifications that do extend {{VideoFrameMetadata}} need to make sure that
+Specifications that do extend {{VideoFrameMetadata}} must make sure that
 added properties are serializable.
 </div>
 
@@ -3374,7 +3374,9 @@ added properties are serializable.
             {{InvalidStateError}} {{DOMException}}.
         2. Let |currentPlaybackFrame| be the {{VideoFrame}} at the [=current
             playback position=].
-        3. Run the [=VideoFrame/Initialize Frame From Other Frame=] algorithm
+        3. If {{VideoFrameInit/metadata}} does not [=map/exists=] in |init|,
+            assign |currentPlaybackFrame|.{{VideoFrame/[[metadata]]}} to it.
+        4. Run the [=VideoFrame/Initialize Frame From Other Frame=] algorithm
             with |init|, |frame|, and |currentPlaybackFrame|.
 
     - {{HTMLCanvasElement}}
@@ -3484,7 +3486,7 @@ added properties are serializable.
         algorithm, with |colorSpace| and {{VideoFrame/[[format]]}}, to
         {{VideoFrame/[[color space]]}}.
     10. Assign the result of calling [=Copy VideoFrame metadata=]
-        with |init|'s {{VideoFrameInit/metadata}} to {{VideoFrame/[[metadata]]}}.
+        with |init|'s {{VideoFrameInit/metadata}} to |frame|.{{VideoFrame/[[metadata]]}}.
 17. Return |frame|.
 
 ### Attributes ###{#videoframe-attributes}
@@ -3820,7 +3822,7 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
         |frame|'s {{VideoFrame/[[timestamp]]}}.
     11. Assign |format| to |frame|.{{VideoFrame/[[format]]}}.
     12. Assign the result of calling [=Copy VideoFrame metadata=]
-        with |init|'s {{VideoFrameInit/metadata}} to {{VideoFrame/metadata}}.
+        with |init|'s {{VideoFrameInit/metadata}} to |frame|.{{VideoFrame/[[metadata]]}}.
 
 : <dfn for=VideoFrame>Initialize Frame With Resource and Size</dfn> (with
     |init|,  |frame|, |resource|, |width| and |height|)
