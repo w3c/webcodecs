@@ -4722,8 +4722,7 @@ interface ImageDecoder {
     3. Assign `true` to {{ImageDecoder/[[message queue blocked]]}}.
     3. Enqueue the following steps to the {{ImageDecoder/[[codec work queue]]}}:
         1. Configure {{ImageDecoder/[[codec implementation]]}} in accordance
-            with the values given for {{ImageDecoderInit/premultiplyAlpha}},
-            {{ImageDecoderInit/colorSpaceConversion}},
+            with the values given for {{ImageDecoderInit/colorSpaceConversion}},
             {{ImageDecoderInit/desiredWidth}}, and
             {{ImageDecoderInit/desiredHeight}}.
         2. Assign `false` to {{ImageDecoder/[[message queue blocked]]}}.
@@ -5113,7 +5112,6 @@ typedef (BufferSource or ReadableStream) ImageBufferSource;
 dictionary ImageDecoderInit {
   required DOMString type;
   required ImageBufferSource data;
-  PremultiplyAlpha premultiplyAlpha = "default";
   ColorSpaceConversion colorSpaceConversion = "default";
   [EnforceRange] unsigned long desiredWidth;
   [EnforceRange] unsigned long desiredHeight;
@@ -5147,11 +5145,6 @@ string=] and for which the `type`, per Section 3.1.1.1 of [[RFC9110]], is
 : <dfn dict-member for=ImageDecoderInit>data</dfn>
 :: {{BufferSource}} or {{ReadableStream}} of bytes representing an encoded
     image file as described by {{ImageDecoderInit/type}}.
-
-: <dfn dict-member for=ImageDecoderInit>premultiplyAlpha</dfn>
-:: Controls whether decoded outputs' color channels are to be premultiplied by
-    their alpha channel, as defined by {{ImageBitmapOptions/premultiplyAlpha}}
-    in {{ImageBitmapOptions}}.
 
 : <dfn dict-member for=ImageDecoderInit>colorSpaceConversion</dfn>
 :: Controls whether decoded outputs' color space is converted or ignored, as
