@@ -3185,7 +3185,7 @@ interface VideoFrame {
   readonly attribute long long? timestamp;          // microseconds
   readonly attribute VideoColorSpace colorSpace;
 
-  VideoFrameMetadata getMetadata();
+  VideoFrameMetadata metadata();
 
   unsigned long allocationSize(
       optional VideoFrameCopyToOptions options = {});
@@ -3291,6 +3291,7 @@ dictionary VideoFrameMetadata {
 
 : <dfn attribute for=VideoFrame>\[[metadata]]</dfn>
 :: The {{VideoFrameMetadata}} associated with this frame.
+
 <div class='note'>
 {{VideoFrameMetadata}} is designed to be extended by other specifications.
 Specifications that do extend {{VideoFrameMetadata}} must make sure that
@@ -3646,7 +3647,7 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
 
     When invoked, run the [=Close VideoFrame=] algorithm with [=this=].
 
-: <dfn method for=VideoFrame>getMetadata()</dfn>
+: <dfn method for=VideoFrame>metadata()</dfn>
 :: Gets the {{VideoFrameMetadata}} associated with this frame.
 
     When invoked, return the result of calling [=Copy VideoFrame metadata=]
