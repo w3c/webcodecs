@@ -3696,8 +3696,11 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
 : <dfn method for=VideoFrame>metadata()</dfn>
 :: Gets the {{VideoFrameMetadata}} associated with this frame.
 
-    When invoked, return the result of calling [=Copy VideoFrame metadata=]
-    with [=this=] {{VideoFrame/[[metadata]]}}.
+    When invoked, run these steps:
+    1. If {{platform object/[[Detached]]}} is <code>true</code>,
+        throw an {{InvalidStateError}} {{DOMException}}.
+    2. Return the result of calling [=Copy VideoFrame metadata=]
+        with {{VideoFrame/[[metadata]]}}.
 
 ### Algorithms ###{#videoframe-algorithms}
 : <dfn>Create a VideoFrame</dfn> (with |output|, |timestamp|, |duration|, |displayAspectWidth|, |displayAspectHeight|, and |colorSpace|)
