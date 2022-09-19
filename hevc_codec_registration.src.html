@@ -1,0 +1,217 @@
+<pre class='metadata'>
+Title: HEVC (H.265) WebCodecs Registration
+Repository: w3c/webcodecs
+Status: NOTE-ED
+Shortname: webcodecs-hevc-codec-registration
+Level: none
+Group: mediawg
+ED: https://w3c.github.io/webcodecs/hevc_codec_registration.html
+TR: https://www.w3.org/TR/webcodecs-hevc-codec-registration/
+Editor: Chris Cunningham, w3cid 114832, Google Inc. https://www.google.com/
+Editor: Paul Adenot, w3cid 62410, Mozilla https://www.mozilla.org/
+Editor: Bernard Aboba, w3cid 65611, Microsoft Corporation https://www.microsoft.com/
+
+Abstract: This registration is entered into the [[webcodecs-codec-registry]].
+    It describes, for HEVC (H.265), the (1) fully qualified codec strings,
+    (2) the codec-specific {{EncodedVideoChunk}}
+    [=EncodedVideoChunk/[[internal data]]=] bytes, (3) the
+    {{VideoDecoderConfig.description}} bytes, (4) the values of
+    {{EncodedVideoChunk}} [=EncodedVideoChunk/[[type]]=], and (5) the
+    codec-specific extensions to {{VideoEncoderConfig}}
+
+    The registration is not intended to include any information on whether a
+    codec format is encumbered by intellectual property claims. Implementers and
+    authors are advised to seek appropriate legal counsel in this matter if they
+    intend to implement or use a specific codec format. Implementers of
+    WebCodecs are not required to support the HEVC / H.265 codec.
+
+    This registration is non-normative.
+
+Markup Shorthands:css no, markdown yes, dfn yes
+!Participate: <a href="https://github.com/w3c/webcodecs">Git Repository.</a>
+!Participate: <a href="https://github.com/w3c/webcodecs/issues/new">File an issue.</a>
+!Version History: <a href="https://github.com/w3c/webcodecs/commits">https://github.com/w3c/webcodecs/commits</a>
+</pre>
+
+<pre class='anchors'>
+spec: WEBCODECS; urlPrefix: https://w3c.github.io/webcodecs/#
+    type: attribute
+        text: EncodedVideoChunkMetadata.decoderConfig; url: dom-encodedvideochunkmetadata-decoderconfig
+        for: EncodedVideoChunkType; text: key; url: dom-encodedvideochunktype-key
+        text: VideoDecoderConfig.description; url: dom-videodecoderconfig-description
+    type: dfn
+        for: EncodedVideoChunk; text: [[internal data]]; url: dom-encodedvideochunk-internal-data-slot
+        for: EncodedVideoChunk; text: [[type]]; url: dom-encodedvideochunk-type-slot
+        for: VideoEncoder; text: [[output callback]]; url: dom-videoencoder-output-callback-slot
+    type: interface
+        text: EncodedVideoChunk; url: encodedvideochunk
+        text: VideoEncoder; url: videoencoder
+    type: dictionary
+        text: VideoEncoderConfig; url: dictdef-videoencoderconfig
+        text: VideoDecoderConfig; url: dictdef-videodecoderconfig
+</pre>
+
+<pre class='biblio'>
+{
+  "ITU-T-REC-H.265": {
+    "href": "https://www.itu.int/rec/T-REC-H.265",
+    "title": "H.265 : High efficiency video coding",
+    "publisher": "ITU",
+    "date": "August 2021"
+  },
+  "iso14496-15": {
+    "href": "https://www.iso.org/standard/74429.html",
+    "title": "ISO/IEC 14496-15:2019 Information technology — Coding of audio-visual objects — Part 15: Carriage of network abstraction layer (NAL) unit structured video in the ISO base media file format",
+    "publisher": "ISO",
+    "date": "September 2019"
+  }
+}
+</pre>
+
+Fully qualified codec strings {#fully-qualified-codec-strings}
+==============================================================
+
+The codec string begins with the prefix "hev1." or "hvc1.", with a suffix of
+four dot-separated fields as described in Section E.3 of [[iso14496-15]].
+
+EncodedVideoChunk data {#encodedvideochunk-data}
+================================================
+
+{{EncodedVideoChunk}} [=EncodedVideoChunk/[[internal data]]=] is expected to be
+an access unit as defined in [[ITU-T-REC-H.265]] section 7.4.2.4.
+
+NOTE: An access unit contains exactly one base layer coded picture.
+
+If the bitstream is in {{HevcBitstreamFormat/hevc}} format,
+[=EncodedVideoChunk/[[internal data]]=] is assumed to be in canonical format, as
+defined in [[iso14496-15]] section 8.3.2.
+
+If the bitstream is in {{HevcBitstreamFormat/annexb}} format,
+[=EncodedVideoChunk/[[internal data]]=] is assumed to be in Annex B format,
+as defined in [[ITU-T-REC-H.265]] Annex B.
+
+NOTE: Since [=EncodedVideoChunk/[[internal data]]=] is inherently byte-aligned,
+    implementations are not required to recover byte-alignment.
+
+VideoDecoderConfig description {#videodecoderconfig-description}
+================================================================
+
+If the {{VideoDecoderConfig.description}} is present, it is assumed to be an
+`HEVCDecoderConfigurationRecord`, as defined by [[iso14496-15]], section
+8.3.3.1, and the bitstream is assumed to be in {{HevcBitstreamFormat/hevc}}
+format.
+
+NOTE: This format is commonly used in .MP4 files, where the player generally
+    has random access to the media data.
+
+If the {{VideoDecoderConfig.description}} is not present, the bitstream is
+assumed to be in {{HevcBitstreamFormat/annexb}} format.
+
+NOTE: "annexb" format is described in greater detail by [[ITU-T-REC-H.265]],
+    Annex B. This format is commonly used in live-streaming applications, where
+    including the VPS, SPS, and PPS data periodically allows users to easily
+    start from the middle of the stream.
+
+EncodedVideoChunk type {#encodedvideochunk-type}
+================================================
+
+If an {{EncodedVideoChunk}}'s [=EncodedVideoChunk/[[type]]=] is
+{{EncodedVideoChunkType/key}}, and the bitstream is in
+{{HevcBitstreamFormat/hevc}} format, then the {{EncodedVideoChunk}} is expected
+to contain a base layer primary coded picture that is an instantaneous decoding
+refresh (IDR), clean random access (CRA), or broken link access (BLA) picture.
+
+NOTE: If the bitstream is in {{HevcBitstreamFormat/hevc}} format, parameter sets
+    necessary for decoding are included in {{VideoDecoderConfig.description}}.
+
+If an {{EncodedVideoChunk}}'s [=EncodedVideoChunk/[[type]]=] is
+{{EncodedVideoChunkType/key}}, and the bitstream is in
+{{HevcBitstreamFormat/annexb}} format, then the {{EncodedVideoChunk}} is
+expected to contain both a base layer coded picture that is an instantaneous
+decoding refresh (IDR), clean random access (CRA), or broken link access (BLA)
+picture, and all parameter sets necessary to decode all video data
+NAL units in the {{EncodedVideoChunk}}.
+
+VideoEncoderConfig extensions {#videoencoderconfig-extensions}
+==============================================================
+
+<pre class='idl'>
+<xmp>
+partial dictionary VideoEncoderConfig {
+  HevcEncoderConfig hevc;
+};
+</xmp>
+</pre>
+
+<dl>
+  <dt><dfn dict-member for=VideoEncoderConfig>hevc</dfn></dt>
+  <dd>
+    Contains codec specific configuration options for the HEVC (H.265) codec.
+  </dd>
+</dl>
+
+HevcEncoderConfig {#hevc-encoder-config}
+--------------------------------------
+<pre class='idl'>
+<xmp>
+dictionary HevcEncoderConfig {
+  HevcBitstreamFormat format = "hevc";
+};
+</xmp>
+</pre>
+
+<dl>
+  <dt><dfn dict-member for=HevcEncoderConfig>format</dfn></dt>
+  <dd>
+    Configures the format of output {{EncodedVideoChunk}}s. See
+    {{HevcBitstreamFormat}}.
+  </dd>
+</dl>
+
+HevcBitstreamFormat {#hevc-bitstream-format}
+------------------------------------------
+<pre class='idl'>
+<xmp>
+enum HevcBitstreamFormat {
+  "annexb",
+  "hevc",
+};
+</xmp>
+</pre>
+
+The {{HevcBitstreamFormat}} determines the location of HEVC parameter sets, and
+mechanisms for packaging the bitstream.
+
+<dl>
+  <dt><dfn enum-value for=AvcBitstreamFormat>annexb</dfn></dt>
+  <dd>
+    Parameter sets are included periodically throughout the bitstream.
+
+    NOTE: This format is described in greater detail by [[ITU-T-REC-H.265]],
+        Annex B. This format is commonly used in live-streaming applications,
+        where including the parameter set data periodically allows users to
+        easily start from the middle of the stream.
+  </dd>
+  <dt><dfn enum-value for=AvcBitstreamFormat>hevc</dfn></dt>
+  <dd>
+    Parameter sets are not included in the bitstream and are instead emitted
+    via the [=VideoEncoder/[[output callback]]=] as the
+    {{VideoDecoderConfig.description}} of the
+    {{EncodedVideoChunkMetadata.decoderConfig}}.
+
+    NOTE: This format is described in greater detail by [[iso14496-15]],
+        section 8.3. This format is commonly used in .MP4 files, where the
+        player generally has random access to the media data.
+</dl>
+
+Privacy Considerations {#privacy-considerations}
+==========================================================================
+
+Please refer to the section [[WEBCODECS#privacy-considerations|Privacy
+Considerations]] in [[WEBCODECS]].
+
+Security Considerations {#security-considerations}
+==========================================================================
+
+Please refer to the section [[WEBCODECS#security-considerations|Security
+Considerations]] in [[WEBCODECS]].

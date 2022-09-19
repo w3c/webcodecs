@@ -1,0 +1,156 @@
+<!doctype html>
+<style>
+  body {
+    font-family: sans-serif;
+    color: #444;
+    font-weight: 300;
+    font-size:  larger;
+  }
+  button {
+    font-size: larger;
+  }
+  #controls {
+    margin-bottom: 10px;
+  }
+  #loading {
+    font-size: 2em;
+  }
+  .monospace {
+    font-family: monospace;
+  }
+  div#container {
+    margin: 0 auto 0 auto;
+    max-width: 60em;
+    padding: 1em 1.5em 1.3em 1.5em;
+  }
+  canvas {
+    outline: 1px solid black;
+  }
+</style>
+<div id=container>
+  <p>
+    This sample combines WebCodecs and WebAudio to create a media player that
+    renders synchronized audio and video.
+  </p>
+  <p>
+    Check out the <a href='../video-decode-display/'>Video Decoding and Display
+    </a> demo for a simpler introduction to video decoding and rendering. View
+    <a href='https://youtu.be/U8T5U8sN5d4?t=1572'>this video presentation</a>
+    for an overview of audio rendering stack.
+  </p>
+  <p>
+    This sample requires <a href='https://web.dev/cross-origin-isolation-guide'>
+    cross origin isolation</a> to use
+    <span class='monospace'>SharedArrayBuffer</span>. You may use
+    <span class='monospace'>node server.js</span> to host this sample locally
+    with the appropriate HTTP headers.
+  </p>
+  <div id=controls>
+    <p id=loading>Loading...</p>
+    <button disabled=true>Play</button>
+    <label for=volume>Volume</label>
+    <input id=volume type=range value=0.8 min=0 max=1.0 step=0.01></input>
+  </div>
+  <canvas width=1280 height=720></canvas>
+</div>
+<script type="module">
+import { WebAudioController } from "./web_audio_controller.js";
+
+// Transfer canvas to offscreen. Painting will be performed by worker without
+// blocking the Window main thread.
+window.$ = document.querySelector.bind(document);
+let canvas = $("canvas");
+let offscreenCanvas = canvas.transferControlToOffscreen();
+
+// Instantiate the "media worker" and start loading the files. The worker will
+// house and drive the demuxers and decoders.
+let mediaWorker = new Worker('./media_worker.js');
+mediaWorker.postMessage({command: 'initialize',
+                         audioFile: '../data/bbb_audio_aac_frag.mp4',
+                         videoFile: '../data/bbb_video_avc_frag.mp4',
+                         canvas: offscreenCanvas},
+                        {transfer: [offscreenCanvas]});
+
+// Wait for worker initialization. Use metadata to init the WebAudioController.
+let initResolver = null;
+let initDone = new Promise(resolver => (initResolver = resolver));
+let audioController = new WebAudioController();
+mediaWorker.addEventListener('message', (e) => {
+  console.assert(e.data.command == 'initialize-done');
+  audioController.initialize(e.data.sampleRate, e.data.channelCount,
+                      e.data.sharedArrayBuffer);
+  initResolver();
+  initResolver = null;
+});
+await initDone;
+
+// Set up volume slider.
+$('#volume').onchange = (e) => { audioController.setVolume(e.target.value); }
+
+// Enable play now that we're loaded
+let playButton = $('button');
+let loadingElement = $('#loading');
+playButton.disabled = false;
+loadingElement.innerText = 'Ready! Click play.'
+
+playButton.onclick = () => {
+  if (playButton.innerText == "Play") {
+    console.log("playback start");
+
+    // Audio can only start in reaction to a user-gesture.
+    audioController.play().then(() => console.log('playback started'));
+    mediaWorker.postMessage({
+        command: 'play',
+        mediaTimeSecs: audioController.getMediaTimeInSeconds(),
+        mediaTimeCapturedAtHighResTimestamp:
+            performance.now() + performance.timeOrigin
+    });
+
+    sendMediaTimeUpdates(true);
+
+    playButton.innerText = "Pause";
+
+  } else {
+    console.log("playback pause");
+    // Resolves when audio has effectively stopped, this can take some time if
+    // using bluetooth, for example.
+    audioController.pause().then(() => { console.log("playback paused");
+      // Wait to pause worker until context suspended to ensure we continue
+      // filling audio buffer while audio is playing.
+      mediaWorker.postMessage({command: 'pause'});
+    });
+
+    sendMediaTimeUpdates(false);
+
+    playButton.innerText = "Play"
+  }
+}
+
+// Helper function to periodically send the current media time to the media
+// worker. Ideally we would instead compute the media time on the worker thread,
+// but this requires WebAudio interfaces to be exposed on the WorkerGlobalScope.
+// See https://github.com/WebAudio/web-audio-api/issues/2423
+let mediaTimeUpdateInterval = null;
+function sendMediaTimeUpdates(enabled) {
+  if (enabled) {
+    // Local testing shows this interval (1 second) is frequent enough that the
+    // estimated media time between updates drifts by less than 20 msec. Lower
+    // values didn't produce meaningfully lower drift and have the downside of
+    // waking up the main thread more often. Higher values could make av sync
+    // glitches more noticeable when changing the output device.
+    const UPDATE_INTERVAL = 1000;
+    mediaTimeUpdateInterval = setInterval(() => {
+      mediaWorker.postMessage({
+          command: 'update-media-time',
+          mediaTimeSecs: audioController.getMediaTimeInSeconds(),
+          mediaTimeCapturedAtHighResTimestamp:
+              performance.now() + performance.timeOrigin
+      });
+    }, UPDATE_INTERVAL);
+  } else {
+    clearInterval(mediaTimeUpdateInterval);
+    mediaTimeUpdateInterval = null;
+  }
+}
+</script>
+</html>
