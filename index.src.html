@@ -3259,7 +3259,7 @@ dictionary VideoFrameBufferInit {
     NOTE: Authors are encouraged to provide a meaningful timestamp unless it is
         implicitly provided by the {{CanvasImageSource}} at construction.
         Interfaces that consume {{VideoFrame}}s can rely on this value for
-        timing decesions. For example, {{VideoEncoder}} can use
+        timing decisions. For example, {{VideoEncoder}} can use
         {{VideoFrame/timestamp}} values to guide rate control (see
         {{VideoEncoderConfig/framerate}}).
 
@@ -4693,20 +4693,19 @@ interface ImageDecoder {
     11. Let |decodeResult| be a new {{ImageDecodeResult}} initialized as
         follows:
         1. Assign 'true' to {{ImageDecodeResult/complete}}.
-        2. Let |timestamp| be the presentation timestamp for |output| as
-            described by |encodedFrame|. If |encodedFrame| does not describe a
-            timestamp, assign `0` to |timestamp|.
-
-            NOTE: For animated images, the timestamp of a given frame will
-                generally equal the sum of durations from preceeding frames.
-                However, implementers are not expected to decode earlier frames
-                to compute this timestamp. If it is infeasible to dermine a
-                imestamp by simply inspecing |encodedFrame|, timestamp can
-                instead be `0`.
-
-        3. Let |duration| be the presentation duration for |output| as
-            described by |encodedFrame|. If |encodedFrame| does not describe a
+        2. Let |duration| be the presentation duration for |output| as
+            described by |encodedFrame|. If |encodedFrame| does not have a
             duration, assign `null` to |duration|.
+        3. Let |timestamp| be the presentation timestamp for |output| as
+            described by |encodedFrame|. If |encodedFrame| does not have a
+            timestamp:
+                1. If |encodedFrame| is a still image assign `0` to |timestamp|.
+                2. If |encodedFrame| is a constant rate animated image and
+                |duration| is not `null`, assign `|frameIndex| * |duration|` to
+                |timestamp|.
+                3. If a |timestamp| can otherwise be trivially generated from
+                metadata without further decoding, assign that to |timestamp|.
+                4. Otherwise, assign `0` to |timestamp|.
         4. Assign {{ImageDecodeResult/image}} with the result of running the
             [=Create a VideoFrame=] algorithm with |output|, |timestamp|, and
             |duration|.
@@ -4760,20 +4759,19 @@ interface ImageDecoder {
             for |output|.
         3. Add a new entry to {{ImageDecoder/[[progressive frame
             generations]]}} with key |frameIndex| and value |frameGeneration|.
-    15. Let |timestamp| be the presentation timestamp for |output| as
-        described by |encodedFrame|. If |encodedFrame| does not describe a
-        timestamp, assign `0` to |timestamp|.
-
-        NOTE: For animated images, the timestamp of a given frame will
-            generally equal the sum of durations from preceeding frames.
-            However, implementers are not expected to decode earlier frames
-            to compute this timestamp. If it is infeasible to dermine a
-            imestamp by simply inspecing |encodedFrame|, timestamp can
-            instead be `0`.
-
-    16. Let |duration| be the presentation duration for |output| as
+    15. Let |duration| be the presentation duration for |output| as
         described by |encodedFrame|. If |encodedFrame| does not describe a
         duration, assign `null` to |duration|.
+    16. Let |timestamp| be the presentation timestamp for |output| as
+        described by |encodedFrame|. If |encodedFrame| does not have a
+        timestamp:
+            1. If |encodedFrame| is a still image assign `0` to |timestamp|.
+            2. If |encodedFrame| is a constant rate animated image and
+            |duration| is not `null`, assign `|frameIndex| * |duration|` to
+            |timestamp|.
+            3. If a |timestamp| can otherwise be trivially generated from
+            metadata without further decoding, assign that to |timestamp|.
+            4. Otherwise, assign `0` to |timestamp|.
     17. Assign {{ImageDecodeResult/image}} with the result of running the
         [=Create a VideoFrame=] algorithm with |output|, |timestamp|, and
         |duration|.
