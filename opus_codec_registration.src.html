@@ -105,7 +105,7 @@ Opus is always "[=EncodedAudioChunkType/key=]".
 NOTE: Once the initialization has succeeded, any packet can be decoded at any
 time without error, but this might not result in the expected audio output.
 
-AudiEncoderConfig extensions {#audioencoderconfig-extensions}
+AudioEncoderConfig extensions {#audioencoderconfig-extensions}
 =============================================================
 
 <pre class='idl'>
@@ -131,10 +131,16 @@ OpusEncoderConfig {#opus-encoder-config}
 <xmp>
 dictionary OpusEncoderConfig {
   OpusBitstreamFormat format = "opus";
-  [EnforceRange] unsigned long long frameDuration;
+  [EnforceRange] unsigned long frameDuration;
 };
 </xmp>
 </pre>
+
+To check if an {{OpusEncoderConfig}} is a valid OpusEncoderConfig,
+run these steps:
+1. If {{OpusEncoderConfig/frameDuration}} is not a valid ptime value,
+    which is described in section 6.1 of [[RFC6381]], return `false`.
+2. Return `true`.
 
 <dl>
   <dt><dfn dict-member for=OpusEncoderConfig>format</dfn></dt>
@@ -144,7 +150,7 @@ dictionary OpusEncoderConfig {
   </dd>
   <dt><dfn dict-member for=OpusEncoderConfig>frameDuration</dfn></dt>
   <dd>
-    Configures the frame duration, in microseconds, of output {{EncodedAudioChunk}}s.
+    Configures the frame duration, in milliseconds, of output {{EncodedAudioChunk}}s.
   </dd>
 </dl>
 

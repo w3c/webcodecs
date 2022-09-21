@@ -2073,7 +2073,10 @@ To check if an {{AudioEncoderConfig}} is a <dfn>valid AudioEncoderConfig</dfn>,
 run these steps:
 1. If {{AudioEncoderConfig/codec}} is not a <a>valid codec string</a>, return
     `false`.
-2. Return `true`.
+2. If the current codec's registry defines a codec-specific additional configuration
+    validation steps, run the algorithm defined in the registry. If the return
+    value is `false`, return it.
+3. Return `true`.
 
 <dl>
   <dt><dfn dict-member for=AudioEncoderConfig>codec</dfn></dt>
