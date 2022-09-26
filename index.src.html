@@ -4461,9 +4461,11 @@ Color primaries describe the color gamut of video samples.
 
 <xmp class='idl'>
 enum VideoColorPrimaries {
-  "bt709",      // BT.709, sRGB
-  "bt470bg",    // BT.601 PAL
-  "smpte170m",  // BT.601 NTSC
+  "bt709",
+  "bt470bg",
+  "smpte170m",
+  "bt2020",
+  "smpte432",
 };
 </xmp>
 
@@ -4483,6 +4485,16 @@ enum VideoColorPrimaries {
     Color primaries used by BT.601 NTSC, as described by [[H.273]]
     section 8.1 table 2 value 6.
   </dd>
+  <dt><dfn enum-value for=VideoColorPrimaries>bt2020</dfn></dt>
+  <dd>
+    Color primaries used by BT.2020 and BT.2100, as described by [[H.273]]
+    section 8.1 table 2 value 9.
+  </dd>
+  <dt><dfn enum-value for=VideoColorPrimaries>smpte432</dfn></dt>
+  <dd>
+    Color primaries used by P3 D65, as described by [[H.273]]
+    section 8.1 table 2 value 12.
+  </dd>
 </dl>
 
 Video Transfer Characteristics {#videotransfercharacteristics}
@@ -4492,9 +4504,12 @@ of video samples.
 
 <xmp class='idl'>
 enum VideoTransferCharacteristics {
-  "bt709",         // BT.709
-  "smpte170m",     // BT.601 (functionally the same as bt709)
-  "iec61966-2-1",  // sRGB
+  "bt709",
+  "smpte170m",
+  "iec61966-2-1",
+  "linear",
+  "pq",
+  "hlg",
 };
 </xmp>
 
@@ -4507,12 +4522,27 @@ enum VideoTransferCharacteristics {
   <dt><dfn enum-value for=VideoTransferCharacteristics>smpte170m</dfn></dt>
   <dd>
     Transfer characteristics used by BT.601, as described by [[H.273]]
-    section 8.2 table 3 value 6.
+    section 8.2 table 3 value 6. (Functionally the same as "bt709".)
   </dd>
   <dt><dfn enum-value for=VideoTransferCharacteristics>iec61966-2-1</dfn></dt>
   <dd>
     Transfer characteristics used by sRGB, as described by [[H.273]]
     section 8.2 table 3 value 13.
+  </dd>
+  <dt><dfn enum-value for=VideoTransferCharacteristics>linear</dfn></dt>
+  <dd>
+    Transfer characteristics used by linear RGB, as described by [[H.273]]
+    section 8.2 table 3 value 8.
+  </dd>
+  <dt><dfn enum-value for=VideoTransferCharacteristics>pq</dfn></dt>
+  <dd>
+    Transfer characteristics used by BT.2100 PQ, as described by [[H.273]]
+    section 8.2 table 3 value 16.
+  </dd>
+  <dt><dfn enum-value for=VideoTransferCharacteristics>hlg</dfn></dt>
+  <dd>
+    Transfer characteristics used by BT.2100 HLG, as described by [[H.273]]
+    section 8.2 table 3 value 18.
   </dd>
 </dl>
 
@@ -4523,10 +4553,11 @@ and color coordinates.
 
 <xmp class='idl'>
 enum VideoMatrixCoefficients {
-  "rgb",        // sRGB
-  "bt709",      // BT.709
-  "bt470bg",    // BT.601 PAL
-  "smpte170m",  // BT.601 NTSC (functionally the same as bt470bg)
+  "rgb",
+  "bt709",
+  "bt470bg",
+  "smpte170m",
+  "bt2020-ncl",
 };
 </xmp>
 
@@ -4549,7 +4580,12 @@ enum VideoMatrixCoefficients {
   <dt><dfn enum-value for=VideoMatrixCoefficients>smpte170m</dfn></dt>
   <dd>
     Matrix coefficients used by BT.601 NTSC, as described by [[H.273]]
-    section 8.3 table 4 value 6.
+    section 8.3 table 4 value 6. (Functionally the same as "bt470bg".)
+  </dd>
+  <dt><dfn enum-value for=VideoMatrixCoefficients>bt2020-ncl</dfn></dt>
+  <dd>
+    Matrix coefficients used by BT.2020 NCL, as described by [[H.273]]
+    section 8.3 table 4 value 9.
   </dd>
 </dl>
 
