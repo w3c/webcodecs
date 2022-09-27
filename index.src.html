@@ -2441,7 +2441,7 @@ These interfaces represent chunks of encoded media.
 EncodedAudioChunk Interface {#encodedaudiochunk-interface}
 ------------------------------------------------------------
 <xmp class='idl'>
-[Exposed=(Window,DedicatedWorker)]
+[Exposed=(Window,DedicatedWorker), Serializable]
 interface EncodedAudioChunk {
   constructor(EncodedAudioChunkInit init);
   readonly attribute EncodedAudioChunkType type;
@@ -2510,10 +2510,28 @@ enum EncodedAudioChunkType {
         greater than in |destination|, throw a {{TypeError}}.
     2. Copy the {{EncodedAudioChunk/[[internal data]]}} into |destination|.
 
+### Serialization ###{#encodedaudiochunk-serialization}
+: The {{EncodedAudioChunk}} [=serialization steps=] (with |value|, |serialized|,
+    and |forStorage|) are:
+:: 1. If |forStorage| is `true`, throw a {{TypeError}}.
+    2. For each {{EncodedAudioChunk}} internal slot in |value|, assign the value
+        of each internal slot to a field in |serialized| with the same name
+        the internal slot.
+
+: The {{EncodedAudioChunk}} [=deserialization steps=] (with |serialized| and
+    |value|) are:
+:: 1. For all named fields in |serialized|, assign the value of each named field
+        to the {{EncodedAudioChunk}} internal slot in |value| with the same name
+        as the named field.
+
+NOTE: Since {{EncodedAudioChunk}}s are immutable, User Agents may choose to
+    implement serialization using a reference counting model similar to
+    [[#audiodata-transfer-serialization]].
+
 EncodedVideoChunk Interface{#encodedvideochunk-interface}
 -----------------------------------------------------------
 <xmp class='idl'>
-[Exposed=(Window,DedicatedWorker)]
+[Exposed=(Window,DedicatedWorker), Serializable]
 interface EncodedVideoChunk {
   constructor(EncodedVideoChunkInit init);
   readonly attribute EncodedVideoChunkType type;
@@ -2583,6 +2601,24 @@ enum EncodedVideoChunkType {
         the {{EncodedVideoChunk/[[byte length]]}} of |destination|, throw a
         {{TypeError}}.
     2. Copy the {{EncodedVideoChunk/[[internal data]]}} into |destination|.
+
+### Serialization ###{#encodedvideochunk-serialization}
+: The {{EncodedVideoChunk}} [=serialization steps=] (with |value|, |serialized|,
+    and |forStorage|) are:
+:: 1. If |forStorage| is `true`, throw a {{TypeError}}.
+    2. For each {{EncodedVideoChunk}} internal slot in |value|, assign the value
+        of each internal slot to a field in |serialized| with the same name
+        the internal slot.
+
+: The {{EncodedVideoChunk}} [=deserialization steps=] (with |serialized| and
+    |value|) are:
+:: 1. For all named fields in |serialized|, assign the value of each named field
+        to the {{EncodedVideoChunk}} internal slot in |value| with the same name
+        as the named field.
+
+NOTE: Since {{EncodedVideoChunk}}s are immutable, User Agents may choose to
+    implement serialization using a reference counting model similar to
+    [[#videoframe-transfer-serialization]].
 
 
 Raw Media Interfaces {#raw-media-interfaces}
