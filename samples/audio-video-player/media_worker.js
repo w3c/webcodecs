@@ -9,15 +9,15 @@ console.info(`Worker started`);
 importScripts('../third_party/mp4boxjs/mp4box.all.min.js');
 let moduleLoadedResolver = null;
 let modulesReady = new Promise(resolver => (moduleLoadedResolver = resolver));
-let playing = false;
+let playing = false
 let audioRenderer = null;
 let videoRenderer = null;
 let lastMediaTimeSecs = 0;
 let lastMediaTimeCapturePoint = 0;
 
 (async () => {
-    let audioImport = import('../library/audio_renderer.js');
-    let videoImport = import('../library/video_renderer.js');
+    let audioImport = import('../lib/audio_renderer.js');
+    let videoImport = import('../lib/video_renderer.js');
     Promise.all([audioImport, videoImport]).then((modules) => {
       audioRenderer = new modules[0].AudioRenderer();
       videoRenderer = new modules[1].VideoRenderer();

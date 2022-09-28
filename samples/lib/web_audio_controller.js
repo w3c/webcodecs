@@ -32,7 +32,7 @@ export class WebAudioController {
     this.audioContext.suspend();
 
     // Make script modules available for execution by AudioWorklet.
-    var workletSource = await URLFromFiles(["../third_party/ringbufjs/ringbuf.js", "../library/audiosink.js"]);
+    var workletSource = await URLFromFiles(["../third_party/ringbufjs/ringbuf.js", "../lib/audiosink.js"]);
     await this.audioContext.audioWorklet.addModule(workletSource);
 
     // Get an instance of the AudioSink worklet, passing it the memory for a
