@@ -1,4 +1,4 @@
-import { MP4PullDemuxer } from "./mp4_pull_demuxer.js";
+import { MP4PullDemuxer } from "../audio-video-player/mp4_pull_demuxer.js";
 
 const FRAME_BUFFER_TARGET_SIZE = 3;
 const ENABLE_DEBUG_LOGGING = false;
