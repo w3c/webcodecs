@@ -100,9 +100,8 @@ spec: css-images-3; urlPrefix: https://www.w3.org/TR/css-images-3/
 spec: webrtc-svc; urlPrefix: https://w3c.github.io/webrtc-svc/
     type: dfn; text: scalability mode identifier; url:#scalabilitymodes*
 
-spec: webcodecs-videoframemetadata-registry; urlPrefix: https://w3c.github.io/webcodecs/videoframemetadata_registry.html
-    type: dictionary
-        text: VideoFrameMetadata; url: dictdef-videoframemetadata
+spec: webcodecs-video-frame-metadata-registry; urlPrefix: https://w3c.github.io/webcodecs/video-frame-metadata-registry.html
+    type: dictionary; text: VideoFrameMetadata; url: dictdef-videoframemetadata
 
 spec: ECMASCRIPT; urlPrefix: https://tc39.es/ecma262/
     type: dfn; text: the current Realm; url: #current-realm
@@ -3331,11 +3330,8 @@ dictionary VideoFrameBufferInit {
 
 : <dfn attribute for=VideoFrame>\[[metadata]]</dfn>
 :: The {{VideoFrameMetadata}} associated with this frame.
-
-<div class='note'>
-{{VideoFrameMetadata}} is defined in [[webcodecs-videoframemetadata-registry]].
-By design, all {{VideoFrameMetadata}} properties must be serializable.
-</div>
+     {{VideoFrameMetadata}} is defined in [[webcodecs-video-frame-metadata-registry]].
+     By design, all {{VideoFrameMetadata}} properties are serializable.
 
 ### Constructors ###{#videoframe-constructors}
 
@@ -3375,7 +3371,7 @@ By design, all {{VideoFrameMetadata}} properties must be serializable.
             {{InvalidStateError}} {{DOMException}}.
         2. Let |currentPlaybackFrame| be the {{VideoFrame}} at the [=current
             playback position=].
-        3. If {{VideoFrameInit/metadata}} does not [=map/exists=] in |init|,
+        3. If {{VideoFrameInit/metadata}} does not [=map/exist=] in |init|,
             assign |currentPlaybackFrame|.{{VideoFrame/[[metadata]]}} to it.
         4. Run the [=VideoFrame/Initialize Frame From Other Frame=] algorithm
             with |init|, |frame|, and |currentPlaybackFrame|.
