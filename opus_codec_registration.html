@@ -8,7 +8,7 @@
   <link href="https://www.w3.org/2008/site/images/favicon.ico" rel="icon">
   <meta content="Bikeshed version 44af0bf3e, updated Fri Jul 29 17:05:16 2022 -0700" name="generator">
   <link href="https://www.w3.org/TR/webcodecs-opus-codec-registration/" rel="canonical">
-  <meta content="5c88ee543277a6d6490dc8eea8730b25026e6f28" name="document-revision">
+  <meta content="eab6c4da66a39c76c65d26f75373dad303cc334b" name="document-revision">
 <style>/* style-autolinks */
 
 .css.css, .property.property, .descriptor.descriptor {
@@ -643,7 +643,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
     <li><a href="#audiodecoderconfig-description"><span class="secno">3</span> <span class="content">AudioDecoderConfig description</span></a>
     <li><a href="#encodedaudiochunk-type"><span class="secno">4</span> <span class="content">EncodedAudioChunk type</span></a>
     <li>
-     <a href="#audioencoderconfig-extensions"><span class="secno">5</span> <span class="content">AudiEncoderConfig extensions</span></a>
+     <a href="#audioencoderconfig-extensions"><span class="secno">5</span> <span class="content">AudioEncoderConfig extensions</span></a>
      <ol class="toc">
       <li><a href="#opus-encoder-config"><span class="secno">5.1</span> <span class="content">OpusEncoderConfig</span></a>
       <li><a href="#opus-bitstream-format"><span class="secno">5.2</span> <span class="content">OpusBitstreamFormat</span></a>
@@ -692,7 +692,7 @@ assumed to be in <code class="idl"><a data-link-type="idl" href="#dom-opusbitstr
 Opus is always "<a data-link-type="dfn" href="https://w3c.github.io/webcodecs/#dom-encodedaudiochunktype-key" id="ref-for-dom-encodedaudiochunktype-key">key</a>".</p>
    <p class="note" role="note"><span>NOTE:</span> Once the initialization has succeeded, any packet can be decoded at any
 time without error, but this might not result in the expected audio output.</p>
-   <h2 class="heading settled" data-level="5" id="audioencoderconfig-extensions"><span class="secno">5. </span><span class="content">AudiEncoderConfig extensions</span><a class="self-link" href="#audioencoderconfig-extensions"></a></h2>
+   <h2 class="heading settled" data-level="5" id="audioencoderconfig-extensions"><span class="secno">5. </span><span class="content">AudioEncoderConfig extensions</span><a class="self-link" href="#audioencoderconfig-extensions"></a></h2>
 <pre class="idl highlight def"><c- b>partial</c-> <c- b>dictionary</c-> <a class="idl-code" data-link-type="dictionary" href="https://w3c.github.io/webcodecs/#dictdef-audioencoderconfig" id="ref-for-dictdef-audioencoderconfig①"><c- g>AudioEncoderConfig</c-></a> {
   <a data-link-type="idl-name" href="#dictdef-opusencoderconfig" id="ref-for-dictdef-opusencoderconfig"><c- n>OpusEncoderConfig</c-></a> <a class="idl-code" data-link-type="dict-member" data-type="OpusEncoderConfig " href="#dom-audioencoderconfig-opus" id="ref-for-dom-audioencoderconfig-opus"><c- g>opus</c-></a>;
 };
@@ -705,12 +705,23 @@ time without error, but this might not result in the expected audio output.</p>
    <h3 class="heading settled" data-level="5.1" id="opus-encoder-config"><span class="secno">5.1. </span><span class="content">OpusEncoderConfig</span><a class="self-link" href="#opus-encoder-config"></a></h3>
 <pre class="idl highlight def"><c- b>dictionary</c-> <dfn class="dfn-paneled idl-code" data-dfn-type="dictionary" data-export id="dictdef-opusencoderconfig"><code><c- g>OpusEncoderConfig</c-></code></dfn> {
   <a data-link-type="idl-name" href="#enumdef-opusbitstreamformat" id="ref-for-enumdef-opusbitstreamformat"><c- n>OpusBitstreamFormat</c-></a> <a class="idl-code" data-default="&quot;opus&quot;" data-link-type="dict-member" data-type="OpusBitstreamFormat " href="#dom-opusencoderconfig-format" id="ref-for-dom-opusencoderconfig-format"><c- g>format</c-></a> = "opus";
+  [<a class="idl-code" data-link-type="extended-attribute" href="https://webidl.spec.whatwg.org/#EnforceRange" id="ref-for-EnforceRange"><c- g>EnforceRange</c-></a>] <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-unsigned-long" id="ref-for-idl-unsigned-long"><c- b>unsigned</c-> <c- b>long</c-></a> <a class="idl-code" data-link-type="dict-member" data-type="unsigned long " href="#dom-opusencoderconfig-frameduration" id="ref-for-dom-opusencoderconfig-frameduration"><c- g>frameDuration</c-></a>;
 };
 
 </pre>
+   <p>To check if an <code class="idl"><a data-link-type="idl" href="#dictdef-opusencoderconfig" id="ref-for-dictdef-opusencoderconfig②">OpusEncoderConfig</a></code> is valid, run these steps:</p>
+   <ol>
+    <li data-md>
+     <p>If <code class="idl"><a data-link-type="idl" href="#dom-opusencoderconfig-frameduration" id="ref-for-dom-opusencoderconfig-frameduration①">frameDuration</a></code> is not a valid <code>ptime</code> value,
+which is described in Section 6.1 of <a data-link-type="biblio" href="#biblio-rfc7587">[RFC7587]</a>, return <code>false</code>.</p>
+    <li data-md>
+     <p>Return <code>true</code>.</p>
+   </ol>
    <dl>
     <dt><dfn class="dfn-paneled idl-code" data-dfn-for="OpusEncoderConfig" data-dfn-type="dict-member" data-export id="dom-opusencoderconfig-format"><code>format</code></dfn>, <span> of type <a data-link-type="idl-name" href="#enumdef-opusbitstreamformat" id="ref-for-enumdef-opusbitstreamformat①">OpusBitstreamFormat</a>, defaulting to <code>"opus"</code></span>
     <dd> Configures the format of output <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webcodecs/#encodedaudiochunk" id="ref-for-encodedaudiochunk⑥">EncodedAudioChunk</a></code>s. See <code class="idl"><a data-link-type="idl" href="#enumdef-opusbitstreamformat" id="ref-for-enumdef-opusbitstreamformat②">OpusBitstreamFormat</a></code>. 
+    <dt><dfn class="dfn-paneled idl-code" data-dfn-for="OpusEncoderConfig" data-dfn-type="dict-member" data-export id="dom-opusencoderconfig-frameduration"><code>frameDuration</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://webidl.spec.whatwg.org/#idl-unsigned-long" id="ref-for-idl-unsigned-long①">unsigned long</a></span>
+    <dd> Configures the frame duration, in milliseconds, of output <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webcodecs/#encodedaudiochunk" id="ref-for-encodedaudiochunk⑦">EncodedAudioChunk</a></code>s. 
    </dl>
    <h3 class="heading settled" data-level="5.2" id="opus-bitstream-format"><span class="secno">5.2. </span><span class="content">OpusBitstreamFormat</span><a class="self-link" href="#opus-bitstream-format"></a></h3>
 <pre class="idl highlight def"><c- b>enum</c-> <dfn class="dfn-paneled idl-code" data-dfn-type="enum" data-export id="enumdef-opusbitstreamformat"><code><c- g>OpusBitstreamFormat</c-></code></dfn> {
@@ -780,6 +791,7 @@ Considerations</a> in <a data-link-type="biblio" href="#biblio-webcodecs">[WEBCO
   <h3 class="no-num no-ref heading settled" id="index-defined-here"><span class="content">Terms defined by this specification</span><a class="self-link" href="#index-defined-here"></a></h3>
   <ul class="index">
    <li><a href="#dom-opusencoderconfig-format">format</a><span>, in § 5.1</span>
+   <li><a href="#dom-opusencoderconfig-frameduration">frameDuration</a><span>, in § 5.1</span>
    <li><a href="#dom-opusbitstreamformat-ogg">"ogg"</a><span>, in § 5.2</span>
    <li><a href="#dom-opusbitstreamformat-ogg">ogg</a><span>, in § 5.2</span>
    <li><a href="#dom-opusbitstreamformat-opus">"opus"</a><span>, in § 5.2</span>
@@ -804,7 +816,7 @@ Considerations</a> in <a data-link-type="biblio" href="#biblio-webcodecs">[WEBCO
    <a href="https://w3c.github.io/webcodecs/#dictdef-audioencoderconfig">https://w3c.github.io/webcodecs/#dictdef-audioencoderconfig</a><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-dictdef-audioencoderconfig">Unnumbered Section</a>
-    <li><a href="#ref-for-dictdef-audioencoderconfig①">5. AudiEncoderConfig extensions</a>
+    <li><a href="#ref-for-dictdef-audioencoderconfig①">5. AudioEncoderConfig extensions</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-encodedaudiochunk">
@@ -813,7 +825,7 @@ Considerations</a> in <a data-link-type="biblio" href="#biblio-webcodecs">[WEBCO
     <li><a href="#ref-for-encodedaudiochunk">Unnumbered Section</a> <a href="#ref-for-encodedaudiochunk①">(2)</a>
     <li><a href="#ref-for-encodedaudiochunk②">2. EncodedAudioChunk data</a> <a href="#ref-for-encodedaudiochunk③">(2)</a> <a href="#ref-for-encodedaudiochunk④">(3)</a>
     <li><a href="#ref-for-encodedaudiochunk⑤">4. EncodedAudioChunk type</a>
-    <li><a href="#ref-for-encodedaudiochunk⑥">5.1. OpusEncoderConfig</a>
+    <li><a href="#ref-for-encodedaudiochunk⑥">5.1. OpusEncoderConfig</a> <a href="#ref-for-encodedaudiochunk⑦">(2)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-dom-encodedaudiochunk-internal-data-slot">
@@ -835,6 +847,18 @@ Considerations</a> in <a data-link-type="biblio" href="#biblio-webcodecs">[WEBCO
     <li><a href="#ref-for-dom-encodedaudiochunktype-key">4. EncodedAudioChunk type</a>
    </ul>
   </aside>
+  <aside class="dfn-panel" data-for="term-for-EnforceRange">
+   <a href="https://webidl.spec.whatwg.org/#EnforceRange">https://webidl.spec.whatwg.org/#EnforceRange</a><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-EnforceRange">5.1. OpusEncoderConfig</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="term-for-idl-unsigned-long">
+   <a href="https://webidl.spec.whatwg.org/#idl-unsigned-long">https://webidl.spec.whatwg.org/#idl-unsigned-long</a><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-idl-unsigned-long">5.1. OpusEncoderConfig</a> <a href="#ref-for-idl-unsigned-long①">(2)</a>
+   </ul>
+  </aside>
   <h3 class="no-num no-ref heading settled" id="index-defined-elsewhere"><span class="content">Terms defined by reference</span><a class="self-link" href="#index-defined-elsewhere"></a></h3>
   <ul class="index">
    <li>
@@ -847,6 +871,12 @@ Considerations</a> in <a data-link-type="biblio" href="#biblio-webcodecs">[WEBCO
      <li><span class="dfn-paneled" id="term-for-dom-encodedaudiochunk-type-slot">[[type]]</span>
      <li><span class="dfn-paneled" id="term-for-dom-encodedaudiochunktype-key">key</span>
     </ul>
+   <li>
+    <a data-link-type="biblio">[WEBIDL]</a> defines the following terms:
+    <ul>
+     <li><span class="dfn-paneled" id="term-for-EnforceRange">EnforceRange</span>
+     <li><span class="dfn-paneled" id="term-for-idl-unsigned-long">unsigned long</span>
+    </ul>
   </ul>
   <h2 class="no-num no-ref heading settled" id="references"><span class="content">References</span><a class="self-link" href="#references"></a></h2>
   <h3 class="no-num no-ref heading settled" id="normative"><span class="content">Normative References</span><a class="self-link" href="#normative"></a></h3>
@@ -855,6 +885,8 @@ Considerations</a> in <a data-link-type="biblio" href="#biblio-webcodecs">[WEBCO
    <dd>S. Bradner. <a href="https://datatracker.ietf.org/doc/html/rfc2119"><cite>Key words for use in RFCs to Indicate Requirement Levels</cite></a>. March 1997. Best Current Practice. URL: <a href="https://datatracker.ietf.org/doc/html/rfc2119">https://datatracker.ietf.org/doc/html/rfc2119</a>
    <dt id="biblio-webcodecs">[WEBCODECS]
    <dd>Chris Cunningham; Paul Adenot; Bernard Aboba. <a href="https://w3c.github.io/webcodecs/"><cite>WebCodecs</cite></a>. URL: <a href="https://w3c.github.io/webcodecs/">https://w3c.github.io/webcodecs/</a>
+   <dt id="biblio-webidl">[WEBIDL]
+   <dd>Edgar Chen; Timothy Gu. <a href="https://webidl.spec.whatwg.org/"><cite>Web IDL Standard</cite></a>. Living Standard. URL: <a href="https://webidl.spec.whatwg.org/">https://webidl.spec.whatwg.org/</a>
   </dl>
   <h3 class="no-num no-ref heading settled" id="informative"><span class="content">Informative References</span><a class="self-link" href="#informative"></a></h3>
   <dl>
@@ -862,6 +894,8 @@ Considerations</a> in <a data-link-type="biblio" href="#biblio-webcodecs">[WEBCO
    <dd><a href="https://datatracker.ietf.org/doc/html/rfc6716"><cite>RFC 6716: Definition of the Opus Audio Codec</cite></a>. September 2012. URL: <a href="https://datatracker.ietf.org/doc/html/rfc6716">https://datatracker.ietf.org/doc/html/rfc6716</a>
    <dt id="biblio-opus-in-ogg">[OPUS-IN-OGG]
    <dd><a href="https://datatracker.ietf.org/doc/html/rfc7845"><cite>RFC 7845: Ogg Encapsulation for the Opus Audio Codec</cite></a>. April 2016. URL: <a href="https://datatracker.ietf.org/doc/html/rfc7845">https://datatracker.ietf.org/doc/html/rfc7845</a>
+   <dt id="biblio-rfc7587">[RFC7587]
+   <dd>J. Spittka; K. Vos; JM. Valin. <a href="https://www.rfc-editor.org/rfc/rfc7587"><cite>RTP Payload Format for the Opus Speech and Audio Codec</cite></a>. June 2015. Proposed Standard. URL: <a href="https://www.rfc-editor.org/rfc/rfc7587">https://www.rfc-editor.org/rfc/rfc7587</a>
    <dt id="biblio-webcodecs-codec-registry">[WEBCODECS-CODEC-REGISTRY]
    <dd>Chris Cunningham; Paul Adenot; Bernard Aboba. <a href="https://w3c.github.io/webcodecs/codec_registry.html"><cite>WebCodecs Codec Registry</cite></a>. URL: <a href="https://w3c.github.io/webcodecs/codec_registry.html">https://w3c.github.io/webcodecs/codec_registry.html</a>
   </dl>
@@ -873,6 +907,7 @@ Considerations</a> in <a data-link-type="biblio" href="#biblio-webcodecs">[WEBCO
 
 <c- b>dictionary</c-> <a href="#dictdef-opusencoderconfig"><code><c- g>OpusEncoderConfig</c-></code></a> {
   <a data-link-type="idl-name" href="#enumdef-opusbitstreamformat"><c- n>OpusBitstreamFormat</c-></a> <a class="idl-code" data-default="&quot;opus&quot;" data-link-type="dict-member" data-type="OpusBitstreamFormat " href="#dom-opusencoderconfig-format"><c- g>format</c-></a> = "opus";
+  [<a class="idl-code" data-link-type="extended-attribute" href="https://webidl.spec.whatwg.org/#EnforceRange"><c- g>EnforceRange</c-></a>] <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-unsigned-long"><c- b>unsigned</c-> <c- b>long</c-></a> <a class="idl-code" data-link-type="dict-member" data-type="unsigned long " href="#dom-opusencoderconfig-frameduration"><c- g>frameDuration</c-></a>;
 };
 
 
@@ -886,19 +921,26 @@ Considerations</a> in <a data-link-type="biblio" href="#biblio-webcodecs">[WEBCO
   <aside class="dfn-panel" data-for="dom-audioencoderconfig-opus">
    <b><a href="#dom-audioencoderconfig-opus">#dom-audioencoderconfig-opus</a></b><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-dom-audioencoderconfig-opus">5. AudiEncoderConfig extensions</a>
+    <li><a href="#ref-for-dom-audioencoderconfig-opus">5. AudioEncoderConfig extensions</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dictdef-opusencoderconfig">
    <b><a href="#dictdef-opusencoderconfig">#dictdef-opusencoderconfig</a></b><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-dictdef-opusencoderconfig">5. AudiEncoderConfig extensions</a> <a href="#ref-for-dictdef-opusencoderconfig①">(2)</a>
+    <li><a href="#ref-for-dictdef-opusencoderconfig">5. AudioEncoderConfig extensions</a> <a href="#ref-for-dictdef-opusencoderconfig①">(2)</a>
+    <li><a href="#ref-for-dictdef-opusencoderconfig②">5.1. OpusEncoderConfig</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dom-opusencoderconfig-format">
    <b><a href="#dom-opusencoderconfig-format">#dom-opusencoderconfig-format</a></b><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-dom-opusencoderconfig-format">5.1. OpusEncoderConfig</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="dom-opusencoderconfig-frameduration">
+   <b><a href="#dom-opusencoderconfig-frameduration">#dom-opusencoderconfig-frameduration</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-dom-opusencoderconfig-frameduration">5.1. OpusEncoderConfig</a> <a href="#ref-for-dom-opusencoderconfig-frameduration①">(2)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="enumdef-opusbitstreamformat">
