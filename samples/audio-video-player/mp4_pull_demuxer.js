@@ -1,4 +1,4 @@
-import {PullDemuxerBase, AUDIO_STREAM_TYPE, VIDEO_STREAM_TYPE} from '../library/pull_demuxer_base.js'
+import {PullDemuxerBase, AUDIO_STREAM_TYPE, VIDEO_STREAM_TYPE} from '../lib/pull_demuxer_base.js'
 
 const ENABLE_DEBUG_LOGGING = false;
 
