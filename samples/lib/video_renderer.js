@@ -1,3 +1,4 @@
+import { VIDEO_STREAM_TYPE } from "./pull_demuxer_base.js";
 import { MP4PullDemuxer } from "../audio-video-player/mp4_pull_demuxer.js";
 
 const FRAME_BUFFER_TARGET_SIZE = 3;
@@ -13,28 +14,23 @@ function debugLog(msg) {
 // VideoFrames to canvas. Maintains a buffer of FRAME_BUFFER_TARGET_SIZE
 // decoded frames for future rendering.
 export class VideoRenderer {
-  async initialize(fileUri, canvas) {
+  async initialize(demuxer, canvas) {
     this.frameBuffer = [];
     this.fillInProgress = false;
 
-    this.demuxer = new MP4PullDemuxer(fileUri);
-
-    let trackInfo = await this.demuxer.getVideoTrackInfo();
-    this.demuxer.selectVideo();
+    this.demuxer = demuxer;
+    await this.demuxer.initialize(VIDEO_STREAM_TYPE);
+    const config = this.demuxer.getDecoderConfig();
 
     this.canvas = canvas;
-    this.canvas.width = trackInfo.displayWidth;
-    this.canvas.height = trackInfo.displayHeight;
+    this.canvas.width = config.displayWidth;
+    this.canvas.height = config.displayHeight;
     this.canvasCtx = canvas.getContext('2d');
 
     this.decoder = new VideoDecoder({
       output: this.bufferFrame.bind(this),
       error: e => console.error(e),
     });
-    const config = {
-      codec: trackInfo.codec,
-      description: trackInfo.extradata
-    };
     console.assert(VideoDecoder.isConfigSupported(config))
     this.decoder.configure(config);
 
@@ -90,18 +86,6 @@ export class VideoRenderer {
     return chosenFrame;
   }
 
-  makeChunk(sample) {
-    const pts_us = sample.cts * 1000000 / sample.timescale;
-    const duration_us = sample.duration * 1000000 / sample.timescale;
-    const type = sample.is_sync ? "key" : "delta";
-    return new EncodedVideoChunk({
-      type: type,
-      timestamp: pts_us,
-      duration: duration_us,
-      data: sample.data
-    });
-  }
-
   async fillFrameBuffer() {
     if (this.frameBufferFull()) {
       debugLog('frame buffer full');
@@ -123,8 +107,8 @@ export class VideoRenderer {
 
     while (this.frameBuffer.length < FRAME_BUFFER_TARGET_SIZE &&
             this.decoder.decodeQueueSize < FRAME_BUFFER_TARGET_SIZE) {
-      let sample = await this.demuxer.readSample();
-      this.decoder.decode(this.makeChunk(sample));
+      let chunk = await this.demuxer.getNextChunk();
+      this.decoder.decode(chunk);
     }
 
     this.fillInProgress = false;
