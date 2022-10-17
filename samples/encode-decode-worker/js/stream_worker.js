@@ -169,7 +169,6 @@ class pipeline {
                 if(decoderSupport.supported) {
                   this.decoder.configure(decoderSupport.config);
                   self.postMessage({text: 'Decoder successfully configured:\n' + JSON.stringify(decoderSupport.config)});
-                 // self.postMessage({text: 'Decoder state: ' + JSON.stringify(this.decoder.state)});
                 } else {
                 self.postMessage({severity: 'fatal', text: 'Config not supported:\n' + JSON.stringify(decoderSupport.config)});
                 }
@@ -179,7 +178,6 @@ class pipeline {
               })
            } else {
              try {
-              // self.postMessage({text: 'size: ' + chunk.byteLength + ' seq: ' + chunk.seqNo + ' kf: ' + chunk.keyframeIndex + ' delta: ' + chunk.deltaframeIndex + ' dur: ' + chunk.duration + ' ts: ' + chunk.timestamp + ' ssrc: ' + chunk.ssrc + ' pt: ' + chunk.pt + ' tid: ' + chunk.temporalLayerId + ' type: ' + chunk.type});
                const queue = this.decoder.decodeQueueSize;
                decqueue_update(queue);
                const before = performance.now();
@@ -208,9 +206,8 @@ class pipeline {
          this.encoder = encoder = new VideoEncoder({
            output: (chunk, cfg) => {
              if (cfg.decoderConfig) {
-               // self.postMessage({text: 'Decoder reconfig!'});
                const decoderConfig = JSON.stringify(cfg.decoderConfig);
-               // self.postMessage({text: 'Configuration: ' + decoderConfig});
+               self.postMessage({text: 'Configuration: ' + decoderConfig});
                const configChunk =
                {
                   type: "config",
@@ -248,7 +245,6 @@ class pipeline {
            if(encoderSupport.supported) {
              this.encoder.configure(encoderSupport.config);
              self.postMessage({text: 'Encoder successfully configured:\n' + JSON.stringify(encoderSupport.config)});
-             // self.postMessage({text: 'Encoder state: ' + JSON.stringify(this.encoder.state)});
            } else {
              self.postMessage({severity: 'fatal', text: 'Config not supported:\n' + JSON.stringify(encoderSupport.config)});
            }
@@ -264,9 +260,6 @@ class pipeline {
            this.frameCounter++;
            try {
              if (this.encoder.state != "closed") {
-               if (this.frameCounter % 20 == 0) {
-                 // self.postMessage({text: 'Encoded 20 frames'});
-               }
                const queue = this.encoder.encodeQueueSize;
                encqueue_update(queue);
                const before = performance.now();
@@ -296,17 +289,14 @@ class pipeline {
      if (stopped) return;
      stopped = true;
      this.stopped = true;
-     self.postMessage({severity: 'fatal', text: 'stop() called'});
-     // TODO: There might be a more elegant way of closing a stream, or other
-     // events to listen for.
+     self.postMessage({text: 'stop() called'});
      if (encoder.state != "closed") encoder.close();
      if (decoder.state != "closed") decoder.close();
-     self.postMessage({severity: 'fatal', text: 'stop(): frame, encoder and decoder closed'});
+     self.postMessage({text: 'stop(): frame, encoder and decoder closed'});
      return;
    }
 
-   async start()
-   {
+   async start() {
      if (stopped) return;
      started = true;
      let duplexStream, readStream, writeStream;
