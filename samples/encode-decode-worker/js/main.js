@@ -136,9 +136,18 @@ function stop() {
   stopButton.disabled = true;
   connectButton.disabled = true;
   streamWorker.postMessage({ type: "stop" });
-  inputStream.cancel();
-  outputStream.abort(); 
-  addToEventLog('stop(): input stream cancelled and output stream aborted');
+  try {
+    inputStream.cancel();
+    addToEventLog('inputStream cancelled');
+  } catch(e) {
+    addToEventLog(`Could not cancel inputStream: ${e.message}`);
+  }
+  try {
+    outputStream.abort();
+    addToEventLog('outputStream aborted');
+  } catch(e) {
+    addToEventLog(`Could not abort outputStream: ${e.message}`);
+  }
 }
 
 document.addEventListener('DOMContentLoaded', async function(event) {
