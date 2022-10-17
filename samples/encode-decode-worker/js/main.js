@@ -33,15 +33,6 @@ const tv4KConstraints   = {video: {width: {exact: 3840}, height: {exact: 2160}}}
 const cinema4KConstraints = {video: {width: {exact: 4096}, height: {exact: 2160}}};
 const eightKConstraints = {video: {width: {min: 7680}, height: {min: 4320}}};
 
-// Old constraints
-//const qvgaConstraints   = { video: {width: {exact: 320},  height: {exact: 240}}};
-//const vgaConstraints    = { video: {width: {exact: 640},  height: {exact: 480}}};
-//const hdConstraints     = { video: {width: {exact: 1280}, height: {exact: 720}}};
-//const fullHdConstraints = { video: {width: {exact: 1920}, height: {exact: 1080}}};
-//const tv4KConstraints   = { video: {width: {exact: 3840}, height: {exact: 2160}}};
-//const cinema4KConstraints = { video: {width: {exact: 4096}, height: {exact: 2160}}};
-//const eightKConstraints = { video: {width: {exact: 7680}, height: {exact: 4320}}};
-
 let constraints = qvgaConstraints;
 
 function addToEventLog(text, severity = 'info') {
@@ -256,12 +247,9 @@ document.addEventListener('DOMContentLoaded', async function(event) {
           break;
         case "H265":
           config.codec = "hvc1.2.4.L123.00"; // Main 10 profile, level 4.1, main Tier
-       // config.codec = "hvc1.1.6.L123.00"  // Main profile, level 4.1, main Tier
           config.hevc = { format: "annexb" };
           config.pt = 2;
-          //addToEventLog('HEVC Encoding not supported yet', 'fatal');
-          //stop();
-          //return;
+          addToEventLog('HEVC Encoding not supported yet', 'fatal');
           break;
         case "VP8":
           config.codec = "vp8";
