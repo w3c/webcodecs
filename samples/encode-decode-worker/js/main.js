@@ -1,14 +1,14 @@
 'use strict';
 
-var preferredResolution;
+let preferredResolution;
 let mediaStream, bitrate = 3000000;
-var stopped = false;
-var preferredCodec ="VP8";
-var mode = "L1T3";
-var latencyPref = "realtime";
-var hw = "no-preference";
-var streamWorker;
-var inputStream, outputStream;
+let stopped = false;
+let preferredCodec ="VP8";
+let mode = "L1T3";
+let latencyPref = "realtime";
+let hw = "no-preference";
+let streamWorker;
+let inputStream, outputStream;
 const rate = document.querySelector('#rate');
 const connectButton = document.querySelector('#connect');
 const stopButton = document.querySelector('#stop');
