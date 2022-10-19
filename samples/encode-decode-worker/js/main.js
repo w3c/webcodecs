@@ -255,11 +255,10 @@ document.addEventListener('DOMContentLoaded', async function(event) {
           config.pt = 1;
           break;
         case "H265":
-          config.codec = "hvc1.1.6.L123.00"  // Main profile, level 4.1, main Tier
+          config.codec = "hvc1.1.6.L123.00"; // Main profile, level 4.1, main Tier
           config.hevc = { format: "annexb" };
           config.pt = 2;
-          addToEventLog('HEVC Encoding not supported', 'fatal');
-          return;
+          break; 
         case "VP8":
           config.codec = "vp8";
           config.pt = 3;
