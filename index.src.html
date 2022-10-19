@@ -3356,6 +3356,14 @@ dictionary VideoFrameBufferInit {
     {{DOMException}}.
 3. Let |frame| be a new {{VideoFrame}}.
 5. Switch on |image|:
+
+    NOTE: Authors are encouraged to provide a meaningful timestamp unless it is
+        implicitly provided by the {{CanvasImageSource}} at construction.
+        Interfaces that consume {{VideoFrame}}s can rely on this value for
+        timing decisions. For example, {{VideoEncoder}} can use
+        {{VideoFrame/timestamp}} values to guide rate control (see
+        {{VideoEncoderConfig/framerate}}).
+
     - {{HTMLImageElement}}
     - {{SVGImageElement}}
         1. If {{VideoFrameInit/timestamp}} does not [=map/exist=] in
@@ -3569,13 +3577,6 @@ dictionary VideoFrameBufferInit {
 
     The {{VideoFrame/timestamp}} getter steps are to return
     {{VideoFrame/[[timestamp]]}}.
-
-    NOTE: Authors are encouraged to provide a meaningful timestamp unless it is
-        implicitly provided by the {{CanvasImageSource}} at construction.
-        Interfaces that consume {{VideoFrame}}s can rely on this value for
-        timing decisions. For example, {{VideoEncoder}} can use
-        {{VideoFrame/timestamp}} values to guide rate control (see
-        {{VideoEncoderConfig/framerate}}).
 
 : <dfn attribute for=VideoFrame>duration</dfn>
 :: The presentation duration, given in microseconds. The duration is copied
