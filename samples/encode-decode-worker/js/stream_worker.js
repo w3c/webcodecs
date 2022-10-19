@@ -51,13 +51,21 @@ function enc_report() {
   enc_aggregate.all.sort();
   const len = enc_aggregate.all.length;
   const half = len >> 1;
+  const f = (len + 1) >> 2;
+  const t = (3 * (len + 1)) >> 2;
+  const alpha1 = (len + 1)/4 - Math.trunc((len + 1)/4);
+  const alpha3 = (3 * (len + 1)/4) - Math.trunc(3 * (len + 1)/4);
+  const fquart = enc_aggregate.all[f] + alpha1 * (enc_aggregate.all[f + 1] - enc_aggregate.all[f]);
+  const tquart = enc_aggregate.all[t] + alpha3 * (enc_aggregate.all[t + 1] - enc_aggregate.all[t]);
   const median = len % 2 === 1 ? enc_aggregate.all[len >> 1] : (enc_aggregate.all[half - 1] + enc_aggregate.all[half]) / 2;
   return {
      count: len,
      min: enc_aggregate.min,
-     max: enc_aggregate.max,
+     fquart: fquart,
      avg: enc_aggregate.sum / len,
-     median,
+     median: median,
+     tquart: tquart,
+     max: enc_aggregate.max,
   };
 }
 
@@ -65,13 +73,21 @@ function encqueue_report() {
   encqueue_aggregate.all.sort();
   const len = encqueue_aggregate.all.length;
   const half = len >> 1;
+  const f = (len + 1) >> 2;
+  const t = (3 * (len + 1)) >> 2;
+  const alpha1 = (len + 1)/4 - Math.trunc((len + 1)/4);
+  const alpha3 = (3 * (len + 1)/4) - Math.trunc(3 * (len + 1)/4);
+  const fquart = encqueue_aggregate.all[f] + alpha1 * (encqueue_aggregate.all[f + 1] - encqueue_aggregate.all[f]);
+  const tquart = encqueue_aggregate.all[t] + alpha3 * (encqueue_aggregate.all[t + 1] - encqueue_aggregate.all[t]);
   const median = len % 2 === 1 ? encqueue_aggregate.all[len >> 1] : (encqueue_aggregate.all[half - 1] + encqueue_aggregate.all[half]) / 2;
   return {
      count: len,
      min: encqueue_aggregate.min,
-     max: encqueue_aggregate.max,
+     fquart: fquart,
      avg: encqueue_aggregate.sum / len,
-     median,
+     median: median,
+     tquart: tquart,
+     max: encqueue_aggregate.max,
   };
 }
 
@@ -82,20 +98,6 @@ function dec_update(duration) {
    dec_aggregate.sum += duration;
 }
 
-function dec_report() {
-  dec_aggregate.all.sort();
-  const len  = dec_aggregate.all.length;
-  const half = len >> 1;
-  const median = len % 2 === 1 ? dec_aggregate.all[len >> 1] : (dec_aggregate.all[half - 1] + dec_aggregate.all[half]) / 2;
-  return {
-     count: len,
-     min: dec_aggregate.min,
-     max: dec_aggregate.max,
-     avg: dec_aggregate.sum / len,
-     median,
-  };
-}
-
 function decqueue_update(duration) {
    decqueue_aggregate.all.push(duration);
    decqueue_aggregate.min = Math.min(decqueue_aggregate.min, duration);
@@ -103,17 +105,47 @@ function decqueue_update(duration) {
    decqueue_aggregate.sum += duration;
 }
 
+function dec_report() {
+  dec_aggregate.all.sort();
+  const len = dec_aggregate.all.length;
+  const half = len >> 1;
+  const f = (len + 1) >> 2;
+  const t = (3 * (len + 1)) >> 2;
+  const alpha1 = (len + 1)/4 - Math.trunc((len + 1)/4);
+  const alpha3 = (3 * (len + 1)/4) - Math.trunc(3 * (len + 1)/4);
+  const fquart = dec_aggregate.all[f] + alpha1 * (dec_aggregate.all[f + 1] - dec_aggregate.all[f]);
+  const tquart = dec_aggregate.all[t] + alpha3 * (dec_aggregate.all[t + 1] - dec_aggregate.all[t]);
+  const median = len % 2 === 1 ? dec_aggregate.all[len >> 1] : (dec_aggregate.all[half - 1] + dec_aggregate.all[half]) / 2;
+  return {
+     count: len,
+     min: dec_aggregate.min,
+     fquart: fquart,
+     avg: dec_aggregate.sum / len,
+     median: median,
+     tquart: tquart,
+     max: dec_aggregate.max,
+  };
+}
+
 function decqueue_report() {
   decqueue_aggregate.all.sort();
-  const len  = decqueue_aggregate.all.length;
+  const len = decqueue_aggregate.all.length;
   const half = len >> 1;
+  const f = (len + 1) >> 2;
+  const t = (3 * (len + 1)) >> 2;
+  const alpha1 = (len + 1)/4 - Math.trunc((len + 1)/4);
+  const alpha3 = (3 * (len + 1)/4) - Math.trunc(3 * (len + 1)/4);
+  const fquart = decqueue_aggregate.all[f] + alpha1 * (decqueue_aggregate.all[f + 1] - decqueue_aggregate.all[f]);
+  const tquart = decqueue_aggregate.all[t] + alpha3 * (decqueue_aggregate.all[t + 1] - decqueue_aggregate.all[t]);
   const median = len % 2 === 1 ? decqueue_aggregate.all[len >> 1] : (decqueue_aggregate.all[half - 1] + decqueue_aggregate.all[half]) / 2;
   return {
      count: len,
      min: decqueue_aggregate.min,
-     max: decqueue_aggregate.max,
+     fquart: fquart,
      avg: decqueue_aggregate.sum / len,
-     median,
+     median: median,
+     tquart: tquart,
+     max: decqueue_aggregate.max,
   };
 }
 
