@@ -132,6 +132,10 @@ OpusEncoderConfig {#opus-encoder-config}
 dictionary OpusEncoderConfig {
   OpusBitstreamFormat format = "opus";
   [EnforceRange] unsigned long long frameDuration = 20000;
+  [EnforceRange] unsigned long complexity;
+  [EnforceRange] unsigned long packetlossperc;
+  boolean useinbandfec;
+  boolean usedtx;
 };
 </xmp>
 </pre>
@@ -139,6 +143,10 @@ dictionary OpusEncoderConfig {
 To check if an {{OpusEncoderConfig}} is valid, run these steps:
 1. If {{OpusEncoderConfig/frameDuration}} is not a valid frame duration,
     which is described section 2.1.4 of [[RFC6716]], return `false`.
+1. If {{OpusEncoderConfig/complexity}} is specified and not within the range of
+    `0` and `10` inclusively, return `false`.
+1. If {{OpusEncoderConfig/packetlossperc}} is specified and not within the range of
+    `0` and `100` inclusively, return `false`.
 2. Return `true`.
 
 <dl>
@@ -150,6 +158,24 @@ To check if an {{OpusEncoderConfig}} is valid, run these steps:
   <dt><dfn dict-member for=OpusEncoderConfig>frameDuration</dfn></dt>
   <dd>
     Configures the frame duration, in microseconds, of output {{EncodedAudioChunk}}s.
+  </dd>
+  <dt><dfn dict-member for=OpusEncoderConfig>complexity</dfn></dt>
+  <dd>
+    Configures the encoder's computational complexity. The valid range is `0` to `10`,
+    with `10` representing the highest complexity.
+  </dd>
+  <dt><dfn dict-member for=OpusEncoderConfig>packetlossperc</dfn></dt>
+  <dd>
+    Configures the encoder's expected packet loss percentage. The valid range is
+    `0` to `100`.
+  </dd>
+  <dt><dfn dict-member for=OpusEncoderConfig>useinbandfec</dfn></dt>
+  <dd>
+    Configures whether the encoder should generate Opus in-band fec or not.
+  </dd>
+  <dt><dfn dict-member for=OpusEncoderConfig>usedtx</dfn></dt>
+  <dd>
+    Configures whether the encoder should use DTX or not.
   </dd>
 </dl>
 
