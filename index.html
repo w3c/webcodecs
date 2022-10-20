@@ -8,7 +8,7 @@
   <link href="https://www.w3.org/2008/site/images/favicon.ico" rel="icon">
   <meta content="Bikeshed version b0de3432c, updated Thu Oct 13 09:16:59 2022 -0700" name="generator">
   <link href="https://www.w3.org/TR/webcodecs/" rel="canonical">
-  <meta content="03025deeae55206980593adef40110184b497b0c" name="document-revision">
+  <meta content="d7edc377f7a2e6ffd1077cc09dad2bb8dcaa546a" name="document-revision">
 <style>
 main > dl > dd {
   margin-bottom: 1em;
@@ -4182,6 +4182,10 @@ exception or returns <var>bad</var>, then throw an <code class="idl"><a data-lin
      <p>Let <var>frame</var> be a new <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe③⑤">VideoFrame</a></code>.</p>
     <li data-md>
      <p>Switch on <var>image</var>:</p>
+     <p class="note" role="note"><span>NOTE:</span> Authors are encouraged to provide a meaningful timestamp unless it is
+    implicitly provided by the <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/canvas.html#canvasimagesource" id="ref-for-canvasimagesource③">CanvasImageSource</a></code> at construction.
+    Interfaces that consume <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe③⑥">VideoFrame</a></code>s can rely on this value for
+    timing decisions. For example, <code class="idl"><a data-link-type="idl" href="#videoencoder" id="ref-for-videoencoder③">VideoEncoder</a></code> can use <code class="idl"><a data-link-type="idl" href="#dom-videoframe-timestamp" id="ref-for-dom-videoframe-timestamp②">timestamp</a></code> values to guide rate control (see <code class="idl"><a data-link-type="idl" href="#dom-videoencoderconfig-framerate" id="ref-for-dom-videoencoderconfig-framerate⑥">framerate</a></code>).</p>
      <ul>
       <li data-md>
        <p><code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/embedded-content.html#htmlimageelement" id="ref-for-htmlimageelement">HTMLImageElement</a></code></p>
@@ -4209,7 +4213,7 @@ there is no such image, the first frame of the animation.</p>
         <li data-md>
          <p>If <var>image</var>’s <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/media.html#dom-media-networkstate" id="ref-for-dom-media-networkstate">networkState</a></code> attribute is <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/media.html#dom-media-network_empty" id="ref-for-dom-media-network_empty">NETWORK_EMPTY</a></code>, then throw an <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#invalidstateerror" id="ref-for-invalidstateerror②①">InvalidStateError</a></code> <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-DOMException" id="ref-for-idl-DOMException②⑥">DOMException</a></code>.</p>
         <li data-md>
-         <p>Let <var>currentPlaybackFrame</var> be the <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe③⑥">VideoFrame</a></code> at the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/media.html#current-playback-position" id="ref-for-current-playback-position">current
+         <p>Let <var>currentPlaybackFrame</var> be the <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe③⑦">VideoFrame</a></code> at the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/media.html#current-playback-position" id="ref-for-current-playback-position">current
 playback position</a>.</p>
         <li data-md>
          <p>If <code class="idl"><a data-link-type="idl" href="#dom-videoframeinit-metadata" id="ref-for-dom-videoframeinit-metadata">metadata</a></code> does not <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#map-exists" id="ref-for-map-exists⑨">exist</a> in <var>init</var>,
@@ -4237,7 +4241,7 @@ with <var>init</var>, <var>frame</var>, and <var>currentPlaybackFrame</var>.</p>
          <p>Run the <a data-link-type="dfn" href="#videoframe-initialize-frame-with-resource-and-size" id="ref-for-videoframe-initialize-frame-with-resource-and-size①">Initialize Frame With Resource and Size</a> algorithm with <var>init</var>, <var>frame</var>, <var>resource</var>, <var>width</var>, and <var>height</var>.</p>
        </ol>
       <li data-md>
-       <p><code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe③⑦">VideoFrame</a></code></p>
+       <p><code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe③⑧">VideoFrame</a></code></p>
        <ol>
         <li data-md>
          <p>Run the <a data-link-type="dfn" href="#videoframe-initialize-frame-from-other-frame" id="ref-for-videoframe-initialize-frame-from-other-frame①">Initialize Frame From Other Frame</a> algorithm
@@ -4295,7 +4299,7 @@ Layout and Allocation Size</a> algorithm with <var>parsedRect</var>, <var>init</
   possibly diagrams) for coded size, visible rectangle, and display size.
   See <a href="https://github.com/w3c/webcodecs/issues/166">#166</a>.</p>
     <li data-md>
-     <p>Let <var>frame</var> be a new <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe③⑧">VideoFrame</a></code> object initialized as follows:</p>
+     <p>Let <var>frame</var> be a new <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe③⑨">VideoFrame</a></code> object initialized as follows:</p>
      <ol>
       <li data-md>
        <p>Assign <var>resourceCodedWidth</var>, <var>resourceCodedHeight</var>, <var>resourceVisibleLeft</var>, and <var>resourceVisibleTop</var> to <code class="idl"><a data-link-type="idl" href="#dom-videoframe-coded-width-slot" id="ref-for-dom-videoframe-coded-width-slot">[[coded width]]</a></code>, <code class="idl"><a data-link-type="idl" href="#dom-videoframe-coded-height-slot" id="ref-for-dom-videoframe-coded-height-slot">[[coded height]]</a></code>, <code class="idl"><a data-link-type="idl" href="#dom-videoframe-visible-left-slot" id="ref-for-dom-videoframe-visible-left-slot①">[[visible left]]</a></code>, and <code class="idl"><a data-link-type="idl" href="#dom-videoframe-visible-top-slot" id="ref-for-dom-videoframe-visible-top-slot①">[[visible top]]</a></code> respectively.</p>
@@ -4352,12 +4356,12 @@ map to a <code class="idl"><a data-link-type="idl" href="#enumdef-videopixelform
      <p>The <code class="idl"><a data-link-type="idl" href="#dom-videoframe-format" id="ref-for-dom-videoframe-format①">format</a></code> getter steps are to return <code class="idl"><a data-link-type="idl" href="#dom-videoframe-format-slot" id="ref-for-dom-videoframe-format-slot②">[[format]]</a></code>.</p>
     <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="VideoFrame" data-dfn-type="attribute" data-export id="dom-videoframe-codedwidth"><code>codedWidth</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://webidl.spec.whatwg.org/#idl-unsigned-long" id="ref-for-idl-unsigned-long⑥②">unsigned long</a>, readonly</span>
     <dd data-md>
-     <p>Width of the <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe③⑨">VideoFrame</a></code> in pixels, potentially including non-visible
+     <p>Width of the <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe④⓪">VideoFrame</a></code> in pixels, potentially including non-visible
 padding, and prior to considering potential ratio adjustments.</p>
      <p>The <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedwidth" id="ref-for-dom-videoframe-codedwidth②">codedWidth</a></code> getter steps are to return <code class="idl"><a data-link-type="idl" href="#dom-videoframe-coded-width-slot" id="ref-for-dom-videoframe-coded-width-slot②">[[coded width]]</a></code>.</p>
     <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="VideoFrame" data-dfn-type="attribute" data-export id="dom-videoframe-codedheight"><code>codedHeight</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://webidl.spec.whatwg.org/#idl-unsigned-long" id="ref-for-idl-unsigned-long⑥③">unsigned long</a>, readonly</span>
     <dd data-md>
-     <p>Height of the <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe④⓪">VideoFrame</a></code> in pixels, potentially including non-visible
+     <p>Height of the <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe④①">VideoFrame</a></code> in pixels, potentially including non-visible
 padding, and prior to considering potential ratio adjustments.</p>
      <p>The <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedheight" id="ref-for-dom-videoframe-codedheight②">codedHeight</a></code> getter steps are to return <code class="idl"><a data-link-type="idl" href="#dom-videoframe-coded-height-slot" id="ref-for-dom-videoframe-coded-height-slot②">[[coded height]]</a></code>.</p>
     <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="VideoFrame" data-dfn-type="attribute" data-export id="dom-videoframe-codedrect"><code>codedRect</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://drafts.fxtf.org/geometry-1/#domrectreadonly" id="ref-for-domrectreadonly②">DOMRectReadOnly</a>, readonly, nullable</span>
@@ -4380,7 +4384,7 @@ padding, and prior to considering potential ratio adjustments.</p>
      </ol>
     <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="VideoFrame" data-dfn-type="attribute" data-export id="dom-videoframe-visiblerect"><code>visibleRect</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://drafts.fxtf.org/geometry-1/#domrectreadonly" id="ref-for-domrectreadonly⑤">DOMRectReadOnly</a>, readonly, nullable</span>
     <dd data-md>
-     <p>A <code class="idl"><a data-link-type="idl" href="https://drafts.fxtf.org/geometry-1/#domrectreadonly" id="ref-for-domrectreadonly⑥">DOMRectReadOnly</a></code> describing the visible rectangle of pixels for this <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe④①">VideoFrame</a></code>.</p>
+     <p>A <code class="idl"><a data-link-type="idl" href="https://drafts.fxtf.org/geometry-1/#domrectreadonly" id="ref-for-domrectreadonly⑥">DOMRectReadOnly</a></code> describing the visible rectangle of pixels for this <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe④②">VideoFrame</a></code>.</p>
      <p>The <code class="idl"><a data-link-type="idl" href="#dom-videoframe-visiblerect" id="ref-for-dom-videoframe-visiblerect②">visibleRect</a></code> getter steps are:</p>
      <ol>
       <li data-md>
@@ -4409,11 +4413,7 @@ adjustments.</p>
     <dd data-md>
      <p>The presentation timestamp, given in microseconds. The timestamp is copied
 from the <code class="idl"><a data-link-type="idl" href="#encodedvideochunk" id="ref-for-encodedvideochunk②⑥">EncodedVideoChunk</a></code> corresponding to this VideoFrame.</p>
-     <p>The <code class="idl"><a data-link-type="idl" href="#dom-videoframe-timestamp" id="ref-for-dom-videoframe-timestamp②">timestamp</a></code> getter steps are to return <code class="idl"><a data-link-type="idl" href="#dom-videoframe-timestamp-slot" id="ref-for-dom-videoframe-timestamp-slot②">[[timestamp]]</a></code>.</p>
-     <p class="note" role="note"><span>NOTE:</span> Authors are encouraged to provide a meaningful timestamp unless it is
-    implicitly provided by the <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/canvas.html#canvasimagesource" id="ref-for-canvasimagesource③">CanvasImageSource</a></code> at construction.
-    Interfaces that consume <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe④②">VideoFrame</a></code>s can rely on this value for
-    timing decisions. For example, <code class="idl"><a data-link-type="idl" href="#videoencoder" id="ref-for-videoencoder③">VideoEncoder</a></code> can use <code class="idl"><a data-link-type="idl" href="#dom-videoframe-timestamp" id="ref-for-dom-videoframe-timestamp③">timestamp</a></code> values to guide rate control (see <code class="idl"><a data-link-type="idl" href="#dom-videoencoderconfig-framerate" id="ref-for-dom-videoencoderconfig-framerate⑥">framerate</a></code>).</p>
+     <p>The <code class="idl"><a data-link-type="idl" href="#dom-videoframe-timestamp" id="ref-for-dom-videoframe-timestamp③">timestamp</a></code> getter steps are to return <code class="idl"><a data-link-type="idl" href="#dom-videoframe-timestamp-slot" id="ref-for-dom-videoframe-timestamp-slot②">[[timestamp]]</a></code>.</p>
     <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="VideoFrame" data-dfn-type="attribute" data-export id="dom-videoframe-duration"><code>duration</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://webidl.spec.whatwg.org/#idl-unsigned-long-long" id="ref-for-idl-unsigned-long-long①⑤">unsigned long long</a>, readonly, nullable</span>
     <dd data-md>
      <p>The presentation duration, given in microseconds. The duration is copied
@@ -7689,7 +7689,7 @@ participation on the mailing list and in the issues.</p>
    <a href="https://html.spec.whatwg.org/multipage/canvas.html#canvasimagesource">https://html.spec.whatwg.org/multipage/canvas.html#canvasimagesource</a><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-canvasimagesource">9.4. VideoFrame Interface</a> <a href="#ref-for-canvasimagesource①">(2)</a> <a href="#ref-for-canvasimagesource②">(3)</a>
-    <li><a href="#ref-for-canvasimagesource③">9.4.3. Attributes</a>
+    <li><a href="#ref-for-canvasimagesource③">9.4.2. Constructors</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-colorspaceconversion">
@@ -10311,7 +10311,7 @@ participation on the mailing list and in the issues.</p>
     <li><a href="#ref-for-videoencoder">6.1. Internal Slots</a>
     <li><a href="#ref-for-videoencoder①">6.2. Constructors</a>
     <li><a href="#ref-for-videoencoder②">6.4. Event Summary</a>
-    <li><a href="#ref-for-videoencoder③">9.4.3. Attributes</a>
+    <li><a href="#ref-for-videoencoder③">9.4.2. Constructors</a>
     <li><a href="#ref-for-videoencoder④">11. Resource Reclamation</a> <a href="#ref-for-videoencoder⑤">(2)</a> <a href="#ref-for-videoencoder⑥">(3)</a> <a href="#ref-for-videoencoder⑦">(4)</a>
    </ul>
   </aside>
@@ -10914,7 +10914,7 @@ participation on the mailing list and in the issues.</p>
    <ul>
     <li><a href="#ref-for-dom-videoencoderconfig-framerate">7.8. VideoEncoderConfig</a> <a href="#ref-for-dom-videoencoderconfig-framerate①">(2)</a>
     <li><a href="#ref-for-dom-videoencoderconfig-framerate②">7.11. Latency Mode</a> <a href="#ref-for-dom-videoencoderconfig-framerate③">(2)</a> <a href="#ref-for-dom-videoencoderconfig-framerate④">(3)</a> <a href="#ref-for-dom-videoencoderconfig-framerate⑤">(4)</a>
-    <li><a href="#ref-for-dom-videoencoderconfig-framerate⑥">9.4.3. Attributes</a>
+    <li><a href="#ref-for-dom-videoencoderconfig-framerate⑥">9.4.2. Constructors</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dom-videoencoderconfig-hardwareacceleration">
@@ -11788,8 +11788,8 @@ participation on the mailing list and in the issues.</p>
     <li><a href="#ref-for-videoframe②⓪">9.1.3. Transfer and Serialization</a> <a href="#ref-for-videoframe②①">(2)</a> <a href="#ref-for-videoframe②②">(3)</a> <a href="#ref-for-videoframe②③">(4)</a> <a href="#ref-for-videoframe②④">(5)</a>
     <li><a href="#ref-for-videoframe②⑤">9.4. VideoFrame Interface</a> <a href="#ref-for-videoframe②⑥">(2)</a> <a href="#ref-for-videoframe②⑦">(3)</a>
     <li><a href="#ref-for-videoframe②⑧">9.4.1. Internal Slots</a> <a href="#ref-for-videoframe②⑨">(2)</a> <a href="#ref-for-videoframe③⓪">(3)</a> <a href="#ref-for-videoframe③①">(4)</a> <a href="#ref-for-videoframe③②">(5)</a> <a href="#ref-for-videoframe③③">(6)</a> <a href="#ref-for-videoframe③④">(7)</a>
-    <li><a href="#ref-for-videoframe③⑤">9.4.2. Constructors</a> <a href="#ref-for-videoframe③⑥">(2)</a> <a href="#ref-for-videoframe③⑦">(3)</a> <a href="#ref-for-videoframe③⑧">(4)</a>
-    <li><a href="#ref-for-videoframe③⑨">9.4.3. Attributes</a> <a href="#ref-for-videoframe④⓪">(2)</a> <a href="#ref-for-videoframe④①">(3)</a> <a href="#ref-for-videoframe④②">(4)</a>
+    <li><a href="#ref-for-videoframe③⑤">9.4.2. Constructors</a> <a href="#ref-for-videoframe③⑥">(2)</a> <a href="#ref-for-videoframe③⑦">(3)</a> <a href="#ref-for-videoframe③⑧">(4)</a> <a href="#ref-for-videoframe③⑨">(5)</a>
+    <li><a href="#ref-for-videoframe④⓪">9.4.3. Attributes</a> <a href="#ref-for-videoframe④①">(2)</a> <a href="#ref-for-videoframe④②">(3)</a>
     <li><a href="#ref-for-videoframe④③">9.4.5. Methods</a> <a href="#ref-for-videoframe④④">(2)</a>
     <li><a href="#ref-for-videoframe④⑤">9.4.6. Algorithms</a> <a href="#ref-for-videoframe④⑥">(2)</a> <a href="#ref-for-videoframe④⑦">(3)</a>
     <li><a href="#ref-for-videoframe④⑧">9.4.7. Transfer and Serialization</a> <a href="#ref-for-videoframe④⑨">(2)</a> <a href="#ref-for-videoframe⑤⓪">(3)</a> <a href="#ref-for-videoframe⑤①">(4)</a> <a href="#ref-for-videoframe⑤②">(5)</a> <a href="#ref-for-videoframe⑤③">(6)</a> <a href="#ref-for-videoframe⑤④">(7)</a> <a href="#ref-for-videoframe⑤⑤">(8)</a>
@@ -12131,7 +12131,8 @@ participation on the mailing list and in the issues.</p>
    <ul>
     <li><a href="#ref-for-dom-videoframe-timestamp">7.8. VideoEncoderConfig</a>
     <li><a href="#ref-for-dom-videoframe-timestamp①">9.4. VideoFrame Interface</a>
-    <li><a href="#ref-for-dom-videoframe-timestamp②">9.4.3. Attributes</a> <a href="#ref-for-dom-videoframe-timestamp③">(2)</a>
+    <li><a href="#ref-for-dom-videoframe-timestamp②">9.4.2. Constructors</a>
+    <li><a href="#ref-for-dom-videoframe-timestamp③">9.4.3. Attributes</a>
     <li><a href="#ref-for-dom-videoframe-timestamp④">9.4.6. Algorithms</a>
    </ul>
   </aside>
