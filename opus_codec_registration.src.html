@@ -133,7 +133,7 @@ dictionary OpusEncoderConfig {
   OpusBitstreamFormat format = "opus";
   [EnforceRange] unsigned long long frameDuration = 20000;
   [EnforceRange] unsigned long complexity;
-  [EnforceRange] unsigned long packetlossperc;
+  [EnforceRange] unsigned long packetlossperc = 0;
   boolean useinbandfec = false;
   boolean usedtx = false;
 };
@@ -162,20 +162,26 @@ To check if an {{OpusEncoderConfig}} is valid, run these steps:
   <dt><dfn dict-member for=OpusEncoderConfig>complexity</dfn></dt>
   <dd>
     Configures the encoder's computational complexity. The valid range is `0` to `10`,
-    with `10` representing the highest complexity.
+    with `10` representing the highest complexity. If no value is specificied, the
+    default value is platform-specific: User Agents <em class="rfc2119">SHOULD</em>
+    set a default of `5` for mobile platforms, and a default of `9` for all other platforms.
   </dd>
   <dt><dfn dict-member for=OpusEncoderConfig>packetlossperc</dfn></dt>
   <dd>
     Configures the encoder's expected packet loss percentage. The valid range is
-    `0` to `100`.
+    `0` to `100`. If no value is specified, the default is `0`.
+
+    NOTE: The packet loss percentage might be updated over the course of the encoding, and
+      it is recommended for User Agents to support these reconfigurations.
   </dd>
   <dt><dfn dict-member for=OpusEncoderConfig>useinbandfec</dfn></dt>
   <dd>
-    Configures whether the encoder should generate Opus in-band fec or not.
+    Specifies whether the encoder provides Opus in-band FEC. If no value is specified,
+    the default is `false`.
   </dd>
   <dt><dfn dict-member for=OpusEncoderConfig>usedtx</dfn></dt>
   <dd>
-    Configures whether the encoder should use DTX or not.
+    Specifies if the encoder uses DTX. If no value is specified, the default is `false`.
   </dd>
 </dl>
 
