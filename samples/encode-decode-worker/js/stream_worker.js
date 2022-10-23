@@ -2,6 +2,80 @@
 
 let encoder, decoder, pl, started = false, stopped = false;
 
+let encqueue_aggregate = {
+  all: [],
+  min: Number.MAX_VALUE,
+  max: 0,
+  avg: 0,
+  sum: 0,
+};
+
+let decqueue_aggregate = {
+  all: [],
+  min: Number.MAX_VALUE,
+  max: 0,
+  avg: 0,
+  sum: 0,
+};
+
+function encqueue_update(duration) {
+  encqueue_aggregate.all.push(duration);
+  encqueue_aggregate.min = Math.min(encqueue_aggregate.min, duration);
+  encqueue_aggregate.max = Math.max(encqueue_aggregate.max, duration);
+  encqueue_aggregate.sum += duration;
+}
+
+function encqueue_report() {
+  encqueue_aggregate.all.sort();
+  const len = encqueue_aggregate.all.length;
+  const half = len >> 1;
+  const f = (len + 1) >> 2;
+  const t = (3 * (len + 1)) >> 2;
+  const alpha1 = (len + 1)/4 - Math.trunc((len + 1)/4);
+  const alpha3 = (3 * (len + 1)/4) - Math.trunc(3 * (len + 1)/4);
+  const fquart = encqueue_aggregate.all[f] + alpha1 * (encqueue_aggregate.all[f + 1] - encqueue_aggregate.all[f]);
+  const tquart = encqueue_aggregate.all[t] + alpha3 * (encqueue_aggregate.all[t + 1] - encqueue_aggregate.all[t]);
+  const median = len % 2 === 1 ? encqueue_aggregate.all[len >> 1] : (encqueue_aggregate.all[half - 1] + encqueue_aggregate.all[half]) / 2;
+  return {
+     count: len,
+     min: encqueue_aggregate.min,
+     fquart: fquart,
+     avg: encqueue_aggregate.sum / len,
+     median: median,
+     tquart: tquart,
+     max: encqueue_aggregate.max,
+  };
+}
+
+function decqueue_update(duration) {
+   decqueue_aggregate.all.push(duration);
+   decqueue_aggregate.min = Math.min(decqueue_aggregate.min, duration);
+   decqueue_aggregate.max = Math.max(decqueue_aggregate.max, duration);
+   decqueue_aggregate.sum += duration;
+}
+
+function decqueue_report() {
+  decqueue_aggregate.all.sort();
+  const len = decqueue_aggregate.all.length;
+  const half = len >> 1;
+  const f = (len + 1) >> 2;
+  const t = (3 * (len + 1)) >> 2;
+  const alpha1 = (len + 1)/4 - Math.trunc((len + 1)/4);
+  const alpha3 = (3 * (len + 1)/4) - Math.trunc(3 * (len + 1)/4);
+  const fquart = decqueue_aggregate.all[f] + alpha1 * (decqueue_aggregate.all[f + 1] - decqueue_aggregate.all[f]);
+  const tquart = decqueue_aggregate.all[t] + alpha3 * (decqueue_aggregate.all[t + 1] - decqueue_aggregate.all[t]);
+  const median = len % 2 === 1 ? decqueue_aggregate.all[len >> 1] : (decqueue_aggregate.all[half - 1] + decqueue_aggregate.all[half]) / 2;
+  return {
+     count: len,
+     min: decqueue_aggregate.min,
+     fquart: fquart,
+     avg: decqueue_aggregate.sum / len,
+     median: median,
+     tquart: tquart,
+     max: decqueue_aggregate.max,
+  };
+}
+
 self.addEventListener('message', async function(e) {
   if (stopped) return;
   // In this demo, we expect at most two messages, one of each type.
@@ -63,6 +137,8 @@ class pipeline {
               })
            } else {
              try {
+               const queue = this.decoder.decodeQueueSize;
+               decqueue_update(queue);
                this.decoder.decode(chunk);
              } catch (e) {
                self.postMessage({severity: 'fatal', text: 'Derror size: ' + chunk.byteLength + ' seq: ' + chunk.seqNo + ' kf: ' + chunk.keyframeIndex + ' delta: ' + chunk.deltaframeIndex + ' dur: ' + chunk.duration + ' ts: ' + chunk.timestamp + ' ssrc: ' + chunk.ssrc + ' pt: ' + chunk.pt + ' tid: ' + chunk.temporalLayerId + ' type: ' + chunk.type});
@@ -139,6 +215,8 @@ class pipeline {
            this.frameCounter++;
            try {
              if (this.encoder.state != "closed") {
+               const queue = this.encoder.encodeQueueSize;
+               encqueue_update(queue);
                this.encoder.encode(frame, { keyFrame: insert_keyframe });
              } 
            } catch(e) {
@@ -151,6 +229,10 @@ class pipeline {
    }
 
    stop() {
+     const encqueue_stats = encqueue_report();
+     const decqueue_stats = decqueue_report();
+     self.postMessage({text: 'Encoder Queue report: ' + JSON.stringify(encqueue_stats)});
+     self.postMessage({text: 'Decoder Queue report: ' + JSON.stringify(decqueue_stats)});
      if (stopped) return;
      stopped = true;
      this.stopped = true;
