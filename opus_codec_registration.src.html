@@ -131,14 +131,14 @@ OpusEncoderConfig {#opus-encoder-config}
 <xmp>
 dictionary OpusEncoderConfig {
   OpusBitstreamFormat format = "opus";
-  [EnforceRange] unsigned long frameDuration;
+  [EnforceRange] unsigned long frameDuration = 20000;
 };
 </xmp>
 </pre>
 
 To check if an {{OpusEncoderConfig}} is valid, run these steps:
-1. If {{OpusEncoderConfig/frameDuration}} is not a valid `ptime` value,
-    which is described in Section 6.1 of [[RFC7587]], return `false`.
+1. If {{OpusEncoderConfig/frameDuration}} is not a valid frame duration,
+    which is described section 2.1.4 of [[RFC6716]], return `false`.
 2. Return `true`.
 
 <dl>
@@ -149,7 +149,7 @@ To check if an {{OpusEncoderConfig}} is valid, run these steps:
   </dd>
   <dt><dfn dict-member for=OpusEncoderConfig>frameDuration</dfn></dt>
   <dd>
-    Configures the frame duration, in milliseconds, of output {{EncodedAudioChunk}}s.
+    Configures the frame duration, in microseconds, of output {{EncodedAudioChunk}}s.
   </dd>
 </dl>
 
