@@ -6,9 +6,9 @@
   <meta content="ED" name="w3c-status">
   <link href="https://www.w3.org/StyleSheets/TR/2021/W3C-ED" rel="stylesheet">
   <link href="https://www.w3.org/2008/site/images/favicon.ico" rel="icon">
-  <meta content="Bikeshed version b0de3432c, updated Thu Oct 13 09:16:59 2022 -0700" name="generator">
+  <meta content="Bikeshed version 63e66730b, updated Tue Oct 25 12:35:05 2022 -0700" name="generator">
   <link href="https://www.w3.org/TR/webcodecs/" rel="canonical">
-  <meta content="1ceb71cad2a782efd600ef06c751b7092f91efcf" name="document-revision">
+  <meta content="faa91a79e3338d7fe13fefcabe92721ec47408a0" name="document-revision">
 <style>
 main > dl > dd {
   margin-bottom: 1em;
@@ -321,6 +321,14 @@ a.self-link:hover {
 .heading > a.self-link {
     font-size: 83%;
 }
+.example > a.self-link,
+.note > a.self-link,
+.issue > a.self-link {
+    /* These blocks are overflow:auto, so positioning outside
+       doesn't work. */
+    left: auto;
+    right: 0;
+}
 li > a.self-link {
     left: calc(-1 * (3.5rem - 26px) - 2em);
 }
@@ -603,7 +611,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
   <div class="head">
    <p data-fill-with="logo"><a class="logo" href="https://www.w3.org/"> <img alt="W3C" height="48" src="https://www.w3.org/StyleSheets/TR/2021/logos/W3C" width="72"> </a> </p>
    <h1 class="p-name no-ref" id="title">WebCodecs</h1>
-   <p id="w3c-state"><a href="https://www.w3.org/standards/types#ED">Editor’s Draft</a>, <time class="dt-updated" datetime="2022-10-21">21 October 2022</time></p>
+   <p id="w3c-state"><a href="https://www.w3.org/standards/types#ED">Editor’s Draft</a>, <time class="dt-updated" datetime="2022-10-27">27 October 2022</time></p>
    <details open>
     <summary>More details about this document</summary>
     <div data-fill-with="spec-metadata">
@@ -3384,7 +3392,7 @@ and <var>forStorage</var>) are:
     <dd data-md>
      <ol>
       <li data-md>
-       <p>If <var>forStorage</var> is <code>true</code>, throw a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#exceptiondef-typeerror" id="ref-for-exceptiondef-typeerror①①">TypeError</a></code>.</p>
+       <p>If <var>forStorage</var> is <code>true</code>, throw a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#datacloneerror" id="ref-for-datacloneerror">DataCloneError</a></code>.</p>
       <li data-md>
        <p>For each <code class="idl"><a data-link-type="idl" href="#encodedaudiochunk" id="ref-for-encodedaudiochunk⑨">EncodedAudioChunk</a></code> internal slot in <var>value</var>, assign the value
 of each internal slot to a field in <var>serialized</var> with the same name as
@@ -3486,7 +3494,7 @@ as the named field.</p>
      <ol>
       <li data-md>
        <p>If <code class="idl"><a data-link-type="idl" href="#dom-encodedvideochunk-byte-length-slot" id="ref-for-dom-encodedvideochunk-byte-length-slot②">[[byte length]]</a></code> is greater than
-the <code class="idl"><a data-link-type="idl" href="#dom-encodedvideochunk-byte-length-slot" id="ref-for-dom-encodedvideochunk-byte-length-slot③">[[byte length]]</a></code> of <var>destination</var>, throw a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#exceptiondef-typeerror" id="ref-for-exceptiondef-typeerror①②">TypeError</a></code>.</p>
+the <code class="idl"><a data-link-type="idl" href="#dom-encodedvideochunk-byte-length-slot" id="ref-for-dom-encodedvideochunk-byte-length-slot③">[[byte length]]</a></code> of <var>destination</var>, throw a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#exceptiondef-typeerror" id="ref-for-exceptiondef-typeerror①①">TypeError</a></code>.</p>
       <li data-md>
        <p>Copy the <code class="idl"><a data-link-type="idl" href="#dom-encodedvideochunk-internal-data-slot" id="ref-for-dom-encodedvideochunk-internal-data-slot③">[[internal data]]</a></code> into <var>destination</var>.</p>
      </ol>
@@ -3498,7 +3506,7 @@ and <var>forStorage</var>) are:
     <dd data-md>
      <ol>
       <li data-md>
-       <p>If <var>forStorage</var> is <code>true</code>, throw a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#exceptiondef-typeerror" id="ref-for-exceptiondef-typeerror①③">TypeError</a></code>.</p>
+       <p>If <var>forStorage</var> is <code>true</code>, throw a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#datacloneerror" id="ref-for-datacloneerror①">DataCloneError</a></code>.</p>
       <li data-md>
        <p>For each <code class="idl"><a data-link-type="idl" href="#encodedvideochunk" id="ref-for-encodedvideochunk②⓪">EncodedVideoChunk</a></code> internal slot in <var>value</var>, assign the value
 of each internal slot to a field in <var>serialized</var> with the same name as
@@ -3604,7 +3612,7 @@ the underlying format does not map to an <code class="idl"><a data-link-type="id
     <dfn class="dfn-paneled idl-code" data-dfn-for="AudioData" data-dfn-type="constructor" data-export data-lt="AudioData(init)|constructor(init)" id="dom-audiodata-audiodata" title="AudioData(init)"><code> AudioData(init) </code></dfn> 
    <ol>
     <li data-md>
-     <p>If <var>init</var> is not a <a data-link-type="dfn" href="#valid-audiodatainit" id="ref-for-valid-audiodatainit">valid AudioDataInit</a>, throw a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#exceptiondef-typeerror" id="ref-for-exceptiondef-typeerror①④">TypeError</a></code>.</p>
+     <p>If <var>init</var> is not a <a data-link-type="dfn" href="#valid-audiodatainit" id="ref-for-valid-audiodatainit">valid AudioDataInit</a>, throw a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#exceptiondef-typeerror" id="ref-for-exceptiondef-typeerror①②">TypeError</a></code>.</p>
     <li data-md>
      <p>Let <var>frame</var> be a new <code class="idl"><a data-link-type="idl" href="#audiodata" id="ref-for-audiodata②⓪">AudioData</a></code> object, initialized as follows:</p>
      <ol>
@@ -3849,7 +3857,7 @@ the <code class="idl"><a data-link-type="idl" href="#dom-audiodatainit-format" i
     <dd data-md>
      <ol>
       <li data-md>
-       <p>If <var>value</var>’s <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/structured-data.html#detached" id="ref-for-detached①①">[[Detached]]</a></code> is <code>true</code>, throw a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#datacloneerror" id="ref-for-datacloneerror">DataCloneError</a></code> <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-DOMException" id="ref-for-idl-DOMException②①">DOMException</a></code>.</p>
+       <p>If <var>value</var>’s <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/structured-data.html#detached" id="ref-for-detached①①">[[Detached]]</a></code> is <code>true</code>, throw a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#datacloneerror" id="ref-for-datacloneerror②">DataCloneError</a></code> <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-DOMException" id="ref-for-idl-DOMException②①">DOMException</a></code>.</p>
       <li data-md>
        <p>For all <code class="idl"><a data-link-type="idl" href="#audiodata" id="ref-for-audiodata③⓪">AudioData</a></code> internal slots in <var>value</var>, assign the value of
 each internal slot to a field in <var>dataHolder</var> with the same name as the
@@ -3870,9 +3878,9 @@ as the named field.</p>
     <dd data-md>
      <ol>
       <li data-md>
-       <p>If <var>value</var>’s <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/structured-data.html#detached" id="ref-for-detached①②">[[Detached]]</a></code> is <code>true</code>, throw a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#datacloneerror" id="ref-for-datacloneerror①">DataCloneError</a></code> <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-DOMException" id="ref-for-idl-DOMException②②">DOMException</a></code>.</p>
+       <p>If <var>value</var>’s <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/structured-data.html#detached" id="ref-for-detached①②">[[Detached]]</a></code> is <code>true</code>, throw a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#datacloneerror" id="ref-for-datacloneerror③">DataCloneError</a></code> <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-DOMException" id="ref-for-idl-DOMException②②">DOMException</a></code>.</p>
       <li data-md>
-       <p>If <var>forStorage</var> is <code>true</code>, throw a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#exceptiondef-typeerror" id="ref-for-exceptiondef-typeerror①⑤">TypeError</a></code>.</p>
+       <p>If <var>forStorage</var> is <code>true</code>, throw a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#datacloneerror" id="ref-for-datacloneerror④">DataCloneError</a></code>.</p>
       <li data-md>
        <p>Let <var>resource</var> be the <a data-link-type="dfn" href="#media-resource" id="ref-for-media-resource①⑦">media resource</a> referenced by <var>value</var>’s <code class="idl"><a data-link-type="idl" href="#dom-audiodata-resource-reference-slot" id="ref-for-dom-audiodata-resource-reference-slot⑦">[[resource reference]]</a></code>.</p>
       <li data-md>
@@ -4198,7 +4206,7 @@ exception or returns <var>bad</var>, then throw an <code class="idl"><a data-lin
        <p><code class="idl"><a data-link-type="idl" href="https://svgwg.org/svg2-draft/embedded.html#InterfaceSVGImageElement" id="ref-for-InterfaceSVGImageElement">SVGImageElement</a></code></p>
        <ol>
         <li data-md>
-         <p>If <code class="idl"><a data-link-type="idl" href="#dom-videoframeinit-timestamp" id="ref-for-dom-videoframeinit-timestamp">timestamp</a></code> does not <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#map-exists" id="ref-for-map-exists⑧">exist</a> in <var>init</var>, throw a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#exceptiondef-typeerror" id="ref-for-exceptiondef-typeerror①⑥">TypeError</a></code>.</p>
+         <p>If <code class="idl"><a data-link-type="idl" href="#dom-videoframeinit-timestamp" id="ref-for-dom-videoframeinit-timestamp">timestamp</a></code> does not <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#map-exists" id="ref-for-map-exists⑧">exist</a> in <var>init</var>, throw a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#exceptiondef-typeerror" id="ref-for-exceptiondef-typeerror①③">TypeError</a></code>.</p>
         <li data-md>
          <p>If <var>image</var>’s media data has no <a data-link-type="dfn" href="https://www.w3.org/TR/css-images-3/#natural-dimensions" id="ref-for-natural-dimensions">natural dimensions</a> (e.g., it’s a vector graphic with no specified content size), then
 throw an <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#invalidstateerror" id="ref-for-invalidstateerror②⓪">InvalidStateError</a></code> <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-DOMException" id="ref-for-idl-DOMException②⑤">DOMException</a></code>.</p>
@@ -4235,7 +4243,7 @@ with <var>init</var>, <var>frame</var>, and <var>currentPlaybackFrame</var>.</p>
        <p><code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/canvas.html#offscreencanvas" id="ref-for-offscreencanvas">OffscreenCanvas</a></code></p>
        <ol>
         <li data-md>
-         <p>If <code class="idl"><a data-link-type="idl" href="#dom-videoframeinit-timestamp" id="ref-for-dom-videoframeinit-timestamp①">timestamp</a></code> does not <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#map-exists" id="ref-for-map-exists①⓪">exist</a> in <var>init</var>, throw a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#exceptiondef-typeerror" id="ref-for-exceptiondef-typeerror①⑦">TypeError</a></code>.</p>
+         <p>If <code class="idl"><a data-link-type="idl" href="#dom-videoframeinit-timestamp" id="ref-for-dom-videoframeinit-timestamp①">timestamp</a></code> does not <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#map-exists" id="ref-for-map-exists①⓪">exist</a> in <var>init</var>, throw a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#exceptiondef-typeerror" id="ref-for-exceptiondef-typeerror①④">TypeError</a></code>.</p>
         <li data-md>
          <p>Let <var>resource</var> be a new <a data-link-type="dfn" href="#media-resource" id="ref-for-media-resource②⓪">media resource</a> containing a copy of <var>image</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/imagebitmap-and-animations.html#concept-imagebitmap-bitmap-data" id="ref-for-concept-imagebitmap-bitmap-data①">bitmap data</a>.</p>
          <p class="note" role="note"><span>NOTE:</span> Implementers are encouraged to avoid a deep copy by using
@@ -4259,7 +4267,7 @@ with <var>init</var>, <var>frame</var>, and <var>image</var>.</p>
    <p><dfn class="dfn-paneled idl-code" data-dfn-for="VideoFrame" data-dfn-type="constructor" data-export data-lt="VideoFrame(data, init)|constructor(data, init)" id="dom-videoframe-videoframe-data-init" title="VideoFrame(data, init)"><code> VideoFrame(data, init) </code></dfn></p>
    <ol>
     <li data-md>
-     <p>If <var>init</var> is not a <a data-link-type="dfn" href="#valid-videoframebufferinit" id="ref-for-valid-videoframebufferinit">valid VideoFrameBufferInit</a>, throw a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#exceptiondef-typeerror" id="ref-for-exceptiondef-typeerror①⑧">TypeError</a></code>.</p>
+     <p>If <var>init</var> is not a <a data-link-type="dfn" href="#valid-videoframebufferinit" id="ref-for-valid-videoframebufferinit">valid VideoFrameBufferInit</a>, throw a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#exceptiondef-typeerror" id="ref-for-exceptiondef-typeerror①⑤">TypeError</a></code>.</p>
     <li data-md>
      <p>Let <var>defaultRect</var> be «[ "x:" → <code>0</code>, "y" → <code>0</code>,
 "width" → <var>init</var>.<code class="idl"><a data-link-type="idl" href="#dom-videoframebufferinit-codedwidth" id="ref-for-dom-videoframebufferinit-codedwidth">codedWidth</a></code>, "height" → <var>init</var>.<code class="idl"><a data-link-type="idl" href="#dom-videoframebufferinit-codedwidth" id="ref-for-dom-videoframebufferinit-codedwidth①">codedWidth</a></code> ]».</p>
@@ -4284,7 +4292,7 @@ Layout and Allocation Size</a> algorithm with <var>parsedRect</var>, <var>init</
     <li data-md>
      <p>If <var>combinedLayout</var> is an exception, throw <var>combinedLayout</var>.</p>
     <li data-md>
-     <p>If <code>data.byteLength</code> is less than <var>combinedLayout</var>’s <a data-link-type="dfn" href="#combined-buffer-layout-allocationsize" id="ref-for-combined-buffer-layout-allocationsize">allocationSize</a>, throw a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#exceptiondef-typeerror" id="ref-for-exceptiondef-typeerror①⑨">TypeError</a></code>.</p>
+     <p>If <code>data.byteLength</code> is less than <var>combinedLayout</var>’s <a data-link-type="dfn" href="#combined-buffer-layout-allocationsize" id="ref-for-combined-buffer-layout-allocationsize">allocationSize</a>, throw a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#exceptiondef-typeerror" id="ref-for-exceptiondef-typeerror①⑥">TypeError</a></code>.</p>
     <li data-md>
      <p>Let <var>resource</var> be a new <a data-link-type="dfn" href="#media-resource" id="ref-for-media-resource②①">media resource</a> containing a copy of <var>data</var>. Use <code class="idl"><a data-link-type="idl" href="#dom-videoframebufferinit-visiblerect" id="ref-for-dom-videoframebufferinit-visiblerect①">visibleRect</a></code> and <code class="idl"><a data-link-type="idl" href="#dom-videoframebufferinit-layout" id="ref-for-dom-videoframebufferinit-layout①">layout</a></code> to determine where in <var>data</var> the pixels for each plane reside.</p>
      <p>The User Agent <em class="rfc2119">MAY</em> choose to allocate <var>resource</var> with a larger coded size and plane strides to improve memory
@@ -4490,7 +4498,7 @@ VideoFrameCopyToOptions</a> algorithm with <var>options</var>.</p>
       <li data-md>
        <p>If <var>combinedLayout</var> is an exception, return a promise rejected with <var>combinedLayout</var>.</p>
       <li data-md>
-       <p>If <code>destination.byteLength</code> is less than <var>combinedLayout</var>’s <a data-link-type="dfn" href="#combined-buffer-layout-allocationsize" id="ref-for-combined-buffer-layout-allocationsize②">allocationSize</a>, return a promise rejected with a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#exceptiondef-typeerror" id="ref-for-exceptiondef-typeerror②⓪">TypeError</a></code>.</p>
+       <p>If <code>destination.byteLength</code> is less than <var>combinedLayout</var>’s <a data-link-type="dfn" href="#combined-buffer-layout-allocationsize" id="ref-for-combined-buffer-layout-allocationsize②">allocationSize</a>, return a promise rejected with a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#exceptiondef-typeerror" id="ref-for-exceptiondef-typeerror①⑦">TypeError</a></code>.</p>
       <li data-md>
        <p>Let <var>p</var> be a new <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-promise" id="ref-for-idl-promise⑨">Promise</a></code>.</p>
       <li data-md>
@@ -4683,7 +4691,7 @@ assign <var>otherFrame</var>.<code class="idl"><a data-link-type="idl" href="#do
       <li data-md>
        <p>Let <var>validInit</var> be the result of running the <a data-link-type="dfn" href="#validate-videoframeinit" id="ref-for-validate-videoframeinit">Validate VideoFrameInit</a> algorithm with <var>format</var> and <var>otherFrame</var>’s <code class="idl"><a data-link-type="idl" href="#dom-videoframe-coded-width-slot" id="ref-for-dom-videoframe-coded-width-slot⑤">[[coded width]]</a></code> and <code class="idl"><a data-link-type="idl" href="#dom-videoframe-coded-height-slot" id="ref-for-dom-videoframe-coded-height-slot⑤">[[coded height]]</a></code>.</p>
       <li data-md>
-       <p>If <var>validInit</var> is <code>false</code>, throw a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#exceptiondef-typeerror" id="ref-for-exceptiondef-typeerror②①">TypeError</a></code>.</p>
+       <p>If <var>validInit</var> is <code>false</code>, throw a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#exceptiondef-typeerror" id="ref-for-exceptiondef-typeerror①⑧">TypeError</a></code>.</p>
       <li data-md>
        <p>Let <var>resource</var> be the <a data-link-type="dfn" href="#media-resource" id="ref-for-media-resource②⑥">media resource</a> referenced by <var>otherFrame</var>’s <code class="idl"><a data-link-type="idl" href="#dom-videoframe-resource-reference-slot" id="ref-for-dom-videoframe-resource-reference-slot②">[[resource reference]]</a></code>.</p>
       <li data-md>
@@ -4716,7 +4724,7 @@ for <code class="idl"><a data-link-type="idl" href="#dom-videoframe-visiblerect"
       <li data-md>
        <p>Let <var>validInit</var> be the result of running the <a data-link-type="dfn" href="#validate-videoframeinit" id="ref-for-validate-videoframeinit①">Validate VideoFrameInit</a> algorithm with <var>format</var>, <var>width</var> and <var>height</var>.</p>
       <li data-md>
-       <p>If <var>validInit</var> is <code>false</code>, throw a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#exceptiondef-typeerror" id="ref-for-exceptiondef-typeerror②②">TypeError</a></code>.</p>
+       <p>If <var>validInit</var> is <code>false</code>, throw a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#exceptiondef-typeerror" id="ref-for-exceptiondef-typeerror①⑨">TypeError</a></code>.</p>
       <li data-md>
        <p>Assign a new reference for <var>resource</var> to <var>frame</var>’s <code class="idl"><a data-link-type="idl" href="#dom-videoframe-resource-reference-slot" id="ref-for-dom-videoframe-resource-reference-slot④">[[resource reference]]</a></code>.</p>
       <li data-md>
@@ -4816,7 +4824,7 @@ and <code class="idl"><a data-link-type="idl" href="#dom-videoframe-display-heig
         <li data-md>
          <p>Let <var>validAlignment</var> be the result of running the <a data-link-type="dfn" href="#videoframe-verify-rect-size-alignment" id="ref-for-videoframe-verify-rect-size-alignment">Verify Rect Size Alignment</a> algorithm with <var>overrideRect</var> and <code class="idl"><a data-link-type="idl" href="#dom-videoframe-format-slot" id="ref-for-dom-videoframe-format-slot①②">[[format]]</a></code>.</p>
         <li data-md>
-         <p>If <var>validAlignment</var> is <code>false</code>, throw a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#exceptiondef-typeerror" id="ref-for-exceptiondef-typeerror②③">TypeError</a></code>.</p>
+         <p>If <var>validAlignment</var> is <code>false</code>, throw a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#exceptiondef-typeerror" id="ref-for-exceptiondef-typeerror②⓪">TypeError</a></code>.</p>
        </ol>
       <li data-md>
        <p>Let <var>parsedRect</var> be the result of running the <a data-link-type="dfn" href="#videoframe-parse-visible-rect" id="ref-for-videoframe-parse-visible-rect①">Parse Visible
@@ -4905,18 +4913,18 @@ subsample for <var>plane</var>.</p>
        <p>If <var>overrideRect</var> is not <code>undefined</code>:</p>
        <ol>
         <li data-md>
-         <p>If either of <var>overrideRect</var>.<code class="idl"><a data-link-type="idl" href="https://drafts.fxtf.org/geometry-1/#dom-domrectinit-width" id="ref-for-dom-domrectinit-width④">width</a></code> or <code class="idl"><a data-link-type="idl" href="https://drafts.fxtf.org/geometry-1/#dom-domrectinit-height" id="ref-for-dom-domrectinit-height④">height</a></code> is <code>0</code>, return a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#exceptiondef-typeerror" id="ref-for-exceptiondef-typeerror②④">TypeError</a></code>.</p>
+         <p>If either of <var>overrideRect</var>.<code class="idl"><a data-link-type="idl" href="https://drafts.fxtf.org/geometry-1/#dom-domrectinit-width" id="ref-for-dom-domrectinit-width④">width</a></code> or <code class="idl"><a data-link-type="idl" href="https://drafts.fxtf.org/geometry-1/#dom-domrectinit-height" id="ref-for-dom-domrectinit-height④">height</a></code> is <code>0</code>, return a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#exceptiondef-typeerror" id="ref-for-exceptiondef-typeerror②①">TypeError</a></code>.</p>
         <li data-md>
-         <p>If the sum of <var>overrideRect</var>.<code class="idl"><a data-link-type="idl" href="https://drafts.fxtf.org/geometry-1/#dom-domrectinit-x" id="ref-for-dom-domrectinit-x②">x</a></code> and <var>overrideRect</var>.<code class="idl"><a data-link-type="idl" href="https://drafts.fxtf.org/geometry-1/#dom-domrectinit-width" id="ref-for-dom-domrectinit-width⑤">width</a></code> is greater than <var>codedWidth</var>, return a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#exceptiondef-typeerror" id="ref-for-exceptiondef-typeerror②⑤">TypeError</a></code>.</p>
+         <p>If the sum of <var>overrideRect</var>.<code class="idl"><a data-link-type="idl" href="https://drafts.fxtf.org/geometry-1/#dom-domrectinit-x" id="ref-for-dom-domrectinit-x②">x</a></code> and <var>overrideRect</var>.<code class="idl"><a data-link-type="idl" href="https://drafts.fxtf.org/geometry-1/#dom-domrectinit-width" id="ref-for-dom-domrectinit-width⑤">width</a></code> is greater than <var>codedWidth</var>, return a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#exceptiondef-typeerror" id="ref-for-exceptiondef-typeerror②②">TypeError</a></code>.</p>
         <li data-md>
-         <p>If the sum of <var>overrideRect</var>.<code class="idl"><a data-link-type="idl" href="https://drafts.fxtf.org/geometry-1/#dom-domrectinit-y" id="ref-for-dom-domrectinit-y②">y</a></code> and <var>overrideRect</var>.<code class="idl"><a data-link-type="idl" href="https://drafts.fxtf.org/geometry-1/#dom-domrectinit-height" id="ref-for-dom-domrectinit-height⑤">height</a></code> is greater than <var>codedHeight</var>, return a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#exceptiondef-typeerror" id="ref-for-exceptiondef-typeerror②⑥">TypeError</a></code>.</p>
+         <p>If the sum of <var>overrideRect</var>.<code class="idl"><a data-link-type="idl" href="https://drafts.fxtf.org/geometry-1/#dom-domrectinit-y" id="ref-for-dom-domrectinit-y②">y</a></code> and <var>overrideRect</var>.<code class="idl"><a data-link-type="idl" href="https://drafts.fxtf.org/geometry-1/#dom-domrectinit-height" id="ref-for-dom-domrectinit-height⑤">height</a></code> is greater than <var>codedHeight</var>, return a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#exceptiondef-typeerror" id="ref-for-exceptiondef-typeerror②③">TypeError</a></code>.</p>
         <li data-md>
          <p>Assign <var>overrideRect</var> to <var>sourceRect</var>.</p>
        </ol>
       <li data-md>
        <p>Let <var>validAlignment</var> be the result of running the <a data-link-type="dfn" href="#videoframe-verify-rect-offset-alignment" id="ref-for-videoframe-verify-rect-offset-alignment①">Verify Rect Offset Alignment</a> algorithm with <var>format</var> and <var>sourceRect</var>.</p>
       <li data-md>
-       <p>If <var>validAlignment</var> is <code>false</code>, throw a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#exceptiondef-typeerror" id="ref-for-exceptiondef-typeerror②⑦">TypeError</a></code>.</p>
+       <p>If <var>validAlignment</var> is <code>false</code>, throw a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#exceptiondef-typeerror" id="ref-for-exceptiondef-typeerror②④">TypeError</a></code>.</p>
       <li data-md>
        <p>Return <var>sourceRect</var>.</p>
      </ol>
@@ -4927,7 +4935,7 @@ subsample for <var>plane</var>.</p>
        <p>Let <var>numPlanes</var> be the number of planes as defined by <var>format</var>.</p>
       <li data-md>
        <p>If <var>layout</var> is not <code>undefined</code> and its length does not equal <var>numPlanes</var>,
- throw a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#exceptiondef-typeerror" id="ref-for-exceptiondef-typeerror②⑧">TypeError</a></code>.</p>
+ throw a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#exceptiondef-typeerror" id="ref-for-exceptiondef-typeerror②⑤">TypeError</a></code>.</p>
       <li data-md>
        <p>Let <var>minAllocationSize</var> be <code>0</code>.</p>
       <li data-md>
@@ -4976,7 +4984,7 @@ truncated <var>parsedRect</var>.<code class="idl"><a data-link-type="idl" href="
            <p>Let <var>planeLayout</var> be the <code class="idl"><a data-link-type="idl" href="#dictdef-planelayout" id="ref-for-dictdef-planelayout②">PlaneLayout</a></code> in <var>layout</var> at position <var>planeIndex</var>.</p>
           <li data-md>
            <p>If <var>planeLayout</var>.<code class="idl"><a data-link-type="idl" href="#dom-planelayout-stride" id="ref-for-dom-planelayout-stride">stride</a></code> is less than <var>computedLayout</var>’s <a data-link-type="dfn" href="#computed-plane-layout-sourcewidthbytes" id="ref-for-computed-plane-layout-sourcewidthbytes②">sourceWidthBytes</a>,
-return a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#exceptiondef-typeerror" id="ref-for-exceptiondef-typeerror②⑨">TypeError</a></code>.</p>
+return a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#exceptiondef-typeerror" id="ref-for-exceptiondef-typeerror②⑥">TypeError</a></code>.</p>
           <li data-md>
            <p>Assign <var>planeLayout</var>.<code class="idl"><a data-link-type="idl" href="#dom-planelayout-offset" id="ref-for-dom-planelayout-offset">offset</a></code> to <var>computedLayout</var>’s <a data-link-type="dfn" href="#computed-plane-layout-destinationoffset" id="ref-for-computed-plane-layout-destinationoffset①">destinationOffset</a>.</p>
           <li data-md>
@@ -4997,7 +5005,7 @@ return a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.wha
         <li data-md>
          <p>Let <var>planeEnd</var> be the sum of <var>planeSize</var> and <var>computedLayout</var>’s <a data-link-type="dfn" href="#computed-plane-layout-destinationoffset" id="ref-for-computed-plane-layout-destinationoffset③">destinationOffset</a>.</p>
         <li data-md>
-         <p>If <var>planeSize</var> or <var>planeEnd</var> is greater than maximum range of <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-unsigned-long" id="ref-for-idl-unsigned-long⑦③">unsigned long</a></code>, return a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#exceptiondef-typeerror" id="ref-for-exceptiondef-typeerror③⓪">TypeError</a></code>.</p>
+         <p>If <var>planeSize</var> or <var>planeEnd</var> is greater than maximum range of <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-unsigned-long" id="ref-for-idl-unsigned-long⑦③">unsigned long</a></code>, return a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#exceptiondef-typeerror" id="ref-for-exceptiondef-typeerror②⑦">TypeError</a></code>.</p>
         <li data-md>
          <p>Append <var>planeEnd</var> to <var>endOffsets</var>.</p>
         <li data-md>
@@ -5019,7 +5027,7 @@ continue.</p>
            <p class="note" role="note"><span>NOTE:</span> If plane A ends before plane B starts, they do not
     overlap.</p>
           <li data-md>
-           <p>Otherwise, return a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#exceptiondef-typeerror" id="ref-for-exceptiondef-typeerror③①">TypeError</a></code>.</p>
+           <p>Otherwise, return a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#exceptiondef-typeerror" id="ref-for-exceptiondef-typeerror②⑧">TypeError</a></code>.</p>
           <li data-md>
            <p>Increment <var>earlierPlaneIndex</var> by <code>1</code>.</p>
          </ol>
@@ -5058,7 +5066,7 @@ follows:</p>
     <dd data-md>
      <ol>
       <li data-md>
-       <p>If <var>value</var>’s <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/structured-data.html#detached" id="ref-for-detached②③">[[Detached]]</a></code> is <code>true</code>, throw a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#datacloneerror" id="ref-for-datacloneerror②">DataCloneError</a></code> <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-DOMException" id="ref-for-idl-DOMException③③">DOMException</a></code>.</p>
+       <p>If <var>value</var>’s <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/structured-data.html#detached" id="ref-for-detached②③">[[Detached]]</a></code> is <code>true</code>, throw a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#datacloneerror" id="ref-for-datacloneerror⑤">DataCloneError</a></code> <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-DOMException" id="ref-for-idl-DOMException③③">DOMException</a></code>.</p>
       <li data-md>
        <p>For all <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe④⑨">VideoFrame</a></code> internal slots in <var>value</var>, assign the value of
 each internal slot to a field in <var>dataHolder</var> with the same name as the
@@ -5078,9 +5086,9 @@ as the named field.</p>
     <dd data-md>
      <ol>
       <li data-md>
-       <p>If <var>value</var>’s <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/structured-data.html#detached" id="ref-for-detached②④">[[Detached]]</a></code> is <code>true</code>, throw a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#datacloneerror" id="ref-for-datacloneerror③">DataCloneError</a></code> <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-DOMException" id="ref-for-idl-DOMException③④">DOMException</a></code>.</p>
+       <p>If <var>value</var>’s <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/structured-data.html#detached" id="ref-for-detached②④">[[Detached]]</a></code> is <code>true</code>, throw a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#datacloneerror" id="ref-for-datacloneerror⑥">DataCloneError</a></code> <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-DOMException" id="ref-for-idl-DOMException③④">DOMException</a></code>.</p>
       <li data-md>
-       <p>If <var>forStorage</var> is <code>true</code>, throw a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#exceptiondef-typeerror" id="ref-for-exceptiondef-typeerror③②">TypeError</a></code>.</p>
+       <p>If <var>forStorage</var> is <code>true</code>, throw a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#datacloneerror" id="ref-for-datacloneerror⑦">DataCloneError</a></code>.</p>
       <li data-md>
        <p>Let <var>resource</var> be the <a data-link-type="dfn" href="#media-resource" id="ref-for-media-resource②⑧">media resource</a> referenced by <var>value</var>’s <code class="idl"><a data-link-type="idl" href="#dom-videoframe-resource-reference-slot" id="ref-for-dom-videoframe-resource-reference-slot⑧">[[resource reference]]</a></code>.</p>
       <li data-md>
@@ -5568,7 +5576,7 @@ support any particular type.</p>
      <p>When invoked, run these steps:</p>
      <ol>
       <li data-md>
-       <p>If <var>init</var> is not <a data-link-type="dfn" href="#valid-imagedecoderinit" id="ref-for-valid-imagedecoderinit">valid ImageDecoderInit</a>, throw a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#exceptiondef-typeerror" id="ref-for-exceptiondef-typeerror③③">TypeError</a></code>.</p>
+       <p>If <var>init</var> is not <a data-link-type="dfn" href="#valid-imagedecoderinit" id="ref-for-valid-imagedecoderinit">valid ImageDecoderInit</a>, throw a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#exceptiondef-typeerror" id="ref-for-exceptiondef-typeerror②⑨">TypeError</a></code>.</p>
       <li data-md>
        <p>Let <var>d</var> be a new <code class="idl"><a data-link-type="idl" href="#imagedecoder" id="ref-for-imagedecoder④">ImageDecoder</a></code> object. In the steps below, all
 mentions of <code class="idl"><a data-link-type="idl" href="#imagedecoder" id="ref-for-imagedecoder⑤">ImageDecoder</a></code> members apply to <var>d</var> unless stated
@@ -5758,7 +5766,7 @@ User Agent.</p>
      <p>When invoked, run these steps:</p>
      <ol>
       <li data-md>
-       <p>If <var>type</var> is not a <a data-link-type="dfn" href="#valid-image-mime-type" id="ref-for-valid-image-mime-type">valid image MIME type</a>, return a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-promise" id="ref-for-idl-promise①⑥">Promise</a></code> rejected with <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#exceptiondef-typeerror" id="ref-for-exceptiondef-typeerror③④">TypeError</a></code>.</p>
+       <p>If <var>type</var> is not a <a data-link-type="dfn" href="#valid-image-mime-type" id="ref-for-valid-image-mime-type">valid image MIME type</a>, return a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-promise" id="ref-for-idl-promise①⑥">Promise</a></code> rejected with <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#exceptiondef-typeerror" id="ref-for-exceptiondef-typeerror③⓪">TypeError</a></code>.</p>
       <li data-md>
        <p>Let <var>p</var> be a new <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-promise" id="ref-for-idl-promise①⑦">Promise</a></code>.</p>
       <li data-md>
@@ -8302,8 +8310,10 @@ participation on the mailing list and in the issues.</p>
   <aside class="dfn-panel" data-for="term-for-datacloneerror">
    <a href="https://webidl.spec.whatwg.org/#datacloneerror">https://webidl.spec.whatwg.org/#datacloneerror</a><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-datacloneerror">9.2.6. Transfer and Serialization</a> <a href="#ref-for-datacloneerror①">(2)</a>
-    <li><a href="#ref-for-datacloneerror②">9.4.7. Transfer and Serialization</a> <a href="#ref-for-datacloneerror③">(2)</a>
+    <li><a href="#ref-for-datacloneerror">8.1.5. Serialization</a>
+    <li><a href="#ref-for-datacloneerror①">8.2.5. Serialization</a>
+    <li><a href="#ref-for-datacloneerror②">9.2.6. Transfer and Serialization</a> <a href="#ref-for-datacloneerror③">(2)</a> <a href="#ref-for-datacloneerror④">(3)</a>
+    <li><a href="#ref-for-datacloneerror⑤">9.4.7. Transfer and Serialization</a> <a href="#ref-for-datacloneerror⑥">(2)</a> <a href="#ref-for-datacloneerror⑦">(3)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-dataerror">
@@ -8453,17 +8463,13 @@ participation on the mailing list and in the issues.</p>
     <li><a href="#ref-for-exceptiondef-typeerror④">5.5. Methods</a> <a href="#ref-for-exceptiondef-typeerror⑤">(2)</a> <a href="#ref-for-exceptiondef-typeerror⑥">(3)</a>
     <li><a href="#ref-for-exceptiondef-typeerror⑦">6.5. Methods</a> <a href="#ref-for-exceptiondef-typeerror⑧">(2)</a> <a href="#ref-for-exceptiondef-typeerror⑨">(3)</a>
     <li><a href="#ref-for-exceptiondef-typeerror①⓪">8.1.4. Methods</a>
-    <li><a href="#ref-for-exceptiondef-typeerror①①">8.1.5. Serialization</a>
-    <li><a href="#ref-for-exceptiondef-typeerror①②">8.2.4. Methods</a>
-    <li><a href="#ref-for-exceptiondef-typeerror①③">8.2.5. Serialization</a>
-    <li><a href="#ref-for-exceptiondef-typeerror①④">9.2.2. Constructors</a>
-    <li><a href="#ref-for-exceptiondef-typeerror①⑤">9.2.6. Transfer and Serialization</a>
-    <li><a href="#ref-for-exceptiondef-typeerror①⑥">9.4.2. Constructors</a> <a href="#ref-for-exceptiondef-typeerror①⑦">(2)</a> <a href="#ref-for-exceptiondef-typeerror①⑧">(3)</a> <a href="#ref-for-exceptiondef-typeerror①⑨">(4)</a>
-    <li><a href="#ref-for-exceptiondef-typeerror②⓪">9.4.5. Methods</a>
-    <li><a href="#ref-for-exceptiondef-typeerror②①">9.4.6. Algorithms</a> <a href="#ref-for-exceptiondef-typeerror②②">(2)</a> <a href="#ref-for-exceptiondef-typeerror②③">(3)</a> <a href="#ref-for-exceptiondef-typeerror②④">(4)</a> <a href="#ref-for-exceptiondef-typeerror②⑤">(5)</a> <a href="#ref-for-exceptiondef-typeerror②⑥">(6)</a> <a href="#ref-for-exceptiondef-typeerror②⑦">(7)</a> <a href="#ref-for-exceptiondef-typeerror②⑧">(8)</a> <a href="#ref-for-exceptiondef-typeerror②⑨">(9)</a> <a href="#ref-for-exceptiondef-typeerror③⓪">(10)</a> <a href="#ref-for-exceptiondef-typeerror③①">(11)</a>
-    <li><a href="#ref-for-exceptiondef-typeerror③②">9.4.7. Transfer and Serialization</a>
-    <li><a href="#ref-for-exceptiondef-typeerror③③">10.2.2. Constructor</a>
-    <li><a href="#ref-for-exceptiondef-typeerror③④">10.2.4. Methods</a>
+    <li><a href="#ref-for-exceptiondef-typeerror①①">8.2.4. Methods</a>
+    <li><a href="#ref-for-exceptiondef-typeerror①②">9.2.2. Constructors</a>
+    <li><a href="#ref-for-exceptiondef-typeerror①③">9.4.2. Constructors</a> <a href="#ref-for-exceptiondef-typeerror①④">(2)</a> <a href="#ref-for-exceptiondef-typeerror①⑤">(3)</a> <a href="#ref-for-exceptiondef-typeerror①⑥">(4)</a>
+    <li><a href="#ref-for-exceptiondef-typeerror①⑦">9.4.5. Methods</a>
+    <li><a href="#ref-for-exceptiondef-typeerror①⑧">9.4.6. Algorithms</a> <a href="#ref-for-exceptiondef-typeerror①⑨">(2)</a> <a href="#ref-for-exceptiondef-typeerror②⓪">(3)</a> <a href="#ref-for-exceptiondef-typeerror②①">(4)</a> <a href="#ref-for-exceptiondef-typeerror②②">(5)</a> <a href="#ref-for-exceptiondef-typeerror②③">(6)</a> <a href="#ref-for-exceptiondef-typeerror②④">(7)</a> <a href="#ref-for-exceptiondef-typeerror②⑤">(8)</a> <a href="#ref-for-exceptiondef-typeerror②⑥">(9)</a> <a href="#ref-for-exceptiondef-typeerror②⑦">(10)</a> <a href="#ref-for-exceptiondef-typeerror②⑧">(11)</a>
+    <li><a href="#ref-for-exceptiondef-typeerror②⑨">10.2.2. Constructor</a>
+    <li><a href="#ref-for-exceptiondef-typeerror③⓪">10.2.4. Methods</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-a-promise-rejected-with">
