@@ -5,7 +5,7 @@ let mediaStream, bitrate = 3000000;
 let stopped = false;
 let preferredCodec ="VP8";
 let mode = "L1T3";
-let latencyPref = "realtime";
+let latencyPref = "realtime", bitPref = "variable";
 let hw = "no-preference";
 let streamWorker;
 let inputStream, outputStream;
@@ -116,6 +116,11 @@ function getPrefValue(radio) {
    addToEventLog('Latency preference selected: ' + latencyPref);
 }
 
+function getBitPrefValue(radio) {
+   bitPref = radio.value;
+   addToEventLog('Bitrate mode selected: ' + bitPref);
+}
+
 function getCodecValue(radio) {
   preferredCodec = radio.value;
   addToEventLog('Codec selected: ' + preferredCodec);
@@ -188,6 +193,7 @@ document.addEventListener('DOMContentLoaded', async function(event) {
     stopButton.disabled = false;
     hwButtons.style.display = "none";
     prefButtons.style.display = "none";
+    bitButtons.style.display = "none";
     codecButtons.style.display = "none";
     resButtons.style.display = "none";
     modeButtons.style.display = "none";
@@ -233,7 +239,7 @@ document.addEventListener('DOMContentLoaded', async function(event) {
       const config = {
         alpha: "discard",
         latencyMode: latencyPref,
-        bitrateMode: "variable",
+        bitrateMode: bitPref,
         codec: preferredCodec,
         width: ts.width/vConfig.resolutionScale,
         height: ts.height/vConfig.resolutionScale,
