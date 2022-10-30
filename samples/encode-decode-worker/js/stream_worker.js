@@ -176,7 +176,7 @@ class pipeline {
                controller.enqueue(configChunk); 
              } 
              chunk.temporalLayerId = 0;
-             if (cfg.svc.temporalLayerId) {
+             if (cfg.svc) {
                chunk.temporalLayerId = cfg.svc.temporalLayerId;
              }
              this.seqNo++;
