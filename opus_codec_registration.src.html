@@ -132,6 +132,10 @@ OpusEncoderConfig {#opus-encoder-config}
 dictionary OpusEncoderConfig {
   OpusBitstreamFormat format = "opus";
   [EnforceRange] unsigned long frameDuration;
+  [EnforceRange] unsigned long complexity;
+  [EnforceRange] unsigned long packetlossperc = 0;
+  boolean useinbandfec = false;
+  boolean usedtx = false;
 };
 </xmp>
 </pre>
@@ -139,6 +143,10 @@ dictionary OpusEncoderConfig {
 To check if an {{OpusEncoderConfig}} is valid, run these steps:
 1. If {{OpusEncoderConfig/frameDuration}} is not a valid `ptime` value,
     which is described in Section 6.1 of [[RFC7587]], return `false`.
+1. If {{OpusEncoderConfig/complexity}} is specified and not within the range of
+    `0` and `10` inclusively, return `false`.
+1. If {{OpusEncoderConfig/packetlossperc}} is specified and not within the range of
+    `0` and `100` inclusively, return `false`.
 2. Return `true`.
 
 <dl>
@@ -150,6 +158,32 @@ To check if an {{OpusEncoderConfig}} is valid, run these steps:
   <dt><dfn dict-member for=OpusEncoderConfig>frameDuration</dfn></dt>
   <dd>
     Configures the frame duration, in milliseconds, of output {{EncodedAudioChunk}}s.
+  </dd>
+  <dt><dfn dict-member for=OpusEncoderConfig>complexity</dfn></dt>
+  <dd>
+    Configures the encoder's computational complexity, as described in section 2.1.9.
+    of [[RFC6716]]. The valid range is `0` to `10`, with `10` representing the highest
+    complexity. If no value is specificied, the default value is platform-specific:
+    User Agents <em class="rfc2119">SHOULD</em> set a default of `5` for mobile
+    platforms, and a default of `9` for all other platforms.
+  </dd>
+  <dt><dfn dict-member for=OpusEncoderConfig>packetlossperc</dfn></dt>
+  <dd>
+    Configures the encoder's expected packet loss percentage. The valid range is
+    `0` to `100`.
+
+    NOTE: The packet loss percentage might be updated over the course of an
+    encoding, and it is recommended for User Agents to support these reconfigurations.
+  </dd>
+  <dt><dfn dict-member for=OpusEncoderConfig>useinbandfec</dfn></dt>
+  <dd>
+    Specifies whether the encoder provides Opus in-band Forward Error Correction
+    (FEC), as described by section 2.1.7. of [[RFC6716]].
+  </dd>
+  <dt><dfn dict-member for=OpusEncoderConfig>usedtx</dfn></dt>
+  <dd>
+    Specifies if the encoder uses Discontinuous Transmission (DTX), as described
+    by section 2.1.9. of [[RFC6716]].
   </dd>
 </dl>
 
