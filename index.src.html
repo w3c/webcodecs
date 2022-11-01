@@ -99,6 +99,9 @@ spec: css-images-3; urlPrefix: https://www.w3.org/TR/css-images-3/
 
 spec: webrtc-svc; urlPrefix: https://w3c.github.io/webrtc-svc/
     type: dfn; text: scalability mode identifier; url:#scalabilitymodes*
+
+spec: ECMASCRIPT; urlPrefix: https://tc39.es/ecma262/
+    type: dfn; text: the current Realm; url: #current-realm
 </pre>
 
 <pre class='biblio'>
@@ -108,6 +111,15 @@ spec: webrtc-svc; urlPrefix: https://w3c.github.io/webrtc-svc/
     "title": "Coding-independent code points for video signal type identification",
     "publisher": "ITU",
     "date": "December 2016"
+  },
+  "WEBCODECS-VIDEO-FRAME-METADATA-REGISTRY": {
+    "href": "https://w3c.github.io/webcodecs/video_frame_metadata_registry.html",
+    "title": "WebCodecs VideoFrame Metadata Registry",
+    "publisher": "W3C",
+    "authors": [
+      "Youenn Fablet"
+    ],
+    "status": "ED"
   }
 }
 </pre>
@@ -1958,7 +1970,7 @@ VideoDecoderConfig{#video-decoder-config}
 <xmp class='idl'>
 dictionary VideoDecoderConfig {
   required DOMString codec;
-  BufferSource description;
+  [AllowShared] BufferSource description;
   [EnforceRange] unsigned long codedWidth;
   [EnforceRange] unsigned long codedHeight;
   [EnforceRange] unsigned long displayAspectWidth;
@@ -2073,7 +2085,10 @@ To check if an {{AudioEncoderConfig}} is a <dfn>valid AudioEncoderConfig</dfn>,
 run these steps:
 1. If {{AudioEncoderConfig/codec}} is not a <a>valid codec string</a>, return
     `false`.
-2. Return `true`.
+2. If the {{AudioEncoderConfig}} has a codec-specific extension and the corresponding 
+    registration in the [[WEBCODECS-CODEC-REGISTRY]] defines steps to check whether the
+    the extension is a valid extension, return the result of running those steps.
+3. Return `true`.
 
 <dl>
   <dt><dfn dict-member for=AudioEncoderConfig>codec</dfn></dt>
@@ -2102,7 +2117,7 @@ dictionary VideoEncoderConfig {
   [EnforceRange] unsigned long displayWidth;
   [EnforceRange] unsigned long displayHeight;
   [EnforceRange] unsigned long long bitrate;
-  [EnforceRange] double framerate;
+  double framerate;
   HardwareAcceleration hardwareAcceleration = "no-preference";
   AlphaOption alpha = "discard";
   DOMString scalabilityMode;
@@ -2176,7 +2191,7 @@ To check if a {{VideoEncoderConfig}} is a <dfn>valid VideoEncoderConfig</dfn>,
   <dt><dfn dict-member for=VideoEncoderConfig>bitrate</dfn></dt>
   <dd>
     The average bitrate of the encoded video given in units of bits per second.
-      
+
     NOTE: Authors are encouraged to additionally provide a
     {{VideoEncoderConfig/framerate}} to inform rate control.
   </dd>
@@ -2441,7 +2456,7 @@ These interfaces represent chunks of encoded media.
 EncodedAudioChunk Interface {#encodedaudiochunk-interface}
 ------------------------------------------------------------
 <xmp class='idl'>
-[Exposed=(Window,DedicatedWorker)]
+[Exposed=(Window,DedicatedWorker), Serializable]
 interface EncodedAudioChunk {
   constructor(EncodedAudioChunkInit init);
   readonly attribute EncodedAudioChunkType type;
@@ -2510,10 +2525,28 @@ enum EncodedAudioChunkType {
         greater than in |destination|, throw a {{TypeError}}.
     2. Copy the {{EncodedAudioChunk/[[internal data]]}} into |destination|.
 
+### Serialization ###{#encodedaudiochunk-serialization}
+: The {{EncodedAudioChunk}} [=serialization steps=] (with |value|, |serialized|,
+    and |forStorage|) are:
+:: 1. If |forStorage| is `true`, throw a {{DataCloneError}}.
+    2. For each {{EncodedAudioChunk}} internal slot in |value|, assign the value
+        of each internal slot to a field in |serialized| with the same name as
+        the internal slot.
+
+: The {{EncodedAudioChunk}} [=deserialization steps=] (with |serialized| and
+    |value|) are:
+:: 1. For all named fields in |serialized|, assign the value of each named field
+        to the {{EncodedAudioChunk}} internal slot in |value| with the same name
+        as the named field.
+
+NOTE: Since {{EncodedAudioChunk}}s are immutable, User Agents may choose to
+    implement serialization using a reference counting model similar to
+    [[#audiodata-transfer-serialization]].
+
 EncodedVideoChunk Interface{#encodedvideochunk-interface}
 -----------------------------------------------------------
 <xmp class='idl'>
-[Exposed=(Window,DedicatedWorker)]
+[Exposed=(Window,DedicatedWorker), Serializable]
 interface EncodedVideoChunk {
   constructor(EncodedVideoChunkInit init);
   readonly attribute EncodedVideoChunkType type;
@@ -2528,7 +2561,7 @@ dictionary EncodedVideoChunkInit {
   required EncodedVideoChunkType type;
   [EnforceRange] required long long timestamp;        // microseconds
   [EnforceRange] unsigned long long duration;         // microseconds
-  required BufferSource data;
+  required [AllowShared] BufferSource data;
 };
 
 enum EncodedVideoChunkType {
@@ -2583,6 +2616,24 @@ enum EncodedVideoChunkType {
         the {{EncodedVideoChunk/[[byte length]]}} of |destination|, throw a
         {{TypeError}}.
     2. Copy the {{EncodedVideoChunk/[[internal data]]}} into |destination|.
+
+### Serialization ###{#encodedvideochunk-serialization}
+: The {{EncodedVideoChunk}} [=serialization steps=] (with |value|, |serialized|,
+    and |forStorage|) are:
+:: 1. If |forStorage| is `true`, throw a {{DataCloneError}}.
+    2. For each {{EncodedVideoChunk}} internal slot in |value|, assign the value
+        of each internal slot to a field in |serialized| with the same name as
+        the internal slot.
+
+: The {{EncodedVideoChunk}} [=deserialization steps=] (with |serialized| and
+    |value|) are:
+:: 1. For all named fields in |serialized|, assign the value of each named field
+        to the {{EncodedVideoChunk}} internal slot in |value| with the same name
+        as the named field.
+
+NOTE: Since {{EncodedVideoChunk}}s are immutable, User Agents may choose to
+    implement serialization using a reference counting model similar to
+    [[#videoframe-transfer-serialization]].
 
 
 Raw Media Interfaces {#raw-media-interfaces}
@@ -2935,7 +2986,7 @@ Note: It's expected that {{AudioDataInit}}'s {{AudioDataInit/data}}'s memory
     |forStorage|) are:
 :: 1. If |value|'s {{platform object/[[Detached]]}} is `true`, throw a
         {{DataCloneError}} {{DOMException}}.
-    2. If |forStorage| is `true`, throw a {{TypeError}}.
+    2. If |forStorage| is `true`, throw a {{DataCloneError}}.
     3. Let |resource| be the [=media resource=] referenced by
             |value|'s {{AudioData/[[resource reference]]}}.
     4. Let |newReference| be a new reference to |resource|.
@@ -3182,6 +3233,8 @@ interface VideoFrame {
   readonly attribute long long timestamp;           // microseconds
   readonly attribute VideoColorSpace colorSpace;
 
+  VideoFrameMetadata metadata();
+
   unsigned long allocationSize(
       optional VideoFrameCopyToOptions options = {});
   Promise<sequence<PlaneLayout>> copyTo(
@@ -3204,6 +3257,8 @@ dictionary VideoFrameInit {
   // Default matches image unless visibleRect is provided.
   [EnforceRange] unsigned long displayWidth;
   [EnforceRange] unsigned long displayHeight;
+
+  VideoFrameMetadata metadata;
 };
 
 dictionary VideoFrameBufferInit {
@@ -3224,6 +3279,10 @@ dictionary VideoFrameBufferInit {
   [EnforceRange] unsigned long displayHeight;
 
   VideoColorSpaceInit colorSpace;
+};
+
+dictionary VideoFrameMetadata {
+  // Possible members are recorded in the VideoFrame Metadata Registry.
 };
 </xmp>
 
@@ -3279,6 +3338,11 @@ dictionary VideoFrameBufferInit {
 : <dfn attribute for=VideoFrame>[[color space]]</dfn>
 :: The {{VideoColorSpace}} associated with this frame.
 
+: <dfn attribute for=VideoFrame>\[[metadata]]</dfn>
+:: The {{VideoFrameMetadata}} associated with this frame.
+    Possible members are recorded in [[webcodecs-video-frame-metadata-registry]].
+    By design, all {{VideoFrameMetadata}} properties are serializable.
+
 ### Constructors ###{#videoframe-constructors}
 
 <dfn constructor for=VideoFrame title="VideoFrame(image, init)">
@@ -3293,6 +3357,14 @@ dictionary VideoFrameBufferInit {
     {{DOMException}}.
 3. Let |frame| be a new {{VideoFrame}}.
 5. Switch on |image|:
+
+    NOTE: Authors are encouraged to provide a meaningful timestamp unless it is
+        implicitly provided by the {{CanvasImageSource}} at construction.
+        Interfaces that consume {{VideoFrame}}s can rely on this value for
+        timing decisions. For example, {{VideoEncoder}} can use
+        {{VideoFrame/timestamp}} values to guide rate control (see
+        {{VideoEncoderConfig/framerate}}).
+
     - {{HTMLImageElement}}
     - {{SVGImageElement}}
         1. If {{VideoFrameInit/timestamp}} does not [=map/exist=] in
@@ -3317,7 +3389,9 @@ dictionary VideoFrameBufferInit {
             {{InvalidStateError}} {{DOMException}}.
         2. Let |currentPlaybackFrame| be the {{VideoFrame}} at the [=current
             playback position=].
-        3. Run the [=VideoFrame/Initialize Frame From Other Frame=] algorithm
+        3. If {{VideoFrameInit/metadata}} does not [=map/exist=] in |init|,
+            assign |currentPlaybackFrame|.{{VideoFrame/[[metadata]]}} to it.
+        4. Run the [=VideoFrame/Initialize Frame From Other Frame=] algorithm
             with |init|, |frame|, and |currentPlaybackFrame|.
 
     - {{HTMLCanvasElement}}
@@ -3426,6 +3500,8 @@ dictionary VideoFrameBufferInit {
     9. Assign the result of running the [=VideoFrame/Pick Color Space=]
         algorithm, with |colorSpace| and {{VideoFrame/[[format]]}}, to
         {{VideoFrame/[[color space]]}}.
+    10. Assign the result of calling [=Copy VideoFrame metadata=]
+        with |init|'s {{VideoFrameInit/metadata}} to |frame|.{{VideoFrame/[[metadata]]}}.
 17. Return |frame|.
 
 ### Attributes ###{#videoframe-attributes}
@@ -3502,13 +3578,6 @@ dictionary VideoFrameBufferInit {
 
     The {{VideoFrame/timestamp}} getter steps are to return
     {{VideoFrame/[[timestamp]]}}.
-
-    NOTE: Authors are encouraged to provide a meaningful timestamp unless it is
-        implicitly provided by the {{CanvasImageSource}} at construction.
-        Interfaces that consume {{VideoFrame}}s can rely on this value for
-        timing decisions. For example, {{VideoEncoder}} can use
-        {{VideoFrame/timestamp}} values to guide rate control (see
-        {{VideoEncoderConfig/framerate}}).
 
 : <dfn attribute for=VideoFrame>duration</dfn>
 :: The presentation duration, given in microseconds. The duration is copied
@@ -3630,6 +3699,15 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
     Close is final.
 
     When invoked, run the [=Close VideoFrame=] algorithm with [=this=].
+
+: <dfn method for=VideoFrame>metadata()</dfn>
+:: Gets the {{VideoFrameMetadata}} associated with this frame.
+
+    When invoked, run these steps:
+    1. If {{platform object/[[Detached]]}} is <code>true</code>,
+        throw an {{InvalidStateError}} {{DOMException}}.
+    2. Return the result of calling [=Copy VideoFrame metadata=]
+        with {{VideoFrame/[[metadata]]}}.
 
 ### Algorithms ###{#videoframe-algorithms}
 : <dfn>Create a VideoFrame</dfn> (with |output|, |timestamp|, |duration|, |displayAspectWidth|, |displayAspectHeight|, and |colorSpace|)
@@ -3754,6 +3832,8 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
         |otherFrame|'s {{VideoFrame/timestamp}} to
         |frame|'s {{VideoFrame/[[timestamp]]}}.
     11. Assign |format| to |frame|.{{VideoFrame/[[format]]}}.
+    12. Assign the result of calling [=Copy VideoFrame metadata=]
+        with |init|'s {{VideoFrameInit/metadata}} to |frame|.{{VideoFrame/[[metadata]]}}.
 
 : <dfn for=VideoFrame>Initialize Frame With Resource and Size</dfn> (with
     |init|,  |frame|, |resource|, |width| and |height|)
@@ -3830,6 +3910,7 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
         {{VideoFrame/[[visible top]]}}, {{VideoFrame/[[visible width]]}},
         {{VideoFrame/[[visible height]]}}, {{VideoFrame/[[display width]]}},
         and {{VideoFrame/[[display height]]}}.
+    5. Assign a new {{VideoFrameMetadata}} to |frame|.{{VideoFrame/[[metadata]]}}.
 
 : <dfn for=VideoFrame>Parse VideoFrameCopyToOptions</dfn> (with |options|)
 ::  1. Let |defaultRect| be the result of performing the getter steps for
@@ -3869,7 +3950,7 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
             subsample for |plane|.
         4. If |rect|.{{DOMRectReadOnly/x}} is not a multiple of |sampleWidth|,
             return `false`.
-        5. If |rect|.{{DOMRectReadOnly/y}} is not a multiple of |sampleHeight|, 
+        5. If |rect|.{{DOMRectReadOnly/y}} is not a multiple of |sampleHeight|,
             return `false`.
         8. Increment |planeIndex| by `1`.
     5. Return `true`.
@@ -4003,6 +4084,13 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
             [=combined buffer layout/allocationSize=].
     9. Return |combinedLayout|.
 
+: <dfn for=VideoFrame>Copy VideoFrame metadata</dfn> (with |metadata|)
+:: 1. Let |metadataCopySerialized| be [$StructuredSerialize$](|metadata|).
+    2. Let |metadataCopy| be [$StructuredDeserialize$](|metadataCopySerialized|, [=the current Realm=]).
+    3. return |metadataCopy|.
+
+The goal of this algorithm is to ensure that metadata owned by a {{VideoFrame}} is immutable.
+
 ### Transfer and Serialization ###{#videoframe-transfer-serialization}
 
 : The {{VideoFrame}} [=transfer steps=] (with |value| and |dataHolder|) are:
@@ -4023,7 +4111,7 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
     |forStorage|) are:
 :: 1. If |value|'s {{platform object/[[Detached]]}} is `true`, throw a
         {{DataCloneError}} {{DOMException}}.
-    2. If |forStorage| is `true`, throw a {{TypeError}}.
+    2. If |forStorage| is `true`, throw a {{DataCloneError}}.
     3. Let |resource| be the [=media resource=] referenced by
             |value|'s {{VideoFrame/[[resource reference]]}}.
     4. Let |newReference| be a new reference to |resource|.
@@ -4403,10 +4491,10 @@ interface VideoColorSpace {
 };
 
 dictionary VideoColorSpaceInit {
-  VideoColorPrimaries primaries;
-  VideoTransferCharacteristics transfer;
-  VideoMatrixCoefficients matrix;
-  boolean fullRange;
+  VideoColorPrimaries? primaries = null;
+  VideoTransferCharacteristics? transfer = null;
+  VideoMatrixCoefficients? matrix = null;
+  boolean? fullRange = null;
 };
 </xmp>
 
@@ -4425,18 +4513,10 @@ dictionary VideoColorSpaceInit {
   VideoColorSpace(init)
 </dfn>
 1. Let |c| be a new {{VideoColorSpace}} object, initialized as follows:
-    1. If `primaries` is present in `init`, assign `init.primaries` to
-        {{VideoColorSpace/[[primaries]]}}. Otherwise, assign `null` to
-        {{VideoColorSpace/[[primaries]]}}.
-    2. If `transfer` is present in `init`, assign `init.transfer` to
-        {{VideoColorSpace/[[transfer]]}}. Otherwise, assign `null` to
-        {{VideoColorSpace/[[transfer]]}}.
-    3. If `matrix` is present in `init`, assign `init.matrix` to
-        {{VideoColorSpace/[[matrix]]}}. Otherwise, assign `null` to
-        {{VideoColorSpace/[[matrix]]}}.
-    4. If `fullRange` is present in `init`, assign `init.fullRange` to
-        {{VideoColorSpace/[[full range]]}}. Otherwise, assign `null` to
-        {{VideoColorSpace/[[full range]]}}.
+    1. Assign `init.primaries` to {{VideoColorSpace/[[primaries]]}}.
+    2. Assign `init.transfer` to {{VideoColorSpace/[[transfer]]}}.
+    3. Assign `init.matrix` to {{VideoColorSpace/[[matrix]]}}.
+    4. Assign `init.fullRange` to {{VideoColorSpace/[[full range]]}}.
 6. Return |c|.
 
 ### Attributes ### {#videocolorspace-attributes}
@@ -4459,9 +4539,11 @@ Color primaries describe the color gamut of video samples.
 
 <xmp class='idl'>
 enum VideoColorPrimaries {
-  "bt709",      // BT.709, sRGB
-  "bt470bg",    // BT.601 PAL
-  "smpte170m",  // BT.601 NTSC
+  "bt709",
+  "bt470bg",
+  "smpte170m",
+  "bt2020",
+  "smpte432",
 };
 </xmp>
 
@@ -4481,6 +4563,16 @@ enum VideoColorPrimaries {
     Color primaries used by BT.601 NTSC, as described by [[H.273]]
     section 8.1 table 2 value 6.
   </dd>
+  <dt><dfn enum-value for=VideoColorPrimaries>bt2020</dfn></dt>
+  <dd>
+    Color primaries used by BT.2020 and BT.2100, as described by [[H.273]]
+    section 8.1 table 2 value 9.
+  </dd>
+  <dt><dfn enum-value for=VideoColorPrimaries>smpte432</dfn></dt>
+  <dd>
+    Color primaries used by P3 D65, as described by [[H.273]]
+    section 8.1 table 2 value 12.
+  </dd>
 </dl>
 
 Video Transfer Characteristics {#videotransfercharacteristics}
@@ -4490,9 +4582,12 @@ of video samples.
 
 <xmp class='idl'>
 enum VideoTransferCharacteristics {
-  "bt709",         // BT.709
-  "smpte170m",     // BT.601 (functionally the same as bt709)
-  "iec61966-2-1",  // sRGB
+  "bt709",
+  "smpte170m",
+  "iec61966-2-1",
+  "linear",
+  "pq",
+  "hlg",
 };
 </xmp>
 
@@ -4505,12 +4600,27 @@ enum VideoTransferCharacteristics {
   <dt><dfn enum-value for=VideoTransferCharacteristics>smpte170m</dfn></dt>
   <dd>
     Transfer characteristics used by BT.601, as described by [[H.273]]
-    section 8.2 table 3 value 6.
+    section 8.2 table 3 value 6. (Functionally the same as "bt709".)
   </dd>
   <dt><dfn enum-value for=VideoTransferCharacteristics>iec61966-2-1</dfn></dt>
   <dd>
     Transfer characteristics used by sRGB, as described by [[H.273]]
     section 8.2 table 3 value 13.
+  </dd>
+  <dt><dfn enum-value for=VideoTransferCharacteristics>linear</dfn></dt>
+  <dd>
+    Transfer characteristics used by linear RGB, as described by [[H.273]]
+    section 8.2 table 3 value 8.
+  </dd>
+  <dt><dfn enum-value for=VideoTransferCharacteristics>pq</dfn></dt>
+  <dd>
+    Transfer characteristics used by BT.2100 PQ, as described by [[H.273]]
+    section 8.2 table 3 value 16.
+  </dd>
+  <dt><dfn enum-value for=VideoTransferCharacteristics>hlg</dfn></dt>
+  <dd>
+    Transfer characteristics used by BT.2100 HLG, as described by [[H.273]]
+    section 8.2 table 3 value 18.
   </dd>
 </dl>
 
@@ -4521,10 +4631,11 @@ and color coordinates.
 
 <xmp class='idl'>
 enum VideoMatrixCoefficients {
-  "rgb",        // sRGB
-  "bt709",      // BT.709
-  "bt470bg",    // BT.601 PAL
-  "smpte170m",  // BT.601 NTSC (functionally the same as bt470bg)
+  "rgb",
+  "bt709",
+  "bt470bg",
+  "smpte170m",
+  "bt2020-ncl",
 };
 </xmp>
 
@@ -4547,7 +4658,12 @@ enum VideoMatrixCoefficients {
   <dt><dfn enum-value for=VideoMatrixCoefficients>smpte170m</dfn></dt>
   <dd>
     Matrix coefficients used by BT.601 NTSC, as described by [[H.273]]
-    section 8.3 table 4 value 6.
+    section 8.3 table 4 value 6. (Functionally the same as "bt470bg".)
+  </dd>
+  <dt><dfn enum-value for=VideoMatrixCoefficients>bt2020-ncl</dfn></dt>
+  <dd>
+    Matrix coefficients used by BT.2020 NCL, as described by [[H.273]]
+    section 8.3 table 4 value 9.
   </dd>
 </dl>
 

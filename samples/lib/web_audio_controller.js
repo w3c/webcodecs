@@ -1,8 +1,3 @@
-import { MP4PullDemuxer } from "./mp4_pull_demuxer.js";
-
-const DATA_BUFFER_DECODE_TARGET_DURATION = 0.3;
-const DATA_BUFFER_DURATION = 0.6;
-const DECODER_QUEUE_SIZE_MAX = 5;
 const ENABLE_DEBUG_LOGGING = false;
 
 function debugLog(msg) {
@@ -37,7 +32,7 @@ export class WebAudioController {
     this.audioContext.suspend();
 
     // Make script modules available for execution by AudioWorklet.
-    var workletSource = await URLFromFiles(["../third_party/ringbufjs/ringbuf.js", "audiosink.js"]);
+    var workletSource = await URLFromFiles(["../third_party/ringbufjs/ringbuf.js", "../lib/audiosink.js"]);
     await this.audioContext.audioWorklet.addModule(workletSource);
 
     // Get an instance of the AudioSink worklet, passing it the memory for a

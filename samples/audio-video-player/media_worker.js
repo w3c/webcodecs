@@ -9,15 +9,15 @@ console.info(`Worker started`);
 importScripts('../third_party/mp4boxjs/mp4box.all.min.js');
 let moduleLoadedResolver = null;
 let modulesReady = new Promise(resolver => (moduleLoadedResolver = resolver));
-let playing = false;
+let playing = false
 let audioRenderer = null;
 let videoRenderer = null;
 let lastMediaTimeSecs = 0;
 let lastMediaTimeCapturePoint = 0;
 
 (async () => {
-    let audioImport = import('./audio_renderer.js');
-    let videoImport = import('./video_renderer.js');
+    let audioImport = import('../lib/audio_renderer.js');
+    let videoImport = import('../lib/video_renderer.js');
     Promise.all([audioImport, videoImport]).then((modules) => {
       audioRenderer = new modules[0].AudioRenderer();
       videoRenderer = new modules[1].VideoRenderer();
@@ -47,8 +47,13 @@ self.addEventListener('message', async function(e) {
 
   switch (e.data.command) {
     case 'initialize':
-      let audioReady = audioRenderer.initialize(e.data.audioFile);
-      let videoReady = videoRenderer.initialize(e.data.videoFile, e.data.canvas);
+      let demuxerModule = await import('./mp4_pull_demuxer.js');
+
+      let audioDemuxer = new demuxerModule.MP4PullDemuxer(e.data.audioFile);
+      let audioReady = audioRenderer.initialize(audioDemuxer);
+
+      let videoDemuxer = new demuxerModule.MP4PullDemuxer(e.data.videoFile);
+      let videoReady = videoRenderer.initialize(videoDemuxer, e.data.canvas);
       await Promise.all([audioReady, videoReady]);
       postMessage({command: 'initialize-done',
                    sampleRate: audioRenderer.sampleRate,

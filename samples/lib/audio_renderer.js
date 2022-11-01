@@ -1,4 +1,4 @@
-import { MP4PullDemuxer } from "./mp4_pull_demuxer.js";
+import { AUDIO_STREAM_TYPE } from "./pull_demuxer_base.js";
 import { RingBuffer } from "../third_party/ringbufjs/ringbuf.js";
 
 const DATA_BUFFER_DECODE_TARGET_DURATION = 0.3;
@@ -14,27 +14,20 @@ function debugLog(msg) {
 }
 
 export class AudioRenderer {
-  async initialize(fileUri) {
+  async initialize(demuxer) {
     this.fillInProgress = false;
     this.playing = false;
 
-    this.demuxer = new MP4PullDemuxer(fileUri);
-
-    let trackInfo = await this.demuxer.getAudioTrackInfo();
-    this.demuxer.selectAudio();
+    this.demuxer = demuxer;
+    await this.demuxer.initialize(AUDIO_STREAM_TYPE);
 
     this.decoder = new AudioDecoder({
       output: this.bufferAudioData.bind(this),
       error: e => console.error(e)
     });
-    const config = {
-      codec: trackInfo.codec,
-      sampleRate: trackInfo.sampleRate,
-      numberOfChannels: trackInfo.numberOfChannels,
-      description: trackInfo.extradata
-    };
-    this.sampleRate = trackInfo.sampleRate;
-    this.channelCount = trackInfo.numberOfChannels;
+    const config = this.demuxer.getDecoderConfig();
+    this.sampleRate = config.sampleRate;
+    this.channelCount = config.numberOfChannels;
 
     debugLog(config);
 
@@ -45,7 +38,7 @@ export class AudioRenderer {
     // rendering thread. The AudioRenderer has buffer space for approximately
     // 500ms of decoded audio ahead.
     let sampleCountIn500ms =
-      DATA_BUFFER_DURATION * this.sampleRate * trackInfo.numberOfChannels;
+      DATA_BUFFER_DURATION * this.sampleRate * this.channelCount;
     let sab = RingBuffer.getStorageForCapacity(
       sampleCountIn500ms,
       Float32Array
@@ -71,18 +64,6 @@ export class AudioRenderer {
   pause() {
     debugLog("playback stop");
     this.playing = false;
-  }
-
-  makeChunk(sample) {
-    const type = sample.is_sync ? "key" : "delta";
-    const pts_us = (sample.cts * 1000000) / sample.timescale;
-    const duration_us = (sample.duration * 1000000) / sample.timescale;
-    return new EncodedAudioChunk({
-      type: type,
-      timestamp: pts_us,
-      duration: duration_us,
-      data: sample.data
-    });
   }
 
   async fillDataBuffer() {
@@ -138,8 +119,8 @@ export class AudioRenderer {
     while (usedBufferSecs < DATA_BUFFER_DECODE_TARGET_DURATION &&
       this.decoder.decodeQueueSize < DECODER_QUEUE_SIZE_MAX) {
       debugLog(`\tMore samples. usedBufferSecs:${usedBufferSecs} < target:${DATA_BUFFER_DECODE_TARGET_DURATION}.`);
-      let sample = await this.demuxer.readSample();
-      this.decoder.decode(this.makeChunk(sample));
+      let chunk = await this.demuxer.getNextChunk();
+      this.decoder.decode(chunk);
 
       // NOTE: awaiting the demuxer.readSample() above will also give the
       // decoder output callbacks a chance to run, so we may see usedBufferSecs
