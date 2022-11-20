@@ -1,7 +1,7 @@
 'use strict';
 
 let preferredResolution;
-let mediaStream, bitrate = 3000000;
+let mediaStream, bitrate = 100000;
 let stopped = false;
 let preferredCodec ="VP8";
 let mode = "L1T3";
