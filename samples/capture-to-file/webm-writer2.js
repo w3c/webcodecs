@@ -1,3 +1,7 @@
+// Note that these two fixes have been applied:
+//   https://github.com/w3c/webcodecs/issues/332#issuecomment-1077442192
+// Ctrl+F for "firstCueWritten" and "MAX_CLUSTER_DURATION_MSEC" to see the changes.
+
 /**
  * A tool for presenting an ArrayBuffer as a stream for writing some simple data
  * types.
@@ -630,7 +634,7 @@ function writeEBML(buffer, bufferFileOffset, ebml) {
  */
 let WebMWriter = function(ArrayBufferDataStream, BlobBuffer) {
   return function(options) {
-    let MAX_CLUSTER_DURATION_MSEC = 5000000, DEFAULT_TRACK_NUMBER = 1,
+    let MAX_CLUSTER_DURATION_MSEC = 5000, DEFAULT_TRACK_NUMBER = 1,
         writtenHeader = false, videoWidth = 0, videoHeight = 0,
         firstTimestampEver = true, earliestTimestamp = 0,
 
@@ -972,7 +976,11 @@ let WebMWriter = function(ArrayBufferDataStream, BlobBuffer) {
      * CuePoints (use addCuePoint()). The seek entry for the Cues in the
      * SeekHead is updated.
      */
+    let firstCueWritten = false;
     function writeCues() {
+      if(firstCueWritten) return;
+      firstCueWritten = true;
+      
       let ebml = {'id': 0x1C53BB6B, 'data': cues},
 
           cuesBuffer = new ArrayBufferDataStream(
