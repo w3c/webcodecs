@@ -16,7 +16,8 @@ Abstract: This registration is entered into the [[webcodecs-codec-registry]].
     (2) the codec-specific {{EncodedAudioChunk}}
     [=EncodedAudioChunk/[[internal data]]=] bytes, (3) the
     {{AudioDecoderConfig.description}} bytes, and (4) the values of
-    {{EncodedAudioChunk}} [=EncodedAudioChunk/[[type]]=].
+    {{EncodedAudioChunk}} [=EncodedAudioChunk/[[type]]=], and (5) the
+    codec-specific extensions to {{AudioEncoderConfig}}.
 
     The registration is not intended to include any information on whether a
     codec format is encumbered by intellectual property claims. Implementers and
@@ -46,6 +47,7 @@ spec: WEBCODECS; urlPrefix: https://w3c.github.io/webcodecs/#
         text: EncodedAudioChunk; url: encodedaudiochunk
     type: dictionary
         text: AudioDecoderConfig; url: dictdef-audiodecoderconfig
+        text: AudioEncoderConfig; url: dictdef-audioencoderconfig
 </pre>
 
 <pre class='biblio'>
@@ -54,6 +56,12 @@ spec: WEBCODECS; urlPrefix: https://w3c.github.io/webcodecs/#
     "href": "https://xiph.org/flac/format.html",
     "title": "FLAC - format",
     "publisher": "Xiph.Org Foundation"
+  },
+  
+  "FLAC-DRAFT": {
+    "href": "https://datatracker.ietf.org/doc/draft-ietf-cellar-flac",
+    "title": "Free Lossless Audio Codec",
+    "publisher": "IETF"
   }
 }
 </pre>
@@ -93,6 +101,59 @@ FLAC is always "[=EncodedAudioChunkType/key=]".
 
 NOTE: Once the initialization has succeeded, any FLAC packet can be decoded at
     any time without error, but this might not result in the expected audio output.
+
+AudioEncoderConfig extensions {#audioencoderconfig-extensions}
+=============================================================
+
+<pre class='idl'>
+<xmp>
+partial dictionary AudioEncoderConfig {
+  FlacEncoderConfig flac;
+};
+</xmp>
+</pre>
+
+<dl>
+  <dt><dfn dict-member for=AudioEncoderConfig>flac</dfn></dt>
+  <dd>
+    Contains codec specific configuration options for the FLAC codec.
+  </dd>
+</dl>
+
+
+FlacEncoderConfig {#flac-encoder-config}
+--------------------------------------
+
+<pre class='idl'>
+<xmp>
+dictionary FlacEncoderConfig {
+  [EnforceRange] unsigned long blockSize = 0;
+  [EnforceRange] unsigned long compressLevel = 5;
+};
+</xmp>
+</pre>
+
+To check if an {{FlacEncoderConfig}} is valid, run these steps:
+1. If {{FlacEncoderConfig/blockSize}} is not a valid block size,
+	which is described section 5.1 of [[FLAC-DRAFT]], return `false`.
+1. If {{FlacEncoderConfig/compressLevel}} is specified and not within the range of
+    `0`(fastest, least compression) and `8`(slowest, most compression) inclusively, return `false`.
+2. Return `true`.
+
+<dl>
+  <dt><dfn dict-member for=FlacEncoderConfig>blockSize</dfn></dt>
+  <dd>
+    Configures the number of samples to use per frame, of output {{EncodedAudioChunk}}s.
+	
+	NOTE: Use 0 to let the encoder estimate a blocksize by default.
+  </dd>
+  
+  <dt><dfn dict-member for=FlacEncoderConfig>compressLevel</dfn></dt>
+  <dd>
+    Configures the compression level to use while encoding.
+  </dd>
+  
+</dl>
 
 Privacy Considerations {#privacy-considerations}
 ==========================================================================
