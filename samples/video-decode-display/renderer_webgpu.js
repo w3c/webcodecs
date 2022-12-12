@@ -52,7 +52,7 @@ class WebGPURenderer {
     
     @fragment
     fn frag_main(@location(0) uv : vec2<f32>) -> @location(0) vec4<f32> {
-      return textureSampleLevel(myTexture, mySampler, uv);
+      return textureSampleBaseClampToEdge(myTexture, mySampler, uv);
     }
   `;
 
