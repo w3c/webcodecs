@@ -13,10 +13,10 @@ Former Editor: Chris Cunningham, w3cid 114832, Google Inc. https://www.google.co
 
 Abstract: This registration is entered into the [[webcodecs-codec-registry]].
     It describes, for AAC, the (1) fully qualified codec strings, (2) the
-    codec-specific {{EncodedAudioChunk}} [=EncodedAudioChunk/[[internal data]]=]
-    bytes, (3) the {{AudioDecoderConfig.description}} bytes, (4) the values of
-    {{EncodedAudioChunk}} [=EncodedAudioChunk/[[type]]=], and (5) the
-    codec-specific extensions to {{AudioEncoderConfig}}
+    codec-specific {{EncodedAudioChunk}} {{EncodedAudioChunk/[[internal data]]}}
+    bytes, (3) the {{AudioDecoderConfig/description|AudioDecoderConfig.description}}
+    bytes, (4) the values of {{EncodedAudioChunk}} {{EncodedAudioChunk/[[type]]}},
+    and (5) the codec-specific extensions to {{AudioEncoderConfig}}
 
     The registration is not intended to include any information on whether a
     codec format is encumbered by intellectual property claims. Implementers and
@@ -30,23 +30,6 @@ Markup Shorthands:css no, markdown yes, dfn yes
 !Participate: <a href="https://github.com/w3c/webcodecs">Git Repository.</a>
 !Participate: <a href="https://github.com/w3c/webcodecs/issues/new">File an issue.</a>
 !Version History: <a href="https://github.com/w3c/webcodecs/commits">https://github.com/w3c/webcodecs/commits</a>
-</pre>
-
-<pre class='anchors'>
-spec: WEBCODECS; urlPrefix: https://w3c.github.io/webcodecs/#
-    type: attribute
-        text: AudioDecoderConfig.description; url: dom-audiodecoderconfig-description
-        text: AudioDecoderConfig.sampleRate; url: dom-audiodecoderconfig-samplerate
-        text: AudioDecoderConfig.numberOfChannels; url: dom-audiodecoderconfig-numberofchannels
-    type: dfn
-        for: EncodedAudioChunkType; text: key; url: dom-encodedaudiochunktype-key
-        for: EncodedAudioChunk; text: [[internal data]]; url: dom-encodedaudiochunk-internal-data-slot
-        for: EncodedAudioChunk; text: [[type]]; url: dom-encodedaudiochunk-type-slot
-    type: interface
-        text: EncodedAudioChunk; url: encodedaudiochunk
-    type: dictionary
-        text: AudioDecoderConfig; url: dictdef-audiodecoderconfig
-        text: AudioEncoderConfig; url: dictdef-audioencoderconfig
 </pre>
 
 <pre class='biblio'>
@@ -76,32 +59,32 @@ EncodedAudioChunk data {#encodedaudiochunk-data}
 ================================================
 
 If the bitstream is in {{AacBitstreamFormat/adts}} format, the
-[=EncodedAudioChunk/[[internal data]]=] of {{EncodedAudioChunk}}s are expected
+{{EncodedAudioChunk/[[internal data]]}} of {{EncodedAudioChunk}}s are expected
 to be an ADTS frame, as described in section 1.A.3.2 of [[iso14496-3]].
 
 If the bitstream is in {{AacBitstreamFormat/aac}} format, the
-[=EncodedAudioChunk/[[internal data]]=] of {{EncodedAudioChunk}}s are expected
+{{EncodedAudioChunk/[[internal data]]}} of {{EncodedAudioChunk}}s are expected
 to be a raw AAC frame (syntax element `raw_data_block()`), as described in
 section 4.4.2.1 of [[iso14496-3]].
 
 AudioDecoderConfig description {#audiodecoderconfig-description}
 ================================================================
 
-If {{AudioDecoderConfig.description}} is present, it is assumed to a
+If {{AudioDecoderConfig/description}} is present, it is assumed to a
 `AudioSpecificConfig` as defined in [[iso14496-3]] section 1.6.2.1, Table 1.15,
 and the bitstream is assumed to be in {{AacBitstreamFormat/aac}}.
 
-If the {{AudioDecoderConfig.description}} is not present, the bitstream is
+If the {{AudioDecoderConfig/description}} is not present, the bitstream is
 assumed to be in {{AacBitstreamFormat/adts}} format.
 
-The {{AudioDecoderConfig.sampleRate}} and {{AudioDecoderConfig.numberOfChannels}}
+The {{AudioDecoderConfig/sampleRate}} and {{AudioDecoderConfig/numberOfChannels}}
 members are ignored.
 
 EncodedAudioChunk type {#encodedaudiochunk-type}
 ================================================
 
-The [=EncodedAudioChunk/[[type]]=] for an {{EncodedAudioChunk}} containing
-AAC is always "[=EncodedAudioChunkType/key=]".
+The {{EncodedAudioChunk/[[type]]}} for an {{EncodedAudioChunk}} containing
+AAC is always "{{EncodedAudioChunkType/key}}".
 
 NOTE: Once the initialization has succeeded, any AAC packet can be decoded at
     any time without error, but this might not result in the expected audio
@@ -161,12 +144,12 @@ NOTE: Once the initialization has succeeded, any AAC packet can be decoded at
       <dt><dfn enum-value for=AacBitstreamFormat>aac</dfn></dt>
       <dd>
         The metadata of the encoded audio stream are provided at configuration via
-        {{AudioDecoderConfig.description}}.
+        {{AudioDecoderConfig/description|AudioDecoderConfig.description}}.
       </dd>
       <dt><dfn enum-value for=AacBitstreamFormat>adts</dfn></dt>
       <dd>
         The metadata of the encoded audio stream are provided in each ADTS frame,
-        and therefore no {{AudioDecoderConfig.description}} is necessary.
+        and therefore no {{AudioDecoderConfig/description|AudioDecoderConfig.description}} is necessary.
     </dl>
 
 Privacy Considerations {#privacy-considerations}

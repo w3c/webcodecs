@@ -13,10 +13,10 @@ Former Editor: Chris Cunningham, w3cid 114832, Google Inc. https://www.google.co
 
 Abstract: This registration is entered into the [[webcodecs-codec-registry]].
     It describes, for Opus, the (1) fully qualified codec strings, (2) the
-    codec-specific {{EncodedAudioChunk}} [=EncodedAudioChunk/[[internal data]]=]
-    bytes, (3) the {{AudioDecoderConfig.description}} bytes, (4) the values of
-    {{EncodedAudioChunk}} [=EncodedAudioChunk/[[type]]=], and (5) the
-    codec-specific extensions to {{AudioEncoderConfig}}
+    codec-specific {{EncodedAudioChunk}} {{EncodedAudioChunk/[[internal data]]}}
+    bytes, (3) the {{AudioDecoderConfig/description|AudioDecoderConfig.description}}
+    bytes, (4) the values of {{EncodedAudioChunk}} {{EncodedAudioChunk/[[type]]}},
+    and (5) the codec-specific extensions to {{AudioEncoderConfig}}
 
     The registration is not intended to include any information on whether a
     codec format is encumbered by intellectual property claims. Implementers and
@@ -32,22 +32,6 @@ Markup Shorthands:css no, markdown yes, dfn yes
 !Version History: <a href="https://github.com/w3c/webcodecs/commits">https://github.com/w3c/webcodecs/commits</a>
 </pre>
 
-<pre class='anchors'>
-spec: WEBCODECS; urlPrefix: https://w3c.github.io/webcodecs/#
-    type: attribute
-        text: AudioDecoderConfig.description; url: dom-audiodecoderconfig-description
-    type: dfn
-        for: EncodedAudioChunkType; text: key; url: dom-encodedaudiochunktype-key
-        for: EncodedAudioChunk; text: [[internal data]]; url: dom-encodedaudiochunk-internal-data-slot
-        for: EncodedAudioChunk; text: [[type]]; url: dom-encodedaudiochunk-type-slot
-    type: method
-        for: AudioDecoder; text: AudioDecoder.decode; url: dom-audiodecoder-decode
-    type: interface
-        text: EncodedAudioChunk; url: encodedaudiochunk
-    type: dictionary
-        text: AudioDecoderConfig; url: dictdef-audiodecoderconfig
-        text: AudioEncoderConfig; url: dictdef-audioencoderconfig
-</pre>
 
 <pre class='biblio'>
 {
@@ -87,20 +71,20 @@ If the bitstream is in {{OpusBitstreamFormat/ogg}} format,
 AudioDecoderConfig description {#audiodecoderconfig-description}
 ================================================================
 
-{{AudioDecoderConfig.description}} can optionally set to an Identification
+{{AudioDecoderConfig/description}} can optionally set to an Identification
 Header, described in section 5.1 of [[OPUS-IN-OGG]].
 
-If an {{AudioDecoderConfig.description}} has been set, the bistream is assumed
+If a {{AudioDecoderConfig/description}} has been set, the bistream is assumed
 to be in {{OpusBitstreamFormat/ogg}} format.
 
-If an {{AudioDecoderConfig.description}} has not been set, the bitstream is
+If a {{AudioDecoderConfig/description}} has not been set, the bitstream is
 assumed to be in {{OpusBitstreamFormat/opus}} format.
 
 EncodedAudioChunk type {#encodedaudiochunk-type}
 ================================================
 
-The [=EncodedAudioChunk/[[type]]=] for an {{EncodedAudioChunk}} containing
-Opus is always "[=EncodedAudioChunkType/key=]".
+The {{EncodedAudioChunk/[[type]]}} for an {{EncodedAudioChunk}} containing
+Opus is always "{{EncodedAudioChunkType/key}}".
 
 NOTE: Once the initialization has succeeded, any packet can be decoded at any
 time without error, but this might not result in the expected audio output.
@@ -209,7 +193,7 @@ encoded audio stream.
   <dt><dfn enum-value for=OpusBitstreamFormat>ogg</dfn></dt>
   <dd>
     The metadata of the encoded audio stream are provided at configuration via
-    {{AudioDecoderConfig.description}}.
+    {{AudioDecoderConfig/description|AudioDecoderConfig.description}}.
   </dd>
 </dl>
 

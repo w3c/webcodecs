@@ -14,9 +14,9 @@ Former Editor: Chris Cunningham, w3cid 114832, Google Inc. https://www.google.co
 Abstract: This registration is entered into the [[webcodecs-codec-registry]].
     It describes, for Linear PCM, the (1) fully qualified codec strings,
     (2) the codec-specific {{EncodedAudioChunk}}
-    [=EncodedAudioChunk/[[internal data]]=] bytes, (3) the
-    {{AudioDecoderConfig.description}}, and (4) the values of
-    {{EncodedAudioChunk}} [=EncodedAudioChunk/[[type]]=].
+    {{EncodedAudioChunk/[[internal data]]}} bytes, (3) the
+    {{AudioDecoderConfig/description|AudioDecoderConfig.description}}, and
+    (4) the values of {{EncodedAudioChunk}} {{EncodedAudioChunk/[[type]]}}.
 
     Linear PCM is the [[webcodecs#audio-sample-formats|raw audio format]] used
     in WebCodecs and does not require decoding. The motivation for registering
@@ -38,28 +38,8 @@ Markup Shorthands:css no, markdown yes, dfn yes
 
 <pre class='anchors'>
 spec: WEBCODECS; urlPrefix: https://w3c.github.io/webcodecs/#
-    type: attribute
-        text: AudioDecoderConfig.description; url: dom-audiodecoderconfig-description
     type: dfn
-        for: EncodedAudioChunkType; text: key; url: dom-encodedaudiochunktype-key
-        for: EncodedAudioChunk; text: [[internal data]]; url: dom-encodedaudiochunk-internal-data-slot
-        for: EncodedAudioChunk; text: [[type]]; url: dom-encodedaudiochunk-type-slot
-        text: sample; url: sample
         text: interleaved; url: interleaved
-        text: section on sample magnitude; url: audio-samples-magnitude
-    type: interface
-        text: EncodedAudioChunk; url: encodedaudiochunk
-        text: AudioData; url: audiodata-interface
-    type: dictionary
-        text: AudioDecoderConfig; url: dictdef-audiodecoderconfig
-        text: AudioEncoderConfig; url: dictdef-audioencoderconfig
-    type: enum
-        text: AudioSampleFormat; url: enumdef-audiosampleformat
-        text: u8; url: dom-audiosampleformat-u8
-        text: s16; url: dom-audiosampleformat-s16
-        text: s24; url: dom-audiosampleformat-s24
-        text: s32; url: dom-audiosampleformat-s32
-        text: f32; url: dom-audiosampleformat-f32
 </pre>
 
 
@@ -80,7 +60,7 @@ formats is as follows.
 NOTE: [[WEBCODECS]] does not define a 24-bit {{AudioSampleFormat}}. 24-bit
     samples are permitted within an {{EncodedAudioChunk}}, but such samples will
     be "decoded" in {{AudioData}} objects as either {{s32}} of {{f32}}. Please
-    see [[WEBCODECS]] [=section on sample magnitude=] for addtional details.
+    see [[WEBCODECS#audio-samples-magnitude]] for additional details.
 
 EncodedAudioChunk data {#encodedaudiochunk-data}
 ================================================
@@ -89,7 +69,7 @@ Linear pulse code modulation (linear PCM) describes a format where the audio
 values are sampled at a regular interval, and where the quantization levels
 between two successive values are linearly uniform.
 
-{{EncodedAudioChunk}} [=EncodedAudioChunk/[[internal data]]=] is expected to be
+{{EncodedAudioChunk}} {{EncodedAudioChunk/[[internal data]]}} is expected to be
 a sequence of bytes of arbitrary length, with a [=sample=] occuring every N
 bits, where N is defined by the codec string. For multichannel PCM, [=samples=]
 from different channels are [=interleaved=].
@@ -98,14 +78,14 @@ from different channels are [=interleaved=].
 AudioDecoderConfig description {#audiodecoderconfig-description}
 ================================================================
 
-An {{AudioDecoderConfig.description}} is expected to be omitted from the
+The {{AudioDecoderConfig/description}} is expected to be omitted from the
 {{AudioDecoderConfig}}.
 
 EncodedAudioChunk type {#encodedaudiochunk-type}
 ================================================
 
-The [=EncodedAudioChunk/[[type]]=] for an {{EncodedAudioChunk}} containing
-Linear PCM is always "[=EncodedAudioChunkType/key=]".
+The {{EncodedAudioChunk/[[type]]}} for an {{EncodedAudioChunk}} containing
+Linear PCM is always "{{EncodedAudioChunkType/key}}".
 
 Privacy Considerations {#privacy-considerations}
 ==========================================================================

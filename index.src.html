@@ -28,74 +28,25 @@ Markup Shorthands:css no, markdown yes, dfn yes
 </pre>
 
 <pre class=link-defaults>
-spec:webidl; type:interface; text:Promise
 spec:html; type:attribute; text:hidden
+spec:infra; type:dfn; text:list
+spec:infra; type:dfn; text:enqueue
 </pre>
 
 <pre class='anchors'>
-spec: media-source; urlPrefix: https://www.w3.org/TR/media-source/
-    type: method
-        for: MediaSource; text: isTypeSupported(); url: #dom-mediasource-istypesupported
-
 spec: html; urlPrefix: https://html.spec.whatwg.org/multipage/;
-    for: HTMLMediaElement;
-        type: method; text: canPlayType(); url: #dom-navigator-canplaytype
-    for: PlatformObject;
-        type: attribute; text: [[Detached]]; url: structured-data.html#detached
+    type: typedef; text: CanvasImageSource; url: canvas.html#canvasimagesource
+    for: CanvasDrawImage;
+        type: method; text: drawImage(); url: canvas.html#dom-context-2d-drawimage
     for: ImageBitmap;
-        type: attribute; text: resizeWidth; url:#dom-imagebitmapoptions-resizewidth
-        type: attribute; text: resizeHeight; url:#dom-imagebitmapoptions-resizeheight
-        type: dfn; text: cropped to the source rectangle with formatting; url: imagebitmap-and-animations.html#cropped-to-the-source-rectangle-with-formatting
         type: dfn; text: bitmap data; url: imagebitmap-and-animations.html#concept-imagebitmap-bitmap-data
     for: Canvas;
         type: dfn; text: Check the usability of the image argument; url: canvas.html#check-the-usability-of-the-image-argument
-    for: origin;
-        type: dfn; text: origin; url: origin.html#concept-origin
     for: webappapis;
-        type: dfn; text: global object; url: webappapis.html#global-object
         type: dfn; text: entry settings object; url: webappapis.html#entry-settings-object
     for: media;
         type: dfn; text: current playback position; url: media.html#current-playback-position
     type: dfn; text: live; url: infrastructure.html#live
-
-spec: mediacapture-streams; urlPrefix: https://www.w3.org/TR/mediacapture-streams/
-    for: mediaDevices;
-        type: method; text: getUserMedia(); url: #dom-mediadevices-getusermedia
-
-spec: mediacapture-screen-share; urlPrefix: https://w3c.github.io/mediacapture-screen-share/
-    for: mediaDevices; type: method; text: getDisplayMedia(); url: #dom-mediadevices-getdisplaymedia
-
-spec: mediacapture-main; urlPrefix: https://w3c.github.io/mediacapture-main/
-    for:MediaStreamTrackState;
-        type: enum-value; text: live; url: #idl-def-MediaStreamTrackState.live
-        type: enum-value; text: ended; url: #idl-def-MediaStreamTrackState.ended
-
-spec: mimesniff; urlPrefix: https://mimesniff.spec.whatwg.org/#
-    type: dfn; text: MIME type; url: mime-type
-    type: dfn; text: valid MIME type string; url:valid-mime-type
-
-spec: infra; urlPrefix: https://infra.spec.whatwg.org/#
-    type: dfn; text: queue; url: queues
-    type: dfn; text: enqueuing; url: queue-enqueue;
-    type: dfn; text: dequeued; url: queue-dequeue;
-    type: dfn; text: empty; url: list-is-empty;
-    type: dfn; text: list; url: lists;
-
-spec: mediastream-recording; urlPrefix: https://www.w3.org/TR/mediastream-recording/#
-    type: interface; text: MediaRecorder; url: mediarecorder
-    type: interface; text: BitrateMode; url: bitratemode
-    for: BitrateMode;
-        type: enum-value; text: constant; url: dom-bitratemode-constant
-        type: enum-value; text: variable; url: dom-bitratemode-variable
-
-spec: media-capabilities; urlPrefix: https://w3c.github.io/media-capabilities/#
-    type: method; text: decodingInfo(); url: dom-mediacapabilities-decodinginfo
-    type: attribute; text: powerEfficient; url: dom-mediacapabilitiesinfo-powerefficient
-
-spec: css-images-3; urlPrefix: https://www.w3.org/TR/css-images-3/
-    type: dfn; text: natural dimensions; url: #natural-dimensions
-    type: dfn; text: natural width; url: #natural-width
-    type: dfn; text: natural height; url: #natural-height
 
 spec: webrtc-svc; urlPrefix: https://w3c.github.io/webrtc-svc/
     type: dfn; text: scalability mode identifier; url:#scalabilitymodes*
@@ -2539,9 +2490,9 @@ enum EncodedAudioChunkType {
         to the {{EncodedAudioChunk}} internal slot in |value| with the same name
         as the named field.
 
-NOTE: Since {{EncodedAudioChunk}}s are immutable, User Agents may choose to
-    implement serialization using a reference counting model similar to
-    [[#audiodata-transfer-serialization]].
+NOTE: <span class=allow-2119>Since {{EncodedAudioChunk}}s are immutable, User
+    Agents may choose to implement serialization using a reference counting
+    model similar to [[#audiodata-transfer-serialization]].</span>
 
 EncodedVideoChunk Interface{#encodedvideochunk-interface}
 -----------------------------------------------------------
@@ -2631,9 +2582,9 @@ enum EncodedVideoChunkType {
         to the {{EncodedVideoChunk}} internal slot in |value| with the same name
         as the named field.
 
-NOTE: Since {{EncodedVideoChunk}}s are immutable, User Agents may choose to
-    implement serialization using a reference counting model similar to
-    [[#videoframe-transfer-serialization]].
+NOTE: <span class=allow-2119>Since {{EncodedVideoChunk}}s are immutable, User
+    Agents may choose to implement serialization using a reference counting
+    model similar to [[#videoframe-transfer-serialization]].</span>
 
 
 Raw Media Interfaces {#raw-media-interfaces}
@@ -2684,8 +2635,9 @@ NOTE: When a [=media resource=] is no longer referenced by a
 
 This section is non-normative.
 
-{{AudioData}} and {{VideoFrame}} are both [=transferable objects|transferable=]
-and [=serializable objects|serializable=] objects. Their transfer and
+{{AudioData}} and {{VideoFrame}} are both
+[[HTML#transferable-objects|transferable]] and
+[[HTML#serializable-objects|serializable]] objects. Their transfer and
 serialization steps are defined in [[#audiodata-transfer-serialization]] and
 [[#videoframe-transfer-serialization]] respectively.
 
@@ -3351,9 +3303,9 @@ dictionary VideoFrameMetadata {
 1. [=Canvas/Check the usability of the image argument=]. If this throws an
     exception or returns <var ignore=''>bad</var>, then throw an
     {{InvalidStateError}} {{DOMException}}.
-2. If the [=origin/origin=] of |image|'s image data is not [=same origin=]
+2. If the [=/origin=] of |image|'s image data is not [=same origin=]
     with the [=webappapis/entry settings object=]'s
-    [=origin/origin=], then throw a {{SecurityError}}
+    [=/origin=], then throw a {{SecurityError}}
     {{DOMException}}.
 3. Let |frame| be a new {{VideoFrame}}.
 5. Switch on |image|:
@@ -5063,7 +5015,7 @@ interface ImageDecoder {
                 [=track update struct/track index=] is |trackIndex| and
                 [=track update struct/frame count=] is |latestFrameCount|.
             2. Append |change| to |tracksChanges|.
-    5. If |tracksChanges| is [=list/empty=], abort these steps.
+    5. If |tracksChanges| [=list/is empty=], abort these steps.
     6. [=Queue a task=] to perform the following steps:
         1. For each <var ignore=''>update</var> in |trackChanges|:
             1. Let |updateTrack| be the {{ImageTrack}} at position
@@ -5266,7 +5218,7 @@ run these steps:
 3. If |data| is of type {{BufferSource}}:
     1. If the result of running  IsDetachedBuffer (described in
         [[!ECMASCRIPT]]) on |data| is `false`, return `false`.
-    2. If |data| is [=empty=], return `false`.
+    2. If |data| [=list/is empty=], return `false`.
 4. If {{ImageDecoderInit/desiredWidth}} [=map/exists=] and
     {{ImageDecoderInit/desiredHeight}} does not exist, return `false`.
 5. If {{ImageDecoderInit/desiredHeight}} [=map/exists=] and
@@ -5557,7 +5509,7 @@ if it is:
 
     - An {{AudioDecoder}} or {{VideoDecoder}}, when there is, respectively, an
         [=active=] {{AudioEncoder}} or {{VideoEncoder}} in the same
-        [=webappapis/global object=].
+        [=/global object=].
 
         NOTE: This prevents prevents breaking long running transcoding tasks.
 
