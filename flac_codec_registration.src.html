@@ -53,12 +53,6 @@ spec: WEBCODECS; urlPrefix: https://w3c.github.io/webcodecs/#
 <pre class='biblio'>
 {
   "FLAC": {
-    "href": "https://xiph.org/flac/format.html",
-    "title": "FLAC - format",
-    "publisher": "Xiph.Org Foundation"
-  },
-  
-  "FLAC-DRAFT": {
     "href": "https://datatracker.ietf.org/doc/draft-ietf-cellar-flac",
     "title": "Free Lossless Audio Codec",
     "publisher": "IETF"
@@ -83,8 +77,8 @@ AudioDecoderConfig description {#audiodecoderconfig-description}
 {{AudioDecoderConfig.description}} is required, and has to be the following:
 
 - The bytes `0x66 0x4C 0x61 0x43` ("`fLaC`" in ASCII)
-- A `METADATA_BLOCK` of type `STEAMINFO` as described in [[FLAC]]
-- Optionaly other `METADATA_BLOCK`, that are not used by the specification
+- A `metadata block` (called the STREAMINFO block) as described in section 7 of [[FLAC]]
+- Optionaly other metadata blocks, that are not used by the specification
 
 The {{AudioDecoderConfig.sampleRate}} and {{AudioDecoderConfig.numberOfChannels}}
 members are overridden by what the decoder finds in the
@@ -135,7 +129,7 @@ dictionary FlacEncoderConfig {
 
 To check if an {{FlacEncoderConfig}} is valid, run these steps:
 1. If {{FlacEncoderConfig/blockSize}} is not a valid block size,
-	which is described section 5.1 of [[FLAC-DRAFT]], return `false`.
+	which is described section 5.1 of [[FLAC]], return `false`.
 1. If {{FlacEncoderConfig/compressLevel}} is specified and not within the range of
     `0` (fastest, least compression) and `8` (slowest, most compression) inclusively, return `false`.
 2. Return `true`.
