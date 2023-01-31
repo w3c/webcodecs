@@ -102,8 +102,8 @@ Definitions {#definitions}
 ==========================
 
 : <dfn>Codec</dfn>
-:: Refers generically to an instance of AudioDecoder, AudioEncoder,
-    VideoDecoder, or VideoEncoder.
+:: Refers generically to an instance of {{AudioDecoder}}, {{AudioEncoder}},
+    {{VideoDecoder}}, or {{VideoEncoder}}.
 
 : <dfn lt="Key Chunk|Key Frame">Key Chunk</dfn>
 :: An encoded chunk that does not depend on any other frames for decoding. Also
@@ -188,7 +188,7 @@ Background {#processing-model-background}
 
   This section describes threading behaviors as they are visible from the
   perspective of web authors. Implementers can choose to use more threads, as
-  long as the exernally visible behaviors of blocking and sequencing are
+  long as the externally visible behaviors of blocking and sequencing are
   maintained as follows.
 </div>
 
@@ -290,13 +290,14 @@ Internal Slots {#audiodecoder-internal-slots}
     {{AudioDecoder/[[control message queue]]}} is blocked by a pending
     [=control message=]. See [=[[message queue blocked]]=].
 : <dfn attribute for=AudioDecoder>[[codec implementation]]</dfn>
-:: Underlying decoder implementation provided by the User Agent.
+:: Underlying decoder implementation provided by the User Agent. See
+    [=[[codec implementation]]=].
 : <dfn attribute for=AudioDecoder>[[codec work queue]]</dfn>
 :: A [=parallel queue=] used for running parallel steps that reference the
     {{AudioDecoder/[[codec implementation]]}}. See [=[[codec work queue]]=].
 : <dfn attribute for=AudioDecoder>[[codec saturated]]</dfn>
-:: A boolean indicating when the [[codec implementation]] is unable to accept
-    additional decoding work.
+:: A boolean indicating when the {{AudioDecoder/[[codec implementation]]}} is
+    unable to accept additional decoding work.
 : <dfn attribute for=AudioDecoder>[[output callback]]</dfn>
 :: Callback given at construction for decoded outputs.
 : <dfn attribute for=AudioDecoder>[[error callback]]</dfn>
@@ -616,13 +617,14 @@ Internal Slots {#videodecoder-internal-slots}
     {{VideoDecoder/[[control message queue]]}} is blocked by a pending
     [=control message=]. See [=[[message queue blocked]]=].
 : <dfn attribute for=VideoDecoder>[[codec implementation]]</dfn>
-:: Underlying decoder implementation provided by the User Agent.
+:: Underlying decoder implementation provided by the User Agent. See
+    [=[[codec implementation]]=].
 : <dfn attribute for=VideoDecoder>[[codec work queue]]</dfn>
 :: A [=parallel queue=] used for running parallel steps that reference the
     {{VideoDecoder/[[codec implementation]]}}. See [=[[codec work queue]]=].
 : <dfn attribute for=VideoDecoder>[[codec saturated]]</dfn>
-:: A boolean indicating when the [[codec implementation]] is unable to accept
-    additional decoding work.
+:: A boolean indicating when the {{VideoDecoder/[[codec implementation]]}} is
+    unable to accept additional decoding work.
 : <dfn attribute for=VideoDecoder>[[output callback]]</dfn>
 :: Callback given at construction for decoded outputs.
 : <dfn attribute for=VideoDecoder>[[error callback]]</dfn>
@@ -736,7 +738,7 @@ Methods {#videodecoder-methods}
 
     NOTE: {{VideoDecoder}} requires that frames are output in the order they
         expect to be presented, commonly known as presentation order. When using
-        some {{VideoDecoder/[[codec implementation]]}}s the User Agent will have to
+        some {{VideoDecoder/[[codec implementation]]}}s the User Agent will have
         to reorder outputs into presentation order.
 
     When invoked, run these steps:
@@ -971,13 +973,14 @@ Internal Slots {#audioencoder-internal-slots}
     {{AudioEncoder/[[control message queue]]}} is blocked by a pending
     [=control message=]. See [=[[message queue blocked]]=].
 : <dfn attribute for=AudioEncoder>[[codec implementation]]</dfn>
-:: Underlying encoder implementation provided by the User Agent.
+:: Underlying encoder implementation provided by the User Agent. See
+    [=[[codec implementation]]=].
 : <dfn attribute for=AudioEncoder>[[codec work queue]]</dfn>
 :: A [=parallel queue=] used for running parallel steps that reference the
     {{AudioEncoder/[[codec implementation]]}}. See [=[[codec work queue]]=].
 : <dfn attribute for=AudioEncoder>[[codec saturated]]</dfn>
-:: A boolean indicating when the [[codec implementation]] is unable to accept
-    additional encoding work.
+:: A boolean indicating when the {{AudioEncoder/[[codec implementation]]}} is
+    unable to accept additional encoding work.
 : <dfn attribute for=AudioEncoder>[[output callback]]</dfn>
 :: Callback given at construction for encoded outputs.
 : <dfn attribute for=AudioEncoder>[[error callback]]</dfn>
@@ -1343,13 +1346,14 @@ Internal Slots {#videoencoder-internal-slots}
     {{VideoEncoder/[[control message queue]]}} is blocked by a pending
     [=control message=]. See [=[[message queue blocked]]=].
 : <dfn attribute for=VideoEncoder>[[codec implementation]]</dfn>
-:: Underlying encoder implementation provided by the User Agent.
+:: Underlying encoder implementation provided by the User Agent. See
+    [=[[codec implementation]]=].
 : <dfn attribute for=VideoEncoder>[[codec work queue]]</dfn>
 :: A [=parallel queue=] used for running parallel steps that reference the
     {{VideoEncoder/[[codec implementation]]}}. See [=[[codec work queue]]=].
 : <dfn attribute for=VideoEncoder>[[codec saturated]]</dfn>
-:: A boolean indicating when the [[codec implementation]] is unable to accept
-    additional encoding work.
+:: A boolean indicating when the {{VideoEncoder/[[codec implementation]]}} is
+    unable to accept additional encoding work.
 : <dfn attribute for=VideoEncoder>[[output callback]]</dfn>
 :: Callback given at construction for encoded outputs.
 : <dfn attribute for=VideoEncoder>[[error callback]]</dfn>
@@ -2617,7 +2621,7 @@ The {{AudioData}} {{AudioData/[[resource reference]]}} and {{VideoFrame}}
 object.
 
 {{VideoFrame}}.{{VideoFrame/close()}} and {{AudioData}}.{{AudioData/close()}}
-will clear their [[resource reference]] slot, releasing the reference their
+will clear their `[[resource reference]]` slot, releasing the reference their
 [=media resource=].
 
 A [=media resource=] <em class="rfc2119">MUST</em> remain alive at least as long
@@ -3672,7 +3676,7 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
             |output| in pixels.
         8. Let |visibleLeft|, |visibleTop|, |visibleWidth|, and |visibleHeight| be
             the left, top, width and height for the visible rectangle of |output|.
-        7. Let |displayWidth| and |displayHeight| be the the display size of
+        7. Let |displayWidth| and |displayHeight| be the display size of
             |output| in pixels.
         8. If |displayAspectWidth| and |displayAspectHeight| are provided,
             increase |displayWidth| or |displayHeight| until the ratio of
@@ -4087,7 +4091,7 @@ conversion is explicitly disabled.
 
 Color space conversion during {{ImageBitmap}} construction is controlled by
 {{ImageBitmapOptions}} {{ImageBitmapOptions/colorSpaceConversion}}. Setting this
-value to "none" disables color space conversion.
+value to {{ColorSpaceConversion/"none"}} disables color space conversion.
 
 VideoFrame CopyTo() Options {#videoframe-copyto-options}
 ------------------------------------------------------------
@@ -4105,7 +4109,7 @@ dictionary VideoFrameCopyToOptions {
 NOTE: The steps of {{VideoFrame/copyTo()}} or {{VideoFrame/allocationSize()}}
 will enforce the following requirements:
     * The coordinates of {{VideoFrameCopyToOptions/rect}} are
-        sample-aligned as determiend by {{VideoFrame/[[format]]}}.
+        sample-aligned as determined by {{VideoFrame/[[format]]}}.
     * If {{VideoFrameCopyToOptions/layout}} [=map/exists=], a {{PlaneLayout}}
         is provided for all planes.
 </div>
@@ -4128,7 +4132,7 @@ will enforce the following requirements:
 
 DOMRects in VideoFrame {#videoframe-domrect}
 --------------------------------------------
-The {{VideoFrame}} interfaces uses {{DOMRect}}s to specify the position and
+The {{VideoFrame}} interface uses {{DOMRect}}s to specify the position and
 dimensions for a rectangle of pixels. {{DOMRectInit}} is used with
 {{VideoFrame/copyTo()}} and {{VideoFrame/allocationSize()}} to describe the
 dimensions of the source rectangle. {{VideoFrame}} defines
@@ -4145,7 +4149,7 @@ A {{PlaneLayout}} is a dictionary specifying the offset and stride of a
 {{PlaneLayout}}s <em class="rfc2119">MAY</em> be provided to {{VideoFrame}}'s
 {{VideoFrame/copyTo()}} to specify how the plane is laid out in the destination
 {{BufferSource}}}.  Alternatively, callers can inspect {{VideoFrame/copyTo()}}'s
-returned sequence of {{PlaneLayout}}s to learn the the offset and stride for
+returned sequence of {{PlaneLayout}}s to learn the offset and stride for
 planes as decided by the User Agent.
 
 <xmp class='idl'>
@@ -4691,7 +4695,8 @@ interface ImageDecoder {
     `true`.
 
 : <dfn attribute for=ImageDecoder>[[codec implementation]]</dfn>
-:: An underlying image decoder implementation provided by the User Agent.
+:: An underlying image decoder implementation provided by the User Agent. See
+    [=[[codec implementation]]=].
 
 : <dfn attribute for=ImageDecoder>[[encoded data]]</dfn>
 :: A [=byte sequence=] containing the encoded image data to be decoded.
@@ -4712,7 +4717,7 @@ interface ImageDecoder {
     {{ImageDecoder/[[ImageTrackList]]}}.
 
 : <dfn attribute for=ImageDecoder>\[[closed]]</dfn>
-:: A boolean indicating that the ImageDecoder is in a permanent closed state
+:: A boolean indicating that the {{ImageDecoder}} is in a permanent closed state
     and can no longer be used.
 
 : <dfn attribute for=ImageDecoder>[[progressive frame generations]]</dfn>
@@ -5604,7 +5609,7 @@ Best Practices for Authors Using WebCodecs{#best-practices-developers}
   realtime media or in contended main thread environments are encouraged to ensure their
   media pipelines operate in worker contexts entirely independent of the main
   thread where possible. For example, realtime media processing of {{VideoFrame}}s
-  are generally be done in a worker context.
+  are generally to be done in a worker context.
 
   The main thread has significant potential for high contention and jank that can
   go unnoticed in development, yet degrade inconsistently across devices and User
