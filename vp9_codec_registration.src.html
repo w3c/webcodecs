@@ -16,7 +16,8 @@ Abstract: This registration is entered into the [[webcodecs-codec-registry]].
     (2) the codec-specific {{EncodedVideoChunk}}
     {{EncodedVideoChunk/[[internal data]]}} bytes, (3) the
     {{VideoDecoderConfig/description|VideoDecoderConfig.description}} bytes,
-    and (4) the values of {{EncodedVideoChunk}} {{EncodedVideoChunk/[[type]]}}.
+    (4) the values of {{EncodedVideoChunk}} {{EncodedVideoChunk/[[type]]}}, and
+    (5) the codec-specific extensions to {{VideoEncoderEncodeOptions}}.
 
     The registration is not intended to include any information on whether a
     codec format is encumbered by intellectual property claims. Implementers and
@@ -71,6 +72,43 @@ If an {{EncodedVideoChunk}}'s {{EncodedVideoChunk/[[type]]}} is
 {{EncodedVideoChunkType/key}}, then the {{EncodedVideoChunk}} is expected to
 contain a frame with a `frame_type` of `KEY_FRAME` as defined in Section
 7.2 of [[VP9]].
+
+VideoEncoderEncodeOptions extensions {#videoencoderencodeoptions-extensions}
+==============================================================
+
+<pre class='idl'>
+<xmp>
+partial dictionary VideoEncoderEncodeOptions {
+  VideoEncoderEncodeOptionsForVp9 vp9;
+};
+</xmp>
+</pre>
+
+<dl>
+  <dt><dfn dict-member for=VideoEncoderEncodeOptions>vp9</dfn></dt>
+  <dd>
+    Contains codec specific encode options for the [[VP9]] codec.
+  </dd>
+</dl>
+
+VideoEncoderEncodeOptionsForVp9 {#vp9-encode-options}
+--------------------------------------
+<pre class='idl'>
+<xmp>
+dictionary VideoEncoderEncodeOptionsForVp9 {
+  unsigned short? quantizer;
+};
+</xmp>
+</pre>
+
+<dl>
+  <dt><dfn dict-member for=VideoEncoderEncodeOptionsForVp9>quantizer</dfn></dt>
+  <dd>
+    Sets per-frame quantizer value.
+    In [[VP9]] the quantizer threshold can be varied from 0 to 63
+  </dd>
+</dl>
+
 
 Privacy Considerations {#privacy-considerations}
 ==========================================================================
