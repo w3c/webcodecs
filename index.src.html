@@ -2073,7 +2073,7 @@ dictionary VideoEncoderConfig {
   HardwareAcceleration hardwareAcceleration = "no-preference";
   AlphaOption alpha = "discard";
   DOMString scalabilityMode;
-  BitrateMode bitrateMode = "variable";
+  VideoEncoderBitrateMode bitrateMode = "variable";
   LatencyMode latencyMode = "quality";
 };
 </xmp>
@@ -2180,8 +2180,8 @@ To check if a {{VideoEncoderConfig}} is a <dfn>valid VideoEncoderConfig</dfn>,
 
   <dt><dfn dict-member for=VideoEncoderConfig>bitrateMode</dfn></dt>
   <dd>
-    Configures encoding to use a {{BitrateMode/constant}} or
-    {{BitrateMode/variable}} bitrate as defined by [[MEDIASTREAM-RECORDING]].
+    Configures encoding to use one of the rate control modes specified by
+    {{VideoEncoderBitrateMode}}.
 
     NOTE: The precise degree of bitrate fluctuation in either mode is
         implementation defined.
@@ -2356,6 +2356,7 @@ VideoEncoderEncodeOptions{#video-encoder-options}
 <xmp class='idl'>
 dictionary VideoEncoderEncodeOptions {
   boolean keyFrame = false;
+  double? quantizer;
 };
 </xmp>
 
@@ -2365,6 +2366,40 @@ dictionary VideoEncoderEncodeOptions {
     A value of `true` indicates that the given frame MUST be encoded as a key
     frame. A value of `false` indicates that the User Agent has flexibility to
     decide whether the frame will be encoded as a [=key frame=].
+  </dd>
+  <dt><dfn dict-member for=VideoEncoderEncodeOptions>quantizer</dfn></dt>
+  <dd>
+    Sets per-frame quantizer value.
+
+    The ranges of codec specific quantizer values are defined in the
+    [[WEBCODECS-CODEC-REGISTRY]].
+  </dd>
+</dl>
+
+
+VideoEncoderBitrateMode{#video-encoder-bitrate-mode}
+-------------------------------------------
+<xmp class='idl'>
+  enum VideoEncoderBitrateMode {
+    "constant",
+    "variable",
+    "quantizer"
+  };
+</xmp>
+
+<dl>
+  <dt><dfn enum-value for=VideoEncoderBitrateMode>constant</dfn></dt>
+  <dd>Encode at a constant bitrate. See {{VideoEncoderConfig/bitrate}}.</dd>
+  <dt><dfn enum-value for=VideoEncoderBitrateMode>variable</dfn></dt>
+  <dd>
+    Encode using a variable bitrate, allowing more space to be used for
+    complex signals and less space for less complex signals.
+    See {{VideoEncoderConfig/bitrate}}.
+  </dd>
+  <dt><dfn enum-value for=VideoEncoderBitrateMode>quantizer</dfn></dt>
+  <dd>
+    Encode using a quantizer, that is specified for each video
+    frame in {{VideoEncoderEncodeOptions/quantizer}}.
   </dd>
 </dl>
 
