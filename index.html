@@ -8,7 +8,7 @@
   <link href="https://www.w3.org/2008/site/images/favicon.ico" rel="icon">
   <meta content="Bikeshed version 859efb4bd, updated Fri Jan 27 16:04:01 2023 -0800" name="generator">
   <link href="https://www.w3.org/TR/webcodecs/" rel="canonical">
-  <meta content="dfc50316381f83f482018cbc29ad6701aa086396" name="document-revision">
+  <meta content="d1df0f8663671214ea932c1fdd5cacb095cc248a" name="document-revision">
 <style>
 main > dl > dd {
   margin-bottom: 1em;
@@ -611,7 +611,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
   <div class="head">
    <p data-fill-with="logo"><a class="logo" href="https://www.w3.org/"> <img alt="W3C" height="48" src="https://www.w3.org/StyleSheets/TR/2021/logos/W3C" width="72"> </a> </p>
    <h1 class="p-name no-ref" id="title">WebCodecs</h1>
-   <p id="w3c-state"><a href="https://www.w3.org/standards/types#ED">Editor’s Draft</a>, <time class="dt-updated" datetime="2023-01-30">30 January 2023</time></p>
+   <p id="w3c-state"><a href="https://www.w3.org/standards/types#ED">Editor’s Draft</a>, <time class="dt-updated" datetime="2023-02-01">1 February 2023</time></p>
    <details open>
     <summary>More details about this document</summary>
     <div data-fill-with="spec-metadata">
@@ -883,8 +883,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
    <dl>
     <dt data-md><dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="codec">Codec</dfn>
     <dd data-md>
-     <p>Refers generically to an instance of AudioDecoder, AudioEncoder,
-VideoDecoder, or VideoEncoder.</p>
+     <p>Refers generically to an instance of <code class="idl"><a data-link-type="idl" href="#audiodecoder" id="ref-for-audiodecoder">AudioDecoder</a></code>, <code class="idl"><a data-link-type="idl" href="#audioencoder" id="ref-for-audioencoder">AudioEncoder</a></code>, <code class="idl"><a data-link-type="idl" href="#videodecoder" id="ref-for-videodecoder">VideoDecoder</a></code>, or <code class="idl"><a data-link-type="idl" href="#videoencoder" id="ref-for-videoencoder">VideoEncoder</a></code>.</p>
     <dt data-md><dfn class="dfn-paneled" data-dfn-type="dfn" data-lt="Key Chunk|Key Frame" data-noexport id="key-chunk">Key Chunk</dfn>
     <dd data-md>
      <p>An encoded chunk that does not depend on any other frames for decoding. Also
@@ -959,7 +958,7 @@ workload.</p>
   to a separate <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/infrastructure.html#parallel-queue" id="ref-for-parallel-queue">parallel queue</a> for parallel execution.</p>
     <p>This section describes threading behaviors as they are visible from the
   perspective of web authors. Implementers can choose to use more threads, as
-  long as the exernally visible behaviors of blocking and sequencing are
+  long as the externally visible behaviors of blocking and sequencing are
   maintained as follows.</p>
    </div>
    <h3 class="heading settled" data-level="2.2" id="control-messages"><span class="secno">2.2. </span><span class="content">Control Messages</span><a class="self-link" href="#control-messages"></a></h3>
@@ -1036,14 +1035,14 @@ encoder or decoder. Except for assignment, any steps that reference <a data-link
      <p>A boolean indicating when processing the <code class="idl"><a data-link-type="idl" href="#dom-audiodecoder-control-message-queue-slot" id="ref-for-dom-audiodecoder-control-message-queue-slot">[[control message queue]]</a></code> is blocked by a pending <a data-link-type="dfn" href="#control-message" id="ref-for-control-message②">control message</a>. See <a data-link-type="dfn" href="#message-queue-blocked" id="ref-for-message-queue-blocked②">[[message queue blocked]]</a>.</p>
     <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="AudioDecoder" data-dfn-type="attribute" data-export id="dom-audiodecoder-codec-implementation-slot"><code>[[codec implementation]]</code></dfn>
     <dd data-md>
-     <p>Underlying decoder implementation provided by the User Agent.</p>
+     <p>Underlying decoder implementation provided by the User Agent. See <a data-link-type="dfn" href="#codec-implementation" id="ref-for-codec-implementation①">[[codec implementation]]</a>.</p>
     <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="AudioDecoder" data-dfn-type="attribute" data-export id="dom-audiodecoder-codec-work-queue-slot"><code>[[codec work queue]]</code></dfn>
     <dd data-md>
      <p>A <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/infrastructure.html#parallel-queue" id="ref-for-parallel-queue②">parallel queue</a> used for running parallel steps that reference the <code class="idl"><a data-link-type="idl" href="#dom-audiodecoder-codec-implementation-slot" id="ref-for-dom-audiodecoder-codec-implementation-slot">[[codec implementation]]</a></code>. See <a data-link-type="dfn" href="#codec-work-queue" id="ref-for-codec-work-queue②">[[codec work queue]]</a>.</p>
     <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="AudioDecoder" data-dfn-type="attribute" data-export id="dom-audiodecoder-codec-saturated-slot"><code>[[codec saturated]]</code></dfn>
     <dd data-md>
-     <p>A boolean indicating when the [[codec implementation]] is unable to accept
-additional decoding work.</p>
+     <p>A boolean indicating when the <code class="idl"><a data-link-type="idl" href="#dom-audiodecoder-codec-implementation-slot" id="ref-for-dom-audiodecoder-codec-implementation-slot①">[[codec implementation]]</a></code> is
+unable to accept additional decoding work.</p>
     <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="AudioDecoder" data-dfn-type="attribute" data-export id="dom-audiodecoder-output-callback-slot"><code>[[output callback]]</code></dfn>
     <dd data-md>
      <p>Callback given at construction for decoded outputs.</p>
@@ -1055,7 +1054,7 @@ additional decoding work.</p>
      <p>A boolean indicating that the next chunk passed to <code class="idl"><a data-link-type="idl" href="#dom-audiodecoder-decode" id="ref-for-dom-audiodecoder-decode①">decode()</a></code> <em class="rfc2119">MUST</em> describe a <a data-link-type="dfn" href="#key-chunk" id="ref-for-key-chunk">key chunk</a> as indicated by <code class="idl"><a data-link-type="idl" href="#dom-encodedaudiochunk-type-slot" id="ref-for-dom-encodedaudiochunk-type-slot">[[type]]</a></code>.</p>
     <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="AudioDecoder" data-dfn-type="attribute" data-export id="dom-audiodecoder-state-slot"><code>[[state]]</code></dfn>
     <dd data-md>
-     <p>The current <code class="idl"><a data-link-type="idl" href="#enumdef-codecstate" id="ref-for-enumdef-codecstate①">CodecState</a></code> of this <code class="idl"><a data-link-type="idl" href="#audiodecoder" id="ref-for-audiodecoder">AudioDecoder</a></code>.</p>
+     <p>The current <code class="idl"><a data-link-type="idl" href="#enumdef-codecstate" id="ref-for-enumdef-codecstate①">CodecState</a></code> of this <code class="idl"><a data-link-type="idl" href="#audiodecoder" id="ref-for-audiodecoder①">AudioDecoder</a></code>.</p>
     <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="AudioDecoder" data-dfn-type="attribute" data-export id="dom-audiodecoder-decodequeuesize-slot"><code>[[decodeQueueSize]]</code></dfn>
     <dd data-md>
      <p>The number of pending decode requests. This number will decrease as the
@@ -1072,13 +1071,13 @@ scheduled to fire. Used to avoid event spam.</p>
     <dfn class="dfn-paneled idl-code" data-dfn-for="AudioDecoder" data-dfn-type="constructor" data-export data-lt="AudioDecoder(init)|constructor(init)" id="dom-audiodecoder-audiodecoder" title="AudioDecoder(init)"><code> AudioDecoder(init) </code></dfn> 
    <ol>
     <li data-md>
-     <p>Let d be a new <code class="idl"><a data-link-type="idl" href="#audiodecoder" id="ref-for-audiodecoder①">AudioDecoder</a></code> object.</p>
+     <p>Let d be a new <code class="idl"><a data-link-type="idl" href="#audiodecoder" id="ref-for-audiodecoder②">AudioDecoder</a></code> object.</p>
     <li data-md>
      <p>Assign a new <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#queue" id="ref-for-queue②">queue</a> to <code class="idl"><a data-link-type="idl" href="#dom-audiodecoder-control-message-queue-slot" id="ref-for-dom-audiodecoder-control-message-queue-slot①">[[control message queue]]</a></code>.</p>
     <li data-md>
      <p>Assign <code>false</code> to <code class="idl"><a data-link-type="idl" href="#dom-audiodecoder-message-queue-blocked-slot" id="ref-for-dom-audiodecoder-message-queue-blocked-slot">[[message queue blocked]]</a></code>.</p>
     <li data-md>
-     <p>Assign <code>null</code> to <code class="idl"><a data-link-type="idl" href="#dom-audiodecoder-codec-implementation-slot" id="ref-for-dom-audiodecoder-codec-implementation-slot①">[[codec implementation]]</a></code>.</p>
+     <p>Assign <code>null</code> to <code class="idl"><a data-link-type="idl" href="#dom-audiodecoder-codec-implementation-slot" id="ref-for-dom-audiodecoder-codec-implementation-slot②">[[codec implementation]]</a></code>.</p>
     <li data-md>
      <p>Assign the result of starting a new <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/infrastructure.html#parallel-queue" id="ref-for-parallel-queue③">parallel queue</a> to <code class="idl"><a data-link-type="idl" href="#dom-audiodecoder-codec-work-queue-slot" id="ref-for-dom-audiodecoder-codec-work-queue-slot">[[codec work queue]]</a></code>.</p>
     <li data-md>
@@ -1116,7 +1115,7 @@ scheduled to fire. Used to avoid event spam.</p>
    <dl>
     <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="AudioDecoder" data-dfn-type="event" data-export id="eventdef-audiodecoder-dequeue"><code>dequeue</code></dfn>
     <dd data-md>
-     <p>Fired at the <code class="idl"><a data-link-type="idl" href="#audiodecoder" id="ref-for-audiodecoder②">AudioDecoder</a></code> when the <code class="idl"><a data-link-type="idl" href="#dom-audiodecoder-decodequeuesize" id="ref-for-dom-audiodecoder-decodequeuesize①">decodeQueueSize</a></code> has
+     <p>Fired at the <code class="idl"><a data-link-type="idl" href="#audiodecoder" id="ref-for-audiodecoder③">AudioDecoder</a></code> when the <code class="idl"><a data-link-type="idl" href="#dom-audiodecoder-decodequeuesize" id="ref-for-dom-audiodecoder-decodequeuesize①">decodeQueueSize</a></code> has
 decreased.</p>
    </dl>
    <h3 class="heading settled" data-level="3.5" id="audiodecoder-methods"><span class="secno">3.5. </span><span class="content">Methods</span><a class="self-link" href="#audiodecoder-methods"></a></h3>
@@ -1151,7 +1150,7 @@ decreased.</p>
        <p>Let <var>supported</var> be the result of running the <a data-link-type="dfn" href="#check-configuration-support" id="ref-for-check-configuration-support">Check Configuration
 Support</a> algorithm with <var>config</var>.</p>
       <li data-md>
-       <p>If <var>supported</var> is <code>true</code>, assign <code class="idl"><a data-link-type="idl" href="#dom-audiodecoder-codec-implementation-slot" id="ref-for-dom-audiodecoder-codec-implementation-slot②">[[codec implementation]]</a></code> with an implementation
+       <p>If <var>supported</var> is <code>true</code>, assign <code class="idl"><a data-link-type="idl" href="#dom-audiodecoder-codec-implementation-slot" id="ref-for-dom-audiodecoder-codec-implementation-slot③">[[codec implementation]]</a></code> with an implementation
 supporting <var>config</var>.</p>
       <li data-md>
        <p>Otherwise, run the <a data-link-type="dfn" href="#close-audiodecoder" id="ref-for-close-audiodecoder">Close AudioDecoder</a> algorithm with <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#notsupportederror" id="ref-for-notsupportederror①">NotSupportedError</a></code> and return <code>"processed"</code>.</p>
@@ -1161,7 +1160,7 @@ supporting <var>config</var>.</p>
        <p>Enqueue the following steps to <code class="idl"><a data-link-type="idl" href="#dom-audiodecoder-codec-work-queue-slot" id="ref-for-dom-audiodecoder-codec-work-queue-slot①">[[codec work queue]]</a></code>:</p>
        <ol>
         <li data-md>
-         <p>Configure <code class="idl"><a data-link-type="idl" href="#dom-audiodecoder-codec-implementation-slot" id="ref-for-dom-audiodecoder-codec-implementation-slot③">[[codec implementation]]</a></code> with <var>config</var>.</p>
+         <p>Configure <code class="idl"><a data-link-type="idl" href="#dom-audiodecoder-codec-implementation-slot" id="ref-for-dom-audiodecoder-codec-implementation-slot④">[[codec implementation]]</a></code> with <var>config</var>.</p>
         <li data-md>
          <p>Assign <code>false</code> to <code class="idl"><a data-link-type="idl" href="#dom-audiodecoder-message-queue-blocked-slot" id="ref-for-dom-audiodecoder-message-queue-blocked-slot②">[[message queue blocked]]</a></code>.</p>
         <li data-md>
@@ -1202,7 +1201,7 @@ it is truly a <a data-link-type="dfn" href="#key-chunk" id="ref-for-key-chunk①
        <p>If <code class="idl"><a data-link-type="idl" href="#dom-audiodecoder-codec-saturated-slot" id="ref-for-dom-audiodecoder-codec-saturated-slot①">[[codec saturated]]</a></code> equals <code>true</code>, return <code>"not
 processed"</code>.</p>
       <li data-md>
-       <p>If decoding chunk will cause the <code class="idl"><a data-link-type="idl" href="#dom-audiodecoder-codec-implementation-slot" id="ref-for-dom-audiodecoder-codec-implementation-slot④">[[codec implementation]]</a></code> to become <a data-link-type="dfn" href="#saturated" id="ref-for-saturated">saturated</a>,
+       <p>If decoding chunk will cause the <code class="idl"><a data-link-type="idl" href="#dom-audiodecoder-codec-implementation-slot" id="ref-for-dom-audiodecoder-codec-implementation-slot⑤">[[codec implementation]]</a></code> to become <a data-link-type="dfn" href="#saturated" id="ref-for-saturated">saturated</a>,
 assign <code>true</code> to <code class="idl"><a data-link-type="idl" href="#dom-audiodecoder-codec-saturated-slot" id="ref-for-dom-audiodecoder-codec-saturated-slot②">[[codec saturated]]</a></code>.</p>
       <li data-md>
        <p>Decrement <code class="idl"><a data-link-type="idl" href="#dom-audiodecoder-decodequeuesize-slot" id="ref-for-dom-audiodecoder-decodequeuesize-slot③">[[decodeQueueSize]]</a></code> and run the <a data-link-type="dfn" href="#audiodecoder-schedule-dequeue-event" id="ref-for-audiodecoder-schedule-dequeue-event">Schedule Dequeue Event</a> algorithm.</p>
@@ -1210,12 +1209,12 @@ assign <code>true</code> to <code class="idl"><a data-link-type="idl" href="#dom
        <p>Enqueue the following steps to the <code class="idl"><a data-link-type="idl" href="#dom-audiodecoder-codec-work-queue-slot" id="ref-for-dom-audiodecoder-codec-work-queue-slot②">[[codec work queue]]</a></code>:</p>
        <ol>
         <li data-md>
-         <p>Attempt to use <code class="idl"><a data-link-type="idl" href="#dom-audiodecoder-codec-implementation-slot" id="ref-for-dom-audiodecoder-codec-implementation-slot⑤">[[codec implementation]]</a></code> to decode
+         <p>Attempt to use <code class="idl"><a data-link-type="idl" href="#dom-audiodecoder-codec-implementation-slot" id="ref-for-dom-audiodecoder-codec-implementation-slot⑥">[[codec implementation]]</a></code> to decode
 the chunk.</p>
         <li data-md>
          <p>If decoding results in an error, <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task" id="ref-for-queue-a-task②">queue a task</a> to run the <a data-link-type="dfn" href="#close-audiodecoder" id="ref-for-close-audiodecoder①">Close AudioDecoder</a> algorithm with <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#encodingerror" id="ref-for-encodingerror">EncodingError</a></code> and return.</p>
         <li data-md>
-         <p>If <code class="idl"><a data-link-type="idl" href="#dom-audiodecoder-codec-saturated-slot" id="ref-for-dom-audiodecoder-codec-saturated-slot③">[[codec saturated]]</a></code> equals <code>true</code> and <code class="idl"><a data-link-type="idl" href="#dom-audiodecoder-codec-implementation-slot" id="ref-for-dom-audiodecoder-codec-implementation-slot⑥">[[codec implementation]]</a></code> is no longer <a data-link-type="dfn" href="#saturated" id="ref-for-saturated①">saturated</a>, <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task" id="ref-for-queue-a-task③">queue a task</a> to perform the following steps:</p>
+         <p>If <code class="idl"><a data-link-type="idl" href="#dom-audiodecoder-codec-saturated-slot" id="ref-for-dom-audiodecoder-codec-saturated-slot③">[[codec saturated]]</a></code> equals <code>true</code> and <code class="idl"><a data-link-type="idl" href="#dom-audiodecoder-codec-implementation-slot" id="ref-for-dom-audiodecoder-codec-implementation-slot⑦">[[codec implementation]]</a></code> is no longer <a data-link-type="dfn" href="#saturated" id="ref-for-saturated①">saturated</a>, <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task" id="ref-for-queue-a-task③">queue a task</a> to perform the following steps:</p>
          <ol>
           <li data-md>
            <p>Assign <code>false</code> to <code class="idl"><a data-link-type="idl" href="#dom-audiodecoder-codec-saturated-slot" id="ref-for-dom-audiodecoder-codec-saturated-slot④">[[codec saturated]]</a></code>.</p>
@@ -1224,7 +1223,7 @@ the chunk.</p>
          </ol>
         <li data-md>
          <p>Let <var>decoded outputs</var> be a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list" id="ref-for-list①">list</a> of decoded audio data outputs
-emitted by <code class="idl"><a data-link-type="idl" href="#dom-audiodecoder-codec-implementation-slot" id="ref-for-dom-audiodecoder-codec-implementation-slot⑦">[[codec implementation]]</a></code>.</p>
+emitted by <code class="idl"><a data-link-type="idl" href="#dom-audiodecoder-codec-implementation-slot" id="ref-for-dom-audiodecoder-codec-implementation-slot⑧">[[codec implementation]]</a></code>.</p>
         <li data-md>
          <p>If <var>decoded outputs</var> is not empty, <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task" id="ref-for-queue-a-task④">queue a task</a> to run the <a data-link-type="dfn" href="#output-audiodata" id="ref-for-output-audiodata">Output AudioData</a> algorithm with <var>decoded outputs</var>.</p>
        </ol>
@@ -1258,10 +1257,10 @@ emitted by <code class="idl"><a data-link-type="idl" href="#dom-audiodecoder-cod
        <p>Enqueue the following steps to the <code class="idl"><a data-link-type="idl" href="#dom-audiodecoder-codec-work-queue-slot" id="ref-for-dom-audiodecoder-codec-work-queue-slot③">[[codec work queue]]</a></code>:</p>
        <ol>
         <li data-md>
-         <p>Signal <code class="idl"><a data-link-type="idl" href="#dom-audiodecoder-codec-implementation-slot" id="ref-for-dom-audiodecoder-codec-implementation-slot⑧">[[codec implementation]]</a></code> to emit all <a data-link-type="dfn" href="#internal-pending-output" id="ref-for-internal-pending-output">internal pending outputs</a>.</p>
+         <p>Signal <code class="idl"><a data-link-type="idl" href="#dom-audiodecoder-codec-implementation-slot" id="ref-for-dom-audiodecoder-codec-implementation-slot⑨">[[codec implementation]]</a></code> to emit all <a data-link-type="dfn" href="#internal-pending-output" id="ref-for-internal-pending-output">internal pending outputs</a>.</p>
         <li data-md>
          <p>Let <var>decoded outputs</var> be a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list" id="ref-for-list②">list</a> of decoded audio data outputs
-emitted by <code class="idl"><a data-link-type="idl" href="#dom-audiodecoder-codec-implementation-slot" id="ref-for-dom-audiodecoder-codec-implementation-slot⑨">[[codec implementation]]</a></code>.</p>
+emitted by <code class="idl"><a data-link-type="idl" href="#dom-audiodecoder-codec-implementation-slot" id="ref-for-dom-audiodecoder-codec-implementation-slot①⓪">[[codec implementation]]</a></code>.</p>
         <li data-md>
          <p><a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task" id="ref-for-queue-a-task⑤">Queue a task</a> to perform these steps:</p>
          <ol>
@@ -1378,7 +1377,7 @@ format to <code class="idl"><a data-link-type="idl" href="#dom-audiodata-format-
       <li data-md>
        <p>Set <code class="idl"><a data-link-type="idl" href="#dom-audiodecoder-state-slot" id="ref-for-dom-audiodecoder-state-slot⑦">[[state]]</a></code> to <code>"unconfigured"</code>.</p>
       <li data-md>
-       <p>Signal <code class="idl"><a data-link-type="idl" href="#dom-audiodecoder-codec-implementation-slot" id="ref-for-dom-audiodecoder-codec-implementation-slot①⓪">[[codec implementation]]</a></code> to cease producing
+       <p>Signal <code class="idl"><a data-link-type="idl" href="#dom-audiodecoder-codec-implementation-slot" id="ref-for-dom-audiodecoder-codec-implementation-slot①①">[[codec implementation]]</a></code> to cease producing
 output for the previous configuration.</p>
       <li data-md>
        <p>Remove all <a data-link-type="dfn" href="#control-message" id="ref-for-control-message⑤">control messages</a> from the <code class="idl"><a data-link-type="idl" href="#dom-audiodecoder-control-message-queue-slot" id="ref-for-dom-audiodecoder-control-message-queue-slot②">[[control message queue]]</a></code>.</p>
@@ -1408,7 +1407,7 @@ output for the previous configuration.</p>
       <li data-md>
        <p>Set <code class="idl"><a data-link-type="idl" href="#dom-audiodecoder-state-slot" id="ref-for-dom-audiodecoder-state-slot⑧">[[state]]</a></code> to <code>"closed"</code>.</p>
       <li data-md>
-       <p>Clear <code class="idl"><a data-link-type="idl" href="#dom-audiodecoder-codec-implementation-slot" id="ref-for-dom-audiodecoder-codec-implementation-slot①①">[[codec implementation]]</a></code> and release associated <a data-link-type="dfn" href="#system-resources" id="ref-for-system-resources①">system resources</a>.</p>
+       <p>Clear <code class="idl"><a data-link-type="idl" href="#dom-audiodecoder-codec-implementation-slot" id="ref-for-dom-audiodecoder-codec-implementation-slot①②">[[codec implementation]]</a></code> and release associated <a data-link-type="dfn" href="#system-resources" id="ref-for-system-resources①">system resources</a>.</p>
       <li data-md>
        <p>If <var>exception</var> is not an <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#aborterror" id="ref-for-aborterror②">AbortError</a></code> <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-DOMException" id="ref-for-idl-DOMException③">DOMException</a></code>, <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task" id="ref-for-queue-a-task⑦">queue a task</a> to invoke the <code class="idl"><a data-link-type="idl" href="#dom-audiodecoder-error-callback-slot" id="ref-for-dom-audiodecoder-error-callback-slot①">[[error callback]]</a></code> with <var>exception</var>.</p>
      </ol>
@@ -1448,14 +1447,14 @@ output for the previous configuration.</p>
      <p>A boolean indicating when processing the <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-control-message-queue-slot" id="ref-for-dom-videodecoder-control-message-queue-slot">[[control message queue]]</a></code> is blocked by a pending <a data-link-type="dfn" href="#control-message" id="ref-for-control-message⑦">control message</a>. See <a data-link-type="dfn" href="#message-queue-blocked" id="ref-for-message-queue-blocked③">[[message queue blocked]]</a>.</p>
     <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="VideoDecoder" data-dfn-type="attribute" data-export id="dom-videodecoder-codec-implementation-slot"><code>[[codec implementation]]</code></dfn>
     <dd data-md>
-     <p>Underlying decoder implementation provided by the User Agent.</p>
+     <p>Underlying decoder implementation provided by the User Agent. See <a data-link-type="dfn" href="#codec-implementation" id="ref-for-codec-implementation②">[[codec implementation]]</a>.</p>
     <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="VideoDecoder" data-dfn-type="attribute" data-export id="dom-videodecoder-codec-work-queue-slot"><code>[[codec work queue]]</code></dfn>
     <dd data-md>
      <p>A <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/infrastructure.html#parallel-queue" id="ref-for-parallel-queue⑤">parallel queue</a> used for running parallel steps that reference the <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-codec-implementation-slot" id="ref-for-dom-videodecoder-codec-implementation-slot">[[codec implementation]]</a></code>. See <a data-link-type="dfn" href="#codec-work-queue" id="ref-for-codec-work-queue③">[[codec work queue]]</a>.</p>
     <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="VideoDecoder" data-dfn-type="attribute" data-export id="dom-videodecoder-codec-saturated-slot"><code>[[codec saturated]]</code></dfn>
     <dd data-md>
-     <p>A boolean indicating when the [[codec implementation]] is unable to accept
-additional decoding work.</p>
+     <p>A boolean indicating when the <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-codec-implementation-slot" id="ref-for-dom-videodecoder-codec-implementation-slot①">[[codec implementation]]</a></code> is
+unable to accept additional decoding work.</p>
     <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="VideoDecoder" data-dfn-type="attribute" data-export id="dom-videodecoder-output-callback-slot"><code>[[output callback]]</code></dfn>
     <dd data-md>
      <p>Callback given at construction for decoded outputs.</p>
@@ -1470,7 +1469,7 @@ additional decoding work.</p>
      <p>A boolean indicating that the next chunk passed to <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-decode" id="ref-for-dom-videodecoder-decode①">decode()</a></code> <em class="rfc2119">MUST</em> describe a <a data-link-type="dfn" href="#key-chunk" id="ref-for-key-chunk②">key chunk</a> as indicated by <code class="idl"><a data-link-type="idl" href="#dom-encodedvideochunk-type" id="ref-for-dom-encodedvideochunk-type">type</a></code>.</p>
     <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="VideoDecoder" data-dfn-type="attribute" data-export id="dom-videodecoder-state-slot"><code>[[state]]</code></dfn>
     <dd data-md>
-     <p>The current <code class="idl"><a data-link-type="idl" href="#enumdef-codecstate" id="ref-for-enumdef-codecstate④">CodecState</a></code> of this <code class="idl"><a data-link-type="idl" href="#videodecoder" id="ref-for-videodecoder">VideoDecoder</a></code>.</p>
+     <p>The current <code class="idl"><a data-link-type="idl" href="#enumdef-codecstate" id="ref-for-enumdef-codecstate④">CodecState</a></code> of this <code class="idl"><a data-link-type="idl" href="#videodecoder" id="ref-for-videodecoder①">VideoDecoder</a></code>.</p>
     <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="VideoDecoder" data-dfn-type="attribute" data-export id="dom-videodecoder-decodequeuesize-slot"><code>[[decodeQueueSize]]</code></dfn>
     <dd data-md>
      <p>The number of pending decode requests. This number will decrease as the
@@ -1487,13 +1486,13 @@ scheduled to fire. Used to avoid event spam.</p>
     <dfn class="dfn-paneled idl-code" data-dfn-for="VideoDecoder" data-dfn-type="constructor" data-export data-lt="VideoDecoder(init)|constructor(init)" id="dom-videodecoder-videodecoder" title="VideoDecoder(init)"><code> VideoDecoder(init) </code></dfn> 
    <ol>
     <li data-md>
-     <p>Let d be a new <code class="idl"><a data-link-type="idl" href="#videodecoder" id="ref-for-videodecoder①">VideoDecoder</a></code> object.</p>
+     <p>Let d be a new <code class="idl"><a data-link-type="idl" href="#videodecoder" id="ref-for-videodecoder②">VideoDecoder</a></code> object.</p>
     <li data-md>
      <p>Assign a new <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#queue" id="ref-for-queue④">queue</a> to <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-control-message-queue-slot" id="ref-for-dom-videodecoder-control-message-queue-slot①">[[control message queue]]</a></code>.</p>
     <li data-md>
      <p>Assign <code>false</code> to <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-message-queue-blocked-slot" id="ref-for-dom-videodecoder-message-queue-blocked-slot">[[message queue blocked]]</a></code>.</p>
     <li data-md>
-     <p>Assign <code>null</code> to <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-codec-implementation-slot" id="ref-for-dom-videodecoder-codec-implementation-slot①">[[codec implementation]]</a></code>.</p>
+     <p>Assign <code>null</code> to <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-codec-implementation-slot" id="ref-for-dom-videodecoder-codec-implementation-slot②">[[codec implementation]]</a></code>.</p>
     <li data-md>
      <p>Assign the result of starting a new <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/infrastructure.html#parallel-queue" id="ref-for-parallel-queue⑥">parallel queue</a> to <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-codec-work-queue-slot" id="ref-for-dom-videodecoder-codec-work-queue-slot">[[codec work queue]]</a></code>.</p>
     <li data-md>
@@ -1533,7 +1532,7 @@ scheduled to fire. Used to avoid event spam.</p>
    <dl>
     <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="VideoDecoder" data-dfn-type="event" data-export id="eventdef-videodecoder-dequeue"><code>dequeue</code></dfn>
     <dd data-md>
-     <p>Fired at the <code class="idl"><a data-link-type="idl" href="#videodecoder" id="ref-for-videodecoder②">VideoDecoder</a></code> when the <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-decodequeuesize" id="ref-for-dom-videodecoder-decodequeuesize①">decodeQueueSize</a></code> has
+     <p>Fired at the <code class="idl"><a data-link-type="idl" href="#videodecoder" id="ref-for-videodecoder③">VideoDecoder</a></code> when the <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-decodequeuesize" id="ref-for-dom-videodecoder-decodequeuesize①">decodeQueueSize</a></code> has
 decreased.</p>
    </dl>
    <h3 class="heading settled" data-level="4.5" id="videodecoder-methods"><span class="secno">4.5. </span><span class="content">Methods</span><a class="self-link" href="#videodecoder-methods"></a></h3>
@@ -1568,7 +1567,7 @@ decreased.</p>
        <p>Let <var>supported</var> be the result of running the <a data-link-type="dfn" href="#check-configuration-support" id="ref-for-check-configuration-support②">Check Configuration
 Support</a> algorithm with <var>config</var>.</p>
       <li data-md>
-       <p>If <var>supported</var> is <code>true</code>, assign <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-codec-implementation-slot" id="ref-for-dom-videodecoder-codec-implementation-slot②">[[codec implementation]]</a></code> with an implementation
+       <p>If <var>supported</var> is <code>true</code>, assign <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-codec-implementation-slot" id="ref-for-dom-videodecoder-codec-implementation-slot③">[[codec implementation]]</a></code> with an implementation
 supporting <var>config</var>.</p>
       <li data-md>
        <p>Otherwise, run the <a data-link-type="dfn" href="#close-videodecoder" id="ref-for-close-videodecoder">Close VideoDecoder</a> algorithm with <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#notsupportederror" id="ref-for-notsupportederror③">NotSupportedError</a></code> and return <code>"processed"</code>.</p>
@@ -1578,7 +1577,7 @@ supporting <var>config</var>.</p>
        <p>Enqueue the following steps to <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-codec-work-queue-slot" id="ref-for-dom-videodecoder-codec-work-queue-slot①">[[codec work queue]]</a></code>:</p>
        <ol>
         <li data-md>
-         <p>Configure <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-codec-implementation-slot" id="ref-for-dom-videodecoder-codec-implementation-slot③">[[codec implementation]]</a></code> with <var>config</var>.</p>
+         <p>Configure <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-codec-implementation-slot" id="ref-for-dom-videodecoder-codec-implementation-slot④">[[codec implementation]]</a></code> with <var>config</var>.</p>
         <li data-md>
          <p>Set <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-active-decoder-config-slot" id="ref-for-dom-videodecoder-active-decoder-config-slot①">[[active decoder config]]</a></code> to <code>config</code>.</p>
         <li data-md>
@@ -1593,12 +1592,12 @@ supporting <var>config</var>.</p>
     <dd>
       <a data-link-type="dfn" href="#enqueues-a-control-message" id="ref-for-enqueues-a-control-message⑦">Enqueues a control message</a> to decode the given <var>chunk</var>. 
      <p class="note" role="note"><span class="marker">NOTE:</span> Authors are encouraged to call <code class="idl"><a data-link-type="idl" href="#dom-videoframe-close" id="ref-for-dom-videoframe-close">close()</a></code> on output <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe③">VideoFrame</a></code>s immediately when frames are no longer needed. The
-        underlying <a data-link-type="dfn" href="#media-resource" id="ref-for-media-resource①">media resource</a>s are owned by the <code class="idl"><a data-link-type="idl" href="#videodecoder" id="ref-for-videodecoder③">VideoDecoder</a></code> and
+        underlying <a data-link-type="dfn" href="#media-resource" id="ref-for-media-resource①">media resource</a>s are owned by the <code class="idl"><a data-link-type="idl" href="#videodecoder" id="ref-for-videodecoder④">VideoDecoder</a></code> and
         failing to release them (or waiting for garbage collection) can cause
         decoding to stall.</p>
-     <p class="note" role="note"><span class="marker">NOTE:</span> <code class="idl"><a data-link-type="idl" href="#videodecoder" id="ref-for-videodecoder④">VideoDecoder</a></code> requires that frames are output in the order they
+     <p class="note" role="note"><span class="marker">NOTE:</span> <code class="idl"><a data-link-type="idl" href="#videodecoder" id="ref-for-videodecoder⑤">VideoDecoder</a></code> requires that frames are output in the order they
         expect to be presented, commonly known as presentation order. When using
-        some <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-codec-implementation-slot" id="ref-for-dom-videodecoder-codec-implementation-slot④">[[codec implementation]]</a></code>s the User Agent will have to
+        some <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-codec-implementation-slot" id="ref-for-dom-videodecoder-codec-implementation-slot⑤">[[codec implementation]]</a></code>s the User Agent will have
         to reorder outputs into presentation order.</p>
      <p>When invoked, run these steps:</p>
      <ol>
@@ -1628,7 +1627,7 @@ it is truly a <a data-link-type="dfn" href="#key-chunk" id="ref-for-key-chunk③
        <p>If <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-codec-saturated-slot" id="ref-for-dom-videodecoder-codec-saturated-slot①">[[codec saturated]]</a></code> equals <code>true</code>, return <code>"not
 processed"</code>.</p>
       <li data-md>
-       <p>If decoding chunk will cause the <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-codec-implementation-slot" id="ref-for-dom-videodecoder-codec-implementation-slot⑤">[[codec implementation]]</a></code> to become <a data-link-type="dfn" href="#saturated" id="ref-for-saturated②">saturated</a>,
+       <p>If decoding chunk will cause the <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-codec-implementation-slot" id="ref-for-dom-videodecoder-codec-implementation-slot⑥">[[codec implementation]]</a></code> to become <a data-link-type="dfn" href="#saturated" id="ref-for-saturated②">saturated</a>,
 assign <code>true</code> to <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-codec-saturated-slot" id="ref-for-dom-videodecoder-codec-saturated-slot②">[[codec saturated]]</a></code>.</p>
       <li data-md>
        <p>Decrement <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-decodequeuesize-slot" id="ref-for-dom-videodecoder-decodequeuesize-slot③">[[decodeQueueSize]]</a></code> and run the <a data-link-type="dfn" href="#videodecoder-schedule-dequeue-event" id="ref-for-videodecoder-schedule-dequeue-event">Schedule Dequeue Event</a> algorithm.</p>
@@ -1636,12 +1635,12 @@ assign <code>true</code> to <code class="idl"><a data-link-type="idl" href="#dom
        <p>Enqueue the following steps to the <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-codec-work-queue-slot" id="ref-for-dom-videodecoder-codec-work-queue-slot②">[[codec work queue]]</a></code>:</p>
        <ol>
         <li data-md>
-         <p>Attempt to use <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-codec-implementation-slot" id="ref-for-dom-videodecoder-codec-implementation-slot⑥">[[codec implementation]]</a></code> to decode
+         <p>Attempt to use <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-codec-implementation-slot" id="ref-for-dom-videodecoder-codec-implementation-slot⑦">[[codec implementation]]</a></code> to decode
 the chunk.</p>
         <li data-md>
          <p>If decoding results in an error, <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task" id="ref-for-queue-a-task⑨">queue a task</a> to run the <a data-link-type="dfn" href="#close-videodecoder" id="ref-for-close-videodecoder①">Close VideoDecoder</a> algorithm with <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#encodingerror" id="ref-for-encodingerror①">EncodingError</a></code> and return.</p>
         <li data-md>
-         <p>If <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-codec-saturated-slot" id="ref-for-dom-videodecoder-codec-saturated-slot③">[[codec saturated]]</a></code> equals <code>true</code> and <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-codec-implementation-slot" id="ref-for-dom-videodecoder-codec-implementation-slot⑦">[[codec implementation]]</a></code> is no longer <a data-link-type="dfn" href="#saturated" id="ref-for-saturated③">saturated</a>, <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task" id="ref-for-queue-a-task①⓪">queue a task</a> to perform the following steps:</p>
+         <p>If <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-codec-saturated-slot" id="ref-for-dom-videodecoder-codec-saturated-slot③">[[codec saturated]]</a></code> equals <code>true</code> and <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-codec-implementation-slot" id="ref-for-dom-videodecoder-codec-implementation-slot⑧">[[codec implementation]]</a></code> is no longer <a data-link-type="dfn" href="#saturated" id="ref-for-saturated③">saturated</a>, <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task" id="ref-for-queue-a-task①⓪">queue a task</a> to perform the following steps:</p>
          <ol>
           <li data-md>
            <p>Assign <code>false</code> to <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-codec-saturated-slot" id="ref-for-dom-videodecoder-codec-saturated-slot④">[[codec saturated]]</a></code>.</p>
@@ -1650,7 +1649,7 @@ the chunk.</p>
          </ol>
         <li data-md>
          <p>Let <var>decoded outputs</var> be a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list" id="ref-for-list④">list</a> of decoded video data outputs
-emitted by <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-codec-implementation-slot" id="ref-for-dom-videodecoder-codec-implementation-slot⑧">[[codec implementation]]</a></code> in
+emitted by <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-codec-implementation-slot" id="ref-for-dom-videodecoder-codec-implementation-slot⑨">[[codec implementation]]</a></code> in
 presentation order.</p>
         <li data-md>
          <p>If <var>decoded outputs</var> is not empty, <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task" id="ref-for-queue-a-task①①">queue a task</a> to run the <a data-link-type="dfn" href="#output-videoframes" id="ref-for-output-videoframes">Output VideoFrame</a> algorithm with <var>decoded outputs</var>.</p>
@@ -1685,10 +1684,10 @@ presentation order.</p>
        <p>Enqueue the following steps to the <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-codec-work-queue-slot" id="ref-for-dom-videodecoder-codec-work-queue-slot③">[[codec work queue]]</a></code>:</p>
        <ol>
         <li data-md>
-         <p>Signal <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-codec-implementation-slot" id="ref-for-dom-videodecoder-codec-implementation-slot⑨">[[codec implementation]]</a></code> to emit all <a data-link-type="dfn" href="#internal-pending-output" id="ref-for-internal-pending-output①">internal pending outputs</a>.</p>
+         <p>Signal <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-codec-implementation-slot" id="ref-for-dom-videodecoder-codec-implementation-slot①⓪">[[codec implementation]]</a></code> to emit all <a data-link-type="dfn" href="#internal-pending-output" id="ref-for-internal-pending-output①">internal pending outputs</a>.</p>
         <li data-md>
          <p>Let <var>decoded outputs</var> be a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list" id="ref-for-list⑤">list</a> of decoded video data outputs
-emitted by <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-codec-implementation-slot" id="ref-for-dom-videodecoder-codec-implementation-slot①⓪">[[codec implementation]]</a></code>.</p>
+emitted by <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-codec-implementation-slot" id="ref-for-dom-videodecoder-codec-implementation-slot①①">[[codec implementation]]</a></code>.</p>
         <li data-md>
          <p><a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task" id="ref-for-queue-a-task①②">Queue a task</a> to perform these steps:</p>
          <ol>
@@ -1802,7 +1801,7 @@ let <var>colorSpace</var> be <code>undefined</code>.</p>
       <li data-md>
        <p>Set <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-state" id="ref-for-dom-videodecoder-state②">state</a></code> to <code>"unconfigured"</code>.</p>
       <li data-md>
-       <p>Signal <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-codec-implementation-slot" id="ref-for-dom-videodecoder-codec-implementation-slot①①">[[codec implementation]]</a></code> to cease producing
+       <p>Signal <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-codec-implementation-slot" id="ref-for-dom-videodecoder-codec-implementation-slot①②">[[codec implementation]]</a></code> to cease producing
 output for the previous configuration.</p>
       <li data-md>
        <p>Remove all <a data-link-type="dfn" href="#control-message" id="ref-for-control-message①⓪">control messages</a> from the <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-control-message-queue-slot" id="ref-for-dom-videodecoder-control-message-queue-slot②">[[control message queue]]</a></code>.</p>
@@ -1832,7 +1831,7 @@ output for the previous configuration.</p>
       <li data-md>
        <p>Set <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-state" id="ref-for-dom-videodecoder-state③">state</a></code> to <code>"closed"</code>.</p>
       <li data-md>
-       <p>Clear <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-codec-implementation-slot" id="ref-for-dom-videodecoder-codec-implementation-slot①②">[[codec implementation]]</a></code> and release associated <a data-link-type="dfn" href="#system-resources" id="ref-for-system-resources③">system resources</a>.</p>
+       <p>Clear <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-codec-implementation-slot" id="ref-for-dom-videodecoder-codec-implementation-slot①③">[[codec implementation]]</a></code> and release associated <a data-link-type="dfn" href="#system-resources" id="ref-for-system-resources③">system resources</a>.</p>
       <li data-md>
        <p>If <var>exception</var> is not an <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#aborterror" id="ref-for-aborterror⑤">AbortError</a></code> <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-DOMException" id="ref-for-idl-DOMException⑦">DOMException</a></code>, <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task" id="ref-for-queue-a-task①④">queue a task</a> to invoke the <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-error-callback-slot" id="ref-for-dom-videodecoder-error-callback-slot①">[[error callback]]</a></code> with <var>exception</var>.</p>
      </ol>
@@ -1874,14 +1873,14 @@ output for the previous configuration.</p>
      <p>A boolean indicating when processing the <code class="idl"><a data-link-type="idl" href="#dom-audioencoder-control-message-queue-slot" id="ref-for-dom-audioencoder-control-message-queue-slot">[[control message queue]]</a></code> is blocked by a pending <a data-link-type="dfn" href="#control-message" id="ref-for-control-message①②">control message</a>. See <a data-link-type="dfn" href="#message-queue-blocked" id="ref-for-message-queue-blocked④">[[message queue blocked]]</a>.</p>
     <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="AudioEncoder" data-dfn-type="attribute" data-export id="dom-audioencoder-codec-implementation-slot"><code>[[codec implementation]]</code></dfn>
     <dd data-md>
-     <p>Underlying encoder implementation provided by the User Agent.</p>
+     <p>Underlying encoder implementation provided by the User Agent. See <a data-link-type="dfn" href="#codec-implementation" id="ref-for-codec-implementation③">[[codec implementation]]</a>.</p>
     <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="AudioEncoder" data-dfn-type="attribute" data-export id="dom-audioencoder-codec-work-queue-slot"><code>[[codec work queue]]</code></dfn>
     <dd data-md>
      <p>A <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/infrastructure.html#parallel-queue" id="ref-for-parallel-queue⑧">parallel queue</a> used for running parallel steps that reference the <code class="idl"><a data-link-type="idl" href="#dom-audioencoder-codec-implementation-slot" id="ref-for-dom-audioencoder-codec-implementation-slot">[[codec implementation]]</a></code>. See <a data-link-type="dfn" href="#codec-work-queue" id="ref-for-codec-work-queue④">[[codec work queue]]</a>.</p>
     <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="AudioEncoder" data-dfn-type="attribute" data-export id="dom-audioencoder-codec-saturated-slot"><code>[[codec saturated]]</code></dfn>
     <dd data-md>
-     <p>A boolean indicating when the [[codec implementation]] is unable to accept
-additional encoding work.</p>
+     <p>A boolean indicating when the <code class="idl"><a data-link-type="idl" href="#dom-audioencoder-codec-implementation-slot" id="ref-for-dom-audioencoder-codec-implementation-slot①">[[codec implementation]]</a></code> is
+unable to accept additional encoding work.</p>
     <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="AudioEncoder" data-dfn-type="attribute" data-export id="dom-audioencoder-output-callback-slot"><code>[[output callback]]</code></dfn>
     <dd data-md>
      <p>Callback given at construction for encoded outputs.</p>
@@ -1897,7 +1896,7 @@ additional encoding work.</p>
 emitted <code class="idl"><a data-link-type="idl" href="#encodedaudiochunk" id="ref-for-encodedaudiochunk③">EncodedAudioChunk</a></code>.</p>
     <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="AudioEncoder" data-dfn-type="attribute" data-export id="dom-audioencoder-state-slot"><code>[[state]]</code></dfn>
     <dd data-md>
-     <p>The current <code class="idl"><a data-link-type="idl" href="#enumdef-codecstate" id="ref-for-enumdef-codecstate⑦">CodecState</a></code> of this <code class="idl"><a data-link-type="idl" href="#audioencoder" id="ref-for-audioencoder">AudioEncoder</a></code>.</p>
+     <p>The current <code class="idl"><a data-link-type="idl" href="#enumdef-codecstate" id="ref-for-enumdef-codecstate⑦">CodecState</a></code> of this <code class="idl"><a data-link-type="idl" href="#audioencoder" id="ref-for-audioencoder①">AudioEncoder</a></code>.</p>
     <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="AudioEncoder" data-dfn-type="attribute" data-export id="dom-audioencoder-encodequeuesize-slot"><code>[[encodeQueueSize]]</code></dfn>
     <dd data-md>
      <p>The number of pending encode requests. This number will decrease as the
@@ -1914,13 +1913,13 @@ scheduled to fire. Used to avoid event spam.</p>
     <dfn class="dfn-paneled idl-code" data-dfn-for="AudioEncoder" data-dfn-type="constructor" data-export data-lt="AudioEncoder(init)|constructor(init)" id="dom-audioencoder-audioencoder" title="AudioEncoder(init)"><code> AudioEncoder(init) </code></dfn> 
    <ol>
     <li data-md>
-     <p>Let e be a new <code class="idl"><a data-link-type="idl" href="#audioencoder" id="ref-for-audioencoder①">AudioEncoder</a></code> object.</p>
+     <p>Let e be a new <code class="idl"><a data-link-type="idl" href="#audioencoder" id="ref-for-audioencoder②">AudioEncoder</a></code> object.</p>
     <li data-md>
      <p>Assign a new <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#queue" id="ref-for-queue⑥">queue</a> to <code class="idl"><a data-link-type="idl" href="#dom-audioencoder-control-message-queue-slot" id="ref-for-dom-audioencoder-control-message-queue-slot①">[[control message queue]]</a></code>.</p>
     <li data-md>
      <p>Assign <code>false</code> to <code class="idl"><a data-link-type="idl" href="#dom-audioencoder-message-queue-blocked-slot" id="ref-for-dom-audioencoder-message-queue-blocked-slot">[[message queue blocked]]</a></code>.</p>
     <li data-md>
-     <p>Assign <code>null</code> to <code class="idl"><a data-link-type="idl" href="#dom-audioencoder-codec-implementation-slot" id="ref-for-dom-audioencoder-codec-implementation-slot①">[[codec implementation]]</a></code>.</p>
+     <p>Assign <code>null</code> to <code class="idl"><a data-link-type="idl" href="#dom-audioencoder-codec-implementation-slot" id="ref-for-dom-audioencoder-codec-implementation-slot②">[[codec implementation]]</a></code>.</p>
     <li data-md>
      <p>Assign the result of starting a new <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/infrastructure.html#parallel-queue" id="ref-for-parallel-queue⑨">parallel queue</a> to <code class="idl"><a data-link-type="idl" href="#dom-audioencoder-codec-work-queue-slot" id="ref-for-dom-audioencoder-codec-work-queue-slot">[[codec work queue]]</a></code>.</p>
     <li data-md>
@@ -1960,7 +1959,7 @@ scheduled to fire. Used to avoid event spam.</p>
    <dl>
     <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="AudioEncoder" data-dfn-type="event" data-export id="eventdef-audioencoder-dequeue"><code>dequeue</code></dfn>
     <dd data-md>
-     <p>Fired at the <code class="idl"><a data-link-type="idl" href="#audioencoder" id="ref-for-audioencoder②">AudioEncoder</a></code> when the <code class="idl"><a data-link-type="idl" href="#dom-audioencoder-encodequeuesize" id="ref-for-dom-audioencoder-encodequeuesize①">encodeQueueSize</a></code> has
+     <p>Fired at the <code class="idl"><a data-link-type="idl" href="#audioencoder" id="ref-for-audioencoder③">AudioEncoder</a></code> when the <code class="idl"><a data-link-type="idl" href="#dom-audioencoder-encodequeuesize" id="ref-for-dom-audioencoder-encodequeuesize①">encodeQueueSize</a></code> has
 decreased.</p>
    </dl>
    <h3 class="heading settled" data-level="5.5" id="audioencoder-methods"><span class="secno">5.5. </span><span class="content">Methods</span><a class="self-link" href="#audioencoder-methods"></a></h3>
@@ -1993,7 +1992,7 @@ decreased.</p>
        <p>Let <var>supported</var> be the result of running the <a data-link-type="dfn" href="#check-configuration-support" id="ref-for-check-configuration-support④">Check Configuration
 Support</a> algorithm with <var>config</var>.</p>
       <li data-md>
-       <p>If <var>supported</var> is <code>true</code>, assign <code class="idl"><a data-link-type="idl" href="#dom-audioencoder-codec-implementation-slot" id="ref-for-dom-audioencoder-codec-implementation-slot②">[[codec implementation]]</a></code> with an implementation
+       <p>If <var>supported</var> is <code>true</code>, assign <code class="idl"><a data-link-type="idl" href="#dom-audioencoder-codec-implementation-slot" id="ref-for-dom-audioencoder-codec-implementation-slot③">[[codec implementation]]</a></code> with an implementation
 supporting <var>config</var>.</p>
       <li data-md>
        <p>Otherwise, run the <a data-link-type="dfn" href="#close-audioencoder" id="ref-for-close-audioencoder">Close AudioEncoder</a> algorithm with <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#notsupportederror" id="ref-for-notsupportederror⑤">NotSupportedError</a></code> and return <code>"processed"</code>.</p>
@@ -2003,7 +2002,7 @@ supporting <var>config</var>.</p>
        <p>Enqueue the following steps to <code class="idl"><a data-link-type="idl" href="#dom-audioencoder-codec-work-queue-slot" id="ref-for-dom-audioencoder-codec-work-queue-slot①">[[codec work queue]]</a></code>:</p>
        <ol>
         <li data-md>
-         <p>Configure <code class="idl"><a data-link-type="idl" href="#dom-audioencoder-codec-implementation-slot" id="ref-for-dom-audioencoder-codec-implementation-slot③">[[codec implementation]]</a></code> with <var>config</var>.</p>
+         <p>Configure <code class="idl"><a data-link-type="idl" href="#dom-audioencoder-codec-implementation-slot" id="ref-for-dom-audioencoder-codec-implementation-slot④">[[codec implementation]]</a></code> with <var>config</var>.</p>
         <li data-md>
          <p>Set <code class="idl"><a data-link-type="idl" href="#dom-audioencoder-active-encoder-config-slot" id="ref-for-dom-audioencoder-active-encoder-config-slot①">[[active encoder config]]</a></code> to <code>config</code>.</p>
         <li data-md>
@@ -2040,7 +2039,7 @@ is <code>true</code>, throw a <code class="idl"><a data-link-type="idl" href="ht
        <p>If <code class="idl"><a data-link-type="idl" href="#dom-audioencoder-codec-saturated-slot" id="ref-for-dom-audioencoder-codec-saturated-slot①">[[codec saturated]]</a></code> equals <code>true</code>, return <code>"not
 processed"</code>.</p>
       <li data-md>
-       <p>If encoding <var>data</var> will cause the <code class="idl"><a data-link-type="idl" href="#dom-audioencoder-codec-implementation-slot" id="ref-for-dom-audioencoder-codec-implementation-slot④">[[codec implementation]]</a></code> to become <a data-link-type="dfn" href="#saturated" id="ref-for-saturated④">saturated</a>,
+       <p>If encoding <var>data</var> will cause the <code class="idl"><a data-link-type="idl" href="#dom-audioencoder-codec-implementation-slot" id="ref-for-dom-audioencoder-codec-implementation-slot⑤">[[codec implementation]]</a></code> to become <a data-link-type="dfn" href="#saturated" id="ref-for-saturated④">saturated</a>,
 assign <code>true</code> to <code class="idl"><a data-link-type="idl" href="#dom-audioencoder-codec-saturated-slot" id="ref-for-dom-audioencoder-codec-saturated-slot②">[[codec saturated]]</a></code>.</p>
       <li data-md>
        <p>Decrement <code class="idl"><a data-link-type="idl" href="#dom-audioencoder-encodequeuesize-slot" id="ref-for-dom-audioencoder-encodequeuesize-slot③">[[encodeQueueSize]]</a></code> and run the <a data-link-type="dfn" href="#audioencoder-schedule-dequeue-event" id="ref-for-audioencoder-schedule-dequeue-event">Schedule Dequeue Event</a> algorithm.</p>
@@ -2048,12 +2047,12 @@ assign <code>true</code> to <code class="idl"><a data-link-type="idl" href="#dom
        <p>Enqueue the following steps to the <code class="idl"><a data-link-type="idl" href="#dom-audioencoder-codec-work-queue-slot" id="ref-for-dom-audioencoder-codec-work-queue-slot②">[[codec work queue]]</a></code>:</p>
        <ol>
         <li data-md>
-         <p>Attempt to use <code class="idl"><a data-link-type="idl" href="#dom-audioencoder-codec-implementation-slot" id="ref-for-dom-audioencoder-codec-implementation-slot⑤">[[codec implementation]]</a></code> to encode
+         <p>Attempt to use <code class="idl"><a data-link-type="idl" href="#dom-audioencoder-codec-implementation-slot" id="ref-for-dom-audioencoder-codec-implementation-slot⑥">[[codec implementation]]</a></code> to encode
 the <a data-link-type="dfn" href="#media-resource" id="ref-for-media-resource②">media resource</a> described by <var>dataClone</var>.</p>
         <li data-md>
          <p>If encoding results in an error, <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task" id="ref-for-queue-a-task①⑥">queue a task</a> to run the <a data-link-type="dfn" href="#close-audioencoder" id="ref-for-close-audioencoder①">Close AudioEncoder</a> algorithm with <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#encodingerror" id="ref-for-encodingerror②">EncodingError</a></code> and return.</p>
         <li data-md>
-         <p>If <code class="idl"><a data-link-type="idl" href="#dom-audioencoder-codec-saturated-slot" id="ref-for-dom-audioencoder-codec-saturated-slot③">[[codec saturated]]</a></code> equals <code>true</code> and <code class="idl"><a data-link-type="idl" href="#dom-audioencoder-codec-implementation-slot" id="ref-for-dom-audioencoder-codec-implementation-slot⑥">[[codec implementation]]</a></code> is no longer <a data-link-type="dfn" href="#saturated" id="ref-for-saturated⑤">saturated</a>, <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task" id="ref-for-queue-a-task①⑦">queue a task</a> to perform the following steps:</p>
+         <p>If <code class="idl"><a data-link-type="idl" href="#dom-audioencoder-codec-saturated-slot" id="ref-for-dom-audioencoder-codec-saturated-slot③">[[codec saturated]]</a></code> equals <code>true</code> and <code class="idl"><a data-link-type="idl" href="#dom-audioencoder-codec-implementation-slot" id="ref-for-dom-audioencoder-codec-implementation-slot⑦">[[codec implementation]]</a></code> is no longer <a data-link-type="dfn" href="#saturated" id="ref-for-saturated⑤">saturated</a>, <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task" id="ref-for-queue-a-task①⑦">queue a task</a> to perform the following steps:</p>
          <ol>
           <li data-md>
            <p>Assign <code>false</code> to <code class="idl"><a data-link-type="idl" href="#dom-audioencoder-codec-saturated-slot" id="ref-for-dom-audioencoder-codec-saturated-slot④">[[codec saturated]]</a></code>.</p>
@@ -2062,7 +2061,7 @@ the <a data-link-type="dfn" href="#media-resource" id="ref-for-media-resource②
          </ol>
         <li data-md>
          <p>Let <var>encoded outputs</var> be a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list" id="ref-for-list⑦">list</a> of encoded audio data outputs
-emitted by <code class="idl"><a data-link-type="idl" href="#dom-audioencoder-codec-implementation-slot" id="ref-for-dom-audioencoder-codec-implementation-slot⑦">[[codec implementation]]</a></code>.</p>
+emitted by <code class="idl"><a data-link-type="idl" href="#dom-audioencoder-codec-implementation-slot" id="ref-for-dom-audioencoder-codec-implementation-slot⑧">[[codec implementation]]</a></code>.</p>
         <li data-md>
          <p>If <var>encoded outputs</var> is not empty, <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task" id="ref-for-queue-a-task①⑧">queue a task</a> to run the <a data-link-type="dfn" href="#output-encodedaudiochunks" id="ref-for-output-encodedaudiochunks">Output EncodedAudioChunks</a> algorithm with <var>encoded outputs</var>.</p>
        </ol>
@@ -2094,10 +2093,10 @@ emitted by <code class="idl"><a data-link-type="idl" href="#dom-audioencoder-cod
        <p>Enqueue the following steps to the <code class="idl"><a data-link-type="idl" href="#dom-audioencoder-codec-work-queue-slot" id="ref-for-dom-audioencoder-codec-work-queue-slot③">[[codec work queue]]</a></code>:</p>
        <ol>
         <li data-md>
-         <p>Signal <code class="idl"><a data-link-type="idl" href="#dom-audioencoder-codec-implementation-slot" id="ref-for-dom-audioencoder-codec-implementation-slot⑧">[[codec implementation]]</a></code> to emit all <a data-link-type="dfn" href="#internal-pending-output" id="ref-for-internal-pending-output②">internal pending outputs</a>.</p>
+         <p>Signal <code class="idl"><a data-link-type="idl" href="#dom-audioencoder-codec-implementation-slot" id="ref-for-dom-audioencoder-codec-implementation-slot⑨">[[codec implementation]]</a></code> to emit all <a data-link-type="dfn" href="#internal-pending-output" id="ref-for-internal-pending-output②">internal pending outputs</a>.</p>
         <li data-md>
          <p>Let <var>encoded outputs</var> be a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list" id="ref-for-list⑧">list</a> of encoded audio data outputs
-emitted by <code class="idl"><a data-link-type="idl" href="#dom-audioencoder-codec-implementation-slot" id="ref-for-dom-audioencoder-codec-implementation-slot⑨">[[codec implementation]]</a></code>.</p>
+emitted by <code class="idl"><a data-link-type="idl" href="#dom-audioencoder-codec-implementation-slot" id="ref-for-dom-audioencoder-codec-implementation-slot①⓪">[[codec implementation]]</a></code>.</p>
         <li data-md>
          <p><a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task" id="ref-for-queue-a-task①⑨">Queue a task</a> to perform these steps:</p>
          <ol>
@@ -2211,7 +2210,7 @@ from <var>output</var>.</p>
            <p>Assign to <var>encoderConfig</var>.<code class="idl"><a data-link-type="idl" href="#dom-audioencoderconfig-numberofchannels" id="ref-for-dom-audioencoderconfig-numberofchannels">numberOfChannels</a></code> to <var>outputConfig</var>.<code class="idl"><a data-link-type="idl" href="#dom-audiodecoderconfig-numberofchannels" id="ref-for-dom-audiodecoderconfig-numberofchannels">numberOfChannels</a></code>.</p>
           <li data-md>
            <p>Assign <var>outputConfig</var>.<code class="idl"><a data-link-type="idl" href="#dom-audiodecoderconfig-description" id="ref-for-dom-audiodecoderconfig-description">description</a></code> with a
-sequence of codec specific bytes as determined by the <code class="idl"><a data-link-type="idl" href="#dom-audioencoder-codec-implementation-slot" id="ref-for-dom-audioencoder-codec-implementation-slot①⓪">[[codec implementation]]</a></code>. The User Agent <em class="rfc2119">MUST</em> ensure that the provided description
+sequence of codec specific bytes as determined by the <code class="idl"><a data-link-type="idl" href="#dom-audioencoder-codec-implementation-slot" id="ref-for-dom-audioencoder-codec-implementation-slot①①">[[codec implementation]]</a></code>. The User Agent <em class="rfc2119">MUST</em> ensure that the provided description
 could be used to correctly decode output.</p>
            <p class="note" role="note"><span class="marker">NOTE:</span> The codec specific requirements for populating the <code class="idl"><a data-link-type="idl" href="#dom-audiodecoderconfig-description" id="ref-for-dom-audiodecoderconfig-description①">description</a></code> are described in the <a data-link-type="biblio" href="#biblio-webcodecs-codec-registry" title="WebCodecs Codec Registry">[WEBCODECS-CODEC-REGISTRY]</a>.</p>
          </ol>
@@ -2241,7 +2240,7 @@ not <a data-link-type="dfn" href="#equal-dictionaries" id="ref-for-equal-diction
       <li data-md>
        <p>Set <code class="idl"><a data-link-type="idl" href="#dom-audioencoder-active-output-config-slot" id="ref-for-dom-audioencoder-active-output-config-slot③">[[active output config]]</a></code> to <code>null</code>.</p>
       <li data-md>
-       <p>Signal <code class="idl"><a data-link-type="idl" href="#dom-audioencoder-codec-implementation-slot" id="ref-for-dom-audioencoder-codec-implementation-slot①①">[[codec implementation]]</a></code> to cease producing
+       <p>Signal <code class="idl"><a data-link-type="idl" href="#dom-audioencoder-codec-implementation-slot" id="ref-for-dom-audioencoder-codec-implementation-slot①②">[[codec implementation]]</a></code> to cease producing
 output for the previous configuration.</p>
       <li data-md>
        <p>Remove all <a data-link-type="dfn" href="#control-message" id="ref-for-control-message①⑤">control messages</a> from the <code class="idl"><a data-link-type="idl" href="#dom-audioencoder-control-message-queue-slot" id="ref-for-dom-audioencoder-control-message-queue-slot②">[[control message queue]]</a></code>.</p>
@@ -2271,7 +2270,7 @@ output for the previous configuration.</p>
       <li data-md>
        <p>Set <code class="idl"><a data-link-type="idl" href="#dom-audioencoder-state-slot" id="ref-for-dom-audioencoder-state-slot⑧">[[state]]</a></code> to <code>"closed"</code>.</p>
       <li data-md>
-       <p>Clear <code class="idl"><a data-link-type="idl" href="#dom-audioencoder-codec-implementation-slot" id="ref-for-dom-audioencoder-codec-implementation-slot①②">[[codec implementation]]</a></code> and release associated <a data-link-type="dfn" href="#system-resources" id="ref-for-system-resources⑤">system resources</a>.</p>
+       <p>Clear <code class="idl"><a data-link-type="idl" href="#dom-audioencoder-codec-implementation-slot" id="ref-for-dom-audioencoder-codec-implementation-slot①③">[[codec implementation]]</a></code> and release associated <a data-link-type="dfn" href="#system-resources" id="ref-for-system-resources⑤">system resources</a>.</p>
       <li data-md>
        <p>If <var>exception</var> is not an <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#aborterror" id="ref-for-aborterror⑧">AbortError</a></code> <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-DOMException" id="ref-for-idl-DOMException①①">DOMException</a></code>, <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task" id="ref-for-queue-a-task②①">queue a task</a> to invoke the <code class="idl"><a data-link-type="idl" href="#dom-audioencoder-error-callback-slot" id="ref-for-dom-audioencoder-error-callback-slot①">[[error callback]]</a></code> with <var>exception</var>.</p>
      </ol>
@@ -2325,14 +2324,14 @@ decode the associated <code class="idl"><a data-link-type="idl" href="#encodedau
      <p>A boolean indicating when processing the <code class="idl"><a data-link-type="idl" href="#dom-videoencoder-control-message-queue-slot" id="ref-for-dom-videoencoder-control-message-queue-slot">[[control message queue]]</a></code> is blocked by a pending <a data-link-type="dfn" href="#control-message" id="ref-for-control-message①⑦">control message</a>. See <a data-link-type="dfn" href="#message-queue-blocked" id="ref-for-message-queue-blocked⑤">[[message queue blocked]]</a>.</p>
     <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="VideoEncoder" data-dfn-type="attribute" data-export id="dom-videoencoder-codec-implementation-slot"><code>[[codec implementation]]</code></dfn>
     <dd data-md>
-     <p>Underlying encoder implementation provided by the User Agent.</p>
+     <p>Underlying encoder implementation provided by the User Agent. See <a data-link-type="dfn" href="#codec-implementation" id="ref-for-codec-implementation④">[[codec implementation]]</a>.</p>
     <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="VideoEncoder" data-dfn-type="attribute" data-export id="dom-videoencoder-codec-work-queue-slot"><code>[[codec work queue]]</code></dfn>
     <dd data-md>
      <p>A <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/infrastructure.html#parallel-queue" id="ref-for-parallel-queue①①">parallel queue</a> used for running parallel steps that reference the <code class="idl"><a data-link-type="idl" href="#dom-videoencoder-codec-implementation-slot" id="ref-for-dom-videoencoder-codec-implementation-slot">[[codec implementation]]</a></code>. See <a data-link-type="dfn" href="#codec-work-queue" id="ref-for-codec-work-queue⑤">[[codec work queue]]</a>.</p>
     <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="VideoEncoder" data-dfn-type="attribute" data-export id="dom-videoencoder-codec-saturated-slot"><code>[[codec saturated]]</code></dfn>
     <dd data-md>
-     <p>A boolean indicating when the [[codec implementation]] is unable to accept
-additional encoding work.</p>
+     <p>A boolean indicating when the <code class="idl"><a data-link-type="idl" href="#dom-videoencoder-codec-implementation-slot" id="ref-for-dom-videoencoder-codec-implementation-slot①">[[codec implementation]]</a></code> is
+unable to accept additional encoding work.</p>
     <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="VideoEncoder" data-dfn-type="attribute" data-export id="dom-videoencoder-output-callback-slot"><code>[[output callback]]</code></dfn>
     <dd data-md>
      <p>Callback given at construction for encoded outputs.</p>
@@ -2348,7 +2347,7 @@ additional encoding work.</p>
 emitted <code class="idl"><a data-link-type="idl" href="#encodedvideochunk" id="ref-for-encodedvideochunk⑤">EncodedVideoChunk</a></code>.</p>
     <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="VideoEncoder" data-dfn-type="attribute" data-export id="dom-videoencoder-state-slot"><code>[[state]]</code></dfn>
     <dd data-md>
-     <p>The current <code class="idl"><a data-link-type="idl" href="#enumdef-codecstate" id="ref-for-enumdef-codecstate①⓪">CodecState</a></code> of this <code class="idl"><a data-link-type="idl" href="#videoencoder" id="ref-for-videoencoder">VideoEncoder</a></code>.</p>
+     <p>The current <code class="idl"><a data-link-type="idl" href="#enumdef-codecstate" id="ref-for-enumdef-codecstate①⓪">CodecState</a></code> of this <code class="idl"><a data-link-type="idl" href="#videoencoder" id="ref-for-videoencoder①">VideoEncoder</a></code>.</p>
     <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="VideoEncoder" data-dfn-type="attribute" data-export id="dom-videoencoder-encodequeuesize-slot"><code>[[encodeQueueSize]]</code></dfn>
     <dd data-md>
      <p>The number of pending encode requests. This number will decrease as the
@@ -2365,13 +2364,13 @@ scheduled to fire. Used to avoid event spam.</p>
     <dfn class="dfn-paneled idl-code" data-dfn-for="VideoEncoder" data-dfn-type="constructor" data-export data-lt="VideoEncoder(init)|constructor(init)" id="dom-videoencoder-videoencoder" title="VideoEncoder(init)"><code> VideoEncoder(init) </code></dfn> 
    <ol>
     <li data-md>
-     <p>Let e be a new <code class="idl"><a data-link-type="idl" href="#videoencoder" id="ref-for-videoencoder①">VideoEncoder</a></code> object.</p>
+     <p>Let e be a new <code class="idl"><a data-link-type="idl" href="#videoencoder" id="ref-for-videoencoder②">VideoEncoder</a></code> object.</p>
     <li data-md>
      <p>Assign a new <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#queue" id="ref-for-queue⑧">queue</a> to <code class="idl"><a data-link-type="idl" href="#dom-videoencoder-control-message-queue-slot" id="ref-for-dom-videoencoder-control-message-queue-slot①">[[control message queue]]</a></code>.</p>
     <li data-md>
      <p>Assign <code>false</code> to <code class="idl"><a data-link-type="idl" href="#dom-videoencoder-message-queue-blocked-slot" id="ref-for-dom-videoencoder-message-queue-blocked-slot">[[message queue blocked]]</a></code>.</p>
     <li data-md>
-     <p>Assign <code>null</code> to <code class="idl"><a data-link-type="idl" href="#dom-videoencoder-codec-implementation-slot" id="ref-for-dom-videoencoder-codec-implementation-slot①">[[codec implementation]]</a></code>.</p>
+     <p>Assign <code>null</code> to <code class="idl"><a data-link-type="idl" href="#dom-videoencoder-codec-implementation-slot" id="ref-for-dom-videoencoder-codec-implementation-slot②">[[codec implementation]]</a></code>.</p>
     <li data-md>
      <p>Assign the result of starting a new <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/infrastructure.html#parallel-queue" id="ref-for-parallel-queue①②">parallel queue</a> to <code class="idl"><a data-link-type="idl" href="#dom-videoencoder-codec-work-queue-slot" id="ref-for-dom-videoencoder-codec-work-queue-slot">[[codec work queue]]</a></code>.</p>
     <li data-md>
@@ -2411,7 +2410,7 @@ scheduled to fire. Used to avoid event spam.</p>
    <dl>
     <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="VideoEncoder" data-dfn-type="event" data-export id="eventdef-videoencoder-dequeue"><code>dequeue</code></dfn>
     <dd data-md>
-     <p>Fired at the <code class="idl"><a data-link-type="idl" href="#videoencoder" id="ref-for-videoencoder②">VideoEncoder</a></code> when the <code class="idl"><a data-link-type="idl" href="#dom-videoencoder-encodequeuesize" id="ref-for-dom-videoencoder-encodequeuesize①">encodeQueueSize</a></code> has
+     <p>Fired at the <code class="idl"><a data-link-type="idl" href="#videoencoder" id="ref-for-videoencoder③">VideoEncoder</a></code> when the <code class="idl"><a data-link-type="idl" href="#dom-videoencoder-encodequeuesize" id="ref-for-dom-videoencoder-encodequeuesize①">encodeQueueSize</a></code> has
 decreased.</p>
    </dl>
    <h3 class="heading settled" data-level="6.5" id="videoencoder-methods"><span class="secno">6.5. </span><span class="content">Methods</span><a class="self-link" href="#videoencoder-methods"></a></h3>
@@ -2445,7 +2444,7 @@ decreased.</p>
        <p>Let <var>supported</var> be the result of running the <a data-link-type="dfn" href="#check-configuration-support" id="ref-for-check-configuration-support⑥">Check Configuration
 Support</a> algorithm with <var>config</var>.</p>
       <li data-md>
-       <p>If <var>supported</var> is <code>true</code>, assign <code class="idl"><a data-link-type="idl" href="#dom-videoencoder-codec-implementation-slot" id="ref-for-dom-videoencoder-codec-implementation-slot②">[[codec implementation]]</a></code> with an implementation
+       <p>If <var>supported</var> is <code>true</code>, assign <code class="idl"><a data-link-type="idl" href="#dom-videoencoder-codec-implementation-slot" id="ref-for-dom-videoencoder-codec-implementation-slot③">[[codec implementation]]</a></code> with an implementation
 supporting <var>config</var>.</p>
       <li data-md>
        <p>Otherwise, run the <a data-link-type="dfn" href="#close-videoencoder" id="ref-for-close-videoencoder">Close VideoEncoder</a> algorithm with <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#notsupportederror" id="ref-for-notsupportederror⑦">NotSupportedError</a></code> and return <code>"processed"</code>.</p>
@@ -2455,7 +2454,7 @@ supporting <var>config</var>.</p>
        <p>Enqueue the following steps to <code class="idl"><a data-link-type="idl" href="#dom-videoencoder-codec-work-queue-slot" id="ref-for-dom-videoencoder-codec-work-queue-slot①">[[codec work queue]]</a></code>:</p>
        <ol>
         <li data-md>
-         <p>Configure <code class="idl"><a data-link-type="idl" href="#dom-videoencoder-codec-implementation-slot" id="ref-for-dom-videoencoder-codec-implementation-slot③">[[codec implementation]]</a></code> with <var>config</var>.</p>
+         <p>Configure <code class="idl"><a data-link-type="idl" href="#dom-videoencoder-codec-implementation-slot" id="ref-for-dom-videoencoder-codec-implementation-slot④">[[codec implementation]]</a></code> with <var>config</var>.</p>
         <li data-md>
          <p>Set <code class="idl"><a data-link-type="idl" href="#dom-videoencoder-active-encoder-config-slot" id="ref-for-dom-videoencoder-active-encoder-config-slot①">[[active encoder config]]</a></code> to <code>config</code>.</p>
         <li data-md>
@@ -2492,7 +2491,7 @@ is <code>true</code>, throw a <code class="idl"><a data-link-type="idl" href="ht
        <p>If <code class="idl"><a data-link-type="idl" href="#dom-videoencoder-codec-saturated-slot" id="ref-for-dom-videoencoder-codec-saturated-slot①">[[codec saturated]]</a></code> equals <code>true</code>, return <code>"not
 processed"</code>.</p>
       <li data-md>
-       <p>If encoding <var>frame</var> will cause the <code class="idl"><a data-link-type="idl" href="#dom-videoencoder-codec-implementation-slot" id="ref-for-dom-videoencoder-codec-implementation-slot④">[[codec implementation]]</a></code> to become <a data-link-type="dfn" href="#saturated" id="ref-for-saturated⑥">saturated</a>,
+       <p>If encoding <var>frame</var> will cause the <code class="idl"><a data-link-type="idl" href="#dom-videoencoder-codec-implementation-slot" id="ref-for-dom-videoencoder-codec-implementation-slot⑤">[[codec implementation]]</a></code> to become <a data-link-type="dfn" href="#saturated" id="ref-for-saturated⑥">saturated</a>,
 assign <code>true</code> to <code class="idl"><a data-link-type="idl" href="#dom-videoencoder-codec-saturated-slot" id="ref-for-dom-videoencoder-codec-saturated-slot②">[[codec saturated]]</a></code>.</p>
       <li data-md>
        <p>Decrement <code class="idl"><a data-link-type="idl" href="#dom-videoencoder-encodequeuesize-slot" id="ref-for-dom-videoencoder-encodequeuesize-slot③">[[encodeQueueSize]]</a></code> and run the <a data-link-type="dfn" href="#videoencoder-schedule-dequeue-event" id="ref-for-videoencoder-schedule-dequeue-event">Schedule Dequeue Event</a> algorithm.</p>
@@ -2500,12 +2499,12 @@ assign <code>true</code> to <code class="idl"><a data-link-type="idl" href="#dom
        <p>Enqueue the following steps to the <code class="idl"><a data-link-type="idl" href="#dom-videoencoder-codec-work-queue-slot" id="ref-for-dom-videoencoder-codec-work-queue-slot②">[[codec work queue]]</a></code>:</p>
        <ol>
         <li data-md>
-         <p>Attempt to use <code class="idl"><a data-link-type="idl" href="#dom-videoencoder-codec-implementation-slot" id="ref-for-dom-videoencoder-codec-implementation-slot⑤">[[codec implementation]]</a></code> to encode
+         <p>Attempt to use <code class="idl"><a data-link-type="idl" href="#dom-videoencoder-codec-implementation-slot" id="ref-for-dom-videoencoder-codec-implementation-slot⑥">[[codec implementation]]</a></code> to encode
 the <var>frameClone</var> according to <var>options</var>.</p>
         <li data-md>
          <p>If encoding results in an error, <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task" id="ref-for-queue-a-task②③">queue a task</a> to run the <a data-link-type="dfn" href="#close-videoencoder" id="ref-for-close-videoencoder①">Close VideoEncoder</a> algorithm with <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#encodingerror" id="ref-for-encodingerror③">EncodingError</a></code> and return.</p>
         <li data-md>
-         <p>If <code class="idl"><a data-link-type="idl" href="#dom-videoencoder-codec-saturated-slot" id="ref-for-dom-videoencoder-codec-saturated-slot③">[[codec saturated]]</a></code> equals <code>true</code> and <code class="idl"><a data-link-type="idl" href="#dom-videoencoder-codec-implementation-slot" id="ref-for-dom-videoencoder-codec-implementation-slot⑥">[[codec implementation]]</a></code> is no longer <a data-link-type="dfn" href="#saturated" id="ref-for-saturated⑦">saturated</a>, <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task" id="ref-for-queue-a-task②④">queue a task</a> to perform the following steps:</p>
+         <p>If <code class="idl"><a data-link-type="idl" href="#dom-videoencoder-codec-saturated-slot" id="ref-for-dom-videoencoder-codec-saturated-slot③">[[codec saturated]]</a></code> equals <code>true</code> and <code class="idl"><a data-link-type="idl" href="#dom-videoencoder-codec-implementation-slot" id="ref-for-dom-videoencoder-codec-implementation-slot⑦">[[codec implementation]]</a></code> is no longer <a data-link-type="dfn" href="#saturated" id="ref-for-saturated⑦">saturated</a>, <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task" id="ref-for-queue-a-task②④">queue a task</a> to perform the following steps:</p>
          <ol>
           <li data-md>
            <p>Assign <code>false</code> to <code class="idl"><a data-link-type="idl" href="#dom-videoencoder-codec-saturated-slot" id="ref-for-dom-videoencoder-codec-saturated-slot④">[[codec saturated]]</a></code>.</p>
@@ -2514,7 +2513,7 @@ the <var>frameClone</var> according to <var>options</var>.</p>
          </ol>
         <li data-md>
          <p>Let <var>encoded outputs</var> be a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list" id="ref-for-list①⓪">list</a> of encoded video data outputs
-emitted by <code class="idl"><a data-link-type="idl" href="#dom-videoencoder-codec-implementation-slot" id="ref-for-dom-videoencoder-codec-implementation-slot⑦">[[codec implementation]]</a></code>.</p>
+emitted by <code class="idl"><a data-link-type="idl" href="#dom-videoencoder-codec-implementation-slot" id="ref-for-dom-videoencoder-codec-implementation-slot⑧">[[codec implementation]]</a></code>.</p>
         <li data-md>
          <p>If <var>encoded outputs</var> is not empty, <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task" id="ref-for-queue-a-task②⑤">queue a task</a> to run the <a data-link-type="dfn" href="#output-encodedvideochunks" id="ref-for-output-encodedvideochunks">Output EncodedVideoChunks</a> algorithm with <var>encoded outputs</var>.</p>
        </ol>
@@ -2546,10 +2545,10 @@ emitted by <code class="idl"><a data-link-type="idl" href="#dom-videoencoder-cod
        <p>Enqueue the following steps to the <code class="idl"><a data-link-type="idl" href="#dom-videoencoder-codec-work-queue-slot" id="ref-for-dom-videoencoder-codec-work-queue-slot③">[[codec work queue]]</a></code>:</p>
        <ol>
         <li data-md>
-         <p>Signal <code class="idl"><a data-link-type="idl" href="#dom-videoencoder-codec-implementation-slot" id="ref-for-dom-videoencoder-codec-implementation-slot⑧">[[codec implementation]]</a></code> to emit all <a data-link-type="dfn" href="#internal-pending-output" id="ref-for-internal-pending-output③">internal pending outputs</a>.</p>
+         <p>Signal <code class="idl"><a data-link-type="idl" href="#dom-videoencoder-codec-implementation-slot" id="ref-for-dom-videoencoder-codec-implementation-slot⑨">[[codec implementation]]</a></code> to emit all <a data-link-type="dfn" href="#internal-pending-output" id="ref-for-internal-pending-output③">internal pending outputs</a>.</p>
         <li data-md>
          <p>Let <var>encoded outputs</var> be a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list" id="ref-for-list①①">list</a> of encoded video data outputs
-emitted by <code class="idl"><a data-link-type="idl" href="#dom-videoencoder-codec-implementation-slot" id="ref-for-dom-videoencoder-codec-implementation-slot⑨">[[codec implementation]]</a></code>.</p>
+emitted by <code class="idl"><a data-link-type="idl" href="#dom-videoencoder-codec-implementation-slot" id="ref-for-dom-videoencoder-codec-implementation-slot①⓪">[[codec implementation]]</a></code>.</p>
         <li data-md>
          <p><a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task" id="ref-for-queue-a-task②⑥">Queue a task</a> to perform these steps:</p>
          <ol>
@@ -2667,7 +2666,7 @@ with <var>output</var>.</p>
           <li data-md>
            <p>Assign <code>encoderConfig.displayHeight</code> to <code>outputConfig.displayHeight</code>.</p>
           <li data-md>
-           <p>Assign the remaining keys of <code>outputConfig</code> as determined by <code class="idl"><a data-link-type="idl" href="#dom-videoencoder-codec-implementation-slot" id="ref-for-dom-videoencoder-codec-implementation-slot①⓪">[[codec implementation]]</a></code>. The User Agent <em class="rfc2119">MUST</em> ensure that the configuration is
+           <p>Assign the remaining keys of <code>outputConfig</code> as determined by <code class="idl"><a data-link-type="idl" href="#dom-videoencoder-codec-implementation-slot" id="ref-for-dom-videoencoder-codec-implementation-slot①①">[[codec implementation]]</a></code>. The User Agent <em class="rfc2119">MUST</em> ensure that the configuration is
 completely described such that <var>outputConfig</var> could be used to
 correctly decode <var>output</var>.</p>
            <p class="note" role="note"><span class="marker">NOTE:</span> The codec specific requirements for populating the <code class="idl"><a data-link-type="idl" href="#dom-videodecoderconfig-description" id="ref-for-dom-videodecoderconfig-description">description</a></code> are described in the <a data-link-type="biblio" href="#biblio-webcodecs-codec-registry" title="WebCodecs Codec Registry">[WEBCODECS-CODEC-REGISTRY]</a>.</p>
@@ -2719,7 +2718,7 @@ temporal layer for <var>output</var>.</p>
       <li data-md>
        <p>Set <code class="idl"><a data-link-type="idl" href="#dom-videoencoder-active-output-config-slot" id="ref-for-dom-videoencoder-active-output-config-slot③">[[active output config]]</a></code> to <code>null</code>.</p>
       <li data-md>
-       <p>Signal <code class="idl"><a data-link-type="idl" href="#dom-videoencoder-codec-implementation-slot" id="ref-for-dom-videoencoder-codec-implementation-slot①①">[[codec implementation]]</a></code> to cease producing
+       <p>Signal <code class="idl"><a data-link-type="idl" href="#dom-videoencoder-codec-implementation-slot" id="ref-for-dom-videoencoder-codec-implementation-slot①②">[[codec implementation]]</a></code> to cease producing
 output for the previous configuration.</p>
       <li data-md>
        <p>Remove all <a data-link-type="dfn" href="#control-message" id="ref-for-control-message②⓪">control messages</a> from the <code class="idl"><a data-link-type="idl" href="#dom-videoencoder-control-message-queue-slot" id="ref-for-dom-videoencoder-control-message-queue-slot②">[[control message queue]]</a></code>.</p>
@@ -2749,7 +2748,7 @@ output for the previous configuration.</p>
       <li data-md>
        <p>Set <code class="idl"><a data-link-type="idl" href="#dom-videoencoder-state-slot" id="ref-for-dom-videoencoder-state-slot⑧">[[state]]</a></code> to <code>"closed"</code>.</p>
       <li data-md>
-       <p>Clear <code class="idl"><a data-link-type="idl" href="#dom-videoencoder-codec-implementation-slot" id="ref-for-dom-videoencoder-codec-implementation-slot①②">[[codec implementation]]</a></code> and release associated <a data-link-type="dfn" href="#system-resources" id="ref-for-system-resources⑦">system resources</a>.</p>
+       <p>Clear <code class="idl"><a data-link-type="idl" href="#dom-videoencoder-codec-implementation-slot" id="ref-for-dom-videoencoder-codec-implementation-slot①③">[[codec implementation]]</a></code> and release associated <a data-link-type="dfn" href="#system-resources" id="ref-for-system-resources⑦">system resources</a>.</p>
       <li data-md>
        <p>If <var>exception</var> is not an <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#aborterror" id="ref-for-aborterror①①">AbortError</a></code> <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-DOMException" id="ref-for-idl-DOMException①⑤">DOMException</a></code>, <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task" id="ref-for-queue-a-task②⑧">queue a task</a> to invoke the <code class="idl"><a data-link-type="idl" href="#dom-videoencoder-error-callback-slot" id="ref-for-dom-videoencoder-error-callback-slot①">[[error callback]]</a></code> with <var>exception</var>.</p>
      </ol>
@@ -2989,7 +2988,7 @@ return <code>false</code>.</p>
     <dd>
       Height of the VideoFrame in pixels, potentially including non-visible
     padding, and prior to considering potential ratio adjustments. 
-     <p class="note" role="note"><span class="marker">NOTE:</span> <code class="idl"><a data-link-type="idl" href="#dom-videodecoderconfig-codedwidth" id="ref-for-dom-videodecoderconfig-codedwidth③">codedWidth</a></code> and <code class="idl"><a data-link-type="idl" href="#dom-videodecoderconfig-codedheight" id="ref-for-dom-videodecoderconfig-codedheight③">codedHeight</a></code> are used when selecting a <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-codec-implementation-slot" id="ref-for-dom-videodecoder-codec-implementation-slot①③">[[codec implementation]]</a></code>.</p>
+     <p class="note" role="note"><span class="marker">NOTE:</span> <code class="idl"><a data-link-type="idl" href="#dom-videodecoderconfig-codedwidth" id="ref-for-dom-videodecoderconfig-codedwidth③">codedWidth</a></code> and <code class="idl"><a data-link-type="idl" href="#dom-videodecoderconfig-codedheight" id="ref-for-dom-videodecoderconfig-codedheight③">codedHeight</a></code> are used when selecting a <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-codec-implementation-slot" id="ref-for-dom-videodecoder-codec-implementation-slot①④">[[codec implementation]]</a></code>.</p>
     <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoDecoderConfig" data-dfn-type="dict-member" data-export id="dom-videodecoderconfig-displayaspectwidth"><code>displayAspectWidth</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://webidl.spec.whatwg.org/#idl-unsigned-long" id="ref-for-idl-unsigned-long②⓪">unsigned long</a></span>
     <dd> Horizontal dimension of the VideoFrame’s aspect ratio when displayed. 
     <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoDecoderConfig" data-dfn-type="dict-member" data-export id="dom-videodecoderconfig-displayaspectheight"><code>displayAspectHeight</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://webidl.spec.whatwg.org/#idl-unsigned-long" id="ref-for-idl-unsigned-long②①">unsigned long</a></span>
@@ -3542,7 +3541,7 @@ sample data described by a <code class="idl"><a data-link-type="idl" href="#vide
    <p>The <code class="idl"><a data-link-type="idl" href="#audiodata" id="ref-for-audiodata⑤">AudioData</a></code> <code class="idl"><a data-link-type="idl" href="#dom-audiodata-resource-reference-slot" id="ref-for-dom-audiodata-resource-reference-slot①">[[resource reference]]</a></code> and <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe①⑦">VideoFrame</a></code> <code class="idl"><a data-link-type="idl" href="#dom-videoframe-resource-reference-slot" id="ref-for-dom-videoframe-resource-reference-slot">[[resource reference]]</a></code> internal slots hold a reference to a <a data-link-type="dfn" href="#media-resource" id="ref-for-media-resource③">media resource</a>.</p>
    <p><code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe①⑧">VideoFrame</a></code>.<code class="idl"><a data-link-type="idl" href="#dom-videoframe-clone" id="ref-for-dom-videoframe-clone">clone()</a></code> and <code class="idl"><a data-link-type="idl" href="#audiodata" id="ref-for-audiodata⑥">AudioData</a></code>.<code class="idl"><a data-link-type="idl" href="#dom-audiodata-clone" id="ref-for-dom-audiodata-clone">clone()</a></code> return new objects whose <code>[[resource reference]]</code> points to the same <a data-link-type="dfn" href="#media-resource" id="ref-for-media-resource④">media resource</a> as the original
 object.</p>
-   <p><code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe①⑨">VideoFrame</a></code>.<code class="idl"><a data-link-type="idl" href="#dom-videoframe-close" id="ref-for-dom-videoframe-close①">close()</a></code> and <code class="idl"><a data-link-type="idl" href="#audiodata" id="ref-for-audiodata⑦">AudioData</a></code>.<code class="idl"><a data-link-type="idl" href="#dom-audiodata-close" id="ref-for-dom-audiodata-close">close()</a></code> will clear their [[resource reference]] slot, releasing the reference their <a data-link-type="dfn" href="#media-resource" id="ref-for-media-resource⑤">media resource</a>.</p>
+   <p><code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe①⑨">VideoFrame</a></code>.<code class="idl"><a data-link-type="idl" href="#dom-videoframe-close" id="ref-for-dom-videoframe-close①">close()</a></code> and <code class="idl"><a data-link-type="idl" href="#audiodata" id="ref-for-audiodata⑦">AudioData</a></code>.<code class="idl"><a data-link-type="idl" href="#dom-audiodata-close" id="ref-for-dom-audiodata-close">close()</a></code> will clear their <code>[[resource reference]]</code> slot, releasing the reference their <a data-link-type="dfn" href="#media-resource" id="ref-for-media-resource⑤">media resource</a>.</p>
    <p>A <a data-link-type="dfn" href="#media-resource" id="ref-for-media-resource⑥">media resource</a> <em class="rfc2119">MUST</em> remain alive at least as long
 as it continues to be referenced by a <code>[[resource reference]]</code>.</p>
    <p class="note" role="note"><span class="marker">NOTE:</span> When a <a data-link-type="dfn" href="#media-resource" id="ref-for-media-resource⑦">media resource</a> is no longer referenced by a <code>[[resource reference]]</code>, the resource can be destroyed. User Agents are
@@ -4201,7 +4200,7 @@ exception or returns <var>bad</var>, then throw an <code class="idl"><a data-lin
      <p class="note" role="note"><span class="marker">NOTE:</span> Authors are encouraged to provide a meaningful timestamp unless it is
     implicitly provided by the <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/canvas.html#canvasimagesource" id="ref-for-canvasimagesource③">CanvasImageSource</a></code> at construction.
     Interfaces that consume <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe③⑥">VideoFrame</a></code>s can rely on this value for
-    timing decisions. For example, <code class="idl"><a data-link-type="idl" href="#videoencoder" id="ref-for-videoencoder③">VideoEncoder</a></code> can use <code class="idl"><a data-link-type="idl" href="#dom-videoframe-timestamp" id="ref-for-dom-videoframe-timestamp②">timestamp</a></code> values to guide rate control (see <code class="idl"><a data-link-type="idl" href="#dom-videoencoderconfig-framerate" id="ref-for-dom-videoencoderconfig-framerate⑥">framerate</a></code>).</p>
+    timing decisions. For example, <code class="idl"><a data-link-type="idl" href="#videoencoder" id="ref-for-videoencoder④">VideoEncoder</a></code> can use <code class="idl"><a data-link-type="idl" href="#dom-videoframe-timestamp" id="ref-for-dom-videoframe-timestamp②">timestamp</a></code> values to guide rate control (see <code class="idl"><a data-link-type="idl" href="#dom-videoencoderconfig-framerate" id="ref-for-dom-videoencoderconfig-framerate⑥">framerate</a></code>).</p>
      <ul>
       <li data-md>
        <p><code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/embedded-content.html#htmlimageelement" id="ref-for-htmlimageelement">HTMLImageElement</a></code></p>
@@ -4607,7 +4606,7 @@ throw an <code class="idl"><a data-link-type="idl" href="https://webidl.spec.wha
          <p>Let <var>visibleLeft</var>, <var>visibleTop</var>, <var>visibleWidth</var>, and <var>visibleHeight</var> be
 the left, top, width and height for the visible rectangle of <var>output</var>.</p>
         <li data-md>
-         <p>Let <var>displayWidth</var> and <var>displayHeight</var> be the the display size of <var>output</var> in pixels.</p>
+         <p>Let <var>displayWidth</var> and <var>displayHeight</var> be the display size of <var>output</var> in pixels.</p>
         <li data-md>
          <p>If <var>displayAspectWidth</var> and <var>displayAspectHeight</var> are provided,
 increase <var>displayWidth</var> or <var>displayHeight</var> until the ratio of <var>displayWidth</var> to <var>displayHeight</var> matches the ratio of <var>displayAspectWidth</var> to <var>displayAspectHeight</var>.</p>
@@ -5117,7 +5116,7 @@ as the named field.</p>
    <p>When rendered, for example by <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/canvas.html#canvasdrawimage" id="ref-for-canvasdrawimage①">CanvasDrawImage</a></code> <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/canvas.html#dom-context-2d-drawimage" id="ref-for-dom-context-2d-drawimage①">drawImage()</a></code>, a <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe⑤⑥">VideoFrame</a></code> <em class="rfc2119">MUST</em> be converted to a color space compatible with the rendering target, unless color
 conversion is explicitly disabled.</p>
    <p>Color space conversion during <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/imagebitmap-and-animations.html#imagebitmap" id="ref-for-imagebitmap①">ImageBitmap</a></code> construction is controlled by <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/imagebitmap-and-animations.html#imagebitmapoptions" id="ref-for-imagebitmapoptions">ImageBitmapOptions</a></code> <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/imagebitmap-and-animations.html#dom-imagebitmapoptions-colorspaceconversion" id="ref-for-dom-imagebitmapoptions-colorspaceconversion">colorSpaceConversion</a></code>. Setting this
-value to "none" disables color space conversion.</p>
+value to <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/imagebitmap-and-animations.html#dom-colorspaceconversion-none" id="ref-for-dom-colorspaceconversion-none">"none"</a></code> disables color space conversion.</p>
    <h3 class="heading settled" data-level="9.5" id="videoframe-copyto-options"><span class="secno">9.5. </span><span class="content">VideoFrame CopyTo() Options</span><a class="self-link" href="#videoframe-copyto-options"></a></h3>
     Options to specify a rectangle of pixels to copy and the offset and stride of
 planes in the destination buffer. 
@@ -5131,7 +5130,7 @@ planes in the destination buffer.
     <ul>
      <li data-md>
       <p>The coordinates of <code class="idl"><a data-link-type="idl" href="#dom-videoframecopytooptions-rect" id="ref-for-dom-videoframecopytooptions-rect③">rect</a></code> are
-sample-aligned as determiend by <code class="idl"><a data-link-type="idl" href="#dom-videoframe-format-slot" id="ref-for-dom-videoframe-format-slot①⑤">[[format]]</a></code>.</p>
+sample-aligned as determined by <code class="idl"><a data-link-type="idl" href="#dom-videoframe-format-slot" id="ref-for-dom-videoframe-format-slot①⑤">[[format]]</a></code>.</p>
      <li data-md>
       <p>If <code class="idl"><a data-link-type="idl" href="#dom-videoframecopytooptions-layout" id="ref-for-dom-videoframecopytooptions-layout②">layout</a></code> <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#map-exists" id="ref-for-map-exists②⑥">exists</a>, a <code class="idl"><a data-link-type="idl" href="#dictdef-planelayout" id="ref-for-dictdef-planelayout④">PlaneLayout</a></code> is provided for all planes.</p>
     </ul>
@@ -5150,7 +5149,7 @@ to specify an offset and stride for each plane in the destination <code class="i
 invalid to specify planes that overlap.</p>
    </dl>
    <h3 class="heading settled" data-level="9.6" id="videoframe-domrect"><span class="secno">9.6. </span><span class="content">DOMRects in VideoFrame</span><a class="self-link" href="#videoframe-domrect"></a></h3>
-    The <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe⑥⓪">VideoFrame</a></code> interfaces uses <code class="idl"><a data-link-type="idl" href="https://drafts.fxtf.org/geometry-1/#domrect" id="ref-for-domrect①">DOMRect</a></code>s to specify the position and
+    The <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe⑥⓪">VideoFrame</a></code> interface uses <code class="idl"><a data-link-type="idl" href="https://drafts.fxtf.org/geometry-1/#domrect" id="ref-for-domrect①">DOMRect</a></code>s to specify the position and
 dimensions for a rectangle of pixels. <code class="idl"><a data-link-type="idl" href="https://drafts.fxtf.org/geometry-1/#dictdef-domrectinit" id="ref-for-dictdef-domrectinit⑤">DOMRectInit</a></code> is used with <code class="idl"><a data-link-type="idl" href="#dom-videoframe-copyto" id="ref-for-dom-videoframe-copyto⑥">copyTo()</a></code> and <code class="idl"><a data-link-type="idl" href="#dom-videoframe-allocationsize" id="ref-for-dom-videoframe-allocationsize④">allocationSize()</a></code> to describe the
 dimensions of the source rectangle. <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe⑥①">VideoFrame</a></code> defines <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedrect" id="ref-for-dom-videoframe-codedrect③">codedRect</a></code> and <code class="idl"><a data-link-type="idl" href="#dom-videoframe-visiblerect" id="ref-for-dom-videoframe-visiblerect⑥">visibleRect</a></code> for convenient copying
 of the coded size and visible region respectively. 
@@ -5158,7 +5157,7 @@ of the coded size and visible region respectively.
     point values provided to <code class="idl"><a data-link-type="idl" href="https://drafts.fxtf.org/geometry-1/#dictdef-domrectinit" id="ref-for-dictdef-domrectinit⑥">DOMRectInit</a></code> will be truncated.</p>
    <h3 class="heading settled" data-level="9.7" id="plane-layout"><span class="secno">9.7. </span><span class="content">Plane Layout</span><a class="self-link" href="#plane-layout"></a></h3>
     A <code class="idl"><a data-link-type="idl" href="#dictdef-planelayout" id="ref-for-dictdef-planelayout⑦">PlaneLayout</a></code> is a dictionary specifying the offset and stride of a <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe⑥②">VideoFrame</a></code> plane once copied to a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#BufferSource" id="ref-for-BufferSource①⑦">BufferSource</a></code>. A sequence of <code class="idl"><a data-link-type="idl" href="#dictdef-planelayout" id="ref-for-dictdef-planelayout⑧">PlaneLayout</a></code>s <em class="rfc2119">MAY</em> be provided to <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe⑥③">VideoFrame</a></code>'s <code class="idl"><a data-link-type="idl" href="#dom-videoframe-copyto" id="ref-for-dom-videoframe-copyto⑦">copyTo()</a></code> to specify how the plane is laid out in the destination <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#BufferSource" id="ref-for-BufferSource①⑧">BufferSource</a></code>}.  Alternatively, callers can inspect <code class="idl"><a data-link-type="idl" href="#dom-videoframe-copyto" id="ref-for-dom-videoframe-copyto⑧">copyTo()</a></code>'s
-returned sequence of <code class="idl"><a data-link-type="idl" href="#dictdef-planelayout" id="ref-for-dictdef-planelayout⑨">PlaneLayout</a></code>s to learn the the offset and stride for
+returned sequence of <code class="idl"><a data-link-type="idl" href="#dictdef-planelayout" id="ref-for-dictdef-planelayout⑨">PlaneLayout</a></code>s to learn the offset and stride for
 planes as decided by the User Agent. 
 <pre class="idl highlight def"><c- b>dictionary</c-> <dfn class="dfn-paneled idl-code" data-dfn-type="dictionary" data-export id="dictdef-planelayout"><code><c- g>PlaneLayout</c-></code></dfn> {
   [<a class="idl-code" data-link-type="extended-attribute" href="https://webidl.spec.whatwg.org/#EnforceRange" id="ref-for-EnforceRange③②"><c- g>EnforceRange</c-></a>] <c- b>required</c-> <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-unsigned-long" id="ref-for-idl-unsigned-long⑦④"><c- b>unsigned</c-> <c- b>long</c-></a> <a class="idl-code" data-link-type="dict-member" data-type="unsigned long " href="#dom-planelayout-offset" id="ref-for-dom-planelayout-offset①"><c- g>offset</c-></a>;
@@ -5492,7 +5491,7 @@ and color coordinates.
     <p>Image codec definitions are typically accompanied by a definition for a
   corresponding file format. Hence image decoders often perform both duties of
   unpacking (demuxing) as well as decoding the encoded image data. The WebCodecs <code class="idl"><a data-link-type="idl" href="#imagedecoder" id="ref-for-imagedecoder">ImageDecoder</a></code> follows this pattern, which motivates an interface design that
-  is notably different from that of <code class="idl"><a data-link-type="idl" href="#videodecoder" id="ref-for-videodecoder⑤">VideoDecoder</a></code> and <code class="idl"><a data-link-type="idl" href="#audiodecoder" id="ref-for-audiodecoder③">AudioDecoder</a></code>.</p>
+  is notably different from that of <code class="idl"><a data-link-type="idl" href="#videodecoder" id="ref-for-videodecoder⑥">VideoDecoder</a></code> and <code class="idl"><a data-link-type="idl" href="#audiodecoder" id="ref-for-audiodecoder④">AudioDecoder</a></code>.</p>
     <p>In spite of these differences, <code class="idl"><a data-link-type="idl" href="#imagedecoder" id="ref-for-imagedecoder①">ImageDecoder</a></code> uses the same <a data-link-type="dfn" href="#codec-processing-model" id="ref-for-codec-processing-model">codec processing model</a> as the other codec interfaces. Additionally, <code class="idl"><a data-link-type="idl" href="#imagedecoder" id="ref-for-imagedecoder②">ImageDecoder</a></code> uses the <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe⑥⑤">VideoFrame</a></code> interface to describe decoded outputs.</p>
    </div>
    <h3 class="heading settled" data-level="10.2" id="imagedecoder-interface"><span class="secno">10.2. </span><span class="content">ImageDecoder Interface</span><a class="self-link" href="#imagedecoder-interface"></a></h3>
@@ -5540,7 +5539,7 @@ buffered.</p>
      <p>The promise used to signal when <code class="idl"><a data-link-type="idl" href="#dom-imagedecoder-complete-slot" id="ref-for-dom-imagedecoder-complete-slot">[[complete]]</a></code> becomes <code>true</code>.</p>
     <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="ImageDecoder" data-dfn-type="attribute" data-export id="dom-imagedecoder-codec-implementation-slot"><code>[[codec implementation]]</code></dfn>
     <dd data-md>
-     <p>An underlying image decoder implementation provided by the User Agent.</p>
+     <p>An underlying image decoder implementation provided by the User Agent. See <a data-link-type="dfn" href="#codec-implementation" id="ref-for-codec-implementation⑤">[[codec implementation]]</a>.</p>
     <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="ImageDecoder" data-dfn-type="attribute" data-export id="dom-imagedecoder-encoded-data-slot"><code>[[encoded data]]</code></dfn>
     <dd data-md>
      <p>A <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#byte-sequence" id="ref-for-byte-sequence">byte sequence</a> containing the encoded image data to be decoded.</p>
@@ -5560,7 +5559,7 @@ used by decoding algorithms.</p>
      <p>A boolean indicating whether the track list has been established in <code class="idl"><a data-link-type="idl" href="#dom-imagedecoder-imagetracklist-slot" id="ref-for-dom-imagedecoder-imagetracklist-slot">[[ImageTrackList]]</a></code>.</p>
     <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="ImageDecoder" data-dfn-type="attribute" data-export id="dom-imagedecoder-closed-slot"><code>[[closed]]</code></dfn>
     <dd data-md>
-     <p>A boolean indicating that the ImageDecoder is in a permanent closed state
+     <p>A boolean indicating that the <code class="idl"><a data-link-type="idl" href="#imagedecoder" id="ref-for-imagedecoder③">ImageDecoder</a></code> is in a permanent closed state
 and can no longer be used.</p>
     <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="ImageDecoder" data-dfn-type="attribute" data-export id="dom-imagedecoder-progressive-frame-generations-slot"><code>[[progressive frame generations]]</code></dfn>
     <dd data-md>
@@ -5571,15 +5570,15 @@ values represent the Progressive Image Frame Generation for the <code class="idl
    <dl>
     <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="ImageDecoder" data-dfn-type="constructor" data-export data-lt="ImageDecoder(init)|constructor(init)" id="dom-imagedecoder-imagedecoder" title="ImageDecoder(init)"><code> ImageDecoder(init) </code></dfn>
     <dd data-md>
-     <p class="note" role="note"><span class="marker">NOTE:</span> Calling <code class="idl"><a data-link-type="idl" href="#dom-imagedecoder-decode" id="ref-for-dom-imagedecoder-decode②">decode()</a></code> on the constructed <code class="idl"><a data-link-type="idl" href="#imagedecoder" id="ref-for-imagedecoder③">ImageDecoder</a></code> will trigger a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#notsupportederror" id="ref-for-notsupportederror①②">NotSupportedError</a></code> if the User Agent does not support <var>type</var>. Authors are encouraged to first check support by calling <code class="idl"><a data-link-type="idl" href="#dom-imagedecoder-istypesupported" id="ref-for-dom-imagedecoder-istypesupported①">isTypeSupported()</a></code> with <var>type</var>. User Agents don’t have to
+     <p class="note" role="note"><span class="marker">NOTE:</span> Calling <code class="idl"><a data-link-type="idl" href="#dom-imagedecoder-decode" id="ref-for-dom-imagedecoder-decode②">decode()</a></code> on the constructed <code class="idl"><a data-link-type="idl" href="#imagedecoder" id="ref-for-imagedecoder④">ImageDecoder</a></code> will trigger a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#notsupportederror" id="ref-for-notsupportederror①②">NotSupportedError</a></code> if the User Agent does not support <var>type</var>. Authors are encouraged to first check support by calling <code class="idl"><a data-link-type="idl" href="#dom-imagedecoder-istypesupported" id="ref-for-dom-imagedecoder-istypesupported①">isTypeSupported()</a></code> with <var>type</var>. User Agents don’t have to
 support any particular type.</p>
      <p>When invoked, run these steps:</p>
      <ol>
       <li data-md>
        <p>If <var>init</var> is not <a data-link-type="dfn" href="#valid-imagedecoderinit" id="ref-for-valid-imagedecoderinit">valid ImageDecoderInit</a>, throw a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#exceptiondef-typeerror" id="ref-for-exceptiondef-typeerror②⑨">TypeError</a></code>.</p>
       <li data-md>
-       <p>Let <var>d</var> be a new <code class="idl"><a data-link-type="idl" href="#imagedecoder" id="ref-for-imagedecoder④">ImageDecoder</a></code> object. In the steps below, all
-mentions of <code class="idl"><a data-link-type="idl" href="#imagedecoder" id="ref-for-imagedecoder⑤">ImageDecoder</a></code> members apply to <var>d</var> unless stated
+       <p>Let <var>d</var> be a new <code class="idl"><a data-link-type="idl" href="#imagedecoder" id="ref-for-imagedecoder⑤">ImageDecoder</a></code> object. In the steps below, all
+mentions of <code class="idl"><a data-link-type="idl" href="#imagedecoder" id="ref-for-imagedecoder⑥">ImageDecoder</a></code> members apply to <var>d</var> unless stated
 otherwise.</p>
       <li data-md>
        <p>Assign a new <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#queue" id="ref-for-queue①⓪">queue</a> to <code class="idl"><a data-link-type="idl" href="#dom-imagedecoder-control-message-queue-slot" id="ref-for-dom-imagedecoder-control-message-queue-slot①">[[control message queue]]</a></code>.</p>
@@ -6384,7 +6383,7 @@ value of <code>-1</code> indicates that no track is selected.</p>
    <dl>
     <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="ImageTrack" data-dfn-type="attribute" data-export id="dom-imagetrack-imagedecoder-slot"><code>[[ImageDecoder]]</code></dfn>
     <dd data-md>
-     <p>The <code class="idl"><a data-link-type="idl" href="#imagedecoder" id="ref-for-imagedecoder⑥">ImageDecoder</a></code> instance that constructed this <code class="idl"><a data-link-type="idl" href="#imagetrack" id="ref-for-imagetrack①⓪">ImageTrack</a></code>.</p>
+     <p>The <code class="idl"><a data-link-type="idl" href="#imagedecoder" id="ref-for-imagedecoder⑦">ImageDecoder</a></code> instance that constructed this <code class="idl"><a data-link-type="idl" href="#imagetrack" id="ref-for-imagetrack①⓪">ImageTrack</a></code>.</p>
     <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="ImageTrack" data-dfn-type="attribute" data-export id="dom-imagetrack-imagetracklist-slot"><code>[[ImageTrackList]]</code></dfn>
     <dd data-md>
      <p>The <code class="idl"><a data-link-type="idl" href="#imagetracklist" id="ref-for-imagetracklist⑦">ImageTrackList</a></code> instance that lists this <code class="idl"><a data-link-type="idl" href="#imagetrack" id="ref-for-imagetrack①①">ImageTrack</a></code>.</p>
@@ -6475,10 +6474,10 @@ close algorithm (amongst <a data-link-type="dfn" href="#close-audiodecoder" id="
 an <a data-link-type="dfn" href="#active-codec" id="ref-for-active-codec">active</a> or <a data-link-type="dfn" href="#inactive-codec" id="ref-for-inactive-codec">inactive</a> codec and/or a <a data-link-type="dfn" href="#background-codec" id="ref-for-background-codec">background</a> codec.</p>
    <p>An <dfn class="dfn-paneled" data-dfn-type="dfn" data-lt="active codec|active" data-noexport id="active-codec">active codec</dfn> is a codec that has
 received a call to <code>encode()</code>, <code>decode()</code>, <code>configure()</code>, <code>flush()</code> or <code>reset()</code> in the past <code>10 seconds</code>, or has called its <code>output()</code> callback in the past <code>10
-seconds</code>. Addionally, <code class="idl"><a data-link-type="idl" href="#videoencoder" id="ref-for-videoencoder④">VideoEncoder</a></code>s are considered <a data-link-type="dfn" href="#active-codec" id="ref-for-active-codec①">active</a> if they are
+seconds</code>. Addionally, <code class="idl"><a data-link-type="idl" href="#videoencoder" id="ref-for-videoencoder⑤">VideoEncoder</a></code>s are considered <a data-link-type="dfn" href="#active-codec" id="ref-for-active-codec①">active</a> if they are
 making progress in encoding queued <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe⑥⑨">VideoFrame</a></code>s.</p>
    <p class="note" role="note"><span class="marker">NOTE:</span> Encoding large <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe⑦⓪">VideoFrame</a></code>s can take more than <code>10s</code> per frame. The
-special case for <code class="idl"><a data-link-type="idl" href="#videoencoder" id="ref-for-videoencoder⑤">VideoEncoder</a></code>s ensures that they are not reclaimed if more
+special case for <code class="idl"><a data-link-type="idl" href="#videoencoder" id="ref-for-videoencoder⑥">VideoEncoder</a></code>s ensures that they are not reclaimed if more
 than <code>10 seconds</code> elapses between each <code>output()</code> callback.</p>
    <p>An <dfn class="dfn-paneled" data-dfn-type="dfn" data-lt="inactive codec|inactive" data-noexport id="inactive-codec">inactive codec</dfn> is any codec that does
 not meet the definition of an <a data-link-type="dfn" href="#active-codec" id="ref-for-active-codec②">active codec</a>.</p>
@@ -6489,13 +6488,13 @@ reclaim a codec that is both <a data-link-type="dfn" href="#active-codec" id="re
 if it is:</p>
    <ul>
     <li data-md>
-     <p>An encoder, e.g. an <code class="idl"><a data-link-type="idl" href="#audioencoder" id="ref-for-audioencoder③">AudioEncoder</a></code> or <code class="idl"><a data-link-type="idl" href="#videoencoder" id="ref-for-videoencoder⑥">VideoEncoder</a></code>.</p>
+     <p>An encoder, e.g. an <code class="idl"><a data-link-type="idl" href="#audioencoder" id="ref-for-audioencoder④">AudioEncoder</a></code> or <code class="idl"><a data-link-type="idl" href="#videoencoder" id="ref-for-videoencoder⑦">VideoEncoder</a></code>.</p>
      <p class="note" role="note"><span class="marker">NOTE:</span> This prevents long running encode tasks from being interrupted.</p>
     <li data-md>
-     <p>An <code class="idl"><a data-link-type="idl" href="#audiodecoder" id="ref-for-audiodecoder④">AudioDecoder</a></code> or <code class="idl"><a data-link-type="idl" href="#videodecoder" id="ref-for-videodecoder⑥">VideoDecoder</a></code>, when there is, respectively, an <a data-link-type="dfn" href="#active-codec" id="ref-for-active-codec⑤">active</a> <code class="idl"><a data-link-type="idl" href="#audioencoder" id="ref-for-audioencoder④">AudioEncoder</a></code> or <code class="idl"><a data-link-type="idl" href="#videoencoder" id="ref-for-videoencoder⑦">VideoEncoder</a></code> in the same <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#global-object" id="ref-for-global-object">global object</a>.</p>
+     <p>An <code class="idl"><a data-link-type="idl" href="#audiodecoder" id="ref-for-audiodecoder⑤">AudioDecoder</a></code> or <code class="idl"><a data-link-type="idl" href="#videodecoder" id="ref-for-videodecoder⑦">VideoDecoder</a></code>, when there is, respectively, an <a data-link-type="dfn" href="#active-codec" id="ref-for-active-codec⑤">active</a> <code class="idl"><a data-link-type="idl" href="#audioencoder" id="ref-for-audioencoder⑤">AudioEncoder</a></code> or <code class="idl"><a data-link-type="idl" href="#videoencoder" id="ref-for-videoencoder⑧">VideoEncoder</a></code> in the same <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#global-object" id="ref-for-global-object">global object</a>.</p>
      <p class="note" role="note"><span class="marker">NOTE:</span> This prevents prevents breaking long running transcoding tasks.</p>
     <li data-md>
-     <p>An <code class="idl"><a data-link-type="idl" href="#audiodecoder" id="ref-for-audiodecoder⑤">AudioDecoder</a></code>, when its tab is audibly playing audio.</p>
+     <p>An <code class="idl"><a data-link-type="idl" href="#audiodecoder" id="ref-for-audiodecoder⑥">AudioDecoder</a></code>, when its tab is audibly playing audio.</p>
    </ul>
    <h2 class="heading settled" data-level="12" id="security-considerations"><span class="secno">12. </span><span class="content">Security Considerations</span><a class="self-link" href="#security-considerations"></a></h2>
    <p>The primary security impact is that features of this API make it easier for an
@@ -6562,7 +6561,7 @@ common baseline or prompt for user approval.</p>
   realtime media or in contended main thread environments are encouraged to ensure their
   media pipelines operate in worker contexts entirely independent of the main
   thread where possible. For example, realtime media processing of <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe⑦①">VideoFrame</a></code>s
-  are generally be done in a worker context.</p>
+  are generally to be done in a worker context.</p>
     <p>The main thread has significant potential for high contention and jank that can
   go unnoticed in development, yet degrade inconsistently across devices and User
   Agents in the field -- potentially dramatically impacting the end user
@@ -7923,6 +7922,12 @@ participation on the mailing list and in the issues.</p>
     <li><a href="#ref-for-dom-media-networkstate">9.4.2. Constructors</a>
    </ul>
   </aside>
+  <aside class="dfn-panel" data-for="term-for-dom-colorspaceconversion-none">
+   <a href="https://html.spec.whatwg.org/multipage/imagebitmap-and-animations.html#dom-colorspaceconversion-none">https://html.spec.whatwg.org/multipage/imagebitmap-and-animations.html#dom-colorspaceconversion-none</a><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-dom-colorspaceconversion-none">9.4.8. Rendering</a>
+   </ul>
+  </aside>
   <aside class="dfn-panel" data-for="term-for-concept-origin">
    <a href="https://html.spec.whatwg.org/multipage/browsers.html#concept-origin">https://html.spec.whatwg.org/multipage/browsers.html#concept-origin</a><b>Referenced in:</b>
    <ul>
@@ -8717,6 +8722,7 @@ participation on the mailing list and in the issues.</p>
      <li><span class="dfn-paneled" id="term-for-dom-document-hidden">hidden</span>
      <li><span class="dfn-paneled" id="term-for-live">live</span>
      <li><span class="dfn-paneled" id="term-for-dom-media-networkstate">networkState</span>
+     <li><span class="dfn-paneled" id="term-for-dom-colorspaceconversion-none">none</span>
      <li><span class="dfn-paneled" id="term-for-concept-origin">origin</span>
      <li><span class="dfn-paneled" id="term-for-concept-WorkerGlobalScope-owner-set">owner set</span>
      <li><span class="dfn-paneled" id="term-for-parallel-queue">parallel queue</span>
@@ -9607,6 +9613,11 @@ participation on the mailing list and in the issues.</p>
    <b><a href="#codec-implementation">#codec-implementation</a></b><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-codec-implementation">2.3. Codec Work Parallel Queue</a>
+    <li><a href="#ref-for-codec-implementation①">3.1. Internal Slots</a>
+    <li><a href="#ref-for-codec-implementation②">4.1. Internal Slots</a>
+    <li><a href="#ref-for-codec-implementation③">5.1. Internal Slots</a>
+    <li><a href="#ref-for-codec-implementation④">6.1. Internal Slots</a>
+    <li><a href="#ref-for-codec-implementation⑤">10.2.1. Internal Slots</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="codec-task-source">
@@ -9618,11 +9629,12 @@ participation on the mailing list and in the issues.</p>
   <aside class="dfn-panel" data-for="audiodecoder">
    <b><a href="#audiodecoder">#audiodecoder</a></b><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-audiodecoder">3.1. Internal Slots</a>
-    <li><a href="#ref-for-audiodecoder①">3.2. Constructors</a>
-    <li><a href="#ref-for-audiodecoder②">3.4. Event Summary</a>
-    <li><a href="#ref-for-audiodecoder③">10.1. Background</a>
-    <li><a href="#ref-for-audiodecoder④">11. Resource Reclamation</a> <a href="#ref-for-audiodecoder⑤">(2)</a>
+    <li><a href="#ref-for-audiodecoder">1. Definitions</a>
+    <li><a href="#ref-for-audiodecoder①">3.1. Internal Slots</a>
+    <li><a href="#ref-for-audiodecoder②">3.2. Constructors</a>
+    <li><a href="#ref-for-audiodecoder③">3.4. Event Summary</a>
+    <li><a href="#ref-for-audiodecoder④">10.1. Background</a>
+    <li><a href="#ref-for-audiodecoder⑤">11. Resource Reclamation</a> <a href="#ref-for-audiodecoder⑥">(2)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dictdef-audiodecoderinit">
@@ -9655,10 +9667,10 @@ participation on the mailing list and in the issues.</p>
   <aside class="dfn-panel" data-for="dom-audiodecoder-codec-implementation-slot">
    <b><a href="#dom-audiodecoder-codec-implementation-slot">#dom-audiodecoder-codec-implementation-slot</a></b><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-dom-audiodecoder-codec-implementation-slot">3.1. Internal Slots</a>
-    <li><a href="#ref-for-dom-audiodecoder-codec-implementation-slot①">3.2. Constructors</a>
-    <li><a href="#ref-for-dom-audiodecoder-codec-implementation-slot②">3.5. Methods</a> <a href="#ref-for-dom-audiodecoder-codec-implementation-slot③">(2)</a> <a href="#ref-for-dom-audiodecoder-codec-implementation-slot④">(3)</a> <a href="#ref-for-dom-audiodecoder-codec-implementation-slot⑤">(4)</a> <a href="#ref-for-dom-audiodecoder-codec-implementation-slot⑥">(5)</a> <a href="#ref-for-dom-audiodecoder-codec-implementation-slot⑦">(6)</a> <a href="#ref-for-dom-audiodecoder-codec-implementation-slot⑧">(7)</a> <a href="#ref-for-dom-audiodecoder-codec-implementation-slot⑨">(8)</a>
-    <li><a href="#ref-for-dom-audiodecoder-codec-implementation-slot①⓪">3.6. Algorithms</a> <a href="#ref-for-dom-audiodecoder-codec-implementation-slot①①">(2)</a>
+    <li><a href="#ref-for-dom-audiodecoder-codec-implementation-slot">3.1. Internal Slots</a> <a href="#ref-for-dom-audiodecoder-codec-implementation-slot①">(2)</a>
+    <li><a href="#ref-for-dom-audiodecoder-codec-implementation-slot②">3.2. Constructors</a>
+    <li><a href="#ref-for-dom-audiodecoder-codec-implementation-slot③">3.5. Methods</a> <a href="#ref-for-dom-audiodecoder-codec-implementation-slot④">(2)</a> <a href="#ref-for-dom-audiodecoder-codec-implementation-slot⑤">(3)</a> <a href="#ref-for-dom-audiodecoder-codec-implementation-slot⑥">(4)</a> <a href="#ref-for-dom-audiodecoder-codec-implementation-slot⑦">(5)</a> <a href="#ref-for-dom-audiodecoder-codec-implementation-slot⑧">(6)</a> <a href="#ref-for-dom-audiodecoder-codec-implementation-slot⑨">(7)</a> <a href="#ref-for-dom-audiodecoder-codec-implementation-slot①⓪">(8)</a>
+    <li><a href="#ref-for-dom-audiodecoder-codec-implementation-slot①①">3.6. Algorithms</a> <a href="#ref-for-dom-audiodecoder-codec-implementation-slot①②">(2)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dom-audiodecoder-codec-work-queue-slot">
@@ -9831,12 +9843,13 @@ participation on the mailing list and in the issues.</p>
   <aside class="dfn-panel" data-for="videodecoder">
    <b><a href="#videodecoder">#videodecoder</a></b><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-videodecoder">4.1. Internal Slots</a>
-    <li><a href="#ref-for-videodecoder①">4.2. Constructors</a>
-    <li><a href="#ref-for-videodecoder②">4.4. Event Summary</a>
-    <li><a href="#ref-for-videodecoder③">4.5. Methods</a> <a href="#ref-for-videodecoder④">(2)</a>
-    <li><a href="#ref-for-videodecoder⑤">10.1. Background</a>
-    <li><a href="#ref-for-videodecoder⑥">11. Resource Reclamation</a>
+    <li><a href="#ref-for-videodecoder">1. Definitions</a>
+    <li><a href="#ref-for-videodecoder①">4.1. Internal Slots</a>
+    <li><a href="#ref-for-videodecoder②">4.2. Constructors</a>
+    <li><a href="#ref-for-videodecoder③">4.4. Event Summary</a>
+    <li><a href="#ref-for-videodecoder④">4.5. Methods</a> <a href="#ref-for-videodecoder⑤">(2)</a>
+    <li><a href="#ref-for-videodecoder⑥">10.1. Background</a>
+    <li><a href="#ref-for-videodecoder⑦">11. Resource Reclamation</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dictdef-videodecoderinit">
@@ -9869,11 +9882,11 @@ participation on the mailing list and in the issues.</p>
   <aside class="dfn-panel" data-for="dom-videodecoder-codec-implementation-slot">
    <b><a href="#dom-videodecoder-codec-implementation-slot">#dom-videodecoder-codec-implementation-slot</a></b><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-dom-videodecoder-codec-implementation-slot">4.1. Internal Slots</a>
-    <li><a href="#ref-for-dom-videodecoder-codec-implementation-slot①">4.2. Constructors</a>
-    <li><a href="#ref-for-dom-videodecoder-codec-implementation-slot②">4.5. Methods</a> <a href="#ref-for-dom-videodecoder-codec-implementation-slot③">(2)</a> <a href="#ref-for-dom-videodecoder-codec-implementation-slot④">(3)</a> <a href="#ref-for-dom-videodecoder-codec-implementation-slot⑤">(4)</a> <a href="#ref-for-dom-videodecoder-codec-implementation-slot⑥">(5)</a> <a href="#ref-for-dom-videodecoder-codec-implementation-slot⑦">(6)</a> <a href="#ref-for-dom-videodecoder-codec-implementation-slot⑧">(7)</a> <a href="#ref-for-dom-videodecoder-codec-implementation-slot⑨">(8)</a> <a href="#ref-for-dom-videodecoder-codec-implementation-slot①⓪">(9)</a>
-    <li><a href="#ref-for-dom-videodecoder-codec-implementation-slot①①">4.6. Algorithms</a> <a href="#ref-for-dom-videodecoder-codec-implementation-slot①②">(2)</a>
-    <li><a href="#ref-for-dom-videodecoder-codec-implementation-slot①③">7.6. VideoDecoderConfig</a>
+    <li><a href="#ref-for-dom-videodecoder-codec-implementation-slot">4.1. Internal Slots</a> <a href="#ref-for-dom-videodecoder-codec-implementation-slot①">(2)</a>
+    <li><a href="#ref-for-dom-videodecoder-codec-implementation-slot②">4.2. Constructors</a>
+    <li><a href="#ref-for-dom-videodecoder-codec-implementation-slot③">4.5. Methods</a> <a href="#ref-for-dom-videodecoder-codec-implementation-slot④">(2)</a> <a href="#ref-for-dom-videodecoder-codec-implementation-slot⑤">(3)</a> <a href="#ref-for-dom-videodecoder-codec-implementation-slot⑥">(4)</a> <a href="#ref-for-dom-videodecoder-codec-implementation-slot⑦">(5)</a> <a href="#ref-for-dom-videodecoder-codec-implementation-slot⑧">(6)</a> <a href="#ref-for-dom-videodecoder-codec-implementation-slot⑨">(7)</a> <a href="#ref-for-dom-videodecoder-codec-implementation-slot①⓪">(8)</a> <a href="#ref-for-dom-videodecoder-codec-implementation-slot①①">(9)</a>
+    <li><a href="#ref-for-dom-videodecoder-codec-implementation-slot①②">4.6. Algorithms</a> <a href="#ref-for-dom-videodecoder-codec-implementation-slot①③">(2)</a>
+    <li><a href="#ref-for-dom-videodecoder-codec-implementation-slot①④">7.6. VideoDecoderConfig</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dom-videodecoder-codec-work-queue-slot">
@@ -10055,10 +10068,11 @@ participation on the mailing list and in the issues.</p>
   <aside class="dfn-panel" data-for="audioencoder">
    <b><a href="#audioencoder">#audioencoder</a></b><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-audioencoder">5.1. Internal Slots</a>
-    <li><a href="#ref-for-audioencoder①">5.2. Constructors</a>
-    <li><a href="#ref-for-audioencoder②">5.4. Event Summary</a>
-    <li><a href="#ref-for-audioencoder③">11. Resource Reclamation</a> <a href="#ref-for-audioencoder④">(2)</a>
+    <li><a href="#ref-for-audioencoder">1. Definitions</a>
+    <li><a href="#ref-for-audioencoder①">5.1. Internal Slots</a>
+    <li><a href="#ref-for-audioencoder②">5.2. Constructors</a>
+    <li><a href="#ref-for-audioencoder③">5.4. Event Summary</a>
+    <li><a href="#ref-for-audioencoder④">11. Resource Reclamation</a> <a href="#ref-for-audioencoder⑤">(2)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dictdef-audioencoderinit">
@@ -10091,10 +10105,10 @@ participation on the mailing list and in the issues.</p>
   <aside class="dfn-panel" data-for="dom-audioencoder-codec-implementation-slot">
    <b><a href="#dom-audioencoder-codec-implementation-slot">#dom-audioencoder-codec-implementation-slot</a></b><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-dom-audioencoder-codec-implementation-slot">5.1. Internal Slots</a>
-    <li><a href="#ref-for-dom-audioencoder-codec-implementation-slot①">5.2. Constructors</a>
-    <li><a href="#ref-for-dom-audioencoder-codec-implementation-slot②">5.5. Methods</a> <a href="#ref-for-dom-audioencoder-codec-implementation-slot③">(2)</a> <a href="#ref-for-dom-audioencoder-codec-implementation-slot④">(3)</a> <a href="#ref-for-dom-audioencoder-codec-implementation-slot⑤">(4)</a> <a href="#ref-for-dom-audioencoder-codec-implementation-slot⑥">(5)</a> <a href="#ref-for-dom-audioencoder-codec-implementation-slot⑦">(6)</a> <a href="#ref-for-dom-audioencoder-codec-implementation-slot⑧">(7)</a> <a href="#ref-for-dom-audioencoder-codec-implementation-slot⑨">(8)</a>
-    <li><a href="#ref-for-dom-audioencoder-codec-implementation-slot①⓪">5.6. Algorithms</a> <a href="#ref-for-dom-audioencoder-codec-implementation-slot①①">(2)</a> <a href="#ref-for-dom-audioencoder-codec-implementation-slot①②">(3)</a>
+    <li><a href="#ref-for-dom-audioencoder-codec-implementation-slot">5.1. Internal Slots</a> <a href="#ref-for-dom-audioencoder-codec-implementation-slot①">(2)</a>
+    <li><a href="#ref-for-dom-audioencoder-codec-implementation-slot②">5.2. Constructors</a>
+    <li><a href="#ref-for-dom-audioencoder-codec-implementation-slot③">5.5. Methods</a> <a href="#ref-for-dom-audioencoder-codec-implementation-slot④">(2)</a> <a href="#ref-for-dom-audioencoder-codec-implementation-slot⑤">(3)</a> <a href="#ref-for-dom-audioencoder-codec-implementation-slot⑥">(4)</a> <a href="#ref-for-dom-audioencoder-codec-implementation-slot⑦">(5)</a> <a href="#ref-for-dom-audioencoder-codec-implementation-slot⑧">(6)</a> <a href="#ref-for-dom-audioencoder-codec-implementation-slot⑨">(7)</a> <a href="#ref-for-dom-audioencoder-codec-implementation-slot①⓪">(8)</a>
+    <li><a href="#ref-for-dom-audioencoder-codec-implementation-slot①①">5.6. Algorithms</a> <a href="#ref-for-dom-audioencoder-codec-implementation-slot①②">(2)</a> <a href="#ref-for-dom-audioencoder-codec-implementation-slot①③">(3)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dom-audioencoder-codec-work-queue-slot">
@@ -10288,11 +10302,12 @@ participation on the mailing list and in the issues.</p>
   <aside class="dfn-panel" data-for="videoencoder">
    <b><a href="#videoencoder">#videoencoder</a></b><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-videoencoder">6.1. Internal Slots</a>
-    <li><a href="#ref-for-videoencoder①">6.2. Constructors</a>
-    <li><a href="#ref-for-videoencoder②">6.4. Event Summary</a>
-    <li><a href="#ref-for-videoencoder③">9.4.2. Constructors</a>
-    <li><a href="#ref-for-videoencoder④">11. Resource Reclamation</a> <a href="#ref-for-videoencoder⑤">(2)</a> <a href="#ref-for-videoencoder⑥">(3)</a> <a href="#ref-for-videoencoder⑦">(4)</a>
+    <li><a href="#ref-for-videoencoder">1. Definitions</a>
+    <li><a href="#ref-for-videoencoder①">6.1. Internal Slots</a>
+    <li><a href="#ref-for-videoencoder②">6.2. Constructors</a>
+    <li><a href="#ref-for-videoencoder③">6.4. Event Summary</a>
+    <li><a href="#ref-for-videoencoder④">9.4.2. Constructors</a>
+    <li><a href="#ref-for-videoencoder⑤">11. Resource Reclamation</a> <a href="#ref-for-videoencoder⑥">(2)</a> <a href="#ref-for-videoencoder⑦">(3)</a> <a href="#ref-for-videoencoder⑧">(4)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dictdef-videoencoderinit">
@@ -10327,10 +10342,10 @@ participation on the mailing list and in the issues.</p>
   <aside class="dfn-panel" data-for="dom-videoencoder-codec-implementation-slot">
    <b><a href="#dom-videoencoder-codec-implementation-slot">#dom-videoencoder-codec-implementation-slot</a></b><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-dom-videoencoder-codec-implementation-slot">6.1. Internal Slots</a>
-    <li><a href="#ref-for-dom-videoencoder-codec-implementation-slot①">6.2. Constructors</a>
-    <li><a href="#ref-for-dom-videoencoder-codec-implementation-slot②">6.5. Methods</a> <a href="#ref-for-dom-videoencoder-codec-implementation-slot③">(2)</a> <a href="#ref-for-dom-videoencoder-codec-implementation-slot④">(3)</a> <a href="#ref-for-dom-videoencoder-codec-implementation-slot⑤">(4)</a> <a href="#ref-for-dom-videoencoder-codec-implementation-slot⑥">(5)</a> <a href="#ref-for-dom-videoencoder-codec-implementation-slot⑦">(6)</a> <a href="#ref-for-dom-videoencoder-codec-implementation-slot⑧">(7)</a> <a href="#ref-for-dom-videoencoder-codec-implementation-slot⑨">(8)</a>
-    <li><a href="#ref-for-dom-videoencoder-codec-implementation-slot①⓪">6.6. Algorithms</a> <a href="#ref-for-dom-videoencoder-codec-implementation-slot①①">(2)</a> <a href="#ref-for-dom-videoencoder-codec-implementation-slot①②">(3)</a>
+    <li><a href="#ref-for-dom-videoencoder-codec-implementation-slot">6.1. Internal Slots</a> <a href="#ref-for-dom-videoencoder-codec-implementation-slot①">(2)</a>
+    <li><a href="#ref-for-dom-videoencoder-codec-implementation-slot②">6.2. Constructors</a>
+    <li><a href="#ref-for-dom-videoencoder-codec-implementation-slot③">6.5. Methods</a> <a href="#ref-for-dom-videoencoder-codec-implementation-slot④">(2)</a> <a href="#ref-for-dom-videoencoder-codec-implementation-slot⑤">(3)</a> <a href="#ref-for-dom-videoencoder-codec-implementation-slot⑥">(4)</a> <a href="#ref-for-dom-videoencoder-codec-implementation-slot⑦">(5)</a> <a href="#ref-for-dom-videoencoder-codec-implementation-slot⑧">(6)</a> <a href="#ref-for-dom-videoencoder-codec-implementation-slot⑨">(7)</a> <a href="#ref-for-dom-videoencoder-codec-implementation-slot①⓪">(8)</a>
+    <li><a href="#ref-for-dom-videoencoder-codec-implementation-slot①①">6.6. Algorithms</a> <a href="#ref-for-dom-videoencoder-codec-implementation-slot①②">(2)</a> <a href="#ref-for-dom-videoencoder-codec-implementation-slot①③">(3)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dom-videoencoder-codec-work-queue-slot">
@@ -12691,8 +12706,9 @@ participation on the mailing list and in the issues.</p>
    <b><a href="#imagedecoder">#imagedecoder</a></b><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-imagedecoder">10.1. Background</a> <a href="#ref-for-imagedecoder①">(2)</a> <a href="#ref-for-imagedecoder②">(3)</a>
-    <li><a href="#ref-for-imagedecoder③">10.2.2. Constructor</a> <a href="#ref-for-imagedecoder④">(2)</a> <a href="#ref-for-imagedecoder⑤">(3)</a>
-    <li><a href="#ref-for-imagedecoder⑥">10.7.1. Internal Slots</a>
+    <li><a href="#ref-for-imagedecoder③">10.2.1. Internal Slots</a>
+    <li><a href="#ref-for-imagedecoder④">10.2.2. Constructor</a> <a href="#ref-for-imagedecoder⑤">(2)</a> <a href="#ref-for-imagedecoder⑥">(3)</a>
+    <li><a href="#ref-for-imagedecoder⑦">10.7.1. Internal Slots</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dom-imagedecoder-control-message-queue-slot">
