@@ -8,7 +8,7 @@
   <link href="https://www.w3.org/2008/site/images/favicon.ico" rel="icon">
   <meta content="Bikeshed version 859efb4bd, updated Fri Jan 27 16:04:01 2023 -0800" name="generator">
   <link href="https://www.w3.org/TR/webcodecs/" rel="canonical">
-  <meta content="d1df0f8663671214ea932c1fdd5cacb095cc248a" name="document-revision">
+  <meta content="f3ac20faebf367c599edbc55f303beb81b79a4c0" name="document-revision">
 <style>
 main > dl > dd {
   margin-bottom: 1em;
@@ -611,7 +611,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
   <div class="head">
    <p data-fill-with="logo"><a class="logo" href="https://www.w3.org/"> <img alt="W3C" height="48" src="https://www.w3.org/StyleSheets/TR/2021/logos/W3C" width="72"> </a> </p>
    <h1 class="p-name no-ref" id="title">WebCodecs</h1>
-   <p id="w3c-state"><a href="https://www.w3.org/standards/types#ED">Editor’s Draft</a>, <time class="dt-updated" datetime="2023-02-01">1 February 2023</time></p>
+   <p id="w3c-state"><a href="https://www.w3.org/standards/types#ED">Editor’s Draft</a>, <time class="dt-updated" datetime="2023-02-02">2 February 2023</time></p>
    <details open>
     <summary>More details about this document</summary>
     <div data-fill-with="spec-metadata">
@@ -964,7 +964,7 @@ workload.</p>
    <h3 class="heading settled" data-level="2.2" id="control-messages"><span class="secno">2.2. </span><span class="content">Control Messages</span><a class="self-link" href="#control-messages"></a></h3>
    <p>A <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="control-message">control message</dfn> defines a sequence of steps corresponding to a
 method invocation on a <a data-link-type="dfn" href="#codec" id="ref-for-codec">codec</a> instance (e.g. <code>encode()</code>).</p>
-   <p>A <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="control-message-queue">control message queue</dfn> is a a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#queue" id="ref-for-queue">queue</a> of <a data-link-type="dfn" href="#control-message" id="ref-for-control-message">control messages</a>. Each <a data-link-type="dfn" href="#codec" id="ref-for-codec①">codec</a> instance has a control message queue
+   <p>A <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="control-message-queue">control message queue</dfn> is a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#queue" id="ref-for-queue">queue</a> of <a data-link-type="dfn" href="#control-message" id="ref-for-control-message">control messages</a>. Each <a data-link-type="dfn" href="#codec" id="ref-for-codec①">codec</a> instance has a control message queue
 stored in an internal slot named <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="control-message-queue-slot">[[control message queue]]</dfn>.</p>
    <p><dfn class="dfn-paneled" data-dfn-type="dfn" data-lt="Enqueues a control message|Queue a control message" data-noexport id="enqueues-a-control-message">Queuing a control
 message</dfn> means <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#queue-enqueue" id="ref-for-queue-enqueue">enqueuing</a> the message to a <a data-link-type="dfn" href="#codec" id="ref-for-codec②">codec</a>’s <a data-link-type="dfn" href="#control-message-queue-slot" id="ref-for-control-message-queue-slot">[[control
@@ -978,7 +978,7 @@ control message queue. Each <a data-link-type="dfn" href="#codec" id="ref-for-co
 blocking message will conclude by setting <a data-link-type="dfn" href="#message-queue-blocked" id="ref-for-message-queue-blocked">[[message queue blocked]]</a> to <code>false</code> and rerunning the <a data-link-type="dfn" href="#process-the-control-message-queue" id="ref-for-process-the-control-message-queue">Process the control message queue</a> steps.</p>
    <p>All control messages will return either <code>"processed"</code> or <code>"not processed"</code>.
 Returning <code>"processed"</code> indicates the message steps are being (or have been)
-executed and the message may be removed from the <a data-link-type="dfn" href="#control-message-queue" id="ref-for-control-message-queue①">control message queue</a>. <code>"not processed"</code> indicates the message must could not be processed at this time
+executed and the message may be removed from the <a data-link-type="dfn" href="#control-message-queue" id="ref-for-control-message-queue①">control message queue</a>. <code>"not processed"</code> indicates the message must not be processed at this time
 and should remain in the <a data-link-type="dfn" href="#control-message-queue" id="ref-for-control-message-queue②">control message queue</a> to be retried later.</p>
    <p>To <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="process-the-control-message-queue">Process the control message queue</dfn>, run these steps:</p>
    <ol>
@@ -3028,7 +3028,7 @@ run these steps:</p>
      <p>If <code class="idl"><a data-link-type="idl" href="#dom-audioencoderconfig-codec" id="ref-for-dom-audioencoderconfig-codec②">codec</a></code> is not a <a data-link-type="dfn" href="#valid-codec-string" id="ref-for-valid-codec-string②">valid codec string</a>, return <code>false</code>.</p>
     <li data-md>
      <p>If the <code class="idl"><a data-link-type="idl" href="#dictdef-audioencoderconfig" id="ref-for-dictdef-audioencoderconfig①⓪">AudioEncoderConfig</a></code> has a codec-specific extension and the corresponding
-registration in the <a data-link-type="biblio" href="#biblio-webcodecs-codec-registry" title="WebCodecs Codec Registry">[WEBCODECS-CODEC-REGISTRY]</a> defines steps to check whether the
+registration in the <a data-link-type="biblio" href="#biblio-webcodecs-codec-registry" title="WebCodecs Codec Registry">[WEBCODECS-CODEC-REGISTRY]</a> defines steps to check whether
 the extension is a valid extension, return the result of running those steps.</p>
     <li data-md>
      <p>Return <code>true</code>.</p>
@@ -3533,7 +3533,7 @@ as the named field.</p>
    <p>Decoded media data <em class="rfc2119">MAY</em> occupy a large amount of system
 memory. To minimize the need for expensive copies, this specification defines a
 scheme for reference counting (<code>clone()</code> and <code>close()</code>).</p>
-   <p class="note" role="note"><span class="marker">NOTE:</span> Authors are encourage to call <code>close()</code> immediately when frames are
+   <p class="note" role="note"><span class="marker">NOTE:</span> Authors are encouraged to call <code>close()</code> immediately when frames are
     no longer needed.</p>
    <h4 class="heading settled" data-level="9.1.2" id="raw-media-memory-model-reference-counting"><span class="secno">9.1.2. </span><span class="content">Reference Counting</span><a class="self-link" href="#raw-media-memory-model-reference-counting"></a></h4>
    <p>A <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="media-resource">media resource</dfn> is storage for the actual pixel data or the audio
@@ -3946,7 +3946,7 @@ arrangement</a> refers solely to the way the samples are laid out in memory
 signal at a particular point in time in a particular channel.</p>
    <p>A <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="frame">frame</dfn> or (sample-frame) refers to a set of values of all channels
 of a multi-channel signal, that happen at the exact same time.</p>
-   <p class="note" role="note"><span class="marker">NOTE:</span> Consequently if an audio signal is mono (has only one channel), a frame
+   <p class="note" role="note"><span class="marker">NOTE:</span> Consequently, if an audio signal is mono (has only one channel), a frame
 and a sample refer to the same thing.</p>
    <p>All audio <a data-link-type="dfn" href="#sample" id="ref-for-sample">samples</a> in this specification are using linear pulse-code
 modulation (Linear PCM): quantization levels are uniform between values.</p>
