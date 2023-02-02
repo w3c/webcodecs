@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    <meta charset="utf-8">
+    <meta name="description" content="WebCodecs code samples">
+    <meta name="viewport" content="width=device-width, user-scalable=yes, initial-scale=1, maximum-scale=1">
+    <meta itemprop="description" content="Client-side WebCodecs code samples">
+    <meta itemprop="name" content="WebCodecs code samples">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta id="theme-color" name="theme-color" content="#ffffff">
+    <base target="_blank">
+
+    <title>WebCodecs in Worker</title>
+    <link rel="stylesheet" href="css/main.css">
+
+    <style>
+        body, html {
+            height: 100%;
+        }
+
+        button {
+            margin: 0 10px 20px 0;
+            min-width: 90px;
+        }
+
+        div#buttons {
+            margin: 0 0 1em 0;
+        }
+
+        div#container {
+            max-width: 100%;
+        }
+
+        #errormessage {
+            display: none;
+            font-size: 300%;
+        }
+
+        #videoblock {
+            display: none;
+        }
+
+        p#dimensions {
+            height: 1em;
+            margin: 0 0 1.5em 0;
+        }
+
+        video {
+            background: none;
+            height: auto;
+            width: auto;
+        }
+    </style>
+
+</head>
+
+<body>
+<div>
+  <h2>WebCodecs in Worker</h2>
+</div>
+
+<textarea id="vLog" style="width: 640px; height: 360px"></textarea>
+<br/></br>
+
+<div id="rateInput">
+  <label for="rate">bitrate: </label>
+  <input type="text" name="rate" id="rate"
+      value=100000>
+</div>
+
+<div id="keyInput">
+  <label for="keygap">keyframe interval: </label>
+  <input type="text" name="keygap" id="keygap"
+      value=3000>
+</div>
+
+<div id="codecButtons">
+<p>Codec:</p>
+   <input type="radio" id="H264" name="codec" value="H264" onchange="getCodecValue(this)">
+   <label for="H.264">H.264</label><br>
+   <input type="radio" id="H265" name="codec" value="H265" onchange="getCodecValue(this)">
+   <label for="H.265">H.265</label><br>
+   <input type="radio" id="VP8"  name="codec" value="VP8" checked="checked" onchange="getCodecValue(this)">
+   <label for="VP8">VP8</label><br>
+   <input type="radio" id="VP9"  name="codec" value="VP9" onchange="getCodecValue(this)">
+   <label for="VP9">VP9</label><br>
+   <input type="radio" id="AV1" name="codec" value="AV1" onchange="getCodecValue(this)">
+   <label for="AV1">AV1</label><br>
+</div>
+
+<div id="hwButtons">
+<p>Hardware Acceleration Preference:</p>
+   <input type="radio" id="hw" name="hwAccel" value="prefer-hardware" onchange="getHwValue(this)">
+   <label for="hw">Prefer Hardware</label><br>
+   <input type="radio" id="sw"  name="hwAccel" value="prefer-software" onchange="getHwValue(this)">
+   <label for="sw">Prefer Software</label><br>
+   <input type="radio" id="no-pref"  name="hwAccel" value="no-preference" checked="checked" onchange="getHwValue(this)">
+   <label for="no-pref">No Preference</label><br>
+</div>
+
+<div id="prefButtons">
+<p>Latency goal:</p>
+   <input type="radio" id="realtime" name="latencyPref" value="realtime" checked="checked" onchange="getPrefValue(this)">
+   <label for="realtime">realtime</label><br>
+   <input type="radio" id="quality"  name="latencyPref" value="quality" onchange="getPrefValue(this)">
+   <label for="quality">quality</label><br>
+</div>
+
+<div id="bitButtons">
+<p>Bitrate mode:</p>
+   <input type="radio" id="constant"  name="bitPref" value="constant" onchange="getBitPrefValue(this)">
+   <label for="constant">constant</label><br>
+   <input type="radio" id="variable" name="bitPref" value="variable" checked="checked" onchange="getBitPrefValue(this)">
+   <label for="variable">variable</label><br>
+</div>
+
+<div id="modeButtons">
+<p>Scalability Mode:</p>
+   <input type="radio" id="L1T1" name="mode" value="L1T1" onchange="getModeValue(this)">
+   <label for="L1T1">L1T1</label><br>
+   <input type="radio" id="L1T2"  name="mode" value="L1T2" onchange="getModeValue(this)">
+   <label for="L1T2">L1T2</label><br>
+   <input type="radio" id="L1T3"  name="mode" value="L1T3" checked="checked" onchange="getModeValue(this)">
+   <label for="L1T3">L1T3</label><br>
+</div>
+
+<div id="resButtons">
+<p>Resolution:</p>
+   <input type="radio" id="qvga" name="resolution" value="qvga" checked="checked" onchange="getResValue(this)">
+   <label for="qvga">QVGA</label><br>
+   <input type="radio" id="vga" name="resolution" value="vga" onchange="getResValue(this)">
+   <label for="vga">VGA</label><br>
+   <input type="radio" id="hd" name="resolution" value="hd" onchange="getResValue(this)">
+   <label for="hd">HD</label><br>
+   <input type="radio" id="full-hd" name="resolution" value="full-hd" onchange="getResValue(this)">
+   <label for="full-hd">Full HD</label><br>
+   <input type="radio" id="tv4K" name="resolution" value="tv4K" onchange="getResValue(this)">
+   <label for="tv4K">Television 4k (3840x2160)</label><br>
+   <input type="radio" id="cinema4K" name="resolution" value="cinema4K" onchange="getResValue(this)">
+   <label for="cinema4K">Cinema 4K (4096x2160)</label><br>
+   <input type="radio" id="eightK" name="resolution" value="eightK" onchange="getResValue(this)">
+   <label for="eightK">8K</label><br>
+</div>
+
+<div class="select">
+   <label for="videoSource">Video source: </label><select id="videoSource"></select>
+</div>
+
+<video height="50%" id="inputVideo" autoplay muted></video>
+<br/>Local Video</br>
+<br/></br><video height="50%" id="outputVideo" autoplay muted></video>
+<br/>Encoded (and Decoded) Video via WebCodecs</br>
+<br/></br>
+<button id="connect">Start</button>
+<button id="stop">Stop</button>
+<script src="js/main.js"></script>
+</body>
+</html>
