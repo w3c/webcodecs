@@ -262,6 +262,7 @@ interface AudioDecoder : EventTarget {
   readonly attribute CodecState state;
   readonly attribute unsigned long decodeQueueSize;
   attribute EventHandler ondequeue;
+  attribute EventHandler onDecoderChange;
 
   undefined configure(AudioDecoderConfig config);
   undefined decode(EncodedAudioChunk chunk);
@@ -589,6 +590,7 @@ interface VideoDecoder : EventTarget {
   readonly attribute CodecState state;
   readonly attribute unsigned long decodeQueueSize;
   attribute EventHandler ondequeue;
+  attribute EventHandler onDecoderChange;
 
   undefined configure(VideoDecoderConfig config);
   undefined decode(EncodedVideoChunk chunk);
@@ -943,6 +945,7 @@ interface AudioEncoder : EventTarget {
   readonly attribute CodecState state;
   readonly attribute unsigned long encodeQueueSize;
   attribute EventHandler ondequeue;
+  attribute EventHandler onEncoderChange;
 
   undefined configure(AudioEncoderConfig config);
   undefined encode(AudioData data);
@@ -1316,6 +1319,7 @@ interface VideoEncoder : EventTarget {
   readonly attribute CodecState state;
   readonly attribute unsigned long encodeQueueSize;
   attribute EventHandler ondequeue;
+  attribute EventHandler onEncoderChange;
 
   undefined configure(VideoEncoderConfig config);
   undefined encode(VideoFrame frame, optional VideoEncoderEncodeOptions options = {});
