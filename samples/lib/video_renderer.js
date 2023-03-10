@@ -31,7 +31,9 @@ export class VideoRenderer {
       output: this.bufferFrame.bind(this),
       error: e => console.error(e),
     });
-    console.assert(VideoDecoder.isConfigSupported(config))
+
+    let support = await VideoDecoder.isConfigSupported(config);
+    console.assert(support.supported);
     this.decoder.configure(config);
 
     this.init_resolver = null;

@@ -31,7 +31,8 @@ export class AudioRenderer {
 
     debugLog(config);
 
-    console.assert(AudioDecoder.isConfigSupported(config));
+    let support = await AudioDecoder.isConfigSupported(config);
+    console.assert(support.supported);
     this.decoder.configure(config);
 
     // Initialize the ring buffer between the decoder and the real-time audio
