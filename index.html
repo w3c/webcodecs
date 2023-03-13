@@ -6,9 +6,9 @@
   <meta content="ED" name="w3c-status">
   <link href="https://www.w3.org/StyleSheets/TR/2021/W3C-ED" rel="stylesheet">
   <link href="https://www.w3.org/2008/site/images/favicon.ico" rel="icon">
-  <meta content="Bikeshed version 71458e5bb, updated Thu Mar 9 17:18:51 2023 -0800" name="generator">
+  <meta content="Bikeshed version d9f9c3533, updated Fri Mar 10 11:31:29 2023 -0800" name="generator">
   <link href="https://www.w3.org/TR/webcodecs/" rel="canonical">
-  <meta content="2b856eb4759963eb4753fed0c771618502ed3a48" name="document-revision">
+  <meta content="5c30e122169f8d893c193b3babfbd95afbb5489c" name="document-revision">
 <style>
 main > dl > dd {
   margin-bottom: 1em;
@@ -613,7 +613,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
   <div class="head">
    <p data-fill-with="logo"><a class="logo" href="https://www.w3.org/"> <img alt="W3C" height="48" src="https://www.w3.org/StyleSheets/TR/2021/logos/W3C" width="72"> </a> </p>
    <h1 class="p-name no-ref" id="title">WebCodecs</h1>
-   <p id="w3c-state"><a href="https://www.w3.org/standards/types#ED">Editor’s Draft</a>, <time class="dt-updated" datetime="2023-03-10">10 March 2023</time></p>
+   <p id="w3c-state"><a href="https://www.w3.org/standards/types#ED">Editor’s Draft</a>, <time class="dt-updated" datetime="2023-03-13">13 March 2023</time></p>
    <details open>
     <summary>More details about this document</summary>
     <div data-fill-with="spec-metadata">
@@ -744,8 +744,9 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
       <li><a href="#latency-mode"><span class="secno">7.11</span> <span class="content">Latency Mode</span></a>
       <li><a href="#config-equivalence"><span class="secno">7.12</span> <span class="content">Configuration Equivalence</span></a>
       <li><a href="#video-encoder-options"><span class="secno">7.13</span> <span class="content">VideoEncoderEncodeOptions</span></a>
-      <li><a href="#codec-state"><span class="secno">7.14</span> <span class="content">CodecState</span></a>
-      <li><a href="#error-callback"><span class="secno">7.15</span> <span class="content">WebCodecsErrorCallback</span></a>
+      <li><a href="#video-encoder-bitrate-mode"><span class="secno">7.14</span> <span class="content">VideoEncoderBitrateMode</span></a>
+      <li><a href="#codec-state"><span class="secno">7.15</span> <span class="content">CodecState</span></a>
+      <li><a href="#error-callback"><span class="secno">7.16</span> <span class="content">WebCodecsErrorCallback</span></a>
      </ol>
     <li>
      <a href="#encoded-media-interfaces"><span class="secno">8</span> <span class="content">Encoded Media Interfaces (Chunks)</span></a>
@@ -3057,7 +3058,7 @@ the extension is a valid extension, return the result of running those steps.</p
   <a data-link-type="idl-name" href="#enumdef-hardwareacceleration" id="ref-for-enumdef-hardwareacceleration③"><c- n>HardwareAcceleration</c-></a> <a class="idl-code" data-default="&quot;no-preference&quot;" data-link-type="dict-member" data-type="HardwareAcceleration " href="#dom-videoencoderconfig-hardwareacceleration" id="ref-for-dom-videoencoderconfig-hardwareacceleration"><c- g>hardwareAcceleration</c-></a> = "no-preference";
   <a data-link-type="idl-name" href="#enumdef-alphaoption" id="ref-for-enumdef-alphaoption"><c- n>AlphaOption</c-></a> <a class="idl-code" data-default="&quot;discard&quot;" data-link-type="dict-member" data-type="AlphaOption " href="#dom-videoencoderconfig-alpha" id="ref-for-dom-videoencoderconfig-alpha①"><c- g>alpha</c-></a> = "discard";
   <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-DOMString" id="ref-for-idl-DOMString⑦"><c- b>DOMString</c-></a> <a class="idl-code" data-link-type="dict-member" data-type="DOMString " href="#dom-videoencoderconfig-scalabilitymode" id="ref-for-dom-videoencoderconfig-scalabilitymode③"><c- g>scalabilityMode</c-></a>;
-  <a data-link-type="idl-name" href="https://w3c.github.io/mediacapture-record/#enumdef-bitratemode" id="ref-for-enumdef-bitratemode"><c- n>BitrateMode</c-></a> <a class="idl-code" data-default="&quot;variable&quot;" data-link-type="dict-member" data-type="BitrateMode " href="#dom-videoencoderconfig-bitratemode" id="ref-for-dom-videoencoderconfig-bitratemode"><c- g>bitrateMode</c-></a> = "variable";
+  <a data-link-type="idl-name" href="#enumdef-videoencoderbitratemode" id="ref-for-enumdef-videoencoderbitratemode"><c- n>VideoEncoderBitrateMode</c-></a> <a class="idl-code" data-default="&quot;variable&quot;" data-link-type="dict-member" data-type="VideoEncoderBitrateMode " href="#dom-videoencoderconfig-bitratemode" id="ref-for-dom-videoencoderconfig-bitratemode"><c- g>bitrateMode</c-></a> = "variable";
   <a data-link-type="idl-name" href="#enumdef-latencymode" id="ref-for-enumdef-latencymode"><c- n>LatencyMode</c-></a> <a class="idl-code" data-default="&quot;quality&quot;" data-link-type="dict-member" data-type="LatencyMode " href="#dom-videoencoderconfig-latencymode" id="ref-for-dom-videoencoderconfig-latencymode"><c- g>latencyMode</c-></a> = "quality";
 };
 </pre>
@@ -3122,9 +3123,9 @@ the extension is a valid extension, return the result of running those steps.</p
     is always discarded, regardless of a <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe①③">VideoFrame</a></code>'s <code class="idl"><a data-link-type="idl" href="#dom-videoframe-format-slot" id="ref-for-dom-videoframe-format-slot">[[format]]</a></code>. 
     <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoEncoderConfig" data-dfn-type="dict-member" data-export id="dom-videoencoderconfig-scalabilitymode"><code>scalabilityMode</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://webidl.spec.whatwg.org/#idl-DOMString" id="ref-for-idl-DOMString⑨">DOMString</a></span>
     <dd> An encoding <a data-link-type="dfn" href="https://w3c.github.io/webrtc-svc/#scalabilitymodes*" id="ref-for-scalabilitymodes*">scalability mode identifier</a> as defined by <a data-link-type="biblio" href="#biblio-webrtc-svc" title="Scalable Video Coding (SVC) Extension for WebRTC">[WebRTC-SVC]</a>. 
-    <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoEncoderConfig" data-dfn-type="dict-member" data-export id="dom-videoencoderconfig-bitratemode"><code>bitrateMode</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://w3c.github.io/mediacapture-record/#enumdef-bitratemode" id="ref-for-enumdef-bitratemode①">BitrateMode</a>, defaulting to <code>"variable"</code></span>
+    <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoEncoderConfig" data-dfn-type="dict-member" data-export id="dom-videoencoderconfig-bitratemode"><code>bitrateMode</code></dfn>, <span> of type <a data-link-type="idl-name" href="#enumdef-videoencoderbitratemode" id="ref-for-enumdef-videoencoderbitratemode①">VideoEncoderBitrateMode</a>, defaulting to <code>"variable"</code></span>
     <dd>
-      Configures encoding to use a <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/mediacapture-record/#dom-bitratemode-constant" id="ref-for-dom-bitratemode-constant">constant</a></code> or <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/mediacapture-record/#dom-bitratemode-variable" id="ref-for-dom-bitratemode-variable">variable</a></code> bitrate as defined by <a data-link-type="biblio" href="#biblio-mediastream-recording" title="MediaStream Recording">[MEDIASTREAM-RECORDING]</a>. 
+      Configures encoding to use one of the rate control modes specified by <code class="idl"><a data-link-type="idl" href="#enumdef-videoencoderbitratemode" id="ref-for-enumdef-videoencoderbitratemode②">VideoEncoderBitrateMode</a></code>. 
      <p class="note" role="note"><span class="marker">NOTE:</span> The precise degree of bitrate fluctuation in either mode is
         implementation defined.</p>
     <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoEncoderConfig" data-dfn-type="dict-member" data-export id="dom-videoencoderconfig-latencymode"><code>latencyMode</code></dfn>, <span> of type <a data-link-type="idl-name" href="#enumdef-latencymode" id="ref-for-enumdef-latencymode①">LatencyMode</a>, defaulting to <code>"quality"</code></span>
@@ -3269,13 +3270,33 @@ keys and values. For nested dictionaries, apply this definition recursively.
   <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-boolean" id="ref-for-idl-boolean①⓪"><c- b>boolean</c-></a> <a class="idl-code" data-default="false" data-link-type="dict-member" data-type="boolean " href="#dom-videoencoderencodeoptions-keyframe" id="ref-for-dom-videoencoderencodeoptions-keyframe"><c- g>keyFrame</c-></a> = <c- b>false</c->;
 };
 </pre>
+   <p class="note" role="note"><span class="marker">NOTE:</span> Codec-specific extensions to <code class="idl"><a data-link-type="idl" href="#dictdef-videoencoderencodeoptions" id="ref-for-dictdef-videoencoderencodeoptions①">VideoEncoderEncodeOptions</a></code> are described in
+    their registrations in the <a data-link-type="biblio" href="#biblio-webcodecs-codec-registry" title="WebCodecs Codec Registry">[WEBCODECS-CODEC-REGISTRY]</a>.</p>
    <dl>
     <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoEncoderEncodeOptions" data-dfn-type="dict-member" data-export id="dom-videoencoderencodeoptions-keyframe"><code>keyFrame</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://webidl.spec.whatwg.org/#idl-boolean" id="ref-for-idl-boolean①①">boolean</a>, defaulting to <code>false</code></span>
     <dd> A value of <code>true</code> indicates that the given frame MUST be encoded as a key
     frame. A value of <code>false</code> indicates that the User Agent has flexibility to
     decide whether the frame will be encoded as a <a data-link-type="dfn" href="#key-chunk" id="ref-for-key-chunk④">key frame</a>. 
    </dl>
-   <h3 class="heading settled" data-level="7.14" id="codec-state"><span class="secno">7.14. </span><span class="content">CodecState</span><a class="self-link" href="#codec-state"></a></h3>
+   <h3 class="heading settled" data-level="7.14" id="video-encoder-bitrate-mode"><span class="secno">7.14. </span><span class="content">VideoEncoderBitrateMode</span><a class="self-link" href="#video-encoder-bitrate-mode"></a></h3>
+<pre class="idl highlight def"><c- b>enum</c-> <dfn class="dfn-paneled idl-code" data-dfn-type="enum" data-export id="enumdef-videoencoderbitratemode"><code><c- g>VideoEncoderBitrateMode</c-></code></dfn> {
+  <a class="idl-code" data-link-type="enum-value" href="#dom-videoencoderbitratemode-constant" id="ref-for-dom-videoencoderbitratemode-constant"><c- s>"constant"</c-></a>,
+  <a class="idl-code" data-link-type="enum-value" href="#dom-videoencoderbitratemode-variable" id="ref-for-dom-videoencoderbitratemode-variable"><c- s>"variable"</c-></a>,
+  <a class="idl-code" data-link-type="enum-value" href="#dom-videoencoderbitratemode-quantizer" id="ref-for-dom-videoencoderbitratemode-quantizer"><c- s>"quantizer"</c-></a>
+};
+</pre>
+   <dl>
+    <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoEncoderBitrateMode" data-dfn-type="enum-value" data-export data-lt="&quot;constant&quot;|constant" id="dom-videoencoderbitratemode-constant"><code>constant</code></dfn>
+    <dd>Encode at a constant bitrate. See <code class="idl"><a data-link-type="idl" href="#dom-videoencoderconfig-bitrate" id="ref-for-dom-videoencoderconfig-bitrate③">bitrate</a></code>.
+    <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoEncoderBitrateMode" data-dfn-type="enum-value" data-export data-lt="&quot;variable&quot;|variable" id="dom-videoencoderbitratemode-variable"><code>variable</code></dfn>
+    <dd> Encode using a variable bitrate, allowing more space to be used for
+    complex signals and less space for less complex signals.
+    See <code class="idl"><a data-link-type="idl" href="#dom-videoencoderconfig-bitrate" id="ref-for-dom-videoencoderconfig-bitrate④">bitrate</a></code>. 
+    <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoEncoderBitrateMode" data-dfn-type="enum-value" data-export data-lt="&quot;quantizer&quot;|quantizer" id="dom-videoencoderbitratemode-quantizer"><code>quantizer</code></dfn>
+    <dd> Encode using a quantizer, that is specified for each video
+    frame in codec specific extensions of <code class="idl"><a data-link-type="idl" href="#dictdef-videoencoderencodeoptions" id="ref-for-dictdef-videoencoderencodeoptions②">VideoEncoderEncodeOptions</a></code>. 
+   </dl>
+   <h3 class="heading settled" data-level="7.15" id="codec-state"><span class="secno">7.15. </span><span class="content">CodecState</span><a class="self-link" href="#codec-state"></a></h3>
 <pre class="idl highlight def"><c- b>enum</c-> <dfn class="dfn-paneled idl-code" data-dfn-type="enum" data-export id="enumdef-codecstate"><code><c- g>CodecState</c-></code></dfn> {
   <a class="idl-code" data-link-type="enum-value" href="#dom-codecstate-unconfigured" id="ref-for-dom-codecstate-unconfigured"><c- s>"unconfigured"</c-></a>,
   <a class="idl-code" data-link-type="enum-value" href="#dom-codecstate-configured" id="ref-for-dom-codecstate-configured"><c- s>"configured"</c-></a>,
@@ -3292,7 +3313,7 @@ keys and values. For nested dictionaries, apply this definition recursively.
     <dd> The codec is no longer usable and underlying <a data-link-type="dfn" href="#system-resources" id="ref-for-system-resources⑧">system resources</a> have
         been released. 
    </dl>
-   <h3 class="heading settled" data-level="7.15" id="error-callback"><span class="secno">7.15. </span><span class="content">WebCodecsErrorCallback</span><a class="self-link" href="#error-callback"></a></h3>
+   <h3 class="heading settled" data-level="7.16" id="error-callback"><span class="secno">7.16. </span><span class="content">WebCodecsErrorCallback</span><a class="self-link" href="#error-callback"></a></h3>
 <pre class="idl highlight def"><c- b>callback</c-> <dfn class="dfn-paneled idl-code" data-dfn-type="callback" data-export id="callbackdef-webcodecserrorcallback"><code><c- g>WebCodecsErrorCallback</c-></code></dfn> = <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-undefined" id="ref-for-idl-undefined②④"><c- b>undefined</c-></a>(<a data-link-type="idl-name" href="https://webidl.spec.whatwg.org/#idl-DOMException" id="ref-for-idl-DOMException①⑥"><c- n>DOMException</c-></a> <dfn class="idl-code" data-dfn-for="WebCodecsErrorCallback" data-dfn-type="argument" data-export id="dom-webcodecserrorcallback-error"><code><c- g>error</c-></code><a class="self-link" href="#dom-webcodecserrorcallback-error"></a></dfn>);
 </pre>
    <h2 class="heading settled" data-level="8" id="encoded-media-interfaces"><span class="secno">8. </span><span class="content">Encoded Media Interfaces (Chunks)</span><a class="self-link" href="#encoded-media-interfaces"></a></h2>
@@ -6756,9 +6777,9 @@ participation on the mailing list and in the issues.</p>
    <li><a href="#close-audiodata">Close AudioData</a><span>, in § 9.2.5</span>
    <li><a href="#close-audiodecoder">Close AudioDecoder</a><span>, in § 3.6</span>
    <li><a href="#close-audioencoder">Close AudioEncoder</a><span>, in § 5.6</span>
-   <li><a href="#dom-codecstate-closed">"closed"</a><span>, in § 7.14</span>
+   <li><a href="#dom-codecstate-closed">"closed"</a><span>, in § 7.15</span>
    <li><a href="#dom-imagedecoder-closed-slot">[[closed]]</a><span>, in § 10.2.1</span>
-   <li><a href="#dom-codecstate-closed">closed</a><span>, in § 7.14</span>
+   <li><a href="#dom-codecstate-closed">closed</a><span>, in § 7.15</span>
    <li><a href="#imagedecoder-close-imagedecoder">Close ImageDecoder</a><span>, in § 10.2.5</span>
    <li><a href="#close-videodecoder">Close VideoDecoder</a><span>, in § 4.6</span>
    <li><a href="#close-videoencoder">Close VideoEncoder</a><span>, in § 6.6</span>
@@ -6791,7 +6812,7 @@ participation on the mailing list and in the issues.</p>
      <li><a href="#dom-videodecoder-codec-saturated-slot">attribute for VideoDecoder</a><span>, in § 4.1</span>
      <li><a href="#dom-videoencoder-codec-saturated-slot">attribute for VideoEncoder</a><span>, in § 6.1</span>
     </ul>
-   <li><a href="#enumdef-codecstate">CodecState</a><span>, in § 7.14</span>
+   <li><a href="#enumdef-codecstate">CodecState</a><span>, in § 7.15</span>
    <li><a href="#codec-string">Codec String</a><span>, in § 7.4</span>
    <li><a href="#codec-task-source">codec task source</a><span>, in § 2.3</span>
    <li>
@@ -6861,9 +6882,11 @@ participation on the mailing list and in the issues.</p>
      <li><a href="#dom-videodecoder-configure">method for VideoDecoder</a><span>, in § 4.5</span>
      <li><a href="#dom-videoencoder-configure">method for VideoEncoder</a><span>, in § 6.5</span>
     </ul>
-   <li><a href="#dom-codecstate-configured">"configured"</a><span>, in § 7.14</span>
-   <li><a href="#dom-codecstate-configured">configured</a><span>, in § 7.14</span>
+   <li><a href="#dom-codecstate-configured">"configured"</a><span>, in § 7.15</span>
+   <li><a href="#dom-codecstate-configured">configured</a><span>, in § 7.15</span>
    <li><a href="#configure-the-image-decoder">configure the image decoder</a><span>, in § 10.2.2</span>
+   <li><a href="#dom-videoencoderbitratemode-constant">"constant"</a><span>, in § 7.14</span>
+   <li><a href="#dom-videoencoderbitratemode-constant">constant</a><span>, in § 7.14</span>
    <li><a href="#dom-videocolorspace-videocolorspace">constructor()</a><span>, in § 9.9.2</span>
    <li><a href="#dom-videoframe-videoframe-data-init">constructor(data, init)</a><span>, in § 9.4.2</span>
    <li><a href="#dom-videoframe-videoframe">constructor(image)</a><span>, in § 9.4.2</span>
@@ -7314,6 +7337,8 @@ participation on the mailing list and in the issues.</p>
    <li><a href="#progressive-image-frame-generation">Progressive Image Frame Generation</a><span>, in § 1</span>
    <li><a href="#dom-latencymode-quality">"quality"</a><span>, in § 7.11</span>
    <li><a href="#dom-latencymode-quality">quality</a><span>, in § 7.11</span>
+   <li><a href="#dom-videoencoderbitratemode-quantizer">"quantizer"</a><span>, in § 7.14</span>
+   <li><a href="#dom-videoencoderbitratemode-quantizer">quantizer</a><span>, in § 7.14</span>
    <li><a href="#enqueues-a-control-message">Queue a control message</a><span>, in § 2.2</span>
    <li><a href="#dom-imagetracklist-ready">ready</a><span>, in § 10.6.2</span>
    <li><a href="#dom-imagetracklist-ready-promise-slot">[[ready promise]]</a><span>, in § 10.6.1</span>
@@ -7496,8 +7521,8 @@ participation on the mailing list and in the issues.</p>
    <li><a href="#dom-audiosampleformat-u8">u8</a><span>, in § 9.3</span>
    <li><a href="#dom-audiosampleformat-u8-planar">"u8-planar"</a><span>, in § 9.3</span>
    <li><a href="#dom-audiosampleformat-u8-planar">u8-planar</a><span>, in § 9.3</span>
-   <li><a href="#dom-codecstate-unconfigured">"unconfigured"</a><span>, in § 7.14</span>
-   <li><a href="#dom-codecstate-unconfigured">unconfigured</a><span>, in § 7.14</span>
+   <li><a href="#dom-codecstate-unconfigured">"unconfigured"</a><span>, in § 7.15</span>
+   <li><a href="#dom-codecstate-unconfigured">unconfigured</a><span>, in § 7.15</span>
    <li><a href="#imagedecoder-update-tracks">Update Tracks</a><span>, in § 10.2.5</span>
    <li><a href="#validate-videoframeinit">Validate VideoFrameInit</a><span>, in § 9.4.6</span>
    <li><a href="#valid-audiodatainit">valid AudioDataInit</a><span>, in § 9.2.5</span>
@@ -7509,6 +7534,8 @@ participation on the mailing list and in the issues.</p>
    <li><a href="#valid-videodecoderconfig">valid VideoDecoderConfig</a><span>, in § 7.6</span>
    <li><a href="#valid-videoencoderconfig">valid VideoEncoderConfig</a><span>, in § 7.8</span>
    <li><a href="#valid-videoframebufferinit">valid VideoFrameBufferInit</a><span>, in § 9.4.6</span>
+   <li><a href="#dom-videoencoderbitratemode-variable">"variable"</a><span>, in § 7.14</span>
+   <li><a href="#dom-videoencoderbitratemode-variable">variable</a><span>, in § 7.14</span>
    <li><a href="#videoframe-verify-rect-offset-alignment">Verify Rect Offset Alignment</a><span>, in § 9.4.6</span>
    <li><a href="#videoframe-verify-rect-size-alignment">Verify Rect Size Alignment</a><span>, in § 9.4.6</span>
    <li><a href="#enumdef-videocolorprimaries">VideoColorPrimaries</a><span>, in § 9.10</span>
@@ -7522,6 +7549,7 @@ participation on the mailing list and in the issues.</p>
    <li><a href="#dictdef-videodecoderinit">VideoDecoderInit</a><span>, in § 4</span>
    <li><a href="#dictdef-videodecodersupport">VideoDecoderSupport</a><span>, in § 7.3.2</span>
    <li><a href="#videoencoder">VideoEncoder</a><span>, in § 6</span>
+   <li><a href="#enumdef-videoencoderbitratemode">VideoEncoderBitrateMode</a><span>, in § 7.14</span>
    <li><a href="#dictdef-videoencoderconfig">VideoEncoderConfig</a><span>, in § 7.8</span>
    <li><a href="#dictdef-videoencoderencodeoptions">VideoEncoderEncodeOptions</a><span>, in § 7.13</span>
    <li><a href="#dom-videoencoder-videoencoder">VideoEncoder(init)</a><span>, in § 6.2</span>
@@ -7550,7 +7578,7 @@ participation on the mailing list and in the issues.</p>
     </ul>
    <li><a href="#dom-videoframe-visible-top-slot">[[visible top]]</a><span>, in § 9.4.1</span>
    <li><a href="#dom-videoframe-visible-width-slot">[[visible width]]</a><span>, in § 9.4.1</span>
-   <li><a href="#callbackdef-webcodecserrorcallback">WebCodecsErrorCallback</a><span>, in § 7.15</span>
+   <li><a href="#callbackdef-webcodecserrorcallback">WebCodecsErrorCallback</a><span>, in § 7.16</span>
    <li><a href="#dom-videoencoderconfig-width">width</a><span>, in § 7.8</span>
   </ul>
   <aside aria-labelledby="infopaneltitle-for-fa955faf653bd0b81e864c51e75e23f9" class="dfn-panel" data-for="fa955faf653bd0b81e864c51e75e23f9" id="infopanel-for-fa955faf653bd0b81e864c51e75e23f9">
@@ -8127,24 +8155,6 @@ participation on the mailing list and in the issues.</p>
     <li><a href="#ref-for-dom-mediasource-istypesupported">7.4. Codec String</a>
    </ul>
   </aside>
-  <aside aria-labelledby="infopaneltitle-for-09138c914693c20c2db2e0daabd93fb1" class="dfn-panel" data-for="09138c914693c20c2db2e0daabd93fb1" id="infopanel-for-09138c914693c20c2db2e0daabd93fb1">
-   <span id="infopaneltitle-for-09138c914693c20c2db2e0daabd93fb1" style="display:none">Info about the 'BitrateMode' external reference.</span><a href="https://w3c.github.io/mediacapture-record/#enumdef-bitratemode">https://w3c.github.io/mediacapture-record/#enumdef-bitratemode</a><b>Referenced in:</b>
-   <ul>
-    <li><a href="#ref-for-enumdef-bitratemode">7.8. VideoEncoderConfig</a> <a href="#ref-for-enumdef-bitratemode①">(2)</a>
-   </ul>
-  </aside>
-  <aside aria-labelledby="infopaneltitle-for-c0218d8e90c475bfbafddef87424e10a" class="dfn-panel" data-for="c0218d8e90c475bfbafddef87424e10a" id="infopanel-for-c0218d8e90c475bfbafddef87424e10a">
-   <span id="infopaneltitle-for-c0218d8e90c475bfbafddef87424e10a" style="display:none">Info about the 'constant' external reference.</span><a href="https://w3c.github.io/mediacapture-record/#dom-bitratemode-constant">https://w3c.github.io/mediacapture-record/#dom-bitratemode-constant</a><b>Referenced in:</b>
-   <ul>
-    <li><a href="#ref-for-dom-bitratemode-constant">7.8. VideoEncoderConfig</a>
-   </ul>
-  </aside>
-  <aside aria-labelledby="infopaneltitle-for-2a7bb368e55bbc09fb7a7cb922dfc537" class="dfn-panel" data-for="2a7bb368e55bbc09fb7a7cb922dfc537" id="infopanel-for-2a7bb368e55bbc09fb7a7cb922dfc537">
-   <span id="infopaneltitle-for-2a7bb368e55bbc09fb7a7cb922dfc537" style="display:none">Info about the 'variable' external reference.</span><a href="https://w3c.github.io/mediacapture-record/#dom-bitratemode-variable">https://w3c.github.io/mediacapture-record/#dom-bitratemode-variable</a><b>Referenced in:</b>
-   <ul>
-    <li><a href="#ref-for-dom-bitratemode-variable">7.8. VideoEncoderConfig</a>
-   </ul>
-  </aside>
   <aside aria-labelledby="infopaneltitle-for-d8b6dead8675d4e22e56ccd529b674c6" class="dfn-panel" data-for="d8b6dead8675d4e22e56ccd529b674c6" id="infopanel-for-d8b6dead8675d4e22e56ccd529b674c6">
    <span id="infopaneltitle-for-d8b6dead8675d4e22e56ccd529b674c6" style="display:none">Info about the 'mime type' external reference.</span><a href="https://mimesniff.spec.whatwg.org/#mime-type">https://mimesniff.spec.whatwg.org/#mime-type</a><b>Referenced in:</b>
    <ul>
@@ -8279,7 +8289,7 @@ participation on the mailing list and in the issues.</p>
     <li><a href="#ref-for-idl-DOMException①①">5.6. Algorithms</a>
     <li><a href="#ref-for-idl-DOMException①②">6.5. Methods</a> <a href="#ref-for-idl-DOMException①③">(2)</a> <a href="#ref-for-idl-DOMException①④">(3)</a>
     <li><a href="#ref-for-idl-DOMException①⑤">6.6. Algorithms</a>
-    <li><a href="#ref-for-idl-DOMException①⑥">7.15. WebCodecsErrorCallback</a>
+    <li><a href="#ref-for-idl-DOMException①⑥">7.16. WebCodecsErrorCallback</a>
     <li><a href="#ref-for-idl-DOMException①⑦">9.2.4. Methods</a> <a href="#ref-for-idl-DOMException①⑧">(2)</a> <a href="#ref-for-idl-DOMException①⑨">(3)</a>
     <li><a href="#ref-for-idl-DOMException②⓪">9.2.5. Algorithms</a>
     <li><a href="#ref-for-idl-DOMException②①">9.2.6. Transfer and Serialization</a> <a href="#ref-for-idl-DOMException②②">(2)</a>
@@ -8569,7 +8579,7 @@ participation on the mailing list and in the issues.</p>
     <li><a href="#ref-for-idl-undefined⑥">4. VideoDecoder Interface</a> <a href="#ref-for-idl-undefined⑦">(2)</a> <a href="#ref-for-idl-undefined⑧">(3)</a> <a href="#ref-for-idl-undefined⑨">(4)</a> <a href="#ref-for-idl-undefined①⓪">(5)</a> <a href="#ref-for-idl-undefined①①">(6)</a>
     <li><a href="#ref-for-idl-undefined①②">5. AudioEncoder Interface</a> <a href="#ref-for-idl-undefined①③">(2)</a> <a href="#ref-for-idl-undefined①④">(3)</a> <a href="#ref-for-idl-undefined①⑤">(4)</a> <a href="#ref-for-idl-undefined①⑥">(5)</a> <a href="#ref-for-idl-undefined①⑦">(6)</a>
     <li><a href="#ref-for-idl-undefined①⑧">6. VideoEncoder Interface</a> <a href="#ref-for-idl-undefined①⑨">(2)</a> <a href="#ref-for-idl-undefined②⓪">(3)</a> <a href="#ref-for-idl-undefined②①">(4)</a> <a href="#ref-for-idl-undefined②②">(5)</a> <a href="#ref-for-idl-undefined②③">(6)</a>
-    <li><a href="#ref-for-idl-undefined②④">7.15. WebCodecsErrorCallback</a>
+    <li><a href="#ref-for-idl-undefined②④">7.16. WebCodecsErrorCallback</a>
     <li><a href="#ref-for-idl-undefined②⑤">8.1. EncodedAudioChunk Interface</a>
     <li><a href="#ref-for-idl-undefined②⑥">8.2. EncodedVideoChunk Interface</a>
     <li><a href="#ref-for-idl-undefined②⑦">9.2. AudioData Interface</a> <a href="#ref-for-idl-undefined②⑧">(2)</a>
@@ -8768,13 +8778,6 @@ participation on the mailing list and in the issues.</p>
      <li><span class="dfn-paneled" id="c127ffacf55c24def2999af41a0f40d1">isTypeSupported()</span>
     </ul>
    <li>
-    <a data-link-type="biblio">[MEDIASTREAM-RECORDING]</a> defines the following terms:
-    <ul>
-     <li><span class="dfn-paneled" id="09138c914693c20c2db2e0daabd93fb1">BitrateMode</span>
-     <li><span class="dfn-paneled" id="c0218d8e90c475bfbafddef87424e10a">constant</span>
-     <li><span class="dfn-paneled" id="2a7bb368e55bbc09fb7a7cb922dfc537">variable</span>
-    </ul>
-   <li>
     <a data-link-type="biblio">[MIMESNIFF]</a> defines the following terms:
     <ul>
      <li><span class="dfn-paneled" id="d8b6dead8675d4e22e56ccd529b674c6">mime type</span>
@@ -8869,8 +8872,6 @@ participation on the mailing list and in the issues.</p>
    <dd>Anne van Kesteren; Domenic Denicola. <a href="https://infra.spec.whatwg.org/"><cite>Infra Standard</cite></a>. Living Standard. URL: <a href="https://infra.spec.whatwg.org/">https://infra.spec.whatwg.org/</a>
    <dt id="biblio-media-capabilities">[MEDIA-CAPABILITIES]
    <dd>Jean-Yves Avenard; Will Cassella. <a href="https://w3c.github.io/media-capabilities/"><cite>Media Capabilities</cite></a>. URL: <a href="https://w3c.github.io/media-capabilities/">https://w3c.github.io/media-capabilities/</a>
-   <dt id="biblio-mediastream-recording">[MEDIASTREAM-RECORDING]
-   <dd>Miguel Casas-sanchez. <a href="https://w3c.github.io/mediacapture-record/"><cite>MediaStream Recording</cite></a>. URL: <a href="https://w3c.github.io/mediacapture-record/">https://w3c.github.io/mediacapture-record/</a>
    <dt id="biblio-mimesniff">[MIMESNIFF]
    <dd>Gordon P. Hemsley. <a href="https://mimesniff.spec.whatwg.org/"><cite>MIME Sniffing Standard</cite></a>. Living Standard. URL: <a href="https://mimesniff.spec.whatwg.org/">https://mimesniff.spec.whatwg.org/</a>
    <dt id="biblio-rfc2119">[RFC2119]
@@ -9075,7 +9076,7 @@ participation on the mailing list and in the issues.</p>
   <a data-link-type="idl-name" href="#enumdef-hardwareacceleration"><c- n>HardwareAcceleration</c-></a> <a class="idl-code" data-default="&quot;no-preference&quot;" data-link-type="dict-member" data-type="HardwareAcceleration " href="#dom-videoencoderconfig-hardwareacceleration"><c- g>hardwareAcceleration</c-></a> = "no-preference";
   <a data-link-type="idl-name" href="#enumdef-alphaoption"><c- n>AlphaOption</c-></a> <a class="idl-code" data-default="&quot;discard&quot;" data-link-type="dict-member" data-type="AlphaOption " href="#dom-videoencoderconfig-alpha"><c- g>alpha</c-></a> = "discard";
   <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-DOMString"><c- b>DOMString</c-></a> <a class="idl-code" data-link-type="dict-member" data-type="DOMString " href="#dom-videoencoderconfig-scalabilitymode"><c- g>scalabilityMode</c-></a>;
-  <a data-link-type="idl-name" href="https://w3c.github.io/mediacapture-record/#enumdef-bitratemode"><c- n>BitrateMode</c-></a> <a class="idl-code" data-default="&quot;variable&quot;" data-link-type="dict-member" data-type="BitrateMode " href="#dom-videoencoderconfig-bitratemode"><c- g>bitrateMode</c-></a> = "variable";
+  <a data-link-type="idl-name" href="#enumdef-videoencoderbitratemode"><c- n>VideoEncoderBitrateMode</c-></a> <a class="idl-code" data-default="&quot;variable&quot;" data-link-type="dict-member" data-type="VideoEncoderBitrateMode " href="#dom-videoencoderconfig-bitratemode"><c- g>bitrateMode</c-></a> = "variable";
   <a data-link-type="idl-name" href="#enumdef-latencymode"><c- n>LatencyMode</c-></a> <a class="idl-code" data-default="&quot;quality&quot;" data-link-type="dict-member" data-type="LatencyMode " href="#dom-videoencoderconfig-latencymode"><c- g>latencyMode</c-></a> = "quality";
 };
 
@@ -9097,6 +9098,12 @@ participation on the mailing list and in the issues.</p>
 
 <c- b>dictionary</c-> <a href="#dictdef-videoencoderencodeoptions"><code><c- g>VideoEncoderEncodeOptions</c-></code></a> {
   <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-boolean"><c- b>boolean</c-></a> <a class="idl-code" data-default="false" data-link-type="dict-member" data-type="boolean " href="#dom-videoencoderencodeoptions-keyframe"><c- g>keyFrame</c-></a> = <c- b>false</c->;
+};
+
+<c- b>enum</c-> <a href="#enumdef-videoencoderbitratemode"><code><c- g>VideoEncoderBitrateMode</c-></code></a> {
+  <a class="idl-code" data-link-type="enum-value" href="#dom-videoencoderbitratemode-constant"><c- s>"constant"</c-></a>,
+  <a class="idl-code" data-link-type="enum-value" href="#dom-videoencoderbitratemode-variable"><c- s>"variable"</c-></a>,
+  <a class="idl-code" data-link-type="enum-value" href="#dom-videoencoderbitratemode-quantizer"><c- s>"quantizer"</c-></a>
 };
 
 <c- b>enum</c-> <a href="#enumdef-codecstate"><code><c- g>CodecState</c-></code></a> {
@@ -9451,7 +9458,7 @@ participation on the mailing list and in the issues.</p>
     <li><a href="#ref-for-system-resources⑤">5.6. Algorithms</a>
     <li><a href="#ref-for-system-resources⑥">6.5. Methods</a>
     <li><a href="#ref-for-system-resources⑦">6.6. Algorithms</a>
-    <li><a href="#ref-for-system-resources⑧">7.14. CodecState</a>
+    <li><a href="#ref-for-system-resources⑧">7.15. CodecState</a>
     <li><a href="#ref-for-system-resources⑨">10.2.5. Algorithms</a>
    </ul>
   </aside>
@@ -10922,6 +10929,7 @@ message' definition.</span><b><a href="#running-a-control-message">#running-a-co
    <ul>
     <li><a href="#ref-for-dom-videoencoderconfig-bitrate">7.8. VideoEncoderConfig</a>
     <li><a href="#ref-for-dom-videoencoderconfig-bitrate①">7.11. Latency Mode</a> <a href="#ref-for-dom-videoencoderconfig-bitrate②">(2)</a>
+    <li><a href="#ref-for-dom-videoencoderconfig-bitrate③">7.14. VideoEncoderBitrateMode</a> <a href="#ref-for-dom-videoencoderconfig-bitrate④">(2)</a>
    </ul>
   </aside>
   <aside aria-labelledby="infopaneltitle-for-dom-videoencoderconfig-framerate" class="dfn-panel" data-for="dom-videoencoderconfig-framerate" id="infopanel-for-dom-videoencoderconfig-framerate">
@@ -11043,12 +11051,38 @@ message' definition.</span><b><a href="#running-a-control-message">#running-a-co
    <span id="infopaneltitle-for-dictdef-videoencoderencodeoptions" style="display:none">Info about the 'VideoEncoderEncodeOptions' definition.</span><b><a href="#dictdef-videoencoderencodeoptions">#dictdef-videoencoderencodeoptions</a></b><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-dictdef-videoencoderencodeoptions">6. VideoEncoder Interface</a>
+    <li><a href="#ref-for-dictdef-videoencoderencodeoptions①">7.13. VideoEncoderEncodeOptions</a>
+    <li><a href="#ref-for-dictdef-videoencoderencodeoptions②">7.14. VideoEncoderBitrateMode</a>
    </ul>
   </aside>
   <aside aria-labelledby="infopaneltitle-for-dom-videoencoderencodeoptions-keyframe" class="dfn-panel" data-for="dom-videoencoderencodeoptions-keyframe" id="infopanel-for-dom-videoencoderencodeoptions-keyframe">
    <span id="infopaneltitle-for-dom-videoencoderencodeoptions-keyframe" style="display:none">Info about the 'keyFrame' definition.</span><b><a href="#dom-videoencoderencodeoptions-keyframe">#dom-videoencoderencodeoptions-keyframe</a></b><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-dom-videoencoderencodeoptions-keyframe">7.13. VideoEncoderEncodeOptions</a>
+   </ul>
+  </aside>
+  <aside aria-labelledby="infopaneltitle-for-enumdef-videoencoderbitratemode" class="dfn-panel" data-for="enumdef-videoencoderbitratemode" id="infopanel-for-enumdef-videoencoderbitratemode">
+   <span id="infopaneltitle-for-enumdef-videoencoderbitratemode" style="display:none">Info about the 'VideoEncoderBitrateMode' definition.</span><b><a href="#enumdef-videoencoderbitratemode">#enumdef-videoencoderbitratemode</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-enumdef-videoencoderbitratemode">7.8. VideoEncoderConfig</a> <a href="#ref-for-enumdef-videoencoderbitratemode①">(2)</a> <a href="#ref-for-enumdef-videoencoderbitratemode②">(3)</a>
+   </ul>
+  </aside>
+  <aside aria-labelledby="infopaneltitle-for-dom-videoencoderbitratemode-constant" class="dfn-panel" data-for="dom-videoencoderbitratemode-constant" id="infopanel-for-dom-videoencoderbitratemode-constant">
+   <span id="infopaneltitle-for-dom-videoencoderbitratemode-constant" style="display:none">Info about the 'constant' definition.</span><b><a href="#dom-videoencoderbitratemode-constant">#dom-videoencoderbitratemode-constant</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-dom-videoencoderbitratemode-constant">7.14. VideoEncoderBitrateMode</a>
+   </ul>
+  </aside>
+  <aside aria-labelledby="infopaneltitle-for-dom-videoencoderbitratemode-variable" class="dfn-panel" data-for="dom-videoencoderbitratemode-variable" id="infopanel-for-dom-videoencoderbitratemode-variable">
+   <span id="infopaneltitle-for-dom-videoencoderbitratemode-variable" style="display:none">Info about the 'variable' definition.</span><b><a href="#dom-videoencoderbitratemode-variable">#dom-videoencoderbitratemode-variable</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-dom-videoencoderbitratemode-variable">7.14. VideoEncoderBitrateMode</a>
+   </ul>
+  </aside>
+  <aside aria-labelledby="infopaneltitle-for-dom-videoencoderbitratemode-quantizer" class="dfn-panel" data-for="dom-videoencoderbitratemode-quantizer" id="infopanel-for-dom-videoencoderbitratemode-quantizer">
+   <span id="infopaneltitle-for-dom-videoencoderbitratemode-quantizer" style="display:none">Info about the 'quantizer' definition.</span><b><a href="#dom-videoencoderbitratemode-quantizer">#dom-videoencoderbitratemode-quantizer</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-dom-videoencoderbitratemode-quantizer">7.14. VideoEncoderBitrateMode</a>
    </ul>
   </aside>
   <aside aria-labelledby="infopaneltitle-for-enumdef-codecstate" class="dfn-panel" data-for="enumdef-codecstate" id="infopanel-for-enumdef-codecstate">
@@ -11071,19 +11105,19 @@ message' definition.</span><b><a href="#running-a-control-message">#running-a-co
   <aside aria-labelledby="infopaneltitle-for-dom-codecstate-unconfigured" class="dfn-panel" data-for="dom-codecstate-unconfigured" id="infopanel-for-dom-codecstate-unconfigured">
    <span id="infopaneltitle-for-dom-codecstate-unconfigured" style="display:none">Info about the 'unconfigured' definition.</span><b><a href="#dom-codecstate-unconfigured">#dom-codecstate-unconfigured</a></b><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-dom-codecstate-unconfigured">7.14. CodecState</a>
+    <li><a href="#ref-for-dom-codecstate-unconfigured">7.15. CodecState</a>
    </ul>
   </aside>
   <aside aria-labelledby="infopaneltitle-for-dom-codecstate-configured" class="dfn-panel" data-for="dom-codecstate-configured" id="infopanel-for-dom-codecstate-configured">
    <span id="infopaneltitle-for-dom-codecstate-configured" style="display:none">Info about the 'configured' definition.</span><b><a href="#dom-codecstate-configured">#dom-codecstate-configured</a></b><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-dom-codecstate-configured">7.14. CodecState</a>
+    <li><a href="#ref-for-dom-codecstate-configured">7.15. CodecState</a>
    </ul>
   </aside>
   <aside aria-labelledby="infopaneltitle-for-dom-codecstate-closed" class="dfn-panel" data-for="dom-codecstate-closed" id="infopanel-for-dom-codecstate-closed">
    <span id="infopaneltitle-for-dom-codecstate-closed" style="display:none">Info about the 'closed' definition.</span><b><a href="#dom-codecstate-closed">#dom-codecstate-closed</a></b><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-dom-codecstate-closed">7.14. CodecState</a>
+    <li><a href="#ref-for-dom-codecstate-closed">7.15. CodecState</a>
    </ul>
   </aside>
   <aside aria-labelledby="infopaneltitle-for-callbackdef-webcodecserrorcallback" class="dfn-panel" data-for="callbackdef-webcodecserrorcallback" id="infopanel-for-callbackdef-webcodecserrorcallback">
