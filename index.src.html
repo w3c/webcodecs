@@ -1719,6 +1719,11 @@ dictionary EncodedVideoChunkMetadata {
 
 dictionary SvcOutputMetadata {
   unsigned long temporalLayerId;
+  unsigned long spatialLayerId;
+  unsigned long frameNumber;
+  sequence <unsigned long> dependencies;
+  sequence <unsigned long> decodeTargets;
+  map <unsigned long, unsigned long> chainLinks;
 };
 </xmp>
 
@@ -1735,9 +1740,27 @@ dictionary SvcOutputMetadata {
     channel data.
 
 : <dfn dict-member for=SvcOutputMetadata>temporalLayerId</dfn>
-:: A number that identifies the [=temporal layer=] for the associated
+:: A number that identifies the [=Temporal Layer=] for the associated
     {{EncodedVideoChunk}}.
+    
+: <dfn dict-member for=SvcOutputMetadata>spatialLayerId</dfn>
+:: A number that identifies the [=Spatial Layer=] for the associated
+    {{EncodedVideoChunk}}.
+    
+: <dfn dict-member for=SvcOutputMetadata>frameNumber</dfn>
+:: A number that identifies the frame.
 
+: <dfn dict-member for=SvcOutputMetadata>dependencies</dfn>
+:: A sequence of frame number values that this {{EncodedVideoChunk}}
+     depends on.
+     
+: <dfn dict-member for=SvcOutputMetadata>decodeTargets</dfn>
+:: A sequence of [=Decode Target=] values that this {{EncodedVideoChunk}}
+     participates in.
+     
+: <dfn dict-member for=SvcOutputMetadata>chainLinks</dfn>
+:: A mapping of [=Decode Target=] values to the last important frame
+     to decode prior to this {{EncodedVideoChunk}}.
 
 Configurations{#configurations}
 ===============================
