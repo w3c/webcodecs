@@ -1666,11 +1666,20 @@ Algorithms {#videoencoder-algorithms}
                 |svc|.{{SvcOutputMetadata/temporalLayerId}}.
             4. Assign |svc| to
                 |chunkMetadata|.{{EncodedVideoChunkMetadata/svc}}.
-        8. If |encoderConfig|.{{VideoEncoderConfig/alpha}} is set to `"keep"`:
+        8. If |encoderConfig|.{{VideoEncoderConfig/scalabilityMode}}
+            describes more than one [=Spatial Layer=]:
+            1. Let |svc| be a new {{SvcOutputMetadata}} instance.
+            2. Let |spatial_layer_id| be the zero-based index describing the
+                spatial layer for |output|.
+            3. Assign |spatial_layer_id| to
+                |svc|.{{SvcOutputMetadata/spatialLayerId}}.
+            4. Assign |svc| to
+                |chunkMetadata|.{{EncodedVideoChunkMetadata/svc}}.
+        9. If |encoderConfig|.{{VideoEncoderConfig/alpha}} is set to `"keep"`:
             1. Let |alphaSideData| be the encoded alpha data in |output|.
             2. Assign |alphaSideData| to
                 |chunkMetadata|.{{EncodedVideoChunkMetadata/alphaSideData}}.
-        9. Invoke {{VideoEncoder/[[output callback]]}} with |chunk| and
+        10. Invoke {{VideoEncoder/[[output callback]]}} with |chunk| and
             |chunkMetadata|.
   </dd>
   <dt><dfn>Reset VideoEncoder</dfn> (with |exception|)</dt>
