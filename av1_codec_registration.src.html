@@ -73,6 +73,44 @@ If an {{EncodedVideoChunk}}'s {{EncodedVideoChunk/[[type]]}} is
 contain a frame with a `frame_type` of `KEY_FRAME` as defined in Section
 6.8.2 of [[AV1]].
 
+VideoEncoderConfig extensions {#videoencoderconfig-extensions}
+==============================================================
+
+<pre class='idl'>
+<xmp>
+partial dictionary VideoEncoderConfig {
+  AV1EncoderConfig av1;
+};
+</xmp>
+</pre>
+
+<dl>
+  <dt><dfn dict-member for=VideoEncoderConfig>av1</dfn></dt>
+  <dd>
+    Contains codec specific configuration options for the AV1 codec.
+  </dd>
+</dl>
+
+AV1EncoderConfig {#av1-encoder-config}
+--------------------------------------
+<pre class='idl'>
+<xmp>
+dictionary AV1EncoderConfig {
+ unsigned short seqForceScreenContentTools = 0
+};
+</xmp>
+</pre>
+
+<dl>
+  <dt><dfn dict-member for=AV1EncoderConfig>seqForceScreenContentTools</dfn></dt>
+  <dd>
+     Indicates whether the encoder should force use of screen content coding tools.
+     The default value (0) indicates that use of screen content coding tools should
+     not be forced. A value of 2 (SELECT_SCREEN_CONTENT_TOOLS) indicates that 
+     use of screen content coding tools should be forced.
+  </dd>
+</dl>
+
 Privacy Considerations {#privacy-considerations}
 ==========================================================================
 
