@@ -39,6 +39,7 @@ spec: html; urlPrefix: https://html.spec.whatwg.org/multipage/;
         type: dfn; text: bitmap data; url: imagebitmap-and-animations.html#concept-imagebitmap-bitmap-data
     for: Canvas;
         type: dfn; text: Check the usability of the image argument; url: canvas.html#check-the-usability-of-the-image-argument
+        type: dfn; text: is not origin-clean; url: canvas.html#the-image-argument-is-not-origin-clean
     for: webappapis;
         type: dfn; text: entry settings object; url: webappapis.html#entry-settings-object
     for: media;
@@ -3335,10 +3336,7 @@ dictionary VideoFrameMetadata {
 1. [=Canvas/Check the usability of the image argument=]. If this throws an
     exception or returns <var ignore=''>bad</var>, then throw an
     {{InvalidStateError}} {{DOMException}}.
-2. If the [=/origin=] of |image|'s image data is not [=same origin=]
-    with the [=webappapis/entry settings object=]'s
-    [=/origin=], then throw a {{SecurityError}}
-    {{DOMException}}.
+2. If |image| [=Canvas/is not origin-clean=], then throw a {{SecurityError}} {{DOMException}}.
 3. Let |frame| be a new {{VideoFrame}}.
 5. Switch on |image|:
 
