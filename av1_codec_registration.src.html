@@ -15,8 +15,9 @@ Abstract: This registration is entered into the [[webcodecs-codec-registry]].
     It describes, for AV1, the (1) fully qualified codec strings,
     (2) the codec-specific {{EncodedVideoChunk}}
     {{EncodedVideoChunk/[[internal data]]}} bytes, (3) the
-    {{VideoDecoderConfig/description|VideoDecoderConfig.description}} bytes, and
-    (4) the values of {{EncodedVideoChunk}} {{EncodedVideoChunk/[[type]]}}.
+    {{VideoDecoderConfig/description|VideoDecoderConfig.description}} bytes,
+    (4) the values of {{EncodedVideoChunk}} {{EncodedVideoChunk/[[type]]}}, and
+    (5) the codec-specific extensions to {{VideoEncoderEncodeOptions}}.
 
     The registration is not intended to include any information on whether a
     codec format is encumbered by intellectual property claims. Implementers and
@@ -72,6 +73,42 @@ If an {{EncodedVideoChunk}}'s {{EncodedVideoChunk/[[type]]}} is
 {{EncodedVideoChunkType/key}}, then the {{EncodedVideoChunk}} is expected to
 contain a frame with a `frame_type` of `KEY_FRAME` as defined in Section
 6.8.2 of [[AV1]].
+
+VideoEncoderEncodeOptions extensions {#videoencoderencodeoptions-extensions}
+==============================================================
+
+<pre class='idl'>
+<xmp>
+partial dictionary VideoEncoderEncodeOptions {
+  VideoEncoderEncodeOptionsForAv1 av1;
+};
+</xmp>
+</pre>
+
+<dl>
+  <dt><dfn dict-member for=VideoEncoderEncodeOptions>av1</dfn></dt>
+  <dd>
+    Contains codec specific encode options for the [[AV1]] codec.
+  </dd>
+</dl>
+
+VideoEncoderEncodeOptionsForAv1 {#av1-encode-options}
+--------------------------------------
+<pre class='idl'>
+<xmp>
+dictionary VideoEncoderEncodeOptionsForAv1 {
+  unsigned short? quantizer;
+};
+</xmp>
+</pre>
+
+<dl>
+  <dt><dfn dict-member for=VideoEncoderEncodeOptionsForAv1>quantizer</dfn></dt>
+  <dd>
+    Sets per-frame quantizer value.
+    In [[AV1]] the quantizer threshold can be varied from 0 to 63
+  </dd>
+</dl>
 
 Privacy Considerations {#privacy-considerations}
 ==========================================================================
