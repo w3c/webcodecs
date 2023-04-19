@@ -2028,6 +2028,7 @@ dictionary AudioEncoderConfig {
   [EnforceRange] unsigned long sampleRate;
   [EnforceRange] unsigned long numberOfChannels;
   [EnforceRange] unsigned long long bitrate;
+  BitrateMode bitrateMode;
 };
 </xmp>
 
@@ -2056,6 +2057,13 @@ run these steps:
   <dt><dfn dict-member for=AudioEncoderConfig>bitrate</dfn></dt>
   <dd>
     The average bitrate of the encoded audio given in units of bits per second.
+  </dd>
+  <dt><dfn dict-member for=AudioEncoderConfig>bitrateMode</dfn></dt>
+  <dd>
+    Configures the encoder to use a {{BitrateMode/constant}} or
+    {{BitrateMode/variable}} bitrate as defined by [[MEDIASTREAM-RECORDING]].
+
+	NOTE: Not all audio codecs support specific {{BitrateMode}}s, Authors are encouraged to check by calling {{AudioEncoder/isConfigSupported()}} with |config|.
   </dd>
 </dl>
 
