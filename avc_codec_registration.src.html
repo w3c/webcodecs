@@ -17,7 +17,8 @@ Abstract: This registration is entered into the [[webcodecs-codec-registry]].
     {{EncodedVideoChunk/[[internal data]]}} bytes, (3) the
     {{VideoDecoderConfig/description|VideoDecoderConfig.description}} bytes,
     (4) the values of {{EncodedVideoChunk}} {{EncodedVideoChunk/[[type]]}},
-    and (5) the codec-specific extensions to {{VideoEncoderConfig}}
+    (5) the codec-specific extensions to {{VideoEncoderConfig}}, and
+    (6) the codec-specific extensions to {{VideoEncoderEncodeOptions}}.
 
     The registration is not intended to include any information on whether a
     codec format is encumbered by intellectual property claims. Implementers and
@@ -185,6 +186,42 @@ mechanisms for packaging the bitstream.
     NOTE: This format is described in greater detail by [[iso14496-15]],
         section 5.3. This format is commonly used in .MP4 files, where the
         player generally has random access to the media data.
+</dl>
+
+VideoEncoderEncodeOptions extensions {#videoencoderencodeoptions-extensions}
+==============================================================
+
+<pre class='idl'>
+<xmp>
+partial dictionary VideoEncoderEncodeOptions {
+  VideoEncoderEncodeOptionsForAvc avc;
+};
+</xmp>
+</pre>
+
+<dl>
+  <dt><dfn dict-member for=VideoEncoderEncodeOptions>avc</dfn></dt>
+  <dd>
+    Contains codec specific encode options for the [[ITU-T-REC-H.264]] codec.
+  </dd>
+</dl>
+
+VideoEncoderEncodeOptionsForAv1 {#av1-encode-options}
+--------------------------------------
+<pre class='idl'>
+<xmp>
+dictionary VideoEncoderEncodeOptionsForAvc {
+  unsigned short? quantizer;
+};
+</xmp>
+</pre>
+
+<dl>
+  <dt><dfn dict-member for=VideoEncoderEncodeOptionsForAvc>quantizer</dfn></dt>
+  <dd>
+    Sets per-frame quantizer value.
+    In [[ITU-T-REC-H.264]] the quantizer threshold can be varied from 0 to 51
+  </dd>
 </dl>
 
 Privacy Considerations {#privacy-considerations}
