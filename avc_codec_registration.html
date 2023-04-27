@@ -6,9 +6,9 @@
   <meta content="ED" name="w3c-status">
   <link href="https://www.w3.org/StyleSheets/TR/2021/W3C-ED" rel="stylesheet">
   <link href="https://www.w3.org/2008/site/images/favicon.ico" rel="icon">
-  <meta content="Bikeshed version d9bd89757, updated Thu Mar 23 10:06:53 2023 -0700" name="generator">
+  <meta content="Bikeshed version bf22245b8, updated Tue Apr 18 15:53:37 2023 -0700" name="generator">
   <link href="https://www.w3.org/TR/webcodecs-avc-codec-registration/" rel="canonical">
-  <meta content="4dceb7afda0581bec4307c43033da8b2deb6556d" name="document-revision">
+  <meta content="e27c2bee8152332ce0f3376769398771b668b1a9" name="document-revision">
 <style>/* style-autolinks */
 .css.css, .property.property, .descriptor.descriptor {
     color: var(--a-normal-text);
@@ -219,8 +219,7 @@ figcaption:not(.no-marker)::before {
     position: absolute;
     z-index: 35;
     width: 20em;
-    min-width: min-content;
-    max-width: 300px;
+    width: 300px;
     height: auto;
     max-height: 500px;
     overflow: auto;
@@ -237,8 +236,15 @@ figcaption:not(.no-marker)::before {
 .dfn-panel a { color: var(--dfnpanel-text); }
 .dfn-panel a:not(:hover) { text-decoration: none !important; border-bottom: none !important; }
 .dfn-panel > b + b { margin-top: 0.25em; }
-.dfn-panel ul { padding: 0; }
-.dfn-panel li { list-style: inside; }
+.dfn-panel ul { padding: 0 0 0 1em; list-style: none; }
+.dfn-panel li a {
+    white-space: pre;
+    display: inline-block;
+    max-width: calc(300px - 1.5em - 1em);
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 .dfn-panel.activated {
     display: inline-block;
     position: fixed;
@@ -249,7 +255,7 @@ figcaption:not(.no-marker)::before {
     max-height: 30vh;
 }
 
-.dfn-paneled { cursor: pointer; }
+.dfn-paneled[role="button"] { cursor: pointer; }
 </style>
 <style>/* style-issues */
 a[href].issue-return {
@@ -589,7 +595,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
   <div class="head">
    <p data-fill-with="logo"><a class="logo" href="https://www.w3.org/"> <img alt="W3C" height="48" src="https://www.w3.org/StyleSheets/TR/2021/logos/W3C" width="72"> </a> </p>
    <h1 class="p-name no-ref" id="title">AVC (H.264) WebCodecs Registration</h1>
-   <p id="w3c-state"><a href="https://www.w3.org/standards/types#ED">Editor’s Draft</a>, <time class="dt-updated" datetime="2023-04-19">19 April 2023</time></p>
+   <p id="w3c-state"><a href="https://www.w3.org/standards/types#ED">Editor’s Draft</a>, <time class="dt-updated" datetime="2023-04-27">27 April 2023</time></p>
    <details open>
     <summary>More details about this document</summary>
     <div data-fill-with="spec-metadata">
@@ -624,7 +630,8 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
     It describes, for AVC (H.264), the (1) fully qualified codec strings,
     (2) the codec-specific <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webcodecs/#encodedvideochunk" id="ref-for-encodedvideochunk">EncodedVideoChunk</a></code> <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webcodecs/#dom-encodedvideochunk-internal-data-slot" id="ref-for-dom-encodedvideochunk-internal-data-slot">[[internal data]]</a></code> bytes, (3) the <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webcodecs/#dom-videodecoderconfig-description" id="ref-for-dom-videodecoderconfig-description">VideoDecoderConfig.description</a></code> bytes,
     (4) the values of <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webcodecs/#encodedvideochunk" id="ref-for-encodedvideochunk①">EncodedVideoChunk</a></code> <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webcodecs/#dom-encodedvideochunk-type-slot" id="ref-for-dom-encodedvideochunk-type-slot">[[type]]</a></code>,
-    and (5) the codec-specific extensions to <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webcodecs/#dictdef-videoencoderconfig" id="ref-for-dictdef-videoencoderconfig">VideoEncoderConfig</a></code></p>
+    (5) the codec-specific extensions to <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webcodecs/#dictdef-videoencoderconfig" id="ref-for-dictdef-videoencoderconfig">VideoEncoderConfig</a></code>, and
+    (6) the codec-specific extensions to <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webcodecs/#dictdef-videoencoderencodeoptions" id="ref-for-dictdef-videoencoderencodeoptions">VideoEncoderEncodeOptions</a></code>.</p>
    <p>The registration is not intended to include any information on whether a
 
     codec format is encumbered by intellectual property claims. Implementers and
@@ -660,8 +667,13 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
       <li><a href="#avc-encoder-config"><span class="secno">5.1</span> <span class="content">AvcEncoderConfig</span></a>
       <li><a href="#avc-bitstream-format"><span class="secno">5.2</span> <span class="content">AvcBitstreamFormat</span></a>
      </ol>
-    <li><a href="#privacy-considerations"><span class="secno">6</span> <span class="content">Privacy Considerations</span></a>
-    <li><a href="#security-considerations"><span class="secno">7</span> <span class="content">Security Considerations</span></a>
+    <li>
+     <a href="#videoencoderencodeoptions-extensions"><span class="secno">6</span> <span class="content">VideoEncoderEncodeOptions extensions</span></a>
+     <ol class="toc">
+      <li><a href="#avc-encode-options"><span class="secno">6.1</span> <span class="content">VideoEncoderEncodeOptionsForAvc</span></a>
+     </ol>
+    <li><a href="#privacy-considerations"><span class="secno">7</span> <span class="content">Privacy Considerations</span></a>
+    <li><a href="#security-considerations"><span class="secno">8</span> <span class="content">Security Considerations</span></a>
     <li>
      <a href="#w3c-conformance"><span class="secno"></span> <span class="content">Conformance</span></a>
      <ol class="toc">
@@ -763,10 +775,31 @@ mechanisms for packaging the bitstream.</p>
         section 5.3. This format is commonly used in .MP4 files, where the
         player generally has random access to the media data.</p>
    </dl>
-   <h2 class="heading settled" data-level="6" id="privacy-considerations"><span class="secno">6. </span><span class="content">Privacy Considerations</span><a class="self-link" href="#privacy-considerations"></a></h2>
+   <h2 class="heading settled" data-level="6" id="videoencoderencodeoptions-extensions"><span class="secno">6. </span><span class="content">VideoEncoderEncodeOptions extensions</span><a class="self-link" href="#videoencoderencodeoptions-extensions"></a></h2>
+<pre class="idl highlight def"><c- b>partial</c-> <c- b>dictionary</c-> <a class="idl-code" data-link-type="dictionary" href="https://w3c.github.io/webcodecs/#dictdef-videoencoderencodeoptions" id="ref-for-dictdef-videoencoderencodeoptions①"><c- g>VideoEncoderEncodeOptions</c-></a> {
+  <a data-link-type="idl-name" href="#dictdef-videoencoderencodeoptionsforavc" id="ref-for-dictdef-videoencoderencodeoptionsforavc"><c- n>VideoEncoderEncodeOptionsForAvc</c-></a> <a class="idl-code" data-link-type="dict-member" data-type="VideoEncoderEncodeOptionsForAvc " href="#dom-videoencoderencodeoptions-avc" id="ref-for-dom-videoencoderencodeoptions-avc"><c- g>avc</c-></a>;
+};
+
+</pre>
+   <dl>
+    <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoEncoderEncodeOptions" data-dfn-type="dict-member" data-export id="dom-videoencoderencodeoptions-avc"><code>avc</code></dfn>, <span> of type <a data-link-type="idl-name" href="#dictdef-videoencoderencodeoptionsforavc" id="ref-for-dictdef-videoencoderencodeoptionsforavc①">VideoEncoderEncodeOptionsForAvc</a></span>
+    <dd> Contains codec specific encode options for the <a data-link-type="biblio" href="#biblio-itu-t-rec-h264" title="H.264 : Advanced video coding for generic audiovisual services">[ITU-T-REC-H.264]</a> codec. 
+   </dl>
+   <h3 class="heading settled" data-level="6.1" id="avc-encode-options"><span class="secno">6.1. </span><span class="content">VideoEncoderEncodeOptionsForAvc</span><a class="self-link" href="#avc-encode-options"></a></h3>
+<pre class="idl highlight def"><c- b>dictionary</c-> <dfn class="dfn-paneled idl-code" data-dfn-type="dictionary" data-export id="dictdef-videoencoderencodeoptionsforavc"><code><c- g>VideoEncoderEncodeOptionsForAvc</c-></code></dfn> {
+  <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-unsigned-short" id="ref-for-idl-unsigned-short"><c- b>unsigned</c-> <c- b>short</c-></a>? <a class="idl-code" data-link-type="dict-member" data-type="unsigned short? " href="#dom-videoencoderencodeoptionsforavc-quantizer" id="ref-for-dom-videoencoderencodeoptionsforavc-quantizer"><c- g>quantizer</c-></a>;
+};
+
+</pre>
+   <dl>
+    <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoEncoderEncodeOptionsForAvc" data-dfn-type="dict-member" data-export id="dom-videoencoderencodeoptionsforavc-quantizer"><code>quantizer</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://webidl.spec.whatwg.org/#idl-unsigned-short" id="ref-for-idl-unsigned-short①">unsigned short</a>, nullable</span>
+    <dd> Sets per-frame quantizer value.
+    In <a data-link-type="biblio" href="#biblio-itu-t-rec-h264" title="H.264 : Advanced video coding for generic audiovisual services">[ITU-T-REC-H.264]</a> the quantizer threshold can be varied from 0 to 51. 
+   </dl>
+   <h2 class="heading settled" data-level="7" id="privacy-considerations"><span class="secno">7. </span><span class="content">Privacy Considerations</span><a class="self-link" href="#privacy-considerations"></a></h2>
    <p>Please refer to the section <a href="https://w3c.github.io/webcodecs/#privacy-considerations">Privacy
 Considerations</a> in <a data-link-type="biblio" href="#biblio-webcodecs" title="WebCodecs">[WEBCODECS]</a>.</p>
-   <h2 class="heading settled" data-level="7" id="security-considerations"><span class="secno">7. </span><span class="content">Security Considerations</span><a class="self-link" href="#security-considerations"></a></h2>
+   <h2 class="heading settled" data-level="8" id="security-considerations"><span class="secno">8. </span><span class="content">Security Considerations</span><a class="self-link" href="#security-considerations"></a></h2>
    <p>Please refer to the section <a href="https://w3c.github.io/webcodecs/#security-considerations">Security
 Considerations</a> in <a data-link-type="biblio" href="#biblio-webcodecs" title="WebCodecs">[WEBCODECS]</a>.</p>
   </main>
@@ -808,82 +841,34 @@ Considerations</a> in <a data-link-type="biblio" href="#biblio-webcodecs" title=
     avc
     <ul>
      <li><a href="#dom-videoencoderconfig-avc">dict-member for VideoEncoderConfig</a><span>, in § 5</span>
+     <li><a href="#dom-videoencoderencodeoptions-avc">dict-member for VideoEncoderEncodeOptions</a><span>, in § 6</span>
      <li><a href="#dom-avcbitstreamformat-avc">enum-value for AvcBitstreamFormat</a><span>, in § 5.2</span>
     </ul>
    <li><a href="#enumdef-avcbitstreamformat">AvcBitstreamFormat</a><span>, in § 5.2</span>
    <li><a href="#dictdef-avcencoderconfig">AvcEncoderConfig</a><span>, in § 5.1</span>
    <li><a href="#dom-avcencoderconfig-format">format</a><span>, in § 5.1</span>
+   <li><a href="#dom-videoencoderencodeoptionsforavc-quantizer">quantizer</a><span>, in § 6.1</span>
+   <li><a href="#dictdef-videoencoderencodeoptionsforavc">VideoEncoderEncodeOptionsForAvc</a><span>, in § 6.1</span>
   </ul>
-  <aside aria-labelledby="infopaneltitle-for-76ace00b8ef70eada5085c1f3d124045" class="dfn-panel" data-for="76ace00b8ef70eada5085c1f3d124045" id="infopanel-for-76ace00b8ef70eada5085c1f3d124045">
-   <span id="infopaneltitle-for-76ace00b8ef70eada5085c1f3d124045" style="display:none">Info about the '"key"' external reference.</span><a href="https://w3c.github.io/webcodecs/#dom-encodedvideochunktype-key">https://w3c.github.io/webcodecs/#dom-encodedvideochunktype-key</a><b>Referenced in:</b>
-   <ul>
-    <li><a href="#ref-for-dom-encodedvideochunktype-key">4. EncodedVideoChunk type</a> <a href="#ref-for-dom-encodedvideochunktype-key①">(2)</a>
-   </ul>
-  </aside>
-  <aside aria-labelledby="infopaneltitle-for-2d415d91cfff3889291029ab57c680b7" class="dfn-panel" data-for="2d415d91cfff3889291029ab57c680b7" id="infopanel-for-2d415d91cfff3889291029ab57c680b7">
-   <span id="infopaneltitle-for-2d415d91cfff3889291029ab57c680b7" style="display:none">Info about the 'EncodedVideoChunk' external reference.</span><a href="https://w3c.github.io/webcodecs/#encodedvideochunk">https://w3c.github.io/webcodecs/#encodedvideochunk</a><b>Referenced in:</b>
-   <ul>
-    <li><a href="#ref-for-encodedvideochunk">Unnumbered Section</a> <a href="#ref-for-encodedvideochunk①">(2)</a>
-    <li><a href="#ref-for-encodedvideochunk②">2. EncodedVideoChunk data</a>
-    <li><a href="#ref-for-encodedvideochunk③">4. EncodedVideoChunk type</a> <a href="#ref-for-encodedvideochunk④">(2)</a> <a href="#ref-for-encodedvideochunk⑤">(3)</a> <a href="#ref-for-encodedvideochunk⑥">(4)</a> <a href="#ref-for-encodedvideochunk⑦">(5)</a>
-    <li><a href="#ref-for-encodedvideochunk⑧">5.1. AvcEncoderConfig</a>
-   </ul>
-  </aside>
-  <aside aria-labelledby="infopaneltitle-for-06eff4852cd4a9699f932d1136d83d1b" class="dfn-panel" data-for="06eff4852cd4a9699f932d1136d83d1b" id="infopanel-for-06eff4852cd4a9699f932d1136d83d1b">
-   <span id="infopaneltitle-for-06eff4852cd4a9699f932d1136d83d1b" style="display:none">Info about the 'VideoEncoderConfig' external reference.</span><a href="https://w3c.github.io/webcodecs/#dictdef-videoencoderconfig">https://w3c.github.io/webcodecs/#dictdef-videoencoderconfig</a><b>Referenced in:</b>
-   <ul>
-    <li><a href="#ref-for-dictdef-videoencoderconfig">Unnumbered Section</a>
-    <li><a href="#ref-for-dictdef-videoencoderconfig①">5. VideoEncoderConfig extensions</a>
-   </ul>
-  </aside>
-  <aside aria-labelledby="infopaneltitle-for-036ad377be5294b3df89ba604a298735" class="dfn-panel" data-for="036ad377be5294b3df89ba604a298735" id="infopanel-for-036ad377be5294b3df89ba604a298735">
-   <span id="infopaneltitle-for-036ad377be5294b3df89ba604a298735" style="display:none">Info about the '[[internal data]]' external reference.</span><a href="https://w3c.github.io/webcodecs/#dom-encodedvideochunk-internal-data-slot">https://w3c.github.io/webcodecs/#dom-encodedvideochunk-internal-data-slot</a><b>Referenced in:</b>
-   <ul>
-    <li><a href="#ref-for-dom-encodedvideochunk-internal-data-slot">Unnumbered Section</a>
-    <li><a href="#ref-for-dom-encodedvideochunk-internal-data-slot①">2. EncodedVideoChunk data</a> <a href="#ref-for-dom-encodedvideochunk-internal-data-slot②">(2)</a> <a href="#ref-for-dom-encodedvideochunk-internal-data-slot③">(3)</a> <a href="#ref-for-dom-encodedvideochunk-internal-data-slot④">(4)</a>
-   </ul>
-  </aside>
-  <aside aria-labelledby="infopaneltitle-for-d5691c608712b79672a4503545863185" class="dfn-panel" data-for="d5691c608712b79672a4503545863185" id="infopanel-for-d5691c608712b79672a4503545863185">
-   <span id="infopaneltitle-for-d5691c608712b79672a4503545863185" style="display:none">Info about the '[[output callback]]' external reference.</span><a href="https://w3c.github.io/webcodecs/#dom-videoencoder-output-callback-slot">https://w3c.github.io/webcodecs/#dom-videoencoder-output-callback-slot</a><b>Referenced in:</b>
-   <ul>
-    <li><a href="#ref-for-dom-videoencoder-output-callback-slot">5.2. AvcBitstreamFormat</a>
-   </ul>
-  </aside>
-  <aside aria-labelledby="infopaneltitle-for-49066c49d91a9ba390066ffa22f677b7" class="dfn-panel" data-for="49066c49d91a9ba390066ffa22f677b7" id="infopanel-for-49066c49d91a9ba390066ffa22f677b7">
-   <span id="infopaneltitle-for-49066c49d91a9ba390066ffa22f677b7" style="display:none">Info about the '[[type]]' external reference.</span><a href="https://w3c.github.io/webcodecs/#dom-encodedvideochunk-type-slot">https://w3c.github.io/webcodecs/#dom-encodedvideochunk-type-slot</a><b>Referenced in:</b>
-   <ul>
-    <li><a href="#ref-for-dom-encodedvideochunk-type-slot">Unnumbered Section</a>
-    <li><a href="#ref-for-dom-encodedvideochunk-type-slot①">4. EncodedVideoChunk type</a> <a href="#ref-for-dom-encodedvideochunk-type-slot②">(2)</a>
-   </ul>
-  </aside>
-  <aside aria-labelledby="infopaneltitle-for-9f09d39f53f9c6bd5d5f3622cbd38a26" class="dfn-panel" data-for="9f09d39f53f9c6bd5d5f3622cbd38a26" id="infopanel-for-9f09d39f53f9c6bd5d5f3622cbd38a26">
-   <span id="infopaneltitle-for-9f09d39f53f9c6bd5d5f3622cbd38a26" style="display:none">Info about the 'decoderConfig' external reference.</span><a href="https://w3c.github.io/webcodecs/#dom-encodedvideochunkmetadata-decoderconfig">https://w3c.github.io/webcodecs/#dom-encodedvideochunkmetadata-decoderconfig</a><b>Referenced in:</b>
-   <ul>
-    <li><a href="#ref-for-dom-encodedvideochunkmetadata-decoderconfig">5.2. AvcBitstreamFormat</a>
-   </ul>
-  </aside>
-  <aside aria-labelledby="infopaneltitle-for-dbc565a04e8eb3b661f72d03c2a1d63a" class="dfn-panel" data-for="dbc565a04e8eb3b661f72d03c2a1d63a" id="infopanel-for-dbc565a04e8eb3b661f72d03c2a1d63a">
-   <span id="infopaneltitle-for-dbc565a04e8eb3b661f72d03c2a1d63a" style="display:none">Info about the 'description' external reference.</span><a href="https://w3c.github.io/webcodecs/#dom-videodecoderconfig-description">https://w3c.github.io/webcodecs/#dom-videodecoderconfig-description</a><b>Referenced in:</b>
-   <ul>
-    <li><a href="#ref-for-dom-videodecoderconfig-description">Unnumbered Section</a>
-    <li><a href="#ref-for-dom-videodecoderconfig-description①">3. VideoDecoderConfig description</a> <a href="#ref-for-dom-videodecoderconfig-description②">(2)</a>
-    <li><a href="#ref-for-dom-videodecoderconfig-description③">4. EncodedVideoChunk type</a>
-    <li><a href="#ref-for-dom-videodecoderconfig-description④">5.2. AvcBitstreamFormat</a>
-   </ul>
-  </aside>
   <h3 class="no-num no-ref heading settled" id="index-defined-elsewhere"><span class="content">Terms defined by reference</span><a class="self-link" href="#index-defined-elsewhere"></a></h3>
   <ul class="index">
    <li>
     <a data-link-type="biblio">[WEBCODECS]</a> defines the following terms:
     <ul>
-     <li><span class="dfn-paneled" id="76ace00b8ef70eada5085c1f3d124045">"key"</span>
-     <li><span class="dfn-paneled" id="2d415d91cfff3889291029ab57c680b7">EncodedVideoChunk</span>
-     <li><span class="dfn-paneled" id="06eff4852cd4a9699f932d1136d83d1b">VideoEncoderConfig</span>
-     <li><span class="dfn-paneled" id="036ad377be5294b3df89ba604a298735">[[internal data]]</span>
-     <li><span class="dfn-paneled" id="d5691c608712b79672a4503545863185">[[output callback]]</span>
-     <li><span class="dfn-paneled" id="49066c49d91a9ba390066ffa22f677b7">[[type]]</span>
-     <li><span class="dfn-paneled" id="9f09d39f53f9c6bd5d5f3622cbd38a26">decoderConfig</span>
-     <li><span class="dfn-paneled" id="dbc565a04e8eb3b661f72d03c2a1d63a">description</span>
+     <li><span class="dfn-paneled" id="5ab730d7">"key"</span>
+     <li><span class="dfn-paneled" id="25947f98">EncodedVideoChunk</span>
+     <li><span class="dfn-paneled" id="4c67f0b7">VideoEncoderConfig</span>
+     <li><span class="dfn-paneled" id="6cce5d95">VideoEncoderEncodeOptions</span>
+     <li><span class="dfn-paneled" id="a4200c1b">[[internal data]]</span>
+     <li><span class="dfn-paneled" id="05d4d94c">[[output callback]]</span>
+     <li><span class="dfn-paneled" id="89df1b66">[[type]]</span>
+     <li><span class="dfn-paneled" id="b67c6424">decoderConfig</span>
+     <li><span class="dfn-paneled" id="c59901b3">description</span>
+    </ul>
+   <li>
+    <a data-link-type="biblio">[WEBIDL]</a> defines the following terms:
+    <ul>
+     <li><span class="dfn-paneled" id="450958f7">unsigned short</span>
     </ul>
   </ul>
   <h2 class="no-num no-ref heading settled" id="references"><span class="content">References</span><a class="self-link" href="#references"></a></h2>
@@ -893,6 +878,8 @@ Considerations</a> in <a data-link-type="biblio" href="#biblio-webcodecs" title=
    <dd>S. Bradner. <a href="https://datatracker.ietf.org/doc/html/rfc2119"><cite>Key words for use in RFCs to Indicate Requirement Levels</cite></a>. March 1997. Best Current Practice. URL: <a href="https://datatracker.ietf.org/doc/html/rfc2119">https://datatracker.ietf.org/doc/html/rfc2119</a>
    <dt id="biblio-webcodecs">[WEBCODECS]
    <dd>Paul Adenot; Bernard Aboba. <a href="https://w3c.github.io/webcodecs/"><cite>WebCodecs</cite></a>. URL: <a href="https://w3c.github.io/webcodecs/">https://w3c.github.io/webcodecs/</a>
+   <dt id="biblio-webidl">[WEBIDL]
+   <dd>Edgar Chen; Timothy Gu. <a href="https://webidl.spec.whatwg.org/"><cite>Web IDL Standard</cite></a>. Living Standard. URL: <a href="https://webidl.spec.whatwg.org/">https://webidl.spec.whatwg.org/</a>
   </dl>
   <h3 class="no-num no-ref heading settled" id="informative"><span class="content">Informative References</span><a class="self-link" href="#informative"></a></h3>
   <dl>
@@ -922,65 +909,79 @@ Considerations</a> in <a data-link-type="biblio" href="#biblio-webcodecs" title=
 };
 
 
+<c- b>partial</c-> <c- b>dictionary</c-> <a class="idl-code" data-link-type="dictionary" href="https://w3c.github.io/webcodecs/#dictdef-videoencoderencodeoptions"><c- g>VideoEncoderEncodeOptions</c-></a> {
+  <a data-link-type="idl-name" href="#dictdef-videoencoderencodeoptionsforavc"><c- n>VideoEncoderEncodeOptionsForAvc</c-></a> <a class="idl-code" data-link-type="dict-member" data-type="VideoEncoderEncodeOptionsForAvc " href="#dom-videoencoderencodeoptions-avc"><c- g>avc</c-></a>;
+};
+
+
+<c- b>dictionary</c-> <a href="#dictdef-videoencoderencodeoptionsforavc"><code><c- g>VideoEncoderEncodeOptionsForAvc</c-></code></a> {
+  <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-unsigned-short"><c- b>unsigned</c-> <c- b>short</c-></a>? <a class="idl-code" data-link-type="dict-member" data-type="unsigned short? " href="#dom-videoencoderencodeoptionsforavc-quantizer"><c- g>quantizer</c-></a>;
+};
+
+
 </pre>
-  <aside aria-labelledby="infopaneltitle-for-dom-videoencoderconfig-avc" class="dfn-panel" data-for="dom-videoencoderconfig-avc" id="infopanel-for-dom-videoencoderconfig-avc">
-   <span id="infopaneltitle-for-dom-videoencoderconfig-avc" style="display:none">Info about the 'avc' definition.</span><b><a href="#dom-videoencoderconfig-avc">#dom-videoencoderconfig-avc</a></b><b>Referenced in:</b>
-   <ul>
-    <li><a href="#ref-for-dom-videoencoderconfig-avc">5. VideoEncoderConfig extensions</a>
-   </ul>
-  </aside>
-  <aside aria-labelledby="infopaneltitle-for-dictdef-avcencoderconfig" class="dfn-panel" data-for="dictdef-avcencoderconfig" id="infopanel-for-dictdef-avcencoderconfig">
-   <span id="infopaneltitle-for-dictdef-avcencoderconfig" style="display:none">Info about the 'AvcEncoderConfig' definition.</span><b><a href="#dictdef-avcencoderconfig">#dictdef-avcencoderconfig</a></b><b>Referenced in:</b>
-   <ul>
-    <li><a href="#ref-for-dictdef-avcencoderconfig">5. VideoEncoderConfig extensions</a> <a href="#ref-for-dictdef-avcencoderconfig①">(2)</a>
-   </ul>
-  </aside>
-  <aside aria-labelledby="infopaneltitle-for-dom-avcencoderconfig-format" class="dfn-panel" data-for="dom-avcencoderconfig-format" id="infopanel-for-dom-avcencoderconfig-format">
-   <span id="infopaneltitle-for-dom-avcencoderconfig-format" style="display:none">Info about the 'format' definition.</span><b><a href="#dom-avcencoderconfig-format">#dom-avcencoderconfig-format</a></b><b>Referenced in:</b>
-   <ul>
-    <li><a href="#ref-for-dom-avcencoderconfig-format">5.1. AvcEncoderConfig</a>
-   </ul>
-  </aside>
-  <aside aria-labelledby="infopaneltitle-for-enumdef-avcbitstreamformat" class="dfn-panel" data-for="enumdef-avcbitstreamformat" id="infopanel-for-enumdef-avcbitstreamformat">
-   <span id="infopaneltitle-for-enumdef-avcbitstreamformat" style="display:none">Info about the 'AvcBitstreamFormat' definition.</span><b><a href="#enumdef-avcbitstreamformat">#enumdef-avcbitstreamformat</a></b><b>Referenced in:</b>
-   <ul>
-    <li><a href="#ref-for-enumdef-avcbitstreamformat">5.1. AvcEncoderConfig</a> <a href="#ref-for-enumdef-avcbitstreamformat①">(2)</a> <a href="#ref-for-enumdef-avcbitstreamformat②">(3)</a>
-    <li><a href="#ref-for-enumdef-avcbitstreamformat③">5.2. AvcBitstreamFormat</a>
-   </ul>
-  </aside>
-  <aside aria-labelledby="infopaneltitle-for-dom-avcbitstreamformat-annexb" class="dfn-panel" data-for="dom-avcbitstreamformat-annexb" id="infopanel-for-dom-avcbitstreamformat-annexb">
-   <span id="infopaneltitle-for-dom-avcbitstreamformat-annexb" style="display:none">Info about the 'annexb' definition.</span><b><a href="#dom-avcbitstreamformat-annexb">#dom-avcbitstreamformat-annexb</a></b><b>Referenced in:</b>
-   <ul>
-    <li><a href="#ref-for-dom-avcbitstreamformat-annexb">2. EncodedVideoChunk data</a>
-    <li><a href="#ref-for-dom-avcbitstreamformat-annexb①">3. VideoDecoderConfig description</a>
-    <li><a href="#ref-for-dom-avcbitstreamformat-annexb②">4. EncodedVideoChunk type</a>
-    <li><a href="#ref-for-dom-avcbitstreamformat-annexb③">5.2. AvcBitstreamFormat</a>
-   </ul>
-  </aside>
-  <aside aria-labelledby="infopaneltitle-for-dom-avcbitstreamformat-avc" class="dfn-panel" data-for="dom-avcbitstreamformat-avc" id="infopanel-for-dom-avcbitstreamformat-avc">
-   <span id="infopaneltitle-for-dom-avcbitstreamformat-avc" style="display:none">Info about the 'avc' definition.</span><b><a href="#dom-avcbitstreamformat-avc">#dom-avcbitstreamformat-avc</a></b><b>Referenced in:</b>
-   <ul>
-    <li><a href="#ref-for-dom-avcbitstreamformat-avc">2. EncodedVideoChunk data</a>
-    <li><a href="#ref-for-dom-avcbitstreamformat-avc①">3. VideoDecoderConfig description</a>
-    <li><a href="#ref-for-dom-avcbitstreamformat-avc②">4. EncodedVideoChunk type</a> <a href="#ref-for-dom-avcbitstreamformat-avc③">(2)</a>
-    <li><a href="#ref-for-dom-avcbitstreamformat-avc④">5.2. AvcBitstreamFormat</a>
-   </ul>
-  </aside>
 <script>/* script-dfn-panel */
 "use strict";
 {
-    function queryAll(sel) {
-        return [].slice.call(document.querySelectorAll(sel));
+    const dfnsJson = window.dfnsJson || {};
+
+    function genDfnPanel({dfnID, url, dfnText, refSections, external}) {
+        return mk.aside({
+            class: "dfn-panel",
+            id: `infopanel-for-${dfnID}`,
+            "data-for": dfnID,
+            "aria-labelled-by":`infopaneltitle-for-${dfnID}`,
+            },
+            mk.span({id:`infopaneltitle-for-${dfnID}`, style:"display:none"},
+                `Info about the '${dfnText}' ${external?"external":""} reference.`),
+            mk.a({href:url}, url),
+            mk.b({}, "Referenced in:"),
+            mk.ul({},
+                ...refSections.map(section=>
+                    mk.li({},
+                        ...section.refs.map((ref, refI)=>
+                            [
+                                mk.a({
+                                    href: `#${ref.id}`
+                                    },
+                                    (refI == 0) ? section.title : `(${refI + 1})`
+                                ),
+                                " ",
+                            ]
+                        ),
+                    ),
+                ),
+            ),
+        );
     }
 
-    // Add popup behavior to all dfns to show the corresponding dfn-panel.
-    var dfns = document.querySelectorAll('.dfn-paneled');
-    for (let dfn of dfns) { insertDfnPopupAction(dfn); }
+    function genAllDfnPanels() {
+        for(const panelData of Object.values(window.dfnpanelData)) {
+            const dfnID = panelData.dfnID;
+            const dfn = document.getElementById(dfnID);
+            if(!dfn) {
+                console.log(`Can't find dfn#${dfnID}.`, panelData);
+            } else {
+                const panel = genDfnPanel(panelData);
+                append(document.body, panel);
+                insertDfnPopupAction(dfn, panel)
+            }
+        }
+    }
 
-    document.body.addEventListener("click", (e) => {
-        // If not handled already, just hide all dfn panels.
-        hideAllDfnPanels();
-    });
+    document.addEventListener("DOMContentLoaded", ()=>{
+        genAllDfnPanels();
+
+        // Add popup behavior to all dfns to show the corresponding dfn-panel.
+        var dfns = queryAll('.dfn-paneled');
+        for(let dfn of dfns) { ; }
+
+        document.body.addEventListener("click", (e) => {
+            // If not handled already, just hide all dfn panels.
+            hideAllDfnPanels();
+        });
+    })
+
 
     function hideAllDfnPanels() {
         // Turn off any currently "on" or "activated" panels.
@@ -1030,49 +1031,261 @@ Considerations</a> in <a data-link-type="biblio" href="#biblio-webcodecs" title=
         }
     }
 
-    function insertDfnPopupAction(dfn) {
+    function insertDfnPopupAction(dfn, dfnPanel) {
         // Find dfn panel
-        const dfnPanel = document.querySelector(`.dfn-panel[data-for='${dfn.id}']`);
-        if (dfnPanel) {
-            const panelWrapper = document.createElement('span');
-            panelWrapper.appendChild(dfnPanel);
-            panelWrapper.style.position = "relative";
-            panelWrapper.style.height = "0px";
-            dfn.insertAdjacentElement("afterend", panelWrapper);
-            dfn.setAttribute('role', 'button');
-            dfn.setAttribute('aria-expanded', 'false')
-            dfn.tabIndex = 0;
-            dfn.classList.add('has-dfn-panel');
-            dfn.addEventListener('click', (event) => {
-                showDfnPanel(dfnPanel, dfn);
+        const panelWrapper = document.createElement('span');
+        panelWrapper.appendChild(dfnPanel);
+        panelWrapper.style.position = "relative";
+        panelWrapper.style.height = "0px";
+        dfn.insertAdjacentElement("afterend", panelWrapper);
+        dfn.setAttribute('role', 'button');
+        dfn.setAttribute('aria-expanded', 'false')
+        dfn.tabIndex = 0;
+        dfn.classList.add('has-dfn-panel');
+        dfn.addEventListener('click', (event) => {
+            showDfnPanel(dfnPanel, dfn);
+            event.stopPropagation();
+        });
+        dfn.addEventListener('keypress', (event) => {
+            const kc = event.keyCode;
+            // 32->Space, 13->Enter
+            if(kc == 32 || kc == 13) {
+                toggleDfnPanel(dfnPanel, dfn);
                 event.stopPropagation();
-            });
-            dfn.addEventListener('keypress', (event) => {
-                const kc = event.keyCode;
-                // 32->Space, 13->Enter
-                if(kc == 32 || kc == 13) {
-                    toggleDfnPanel(dfnPanel, dfn);
-                    event.stopPropagation();
-                    event.preventDefault();
-                }
-            });
+                event.preventDefault();
+            }
+        });
 
-            dfnPanel.addEventListener('click', (event) => {
+        dfnPanel.addEventListener('click', (event) => {
+            if (event.target.nodeName == 'A') {
                 pinDfnPanel(dfnPanel);
+            }
+            event.stopPropagation();
+        });
+
+        dfnPanel.addEventListener('keydown', (event) => {
+            if(event.keyCode == 27) { // Escape key
+                hideDfnPanel(dfnPanel, dfn);
                 event.stopPropagation();
-            });
-
-            dfnPanel.addEventListener('keydown', (event) => {
-                if(event.keyCode == 27) { // Escape key
-                    hideDfnPanel(dfnPanel, dfn);
-                    event.stopPropagation();
-                    event.preventDefault();
-                }
-            })
-
-        } else {
-            console.log("Couldn't find .dfn-panel[data-for='" + dfn.id + "']");
-        }
+                event.preventDefault();
+            }
+        })
     }
 }
 </script>
+<script>/* script-dfn-panel-json */
+window.dfnpanelData = {};
+window.dfnpanelData['5ab730d7'] = {"dfnID": "5ab730d7", "url": "https://w3c.github.io/webcodecs/#dom-encodedvideochunktype-key", "dfnText": "\"key\"", "refSections": [{"refs": [{"id": "ref-for-dom-encodedvideochunktype-key"}, {"id": "ref-for-dom-encodedvideochunktype-key\u2460"}], "title": "4. EncodedVideoChunk type"}], "external": true};
+window.dfnpanelData['25947f98'] = {"dfnID": "25947f98", "url": "https://w3c.github.io/webcodecs/#encodedvideochunk", "dfnText": "EncodedVideoChunk", "refSections": [{"refs": [{"id": "ref-for-encodedvideochunk"}, {"id": "ref-for-encodedvideochunk\u2460"}], "title": "Unnumbered Section"}, {"refs": [{"id": "ref-for-encodedvideochunk\u2461"}], "title": "2. EncodedVideoChunk data"}, {"refs": [{"id": "ref-for-encodedvideochunk\u2462"}, {"id": "ref-for-encodedvideochunk\u2463"}, {"id": "ref-for-encodedvideochunk\u2464"}, {"id": "ref-for-encodedvideochunk\u2465"}, {"id": "ref-for-encodedvideochunk\u2466"}], "title": "4. EncodedVideoChunk type"}, {"refs": [{"id": "ref-for-encodedvideochunk\u2467"}], "title": "5.1. AvcEncoderConfig"}], "external": true};
+window.dfnpanelData['4c67f0b7'] = {"dfnID": "4c67f0b7", "url": "https://w3c.github.io/webcodecs/#dictdef-videoencoderconfig", "dfnText": "VideoEncoderConfig", "refSections": [{"refs": [{"id": "ref-for-dictdef-videoencoderconfig"}], "title": "Unnumbered Section"}, {"refs": [{"id": "ref-for-dictdef-videoencoderconfig\u2460"}], "title": "5. VideoEncoderConfig extensions"}], "external": true};
+window.dfnpanelData['6cce5d95'] = {"dfnID": "6cce5d95", "url": "https://w3c.github.io/webcodecs/#dictdef-videoencoderencodeoptions", "dfnText": "VideoEncoderEncodeOptions", "refSections": [{"refs": [{"id": "ref-for-dictdef-videoencoderencodeoptions"}], "title": "Unnumbered Section"}, {"refs": [{"id": "ref-for-dictdef-videoencoderencodeoptions\u2460"}], "title": "6. VideoEncoderEncodeOptions extensions"}], "external": true};
+window.dfnpanelData['a4200c1b'] = {"dfnID": "a4200c1b", "url": "https://w3c.github.io/webcodecs/#dom-encodedvideochunk-internal-data-slot", "dfnText": "[[internal data]]", "refSections": [{"refs": [{"id": "ref-for-dom-encodedvideochunk-internal-data-slot"}], "title": "Unnumbered Section"}, {"refs": [{"id": "ref-for-dom-encodedvideochunk-internal-data-slot\u2460"}, {"id": "ref-for-dom-encodedvideochunk-internal-data-slot\u2461"}, {"id": "ref-for-dom-encodedvideochunk-internal-data-slot\u2462"}, {"id": "ref-for-dom-encodedvideochunk-internal-data-slot\u2463"}], "title": "2. EncodedVideoChunk data"}], "external": true};
+window.dfnpanelData['05d4d94c'] = {"dfnID": "05d4d94c", "url": "https://w3c.github.io/webcodecs/#dom-videoencoder-output-callback-slot", "dfnText": "[[output callback]]", "refSections": [{"refs": [{"id": "ref-for-dom-videoencoder-output-callback-slot"}], "title": "5.2. AvcBitstreamFormat"}], "external": true};
+window.dfnpanelData['89df1b66'] = {"dfnID": "89df1b66", "url": "https://w3c.github.io/webcodecs/#dom-encodedvideochunk-type-slot", "dfnText": "[[type]]", "refSections": [{"refs": [{"id": "ref-for-dom-encodedvideochunk-type-slot"}], "title": "Unnumbered Section"}, {"refs": [{"id": "ref-for-dom-encodedvideochunk-type-slot\u2460"}, {"id": "ref-for-dom-encodedvideochunk-type-slot\u2461"}], "title": "4. EncodedVideoChunk type"}], "external": true};
+window.dfnpanelData['b67c6424'] = {"dfnID": "b67c6424", "url": "https://w3c.github.io/webcodecs/#dom-encodedvideochunkmetadata-decoderconfig", "dfnText": "decoderConfig", "refSections": [{"refs": [{"id": "ref-for-dom-encodedvideochunkmetadata-decoderconfig"}], "title": "5.2. AvcBitstreamFormat"}], "external": true};
+window.dfnpanelData['c59901b3'] = {"dfnID": "c59901b3", "url": "https://w3c.github.io/webcodecs/#dom-videodecoderconfig-description", "dfnText": "description", "refSections": [{"refs": [{"id": "ref-for-dom-videodecoderconfig-description"}], "title": "Unnumbered Section"}, {"refs": [{"id": "ref-for-dom-videodecoderconfig-description\u2460"}, {"id": "ref-for-dom-videodecoderconfig-description\u2461"}], "title": "3. VideoDecoderConfig description"}, {"refs": [{"id": "ref-for-dom-videodecoderconfig-description\u2462"}], "title": "4. EncodedVideoChunk type"}, {"refs": [{"id": "ref-for-dom-videodecoderconfig-description\u2463"}], "title": "5.2. AvcBitstreamFormat"}], "external": true};
+window.dfnpanelData['450958f7'] = {"dfnID": "450958f7", "url": "https://webidl.spec.whatwg.org/#idl-unsigned-short", "dfnText": "unsigned short", "refSections": [{"refs": [{"id": "ref-for-idl-unsigned-short"}, {"id": "ref-for-idl-unsigned-short\u2460"}], "title": "6.1. VideoEncoderEncodeOptionsForAvc"}], "external": true};
+window.dfnpanelData['dom-videoencoderconfig-avc'] = {"dfnID": "dom-videoencoderconfig-avc", "url": "#dom-videoencoderconfig-avc", "dfnText": "avc", "refSections": [{"refs": [{"id": "ref-for-dom-videoencoderconfig-avc"}], "title": "5. VideoEncoderConfig extensions"}], "external": false};
+window.dfnpanelData['dictdef-avcencoderconfig'] = {"dfnID": "dictdef-avcencoderconfig", "url": "#dictdef-avcencoderconfig", "dfnText": "AvcEncoderConfig", "refSections": [{"refs": [{"id": "ref-for-dictdef-avcencoderconfig"}, {"id": "ref-for-dictdef-avcencoderconfig\u2460"}], "title": "5. VideoEncoderConfig extensions"}], "external": false};
+window.dfnpanelData['dom-avcencoderconfig-format'] = {"dfnID": "dom-avcencoderconfig-format", "url": "#dom-avcencoderconfig-format", "dfnText": "format", "refSections": [{"refs": [{"id": "ref-for-dom-avcencoderconfig-format"}], "title": "5.1. AvcEncoderConfig"}], "external": false};
+window.dfnpanelData['enumdef-avcbitstreamformat'] = {"dfnID": "enumdef-avcbitstreamformat", "url": "#enumdef-avcbitstreamformat", "dfnText": "AvcBitstreamFormat", "refSections": [{"refs": [{"id": "ref-for-enumdef-avcbitstreamformat"}, {"id": "ref-for-enumdef-avcbitstreamformat\u2460"}, {"id": "ref-for-enumdef-avcbitstreamformat\u2461"}], "title": "5.1. AvcEncoderConfig"}, {"refs": [{"id": "ref-for-enumdef-avcbitstreamformat\u2462"}], "title": "5.2. AvcBitstreamFormat"}], "external": false};
+window.dfnpanelData['dom-avcbitstreamformat-annexb'] = {"dfnID": "dom-avcbitstreamformat-annexb", "url": "#dom-avcbitstreamformat-annexb", "dfnText": "annexb", "refSections": [{"refs": [{"id": "ref-for-dom-avcbitstreamformat-annexb"}], "title": "2. EncodedVideoChunk data"}, {"refs": [{"id": "ref-for-dom-avcbitstreamformat-annexb\u2460"}], "title": "3. VideoDecoderConfig description"}, {"refs": [{"id": "ref-for-dom-avcbitstreamformat-annexb\u2461"}], "title": "4. EncodedVideoChunk type"}, {"refs": [{"id": "ref-for-dom-avcbitstreamformat-annexb\u2462"}], "title": "5.2. AvcBitstreamFormat"}], "external": false};
+window.dfnpanelData['dom-avcbitstreamformat-avc'] = {"dfnID": "dom-avcbitstreamformat-avc", "url": "#dom-avcbitstreamformat-avc", "dfnText": "avc", "refSections": [{"refs": [{"id": "ref-for-dom-avcbitstreamformat-avc"}], "title": "2. EncodedVideoChunk data"}, {"refs": [{"id": "ref-for-dom-avcbitstreamformat-avc\u2460"}], "title": "3. VideoDecoderConfig description"}, {"refs": [{"id": "ref-for-dom-avcbitstreamformat-avc\u2461"}, {"id": "ref-for-dom-avcbitstreamformat-avc\u2462"}], "title": "4. EncodedVideoChunk type"}, {"refs": [{"id": "ref-for-dom-avcbitstreamformat-avc\u2463"}], "title": "5.2. AvcBitstreamFormat"}], "external": false};
+window.dfnpanelData['dom-videoencoderencodeoptions-avc'] = {"dfnID": "dom-videoencoderencodeoptions-avc", "url": "#dom-videoencoderencodeoptions-avc", "dfnText": "avc", "refSections": [{"refs": [{"id": "ref-for-dom-videoencoderencodeoptions-avc"}], "title": "6. VideoEncoderEncodeOptions extensions"}], "external": false};
+window.dfnpanelData['dictdef-videoencoderencodeoptionsforavc'] = {"dfnID": "dictdef-videoencoderencodeoptionsforavc", "url": "#dictdef-videoencoderencodeoptionsforavc", "dfnText": "VideoEncoderEncodeOptionsForAvc", "refSections": [{"refs": [{"id": "ref-for-dictdef-videoencoderencodeoptionsforavc"}, {"id": "ref-for-dictdef-videoencoderencodeoptionsforavc\u2460"}], "title": "6. VideoEncoderEncodeOptions extensions"}], "external": false};
+window.dfnpanelData['dom-videoencoderencodeoptionsforavc-quantizer'] = {"dfnID": "dom-videoencoderencodeoptionsforavc-quantizer", "url": "#dom-videoencoderencodeoptionsforavc-quantizer", "dfnText": "quantizer", "refSections": [{"refs": [{"id": "ref-for-dom-videoencoderencodeoptionsforavc-quantizer"}], "title": "6.1. VideoEncoderEncodeOptionsForAvc"}], "external": false};</script>
+<script>/* script-dom-helper */
+function query(sel) { return document.querySelector(sel); }
+
+function queryAll(sel) { return [...document.querySelectorAll(sel)]; }
+
+function iter(obj) {
+	if(!obj) return [];
+	var it = obj[Symbol.iterator];
+	if(it) return it;
+	return Object.entries(obj);
+}
+
+function mk(tagname, attrs, ...children) {
+	const el = document.createElement(tagname);
+	for(const [k,v] of iter(attrs)) {
+		if(k.slice(0,3) == "_on") {
+			const eventName = k.slice(3);
+			el.addEventListener(eventName, v);
+		} else if(k[0] == "_") {
+			// property, not attribute
+			el[k.slice(1)] = v;
+		} else {
+			if(v === false || v == null) {
+        continue;
+      } else if(v === true) {
+        el.setAttribute(k, "");
+        continue;
+      } else {
+  			el.setAttribute(k, v);
+      }
+		}
+	}
+	append(el, children);
+	return el;
+}
+
+/* Create shortcuts for every known HTML element */
+[
+  "a",
+  "abbr",
+  "acronym",
+  "address",
+  "applet",
+  "area",
+  "article",
+  "aside",
+  "audio",
+  "b",
+  "base",
+  "basefont",
+  "bdo",
+  "big",
+  "blockquote",
+  "body",
+  "br",
+  "button",
+  "canvas",
+  "caption",
+  "center",
+  "cite",
+  "code",
+  "col",
+  "colgroup",
+  "datalist",
+  "dd",
+  "del",
+  "details",
+  "dfn",
+  "dialog",
+  "div",
+  "dl",
+  "dt",
+  "em",
+  "embed",
+  "fieldset",
+  "figcaption",
+  "figure",
+  "font",
+  "footer",
+  "form",
+  "frame",
+  "frameset",
+  "head",
+  "header",
+  "h1",
+  "h2",
+  "h3",
+  "h4",
+  "h5",
+  "h6",
+  "hr",
+  "html",
+  "i",
+  "iframe",
+  "img",
+  "input",
+  "ins",
+  "kbd",
+  "label",
+  "legend",
+  "li",
+  "link",
+  "main",
+  "map",
+  "mark",
+  "meta",
+  "meter",
+  "nav",
+  "nobr",
+  "noscript",
+  "object",
+  "ol",
+  "optgroup",
+  "option",
+  "output",
+  "p",
+  "param",
+  "pre",
+  "progress",
+  "q",
+  "s",
+  "samp",
+  "script",
+  "section",
+  "select",
+  "small",
+  "source",
+  "span",
+  "strike",
+  "strong",
+  "style",
+  "sub",
+  "summary",
+  "sup",
+  "table",
+  "tbody",
+  "td",
+  "template",
+  "textarea",
+  "tfoot",
+  "th",
+  "thead",
+  "time",
+  "title",
+  "tr",
+  "u",
+  "ul",
+  "var",
+  "video",
+  "wbr",
+  "xmp",
+].forEach(tagname=>{
+	mk[tagname] = (...args) => mk(tagname, ...args);
+});
+
+function* nodesFromChildList(children) {
+	for(const child of children.flat(Infinity)) {
+		if(child instanceof Node) {
+			yield child;
+		} else {
+			yield new Text(child);
+		}
+	}
+}
+function append(el, ...children) {
+	for(const child of nodesFromChildList(children)) {
+		if(el instanceof Node) el.appendChild(child);
+		else el.push(child);
+	}
+	return el;
+}
+
+function insertAfter(el, ...children) {
+	for(const child of nodesFromChildList(children)) {
+		el.parentNode.insertBefore(child, el.nextSibling);
+	}
+	return el;
+}
+
+function clearContents(el) {
+	el.innerHTML = "";
+	return el;
+}
+
+function parseHTML(markup) {
+	if(markup.toLowerCase().trim().indexOf('<!doctype') === 0) {
+		const doc = document.implementation.createHTMLDocument("");
+		doc.documentElement.innerHTML = markup;
+		return doc;
+	} else {
+		const el = mk.template({});
+		el.innerHTML = markup;
+		return el.content;
+	}
+}</script>
