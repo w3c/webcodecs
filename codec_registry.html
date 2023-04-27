@@ -6,9 +6,9 @@
   <meta content="ED" name="w3c-status">
   <link href="https://www.w3.org/StyleSheets/TR/2021/W3C-ED" rel="stylesheet">
   <link href="https://www.w3.org/2008/site/images/favicon.ico" rel="icon">
-  <meta content="Bikeshed version d9bd89757, updated Thu Mar 23 10:06:53 2023 -0700" name="generator">
+  <meta content="Bikeshed version bf22245b8, updated Tue Apr 18 15:53:37 2023 -0700" name="generator">
   <link href="https://www.w3.org/TR/webcodecs-codec-registry/" rel="canonical">
-  <meta content="4dceb7afda0581bec4307c43033da8b2deb6556d" name="document-revision">
+  <meta content="e27c2bee8152332ce0f3376769398771b668b1a9" name="document-revision">
 <style>/* style-autolinks */
 .css.css, .property.property, .descriptor.descriptor {
     color: var(--a-normal-text);
@@ -219,8 +219,7 @@ figcaption:not(.no-marker)::before {
     position: absolute;
     z-index: 35;
     width: 20em;
-    min-width: min-content;
-    max-width: 300px;
+    width: 300px;
     height: auto;
     max-height: 500px;
     overflow: auto;
@@ -237,8 +236,15 @@ figcaption:not(.no-marker)::before {
 .dfn-panel a { color: var(--dfnpanel-text); }
 .dfn-panel a:not(:hover) { text-decoration: none !important; border-bottom: none !important; }
 .dfn-panel > b + b { margin-top: 0.25em; }
-.dfn-panel ul { padding: 0; }
-.dfn-panel li { list-style: inside; }
+.dfn-panel ul { padding: 0 0 0 1em; list-style: none; }
+.dfn-panel li a {
+    white-space: pre;
+    display: inline-block;
+    max-width: calc(300px - 1.5em - 1em);
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 .dfn-panel.activated {
     display: inline-block;
     position: fixed;
@@ -249,7 +255,7 @@ figcaption:not(.no-marker)::before {
     max-height: 30vh;
 }
 
-.dfn-paneled { cursor: pointer; }
+.dfn-paneled[role="button"] { cursor: pointer; }
 </style>
 <style>/* style-issues */
 a[href].issue-return {
@@ -463,7 +469,7 @@ dfn > a.self-link::before      { content: "#"; }
   <div class="head">
    <p data-fill-with="logo"><a class="logo" href="https://www.w3.org/"> <img alt="W3C" height="48" src="https://www.w3.org/StyleSheets/TR/2021/logos/W3C" width="72"> </a> </p>
    <h1 class="p-name no-ref" id="title">WebCodecs Codec Registry</h1>
-   <p id="w3c-state"><a href="https://www.w3.org/standards/types#ED">Editor’s Draft</a>, <time class="dt-updated" datetime="2023-04-19">19 April 2023</time></p>
+   <p id="w3c-state"><a href="https://www.w3.org/standards/types#ED">Editor’s Draft</a>, <time class="dt-updated" datetime="2023-04-27">27 April 2023</time></p>
    <details open>
     <summary>More details about this document</summary>
     <div data-fill-with="spec-metadata">
@@ -680,60 +686,18 @@ Considerations</a> in <a data-link-type="biblio" href="#biblio-webcodecs" title=
   </main>
 <script src="https://www.w3.org/scripts/TR/2021/fixup.js"></script>
   <h2 class="no-num no-ref heading settled" id="index"><span class="content">Index</span><a class="self-link" href="#index"></a></h2>
-  <aside aria-labelledby="infopaneltitle-for-d44ec32de9892fb3411b2dbd8cf1e23f" class="dfn-panel" data-for="d44ec32de9892fb3411b2dbd8cf1e23f" id="infopanel-for-d44ec32de9892fb3411b2dbd8cf1e23f">
-   <span id="infopaneltitle-for-d44ec32de9892fb3411b2dbd8cf1e23f" style="display:none">Info about the 'AudioDecoderConfig' external reference.</span><a href="https://w3c.github.io/webcodecs/#dictdef-audiodecoderconfig">https://w3c.github.io/webcodecs/#dictdef-audiodecoderconfig</a><b>Referenced in:</b>
-   <ul>
-    <li><a href="#ref-for-dictdef-audiodecoderconfig">2. Registration Entry Requirements</a>
-   </ul>
-  </aside>
-  <aside aria-labelledby="infopaneltitle-for-1482839963ff600ffe5e8352ebeb6695" class="dfn-panel" data-for="1482839963ff600ffe5e8352ebeb6695" id="infopanel-for-1482839963ff600ffe5e8352ebeb6695">
-   <span id="infopaneltitle-for-1482839963ff600ffe5e8352ebeb6695" style="display:none">Info about the 'AudioEncoderConfig' external reference.</span><a href="https://w3c.github.io/webcodecs/#dictdef-audioencoderconfig">https://w3c.github.io/webcodecs/#dictdef-audioencoderconfig</a><b>Referenced in:</b>
-   <ul>
-    <li><a href="#ref-for-dictdef-audioencoderconfig">2. Registration Entry Requirements</a>
-   </ul>
-  </aside>
-  <aside aria-labelledby="infopaneltitle-for-2aa02bf883fadc34a57c60dc28546028" class="dfn-panel" data-for="2aa02bf883fadc34a57c60dc28546028" id="infopanel-for-2aa02bf883fadc34a57c60dc28546028">
-   <span id="infopaneltitle-for-2aa02bf883fadc34a57c60dc28546028" style="display:none">Info about the 'EncodedAudioChunk' external reference.</span><a href="https://w3c.github.io/webcodecs/#encodedaudiochunk">https://w3c.github.io/webcodecs/#encodedaudiochunk</a><b>Referenced in:</b>
-   <ul>
-    <li><a href="#ref-for-encodedaudiochunk">2. Registration Entry Requirements</a> <a href="#ref-for-encodedaudiochunk①">(2)</a>
-   </ul>
-  </aside>
-  <aside aria-labelledby="infopaneltitle-for-2d415d91cfff3889291029ab57c680b7" class="dfn-panel" data-for="2d415d91cfff3889291029ab57c680b7" id="infopanel-for-2d415d91cfff3889291029ab57c680b7">
-   <span id="infopaneltitle-for-2d415d91cfff3889291029ab57c680b7" style="display:none">Info about the 'EncodedVideoChunk' external reference.</span><a href="https://w3c.github.io/webcodecs/#encodedvideochunk">https://w3c.github.io/webcodecs/#encodedvideochunk</a><b>Referenced in:</b>
-   <ul>
-    <li><a href="#ref-for-encodedvideochunk">2. Registration Entry Requirements</a> <a href="#ref-for-encodedvideochunk①">(2)</a>
-   </ul>
-  </aside>
-  <aside aria-labelledby="infopaneltitle-for-fc8f0a1d58fe91da41c6610176ca672f" class="dfn-panel" data-for="fc8f0a1d58fe91da41c6610176ca672f" id="infopanel-for-fc8f0a1d58fe91da41c6610176ca672f">
-   <span id="infopaneltitle-for-fc8f0a1d58fe91da41c6610176ca672f" style="display:none">Info about the 'VideoDecoderConfig' external reference.</span><a href="https://w3c.github.io/webcodecs/#dictdef-videodecoderconfig">https://w3c.github.io/webcodecs/#dictdef-videodecoderconfig</a><b>Referenced in:</b>
-   <ul>
-    <li><a href="#ref-for-dictdef-videodecoderconfig">2. Registration Entry Requirements</a>
-   </ul>
-  </aside>
-  <aside aria-labelledby="infopaneltitle-for-06eff4852cd4a9699f932d1136d83d1b" class="dfn-panel" data-for="06eff4852cd4a9699f932d1136d83d1b" id="infopanel-for-06eff4852cd4a9699f932d1136d83d1b">
-   <span id="infopaneltitle-for-06eff4852cd4a9699f932d1136d83d1b" style="display:none">Info about the 'VideoEncoderConfig' external reference.</span><a href="https://w3c.github.io/webcodecs/#dictdef-videoencoderconfig">https://w3c.github.io/webcodecs/#dictdef-videoencoderconfig</a><b>Referenced in:</b>
-   <ul>
-    <li><a href="#ref-for-dictdef-videoencoderconfig">2. Registration Entry Requirements</a>
-   </ul>
-  </aside>
-  <aside aria-labelledby="infopaneltitle-for-49066c49d91a9ba390066ffa22f677b7" class="dfn-panel" data-for="49066c49d91a9ba390066ffa22f677b7" id="infopanel-for-49066c49d91a9ba390066ffa22f677b7">
-   <span id="infopaneltitle-for-49066c49d91a9ba390066ffa22f677b7" style="display:none">Info about the '[[type]]' external reference.</span><a href="https://w3c.github.io/webcodecs/#dom-encodedvideochunk-type-slot">https://w3c.github.io/webcodecs/#dom-encodedvideochunk-type-slot</a><b>Referenced in:</b>
-   <ul>
-    <li><a href="#ref-for-dom-encodedvideochunk-type-slot">2. Registration Entry Requirements</a>
-   </ul>
-  </aside>
   <h3 class="no-num no-ref heading settled" id="index-defined-elsewhere"><span class="content">Terms defined by reference</span><a class="self-link" href="#index-defined-elsewhere"></a></h3>
   <ul class="index">
    <li>
     <a data-link-type="biblio">[WEBCODECS]</a> defines the following terms:
     <ul>
-     <li><span class="dfn-paneled" id="d44ec32de9892fb3411b2dbd8cf1e23f">AudioDecoderConfig</span>
-     <li><span class="dfn-paneled" id="1482839963ff600ffe5e8352ebeb6695">AudioEncoderConfig</span>
-     <li><span class="dfn-paneled" id="2aa02bf883fadc34a57c60dc28546028">EncodedAudioChunk</span>
-     <li><span class="dfn-paneled" id="2d415d91cfff3889291029ab57c680b7">EncodedVideoChunk</span>
-     <li><span class="dfn-paneled" id="fc8f0a1d58fe91da41c6610176ca672f">VideoDecoderConfig</span>
-     <li><span class="dfn-paneled" id="06eff4852cd4a9699f932d1136d83d1b">VideoEncoderConfig</span>
-     <li><span class="dfn-paneled" id="49066c49d91a9ba390066ffa22f677b7">[[type]]</span>
+     <li><span class="dfn-paneled" id="08e6b53d">AudioDecoderConfig</span>
+     <li><span class="dfn-paneled" id="c3b0b371">AudioEncoderConfig</span>
+     <li><span class="dfn-paneled" id="ddafb265">EncodedAudioChunk</span>
+     <li><span class="dfn-paneled" id="25947f98">EncodedVideoChunk</span>
+     <li><span class="dfn-paneled" id="8d8392c1">VideoDecoderConfig</span>
+     <li><span class="dfn-paneled" id="4c67f0b7">VideoEncoderConfig</span>
+     <li><span class="dfn-paneled" id="89df1b66">[[type]]</span>
     </ul>
   </ul>
   <h2 class="no-num no-ref heading settled" id="references"><span class="content">References</span><a class="self-link" href="#references"></a></h2>
@@ -774,18 +738,65 @@ Considerations</a> in <a data-link-type="biblio" href="#biblio-webcodecs" title=
 <script>/* script-dfn-panel */
 "use strict";
 {
-    function queryAll(sel) {
-        return [].slice.call(document.querySelectorAll(sel));
+    const dfnsJson = window.dfnsJson || {};
+
+    function genDfnPanel({dfnID, url, dfnText, refSections, external}) {
+        return mk.aside({
+            class: "dfn-panel",
+            id: `infopanel-for-${dfnID}`,
+            "data-for": dfnID,
+            "aria-labelled-by":`infopaneltitle-for-${dfnID}`,
+            },
+            mk.span({id:`infopaneltitle-for-${dfnID}`, style:"display:none"},
+                `Info about the '${dfnText}' ${external?"external":""} reference.`),
+            mk.a({href:url}, url),
+            mk.b({}, "Referenced in:"),
+            mk.ul({},
+                ...refSections.map(section=>
+                    mk.li({},
+                        ...section.refs.map((ref, refI)=>
+                            [
+                                mk.a({
+                                    href: `#${ref.id}`
+                                    },
+                                    (refI == 0) ? section.title : `(${refI + 1})`
+                                ),
+                                " ",
+                            ]
+                        ),
+                    ),
+                ),
+            ),
+        );
     }
 
-    // Add popup behavior to all dfns to show the corresponding dfn-panel.
-    var dfns = document.querySelectorAll('.dfn-paneled');
-    for (let dfn of dfns) { insertDfnPopupAction(dfn); }
+    function genAllDfnPanels() {
+        for(const panelData of Object.values(window.dfnpanelData)) {
+            const dfnID = panelData.dfnID;
+            const dfn = document.getElementById(dfnID);
+            if(!dfn) {
+                console.log(`Can't find dfn#${dfnID}.`, panelData);
+            } else {
+                const panel = genDfnPanel(panelData);
+                append(document.body, panel);
+                insertDfnPopupAction(dfn, panel)
+            }
+        }
+    }
 
-    document.body.addEventListener("click", (e) => {
-        // If not handled already, just hide all dfn panels.
-        hideAllDfnPanels();
-    });
+    document.addEventListener("DOMContentLoaded", ()=>{
+        genAllDfnPanels();
+
+        // Add popup behavior to all dfns to show the corresponding dfn-panel.
+        var dfns = queryAll('.dfn-paneled');
+        for(let dfn of dfns) { ; }
+
+        document.body.addEventListener("click", (e) => {
+            // If not handled already, just hide all dfn panels.
+            hideAllDfnPanels();
+        });
+    })
+
 
     function hideAllDfnPanels() {
         // Turn off any currently "on" or "activated" panels.
@@ -835,49 +846,250 @@ Considerations</a> in <a data-link-type="biblio" href="#biblio-webcodecs" title=
         }
     }
 
-    function insertDfnPopupAction(dfn) {
+    function insertDfnPopupAction(dfn, dfnPanel) {
         // Find dfn panel
-        const dfnPanel = document.querySelector(`.dfn-panel[data-for='${dfn.id}']`);
-        if (dfnPanel) {
-            const panelWrapper = document.createElement('span');
-            panelWrapper.appendChild(dfnPanel);
-            panelWrapper.style.position = "relative";
-            panelWrapper.style.height = "0px";
-            dfn.insertAdjacentElement("afterend", panelWrapper);
-            dfn.setAttribute('role', 'button');
-            dfn.setAttribute('aria-expanded', 'false')
-            dfn.tabIndex = 0;
-            dfn.classList.add('has-dfn-panel');
-            dfn.addEventListener('click', (event) => {
-                showDfnPanel(dfnPanel, dfn);
+        const panelWrapper = document.createElement('span');
+        panelWrapper.appendChild(dfnPanel);
+        panelWrapper.style.position = "relative";
+        panelWrapper.style.height = "0px";
+        dfn.insertAdjacentElement("afterend", panelWrapper);
+        dfn.setAttribute('role', 'button');
+        dfn.setAttribute('aria-expanded', 'false')
+        dfn.tabIndex = 0;
+        dfn.classList.add('has-dfn-panel');
+        dfn.addEventListener('click', (event) => {
+            showDfnPanel(dfnPanel, dfn);
+            event.stopPropagation();
+        });
+        dfn.addEventListener('keypress', (event) => {
+            const kc = event.keyCode;
+            // 32->Space, 13->Enter
+            if(kc == 32 || kc == 13) {
+                toggleDfnPanel(dfnPanel, dfn);
                 event.stopPropagation();
-            });
-            dfn.addEventListener('keypress', (event) => {
-                const kc = event.keyCode;
-                // 32->Space, 13->Enter
-                if(kc == 32 || kc == 13) {
-                    toggleDfnPanel(dfnPanel, dfn);
-                    event.stopPropagation();
-                    event.preventDefault();
-                }
-            });
+                event.preventDefault();
+            }
+        });
 
-            dfnPanel.addEventListener('click', (event) => {
+        dfnPanel.addEventListener('click', (event) => {
+            if (event.target.nodeName == 'A') {
                 pinDfnPanel(dfnPanel);
+            }
+            event.stopPropagation();
+        });
+
+        dfnPanel.addEventListener('keydown', (event) => {
+            if(event.keyCode == 27) { // Escape key
+                hideDfnPanel(dfnPanel, dfn);
                 event.stopPropagation();
-            });
-
-            dfnPanel.addEventListener('keydown', (event) => {
-                if(event.keyCode == 27) { // Escape key
-                    hideDfnPanel(dfnPanel, dfn);
-                    event.stopPropagation();
-                    event.preventDefault();
-                }
-            })
-
-        } else {
-            console.log("Couldn't find .dfn-panel[data-for='" + dfn.id + "']");
-        }
+                event.preventDefault();
+            }
+        })
     }
 }
 </script>
+<script>/* script-dfn-panel-json */
+window.dfnpanelData = {};
+window.dfnpanelData['08e6b53d'] = {"dfnID": "08e6b53d", "url": "https://w3c.github.io/webcodecs/#dictdef-audiodecoderconfig", "dfnText": "AudioDecoderConfig", "refSections": [{"refs": [{"id": "ref-for-dictdef-audiodecoderconfig"}], "title": "2. Registration Entry Requirements"}], "external": true};
+window.dfnpanelData['c3b0b371'] = {"dfnID": "c3b0b371", "url": "https://w3c.github.io/webcodecs/#dictdef-audioencoderconfig", "dfnText": "AudioEncoderConfig", "refSections": [{"refs": [{"id": "ref-for-dictdef-audioencoderconfig"}], "title": "2. Registration Entry Requirements"}], "external": true};
+window.dfnpanelData['ddafb265'] = {"dfnID": "ddafb265", "url": "https://w3c.github.io/webcodecs/#encodedaudiochunk", "dfnText": "EncodedAudioChunk", "refSections": [{"refs": [{"id": "ref-for-encodedaudiochunk"}, {"id": "ref-for-encodedaudiochunk\u2460"}], "title": "2. Registration Entry Requirements"}], "external": true};
+window.dfnpanelData['25947f98'] = {"dfnID": "25947f98", "url": "https://w3c.github.io/webcodecs/#encodedvideochunk", "dfnText": "EncodedVideoChunk", "refSections": [{"refs": [{"id": "ref-for-encodedvideochunk"}, {"id": "ref-for-encodedvideochunk\u2460"}], "title": "2. Registration Entry Requirements"}], "external": true};
+window.dfnpanelData['8d8392c1'] = {"dfnID": "8d8392c1", "url": "https://w3c.github.io/webcodecs/#dictdef-videodecoderconfig", "dfnText": "VideoDecoderConfig", "refSections": [{"refs": [{"id": "ref-for-dictdef-videodecoderconfig"}], "title": "2. Registration Entry Requirements"}], "external": true};
+window.dfnpanelData['4c67f0b7'] = {"dfnID": "4c67f0b7", "url": "https://w3c.github.io/webcodecs/#dictdef-videoencoderconfig", "dfnText": "VideoEncoderConfig", "refSections": [{"refs": [{"id": "ref-for-dictdef-videoencoderconfig"}], "title": "2. Registration Entry Requirements"}], "external": true};
+window.dfnpanelData['89df1b66'] = {"dfnID": "89df1b66", "url": "https://w3c.github.io/webcodecs/#dom-encodedvideochunk-type-slot", "dfnText": "[[type]]", "refSections": [{"refs": [{"id": "ref-for-dom-encodedvideochunk-type-slot"}], "title": "2. Registration Entry Requirements"}], "external": true};
+</script>
+<script>/* script-dom-helper */
+function query(sel) { return document.querySelector(sel); }
+
+function queryAll(sel) { return [...document.querySelectorAll(sel)]; }
+
+function iter(obj) {
+	if(!obj) return [];
+	var it = obj[Symbol.iterator];
+	if(it) return it;
+	return Object.entries(obj);
+}
+
+function mk(tagname, attrs, ...children) {
+	const el = document.createElement(tagname);
+	for(const [k,v] of iter(attrs)) {
+		if(k.slice(0,3) == "_on") {
+			const eventName = k.slice(3);
+			el.addEventListener(eventName, v);
+		} else if(k[0] == "_") {
+			// property, not attribute
+			el[k.slice(1)] = v;
+		} else {
+			if(v === false || v == null) {
+        continue;
+      } else if(v === true) {
+        el.setAttribute(k, "");
+        continue;
+      } else {
+  			el.setAttribute(k, v);
+      }
+		}
+	}
+	append(el, children);
+	return el;
+}
+
+/* Create shortcuts for every known HTML element */
+[
+  "a",
+  "abbr",
+  "acronym",
+  "address",
+  "applet",
+  "area",
+  "article",
+  "aside",
+  "audio",
+  "b",
+  "base",
+  "basefont",
+  "bdo",
+  "big",
+  "blockquote",
+  "body",
+  "br",
+  "button",
+  "canvas",
+  "caption",
+  "center",
+  "cite",
+  "code",
+  "col",
+  "colgroup",
+  "datalist",
+  "dd",
+  "del",
+  "details",
+  "dfn",
+  "dialog",
+  "div",
+  "dl",
+  "dt",
+  "em",
+  "embed",
+  "fieldset",
+  "figcaption",
+  "figure",
+  "font",
+  "footer",
+  "form",
+  "frame",
+  "frameset",
+  "head",
+  "header",
+  "h1",
+  "h2",
+  "h3",
+  "h4",
+  "h5",
+  "h6",
+  "hr",
+  "html",
+  "i",
+  "iframe",
+  "img",
+  "input",
+  "ins",
+  "kbd",
+  "label",
+  "legend",
+  "li",
+  "link",
+  "main",
+  "map",
+  "mark",
+  "meta",
+  "meter",
+  "nav",
+  "nobr",
+  "noscript",
+  "object",
+  "ol",
+  "optgroup",
+  "option",
+  "output",
+  "p",
+  "param",
+  "pre",
+  "progress",
+  "q",
+  "s",
+  "samp",
+  "script",
+  "section",
+  "select",
+  "small",
+  "source",
+  "span",
+  "strike",
+  "strong",
+  "style",
+  "sub",
+  "summary",
+  "sup",
+  "table",
+  "tbody",
+  "td",
+  "template",
+  "textarea",
+  "tfoot",
+  "th",
+  "thead",
+  "time",
+  "title",
+  "tr",
+  "u",
+  "ul",
+  "var",
+  "video",
+  "wbr",
+  "xmp",
+].forEach(tagname=>{
+	mk[tagname] = (...args) => mk(tagname, ...args);
+});
+
+function* nodesFromChildList(children) {
+	for(const child of children.flat(Infinity)) {
+		if(child instanceof Node) {
+			yield child;
+		} else {
+			yield new Text(child);
+		}
+	}
+}
+function append(el, ...children) {
+	for(const child of nodesFromChildList(children)) {
+		if(el instanceof Node) el.appendChild(child);
+		else el.push(child);
+	}
+	return el;
+}
+
+function insertAfter(el, ...children) {
+	for(const child of nodesFromChildList(children)) {
+		el.parentNode.insertBefore(child, el.nextSibling);
+	}
+	return el;
+}
+
+function clearContents(el) {
+	el.innerHTML = "";
+	return el;
+}
+
+function parseHTML(markup) {
+	if(markup.toLowerCase().trim().indexOf('<!doctype') === 0) {
+		const doc = document.implementation.createHTMLDocument("");
+		doc.documentElement.innerHTML = markup;
+		return doc;
+	} else {
+		const el = mk.template({});
+		el.innerHTML = markup;
+		return el.content;
+	}
+}</script>
