@@ -6,9 +6,9 @@
   <meta content="ED" name="w3c-status">
   <link href="https://www.w3.org/StyleSheets/TR/2021/W3C-ED" rel="stylesheet">
   <link href="https://www.w3.org/2008/site/images/favicon.ico" rel="icon">
-  <meta content="Bikeshed version d9bd89757, updated Thu Mar 23 10:06:53 2023 -0700" name="generator">
+  <meta content="Bikeshed version bf22245b8, updated Tue Apr 18 15:53:37 2023 -0700" name="generator">
   <link href="https://www.w3.org/TR/webcodecs-vp9-codec-registration/" rel="canonical">
-  <meta content="4dceb7afda0581bec4307c43033da8b2deb6556d" name="document-revision">
+  <meta content="e27c2bee8152332ce0f3376769398771b668b1a9" name="document-revision">
 <style>/* style-autolinks */
 .css.css, .property.property, .descriptor.descriptor {
     color: var(--a-normal-text);
@@ -219,8 +219,7 @@ figcaption:not(.no-marker)::before {
     position: absolute;
     z-index: 35;
     width: 20em;
-    min-width: min-content;
-    max-width: 300px;
+    width: 300px;
     height: auto;
     max-height: 500px;
     overflow: auto;
@@ -237,8 +236,15 @@ figcaption:not(.no-marker)::before {
 .dfn-panel a { color: var(--dfnpanel-text); }
 .dfn-panel a:not(:hover) { text-decoration: none !important; border-bottom: none !important; }
 .dfn-panel > b + b { margin-top: 0.25em; }
-.dfn-panel ul { padding: 0; }
-.dfn-panel li { list-style: inside; }
+.dfn-panel ul { padding: 0 0 0 1em; list-style: none; }
+.dfn-panel li a {
+    white-space: pre;
+    display: inline-block;
+    max-width: calc(300px - 1.5em - 1em);
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 .dfn-panel.activated {
     display: inline-block;
     position: fixed;
@@ -249,7 +255,7 @@ figcaption:not(.no-marker)::before {
     max-height: 30vh;
 }
 
-.dfn-paneled { cursor: pointer; }
+.dfn-paneled[role="button"] { cursor: pointer; }
 </style>
 <style>/* style-issues */
 a[href].issue-return {
@@ -589,7 +595,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
   <div class="head">
    <p data-fill-with="logo"><a class="logo" href="https://www.w3.org/"> <img alt="W3C" height="48" src="https://www.w3.org/StyleSheets/TR/2021/logos/W3C" width="72"> </a> </p>
    <h1 class="p-name no-ref" id="title">VP9 WebCodecs Registration</h1>
-   <p id="w3c-state"><a href="https://www.w3.org/standards/types#ED">Editor’s Draft</a>, <time class="dt-updated" datetime="2023-04-19">19 April 2023</time></p>
+   <p id="w3c-state"><a href="https://www.w3.org/standards/types#ED">Editor’s Draft</a>, <time class="dt-updated" datetime="2023-04-27">27 April 2023</time></p>
    <details open>
     <summary>More details about this document</summary>
     <div data-fill-with="spec-metadata">
@@ -757,70 +763,22 @@ Considerations</a> in <a data-link-type="biblio" href="#biblio-webcodecs" title=
    <li><a href="#dictdef-videoencoderencodeoptionsforvp9">VideoEncoderEncodeOptionsForVp9</a><span>, in § 5.1</span>
    <li><a href="#dom-videoencoderencodeoptions-vp9">vp9</a><span>, in § 5</span>
   </ul>
-  <aside aria-labelledby="infopaneltitle-for-76ace00b8ef70eada5085c1f3d124045" class="dfn-panel" data-for="76ace00b8ef70eada5085c1f3d124045" id="infopanel-for-76ace00b8ef70eada5085c1f3d124045">
-   <span id="infopaneltitle-for-76ace00b8ef70eada5085c1f3d124045" style="display:none">Info about the '"key"' external reference.</span><a href="https://w3c.github.io/webcodecs/#dom-encodedvideochunktype-key">https://w3c.github.io/webcodecs/#dom-encodedvideochunktype-key</a><b>Referenced in:</b>
-   <ul>
-    <li><a href="#ref-for-dom-encodedvideochunktype-key">4. EncodedVideoChunk type</a>
-   </ul>
-  </aside>
-  <aside aria-labelledby="infopaneltitle-for-2d415d91cfff3889291029ab57c680b7" class="dfn-panel" data-for="2d415d91cfff3889291029ab57c680b7" id="infopanel-for-2d415d91cfff3889291029ab57c680b7">
-   <span id="infopaneltitle-for-2d415d91cfff3889291029ab57c680b7" style="display:none">Info about the 'EncodedVideoChunk' external reference.</span><a href="https://w3c.github.io/webcodecs/#encodedvideochunk">https://w3c.github.io/webcodecs/#encodedvideochunk</a><b>Referenced in:</b>
-   <ul>
-    <li><a href="#ref-for-encodedvideochunk">Unnumbered Section</a> <a href="#ref-for-encodedvideochunk①">(2)</a>
-    <li><a href="#ref-for-encodedvideochunk②">2. EncodedVideoChunk data</a>
-    <li><a href="#ref-for-encodedvideochunk③">4. EncodedVideoChunk type</a> <a href="#ref-for-encodedvideochunk④">(2)</a>
-   </ul>
-  </aside>
-  <aside aria-labelledby="infopaneltitle-for-57d76a4e945e6cad564c6d3cdd5dbc3e" class="dfn-panel" data-for="57d76a4e945e6cad564c6d3cdd5dbc3e" id="infopanel-for-57d76a4e945e6cad564c6d3cdd5dbc3e">
-   <span id="infopaneltitle-for-57d76a4e945e6cad564c6d3cdd5dbc3e" style="display:none">Info about the 'VideoEncoderEncodeOptions' external reference.</span><a href="https://w3c.github.io/webcodecs/#dictdef-videoencoderencodeoptions">https://w3c.github.io/webcodecs/#dictdef-videoencoderencodeoptions</a><b>Referenced in:</b>
-   <ul>
-    <li><a href="#ref-for-dictdef-videoencoderencodeoptions">Unnumbered Section</a>
-    <li><a href="#ref-for-dictdef-videoencoderencodeoptions①">5. VideoEncoderEncodeOptions extensions</a>
-   </ul>
-  </aside>
-  <aside aria-labelledby="infopaneltitle-for-036ad377be5294b3df89ba604a298735" class="dfn-panel" data-for="036ad377be5294b3df89ba604a298735" id="infopanel-for-036ad377be5294b3df89ba604a298735">
-   <span id="infopaneltitle-for-036ad377be5294b3df89ba604a298735" style="display:none">Info about the '[[internal data]]' external reference.</span><a href="https://w3c.github.io/webcodecs/#dom-encodedvideochunk-internal-data-slot">https://w3c.github.io/webcodecs/#dom-encodedvideochunk-internal-data-slot</a><b>Referenced in:</b>
-   <ul>
-    <li><a href="#ref-for-dom-encodedvideochunk-internal-data-slot">Unnumbered Section</a>
-    <li><a href="#ref-for-dom-encodedvideochunk-internal-data-slot①">2. EncodedVideoChunk data</a>
-   </ul>
-  </aside>
-  <aside aria-labelledby="infopaneltitle-for-49066c49d91a9ba390066ffa22f677b7" class="dfn-panel" data-for="49066c49d91a9ba390066ffa22f677b7" id="infopanel-for-49066c49d91a9ba390066ffa22f677b7">
-   <span id="infopaneltitle-for-49066c49d91a9ba390066ffa22f677b7" style="display:none">Info about the '[[type]]' external reference.</span><a href="https://w3c.github.io/webcodecs/#dom-encodedvideochunk-type-slot">https://w3c.github.io/webcodecs/#dom-encodedvideochunk-type-slot</a><b>Referenced in:</b>
-   <ul>
-    <li><a href="#ref-for-dom-encodedvideochunk-type-slot">Unnumbered Section</a>
-    <li><a href="#ref-for-dom-encodedvideochunk-type-slot①">4. EncodedVideoChunk type</a>
-   </ul>
-  </aside>
-  <aside aria-labelledby="infopaneltitle-for-dbc565a04e8eb3b661f72d03c2a1d63a" class="dfn-panel" data-for="dbc565a04e8eb3b661f72d03c2a1d63a" id="infopanel-for-dbc565a04e8eb3b661f72d03c2a1d63a">
-   <span id="infopaneltitle-for-dbc565a04e8eb3b661f72d03c2a1d63a" style="display:none">Info about the 'description' external reference.</span><a href="https://w3c.github.io/webcodecs/#dom-videodecoderconfig-description">https://w3c.github.io/webcodecs/#dom-videodecoderconfig-description</a><b>Referenced in:</b>
-   <ul>
-    <li><a href="#ref-for-dom-videodecoderconfig-description">Unnumbered Section</a>
-    <li><a href="#ref-for-dom-videodecoderconfig-description①">3. VideoDecoderConfig description</a>
-   </ul>
-  </aside>
-  <aside aria-labelledby="infopaneltitle-for-85ad66f191d72a7d6508e0bab70044dc" class="dfn-panel" data-for="85ad66f191d72a7d6508e0bab70044dc" id="infopanel-for-85ad66f191d72a7d6508e0bab70044dc">
-   <span id="infopaneltitle-for-85ad66f191d72a7d6508e0bab70044dc" style="display:none">Info about the 'unsigned short' external reference.</span><a href="https://webidl.spec.whatwg.org/#idl-unsigned-short">https://webidl.spec.whatwg.org/#idl-unsigned-short</a><b>Referenced in:</b>
-   <ul>
-    <li><a href="#ref-for-idl-unsigned-short">5.1. VideoEncoderEncodeOptionsForVp9</a> <a href="#ref-for-idl-unsigned-short①">(2)</a>
-   </ul>
-  </aside>
   <h3 class="no-num no-ref heading settled" id="index-defined-elsewhere"><span class="content">Terms defined by reference</span><a class="self-link" href="#index-defined-elsewhere"></a></h3>
   <ul class="index">
    <li>
     <a data-link-type="biblio">[WEBCODECS]</a> defines the following terms:
     <ul>
-     <li><span class="dfn-paneled" id="76ace00b8ef70eada5085c1f3d124045">"key"</span>
-     <li><span class="dfn-paneled" id="2d415d91cfff3889291029ab57c680b7">EncodedVideoChunk</span>
-     <li><span class="dfn-paneled" id="57d76a4e945e6cad564c6d3cdd5dbc3e">VideoEncoderEncodeOptions</span>
-     <li><span class="dfn-paneled" id="036ad377be5294b3df89ba604a298735">[[internal data]]</span>
-     <li><span class="dfn-paneled" id="49066c49d91a9ba390066ffa22f677b7">[[type]]</span>
-     <li><span class="dfn-paneled" id="dbc565a04e8eb3b661f72d03c2a1d63a">description</span>
+     <li><span class="dfn-paneled" id="5ab730d7">"key"</span>
+     <li><span class="dfn-paneled" id="25947f98">EncodedVideoChunk</span>
+     <li><span class="dfn-paneled" id="6cce5d95">VideoEncoderEncodeOptions</span>
+     <li><span class="dfn-paneled" id="a4200c1b">[[internal data]]</span>
+     <li><span class="dfn-paneled" id="89df1b66">[[type]]</span>
+     <li><span class="dfn-paneled" id="c59901b3">description</span>
     </ul>
    <li>
     <a data-link-type="biblio">[WEBIDL]</a> defines the following terms:
     <ul>
-     <li><span class="dfn-paneled" id="85ad66f191d72a7d6508e0bab70044dc">unsigned short</span>
+     <li><span class="dfn-paneled" id="450958f7">unsigned short</span>
     </ul>
   </ul>
   <h2 class="no-num no-ref heading settled" id="references"><span class="content">References</span><a class="self-link" href="#references"></a></h2>
@@ -854,39 +812,68 @@ Considerations</a> in <a data-link-type="biblio" href="#biblio-webcodecs" title=
 
 
 </pre>
-  <aside aria-labelledby="infopaneltitle-for-dom-videoencoderencodeoptions-vp9" class="dfn-panel" data-for="dom-videoencoderencodeoptions-vp9" id="infopanel-for-dom-videoencoderencodeoptions-vp9">
-   <span id="infopaneltitle-for-dom-videoencoderencodeoptions-vp9" style="display:none">Info about the 'vp9' definition.</span><b><a href="#dom-videoencoderencodeoptions-vp9">#dom-videoencoderencodeoptions-vp9</a></b><b>Referenced in:</b>
-   <ul>
-    <li><a href="#ref-for-dom-videoencoderencodeoptions-vp9">5. VideoEncoderEncodeOptions extensions</a>
-   </ul>
-  </aside>
-  <aside aria-labelledby="infopaneltitle-for-dictdef-videoencoderencodeoptionsforvp9" class="dfn-panel" data-for="dictdef-videoencoderencodeoptionsforvp9" id="infopanel-for-dictdef-videoencoderencodeoptionsforvp9">
-   <span id="infopaneltitle-for-dictdef-videoencoderencodeoptionsforvp9" style="display:none">Info about the 'VideoEncoderEncodeOptionsForVp9' definition.</span><b><a href="#dictdef-videoencoderencodeoptionsforvp9">#dictdef-videoencoderencodeoptionsforvp9</a></b><b>Referenced in:</b>
-   <ul>
-    <li><a href="#ref-for-dictdef-videoencoderencodeoptionsforvp9">5. VideoEncoderEncodeOptions extensions</a> <a href="#ref-for-dictdef-videoencoderencodeoptionsforvp9①">(2)</a>
-   </ul>
-  </aside>
-  <aside aria-labelledby="infopaneltitle-for-dom-videoencoderencodeoptionsforvp9-quantizer" class="dfn-panel" data-for="dom-videoencoderencodeoptionsforvp9-quantizer" id="infopanel-for-dom-videoencoderencodeoptionsforvp9-quantizer">
-   <span id="infopaneltitle-for-dom-videoencoderencodeoptionsforvp9-quantizer" style="display:none">Info about the 'quantizer' definition.</span><b><a href="#dom-videoencoderencodeoptionsforvp9-quantizer">#dom-videoencoderencodeoptionsforvp9-quantizer</a></b><b>Referenced in:</b>
-   <ul>
-    <li><a href="#ref-for-dom-videoencoderencodeoptionsforvp9-quantizer">5.1. VideoEncoderEncodeOptionsForVp9</a>
-   </ul>
-  </aside>
 <script>/* script-dfn-panel */
 "use strict";
 {
-    function queryAll(sel) {
-        return [].slice.call(document.querySelectorAll(sel));
+    const dfnsJson = window.dfnsJson || {};
+
+    function genDfnPanel({dfnID, url, dfnText, refSections, external}) {
+        return mk.aside({
+            class: "dfn-panel",
+            id: `infopanel-for-${dfnID}`,
+            "data-for": dfnID,
+            "aria-labelled-by":`infopaneltitle-for-${dfnID}`,
+            },
+            mk.span({id:`infopaneltitle-for-${dfnID}`, style:"display:none"},
+                `Info about the '${dfnText}' ${external?"external":""} reference.`),
+            mk.a({href:url}, url),
+            mk.b({}, "Referenced in:"),
+            mk.ul({},
+                ...refSections.map(section=>
+                    mk.li({},
+                        ...section.refs.map((ref, refI)=>
+                            [
+                                mk.a({
+                                    href: `#${ref.id}`
+                                    },
+                                    (refI == 0) ? section.title : `(${refI + 1})`
+                                ),
+                                " ",
+                            ]
+                        ),
+                    ),
+                ),
+            ),
+        );
     }
 
-    // Add popup behavior to all dfns to show the corresponding dfn-panel.
-    var dfns = document.querySelectorAll('.dfn-paneled');
-    for (let dfn of dfns) { insertDfnPopupAction(dfn); }
+    function genAllDfnPanels() {
+        for(const panelData of Object.values(window.dfnpanelData)) {
+            const dfnID = panelData.dfnID;
+            const dfn = document.getElementById(dfnID);
+            if(!dfn) {
+                console.log(`Can't find dfn#${dfnID}.`, panelData);
+            } else {
+                const panel = genDfnPanel(panelData);
+                append(document.body, panel);
+                insertDfnPopupAction(dfn, panel)
+            }
+        }
+    }
 
-    document.body.addEventListener("click", (e) => {
-        // If not handled already, just hide all dfn panels.
-        hideAllDfnPanels();
-    });
+    document.addEventListener("DOMContentLoaded", ()=>{
+        genAllDfnPanels();
+
+        // Add popup behavior to all dfns to show the corresponding dfn-panel.
+        var dfns = queryAll('.dfn-paneled');
+        for(let dfn of dfns) { ; }
+
+        document.body.addEventListener("click", (e) => {
+            // If not handled already, just hide all dfn panels.
+            hideAllDfnPanels();
+        });
+    })
+
 
     function hideAllDfnPanels() {
         // Turn off any currently "on" or "activated" panels.
@@ -936,49 +923,252 @@ Considerations</a> in <a data-link-type="biblio" href="#biblio-webcodecs" title=
         }
     }
 
-    function insertDfnPopupAction(dfn) {
+    function insertDfnPopupAction(dfn, dfnPanel) {
         // Find dfn panel
-        const dfnPanel = document.querySelector(`.dfn-panel[data-for='${dfn.id}']`);
-        if (dfnPanel) {
-            const panelWrapper = document.createElement('span');
-            panelWrapper.appendChild(dfnPanel);
-            panelWrapper.style.position = "relative";
-            panelWrapper.style.height = "0px";
-            dfn.insertAdjacentElement("afterend", panelWrapper);
-            dfn.setAttribute('role', 'button');
-            dfn.setAttribute('aria-expanded', 'false')
-            dfn.tabIndex = 0;
-            dfn.classList.add('has-dfn-panel');
-            dfn.addEventListener('click', (event) => {
-                showDfnPanel(dfnPanel, dfn);
+        const panelWrapper = document.createElement('span');
+        panelWrapper.appendChild(dfnPanel);
+        panelWrapper.style.position = "relative";
+        panelWrapper.style.height = "0px";
+        dfn.insertAdjacentElement("afterend", panelWrapper);
+        dfn.setAttribute('role', 'button');
+        dfn.setAttribute('aria-expanded', 'false')
+        dfn.tabIndex = 0;
+        dfn.classList.add('has-dfn-panel');
+        dfn.addEventListener('click', (event) => {
+            showDfnPanel(dfnPanel, dfn);
+            event.stopPropagation();
+        });
+        dfn.addEventListener('keypress', (event) => {
+            const kc = event.keyCode;
+            // 32->Space, 13->Enter
+            if(kc == 32 || kc == 13) {
+                toggleDfnPanel(dfnPanel, dfn);
                 event.stopPropagation();
-            });
-            dfn.addEventListener('keypress', (event) => {
-                const kc = event.keyCode;
-                // 32->Space, 13->Enter
-                if(kc == 32 || kc == 13) {
-                    toggleDfnPanel(dfnPanel, dfn);
-                    event.stopPropagation();
-                    event.preventDefault();
-                }
-            });
+                event.preventDefault();
+            }
+        });
 
-            dfnPanel.addEventListener('click', (event) => {
+        dfnPanel.addEventListener('click', (event) => {
+            if (event.target.nodeName == 'A') {
                 pinDfnPanel(dfnPanel);
+            }
+            event.stopPropagation();
+        });
+
+        dfnPanel.addEventListener('keydown', (event) => {
+            if(event.keyCode == 27) { // Escape key
+                hideDfnPanel(dfnPanel, dfn);
                 event.stopPropagation();
-            });
-
-            dfnPanel.addEventListener('keydown', (event) => {
-                if(event.keyCode == 27) { // Escape key
-                    hideDfnPanel(dfnPanel, dfn);
-                    event.stopPropagation();
-                    event.preventDefault();
-                }
-            })
-
-        } else {
-            console.log("Couldn't find .dfn-panel[data-for='" + dfn.id + "']");
-        }
+                event.preventDefault();
+            }
+        })
     }
 }
 </script>
+<script>/* script-dfn-panel-json */
+window.dfnpanelData = {};
+window.dfnpanelData['5ab730d7'] = {"dfnID": "5ab730d7", "url": "https://w3c.github.io/webcodecs/#dom-encodedvideochunktype-key", "dfnText": "\"key\"", "refSections": [{"refs": [{"id": "ref-for-dom-encodedvideochunktype-key"}], "title": "4. EncodedVideoChunk type"}], "external": true};
+window.dfnpanelData['25947f98'] = {"dfnID": "25947f98", "url": "https://w3c.github.io/webcodecs/#encodedvideochunk", "dfnText": "EncodedVideoChunk", "refSections": [{"refs": [{"id": "ref-for-encodedvideochunk"}, {"id": "ref-for-encodedvideochunk\u2460"}], "title": "Unnumbered Section"}, {"refs": [{"id": "ref-for-encodedvideochunk\u2461"}], "title": "2. EncodedVideoChunk data"}, {"refs": [{"id": "ref-for-encodedvideochunk\u2462"}, {"id": "ref-for-encodedvideochunk\u2463"}], "title": "4. EncodedVideoChunk type"}], "external": true};
+window.dfnpanelData['6cce5d95'] = {"dfnID": "6cce5d95", "url": "https://w3c.github.io/webcodecs/#dictdef-videoencoderencodeoptions", "dfnText": "VideoEncoderEncodeOptions", "refSections": [{"refs": [{"id": "ref-for-dictdef-videoencoderencodeoptions"}], "title": "Unnumbered Section"}, {"refs": [{"id": "ref-for-dictdef-videoencoderencodeoptions\u2460"}], "title": "5. VideoEncoderEncodeOptions extensions"}], "external": true};
+window.dfnpanelData['a4200c1b'] = {"dfnID": "a4200c1b", "url": "https://w3c.github.io/webcodecs/#dom-encodedvideochunk-internal-data-slot", "dfnText": "[[internal data]]", "refSections": [{"refs": [{"id": "ref-for-dom-encodedvideochunk-internal-data-slot"}], "title": "Unnumbered Section"}, {"refs": [{"id": "ref-for-dom-encodedvideochunk-internal-data-slot\u2460"}], "title": "2. EncodedVideoChunk data"}], "external": true};
+window.dfnpanelData['89df1b66'] = {"dfnID": "89df1b66", "url": "https://w3c.github.io/webcodecs/#dom-encodedvideochunk-type-slot", "dfnText": "[[type]]", "refSections": [{"refs": [{"id": "ref-for-dom-encodedvideochunk-type-slot"}], "title": "Unnumbered Section"}, {"refs": [{"id": "ref-for-dom-encodedvideochunk-type-slot\u2460"}], "title": "4. EncodedVideoChunk type"}], "external": true};
+window.dfnpanelData['c59901b3'] = {"dfnID": "c59901b3", "url": "https://w3c.github.io/webcodecs/#dom-videodecoderconfig-description", "dfnText": "description", "refSections": [{"refs": [{"id": "ref-for-dom-videodecoderconfig-description"}], "title": "Unnumbered Section"}, {"refs": [{"id": "ref-for-dom-videodecoderconfig-description\u2460"}], "title": "3. VideoDecoderConfig description"}], "external": true};
+window.dfnpanelData['450958f7'] = {"dfnID": "450958f7", "url": "https://webidl.spec.whatwg.org/#idl-unsigned-short", "dfnText": "unsigned short", "refSections": [{"refs": [{"id": "ref-for-idl-unsigned-short"}, {"id": "ref-for-idl-unsigned-short\u2460"}], "title": "5.1. VideoEncoderEncodeOptionsForVp9"}], "external": true};
+window.dfnpanelData['dom-videoencoderencodeoptions-vp9'] = {"dfnID": "dom-videoencoderencodeoptions-vp9", "url": "#dom-videoencoderencodeoptions-vp9", "dfnText": "vp9", "refSections": [{"refs": [{"id": "ref-for-dom-videoencoderencodeoptions-vp9"}], "title": "5. VideoEncoderEncodeOptions extensions"}], "external": false};
+window.dfnpanelData['dictdef-videoencoderencodeoptionsforvp9'] = {"dfnID": "dictdef-videoencoderencodeoptionsforvp9", "url": "#dictdef-videoencoderencodeoptionsforvp9", "dfnText": "VideoEncoderEncodeOptionsForVp9", "refSections": [{"refs": [{"id": "ref-for-dictdef-videoencoderencodeoptionsforvp9"}, {"id": "ref-for-dictdef-videoencoderencodeoptionsforvp9\u2460"}], "title": "5. VideoEncoderEncodeOptions extensions"}], "external": false};
+window.dfnpanelData['dom-videoencoderencodeoptionsforvp9-quantizer'] = {"dfnID": "dom-videoencoderencodeoptionsforvp9-quantizer", "url": "#dom-videoencoderencodeoptionsforvp9-quantizer", "dfnText": "quantizer", "refSections": [{"refs": [{"id": "ref-for-dom-videoencoderencodeoptionsforvp9-quantizer"}], "title": "5.1. VideoEncoderEncodeOptionsForVp9"}], "external": false};</script>
+<script>/* script-dom-helper */
+function query(sel) { return document.querySelector(sel); }
+
+function queryAll(sel) { return [...document.querySelectorAll(sel)]; }
+
+function iter(obj) {
+	if(!obj) return [];
+	var it = obj[Symbol.iterator];
+	if(it) return it;
+	return Object.entries(obj);
+}
+
+function mk(tagname, attrs, ...children) {
+	const el = document.createElement(tagname);
+	for(const [k,v] of iter(attrs)) {
+		if(k.slice(0,3) == "_on") {
+			const eventName = k.slice(3);
+			el.addEventListener(eventName, v);
+		} else if(k[0] == "_") {
+			// property, not attribute
+			el[k.slice(1)] = v;
+		} else {
+			if(v === false || v == null) {
+        continue;
+      } else if(v === true) {
+        el.setAttribute(k, "");
+        continue;
+      } else {
+  			el.setAttribute(k, v);
+      }
+		}
+	}
+	append(el, children);
+	return el;
+}
+
+/* Create shortcuts for every known HTML element */
+[
+  "a",
+  "abbr",
+  "acronym",
+  "address",
+  "applet",
+  "area",
+  "article",
+  "aside",
+  "audio",
+  "b",
+  "base",
+  "basefont",
+  "bdo",
+  "big",
+  "blockquote",
+  "body",
+  "br",
+  "button",
+  "canvas",
+  "caption",
+  "center",
+  "cite",
+  "code",
+  "col",
+  "colgroup",
+  "datalist",
+  "dd",
+  "del",
+  "details",
+  "dfn",
+  "dialog",
+  "div",
+  "dl",
+  "dt",
+  "em",
+  "embed",
+  "fieldset",
+  "figcaption",
+  "figure",
+  "font",
+  "footer",
+  "form",
+  "frame",
+  "frameset",
+  "head",
+  "header",
+  "h1",
+  "h2",
+  "h3",
+  "h4",
+  "h5",
+  "h6",
+  "hr",
+  "html",
+  "i",
+  "iframe",
+  "img",
+  "input",
+  "ins",
+  "kbd",
+  "label",
+  "legend",
+  "li",
+  "link",
+  "main",
+  "map",
+  "mark",
+  "meta",
+  "meter",
+  "nav",
+  "nobr",
+  "noscript",
+  "object",
+  "ol",
+  "optgroup",
+  "option",
+  "output",
+  "p",
+  "param",
+  "pre",
+  "progress",
+  "q",
+  "s",
+  "samp",
+  "script",
+  "section",
+  "select",
+  "small",
+  "source",
+  "span",
+  "strike",
+  "strong",
+  "style",
+  "sub",
+  "summary",
+  "sup",
+  "table",
+  "tbody",
+  "td",
+  "template",
+  "textarea",
+  "tfoot",
+  "th",
+  "thead",
+  "time",
+  "title",
+  "tr",
+  "u",
+  "ul",
+  "var",
+  "video",
+  "wbr",
+  "xmp",
+].forEach(tagname=>{
+	mk[tagname] = (...args) => mk(tagname, ...args);
+});
+
+function* nodesFromChildList(children) {
+	for(const child of children.flat(Infinity)) {
+		if(child instanceof Node) {
+			yield child;
+		} else {
+			yield new Text(child);
+		}
+	}
+}
+function append(el, ...children) {
+	for(const child of nodesFromChildList(children)) {
+		if(el instanceof Node) el.appendChild(child);
+		else el.push(child);
+	}
+	return el;
+}
+
+function insertAfter(el, ...children) {
+	for(const child of nodesFromChildList(children)) {
+		el.parentNode.insertBefore(child, el.nextSibling);
+	}
+	return el;
+}
+
+function clearContents(el) {
+	el.innerHTML = "";
+	return el;
+}
+
+function parseHTML(markup) {
+	if(markup.toLowerCase().trim().indexOf('<!doctype') === 0) {
+		const doc = document.implementation.createHTMLDocument("");
+		doc.documentElement.innerHTML = markup;
+		return doc;
+	} else {
+		const el = mk.template({});
+		el.innerHTML = markup;
+		return el.content;
+	}
+}</script>
