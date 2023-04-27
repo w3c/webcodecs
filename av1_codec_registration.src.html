@@ -14,10 +14,11 @@ Former Editor: Chris Cunningham, w3cid 114832, Google Inc. https://www.google.co
 Abstract: This registration is entered into the [[webcodecs-codec-registry]].
     It describes, for AV1, the (1) fully qualified codec strings,
     (2) the codec-specific {{EncodedVideoChunk}}
-    {{EncodedVideoChunk/[[internal data]]}} bytes, (3) the
+    {{EncodedVideoChunk/[[internal data]]}} bytes, (3) the codec-specific
+    extensions to {{VideoEncoderConfig}}, (4) the
     {{VideoDecoderConfig/description|VideoDecoderConfig.description}} bytes,
-    (4) the values of {{EncodedVideoChunk}} {{EncodedVideoChunk/[[type]]}}, and
-    (5) the codec-specific extensions to {{VideoEncoderEncodeOptions}}.
+    (5) the values of {{EncodedVideoChunk}} {{EncodedVideoChunk/[[type]]}}, and
+    (6) the codec-specific extensions to {{VideoEncoderEncodeOptions}}.
 
     The registration is not intended to include any information on whether a
     codec format is encumbered by intellectual property claims. Implementers and
@@ -73,6 +74,47 @@ If an {{EncodedVideoChunk}}'s {{EncodedVideoChunk/[[type]]}} is
 {{EncodedVideoChunkType/key}}, then the {{EncodedVideoChunk}} is expected to
 contain a frame with a `frame_type` of `KEY_FRAME` as defined in Section
 6.8.2 of [[AV1]].
+
+VideoEncoderConfig extensions {#videoencoderconfig-extensions}
+==============================================================
+
+<pre class='idl'>
+<xmp>
+partial dictionary VideoEncoderConfig {
+  AV1EncoderConfig av1;
+};
+</xmp>
+</pre>
+
+<dl>
+  <dt><dfn dict-member for=VideoEncoderConfig>av1</dfn></dt>
+  <dd>
+    Contains codec specific configuration options for the AV1 codec.
+  </dd>
+</dl>
+
+AV1EncoderConfig {#av1-encoder-config}
+--------------------------------------
+<pre class='idl'>
+<xmp>
+dictionary AV1EncoderConfig {
+  boolean forceScreenContentTools = false;
+};
+</xmp>
+</pre>
+
+<dl>
+  <dt><dfn dict-member for=AV1EncoderConfig>forceScreenContentTools</dfn></dt>
+  <dd>
+     Indicates whether the encoder should force use of screen content
+     coding tools. The default value (false) indicates that use of
+     screen content coding tools is not forced. A value of true
+     (corresponding to setting seq_force_screen_content_tools
+     to SELECT_SCREEN_CONTENT_TOOLS in Section 5.5.1
+     of [[AV1]]) indicates that use of screen content coding tools
+     is forced.
+  </dd>
+</dl>
 
 VideoEncoderEncodeOptions extensions {#videoencoderencodeoptions-extensions}
 ==============================================================
