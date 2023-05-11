@@ -6,9 +6,9 @@
   <meta content="ED" name="w3c-status">
   <link href="https://www.w3.org/StyleSheets/TR/2021/W3C-ED" rel="stylesheet">
   <link href="https://www.w3.org/2008/site/images/favicon.ico" rel="icon">
-  <meta content="Bikeshed version bf22245b8, updated Tue Apr 18 15:53:37 2023 -0700" name="generator">
+  <meta content="Bikeshed version 3383f409d, updated Fri Apr 28 15:49:22 2023 -0700" name="generator">
   <link href="https://www.w3.org/TR/webcodecs/" rel="canonical">
-  <meta content="3ec453075027b653465e66e6f22085fb11af26c3" name="document-revision">
+  <meta content="3a96dbd3a62982eb1ee54393ef39adffb2109046" name="document-revision">
 <style>
 main > dl > dd {
   margin-bottom: 1em;
@@ -619,7 +619,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
   <div class="head">
    <p data-fill-with="logo"><a class="logo" href="https://www.w3.org/"> <img alt="W3C" height="48" src="https://www.w3.org/StyleSheets/TR/2021/logos/W3C" width="72"> </a> </p>
    <h1 class="p-name no-ref" id="title">WebCodecs</h1>
-   <p id="w3c-state"><a href="https://www.w3.org/standards/types#ED">Editor’s Draft</a>, <time class="dt-updated" datetime="2023-04-27">27 April 2023</time></p>
+   <p id="w3c-state"><a href="https://www.w3.org/standards/types#ED">Editor’s Draft</a>, <time class="dt-updated" datetime="2023-05-11">11 May 2023</time></p>
    <details open>
     <summary>More details about this document</summary>
     <div data-fill-with="spec-metadata">
@@ -2847,9 +2847,13 @@ included, return <code>true</code>.</p>
        <p>If <code>config[m]</code> is a nested dictionary, set <code>clone[m]</code> to the result of
 recursively running the <a data-link-type="dfn" href="#clone-configuration" id="ref-for-clone-configuration④">Clone Configuration</a> algorithm with <code>config[m]</code>.</p>
       <li data-md>
-       <p>Otherwise, assign the value of <code>config[m]</code> to <code>clone[m]</code>.</p>
+       <p>Otherwise, assign a copy of <code>config[m]</code> to <code>clone[m]</code>.</p>
      </ol>
    </ol>
+   <p class="note" role="note"><span class="marker">Note:</span> This implements a "deep-copy". These configuration objects are
+frequently used as the input of asynchronous operations. Copying means that
+modifying the original object while the operation is in flight won’t change the
+operation’s outcome.</p>
    <h3 class="heading settled" data-level="7.3" id="config-support-info"><span class="secno">7.3. </span><span class="content">Signalling Configuration Support</span><a class="self-link" href="#config-support-info"></a></h3>
    <h4 class="heading settled" data-level="7.3.1" id="audio-decoder-support"><span class="secno">7.3.1. </span><span class="content">AudioDecoderSupport</span><a class="self-link" href="#audio-decoder-support"></a></h4>
 <pre class="idl highlight def"><c- b>dictionary</c-> <dfn class="dfn-paneled idl-code" data-dfn-type="dictionary" data-export id="dictdef-audiodecodersupport"><code><c- g>AudioDecoderSupport</c-></code></dfn> {
@@ -4067,13 +4071,13 @@ An audio buffer comprised only of values equal to the <a data-link-type="dfn" hr
       <td>+32767
      <tr class="odd">
       <td><code class="idl"><a data-link-type="idl" href="#dom-audiosampleformat-s32" id="ref-for-dom-audiosampleformat-s32②">s32</a></code>
-      <td><a href="https://webidl.spec.whatwg.org/#idl-long" id="46ca9fd60①">long</a>
+      <td><a href="https://webidl.spec.whatwg.org/#idl-long" id="46ca9fd62">long</a>
       <td>-2147483648
       <td>0
       <td>+2147483647
      <tr class="even">
       <td><code class="idl"><a data-link-type="idl" href="#dom-audiosampleformat-f32" id="ref-for-dom-audiosampleformat-f32②">f32</a></code>
-      <td><a href="https://webidl.spec.whatwg.org/#idl-float" id="a18079a10①">float</a>
+      <td><a href="https://webidl.spec.whatwg.org/#idl-float" id="a18079a12">float</a>
       <td>-1.0
       <td>0.0
       <td>+1.0
@@ -8622,8 +8626,8 @@ window.dfnpanelData['82ca3efc'] = {"dfnID": "82ca3efc", "url": "https://webidl.s
 window.dfnpanelData['d0b4a948'] = {"dfnID": "d0b4a948", "url": "https://webidl.spec.whatwg.org/#a-promise-rejected-with", "dfnText": "a promise rejected with", "refSections": [{"refs": [{"id": "ref-for-a-promise-rejected-with"}, {"id": "ref-for-a-promise-rejected-with\u2460"}], "title": "3.5. Methods"}, {"refs": [{"id": "ref-for-a-promise-rejected-with\u2461"}, {"id": "ref-for-a-promise-rejected-with\u2462"}], "title": "4.5. Methods"}, {"refs": [{"id": "ref-for-a-promise-rejected-with\u2463"}, {"id": "ref-for-a-promise-rejected-with\u2464"}], "title": "5.5. Methods"}, {"refs": [{"id": "ref-for-a-promise-rejected-with\u2465"}, {"id": "ref-for-a-promise-rejected-with\u2466"}], "title": "6.5. Methods"}], "external": true};
 window.dfnpanelData['5372cca8'] = {"dfnID": "5372cca8", "url": "https://webidl.spec.whatwg.org/#idl-boolean", "dfnText": "boolean", "refSections": [{"refs": [{"id": "ref-for-idl-boolean"}, {"id": "ref-for-idl-boolean\u2460"}], "title": "7.3.1. AudioDecoderSupport"}, {"refs": [{"id": "ref-for-idl-boolean\u2461"}, {"id": "ref-for-idl-boolean\u2462"}], "title": "7.3.2. VideoDecoderSupport"}, {"refs": [{"id": "ref-for-idl-boolean\u2463"}, {"id": "ref-for-idl-boolean\u2464"}], "title": "7.3.3. AudioEncoderSupport"}, {"refs": [{"id": "ref-for-idl-boolean\u2465"}, {"id": "ref-for-idl-boolean\u2466"}], "title": "7.3.4. VideoEncoderSupport"}, {"refs": [{"id": "ref-for-idl-boolean\u2467"}, {"id": "ref-for-idl-boolean\u2468"}], "title": "7.6. VideoDecoderConfig"}, {"refs": [{"id": "ref-for-idl-boolean\u2460\u24ea"}, {"id": "ref-for-idl-boolean\u2460\u2460"}], "title": "7.13. VideoEncoderEncodeOptions"}, {"refs": [{"id": "ref-for-idl-boolean\u2460\u2461"}, {"id": "ref-for-idl-boolean\u2460\u2462"}], "title": "9.9. Video Color Space Interface"}, {"refs": [{"id": "ref-for-idl-boolean\u2460\u2463"}], "title": "9.9.3. Attributes"}, {"refs": [{"id": "ref-for-idl-boolean\u2460\u2464"}, {"id": "ref-for-idl-boolean\u2460\u2465"}], "title": "10.2. ImageDecoder Interface"}, {"refs": [{"id": "ref-for-idl-boolean\u2460\u2466"}], "title": "10.2.3. Attributes"}, {"refs": [{"id": "ref-for-idl-boolean\u2460\u2467"}, {"id": "ref-for-idl-boolean\u2460\u2468"}], "title": "10.3. ImageDecoderInit Interface"}, {"refs": [{"id": "ref-for-idl-boolean\u2461\u24ea"}, {"id": "ref-for-idl-boolean\u2461\u2460"}], "title": "10.4. ImageDecodeOptions Interface"}, {"refs": [{"id": "ref-for-idl-boolean\u2461\u2461"}, {"id": "ref-for-idl-boolean\u2461\u2462"}], "title": "10.5. ImageDecodeResult Interface"}, {"refs": [{"id": "ref-for-idl-boolean\u2461\u2463"}, {"id": "ref-for-idl-boolean\u2461\u2464"}], "title": "10.7. ImageTrack Interface"}, {"refs": [{"id": "ref-for-idl-boolean\u2461\u2465"}, {"id": "ref-for-idl-boolean\u2461\u2466"}], "title": "10.7.2. Attributes"}], "external": true};
 window.dfnpanelData['8c800cdf'] = {"dfnID": "8c800cdf", "url": "https://webidl.spec.whatwg.org/#idl-double", "dfnText": "double", "refSections": [{"refs": [{"id": "ref-for-idl-double"}, {"id": "ref-for-idl-double\u2460"}], "title": "7.8. VideoEncoderConfig"}], "external": true};
-window.dfnpanelData['eec1be2d'] = {"dfnID": "eec1be2d", "url": "https://webidl.spec.whatwg.org/#idl-float", "dfnText": "float", "refSections": [{"refs": [{"id": "ref-for-idl-float"}, {"id": "ref-for-idl-float\u2460"}], "title": "9.2. AudioData Interface"}, {"refs": [{"id": "ref-for-idl-float\u2461"}], "title": "9.2.3. Attributes"}, {"refs": [{"id": "a18079a10"}, {"id": "a18079a11"}], "title": "9.3. Audio Sample Format"}, {"refs": [{"id": "a18079a10"}], "title": "9.3.2. Magnitude of the audio samples"}], "external": true};
-window.dfnpanelData['f8de33a3'] = {"dfnID": "f8de33a3", "url": "https://webidl.spec.whatwg.org/#idl-long", "dfnText": "long", "refSections": [{"refs": [{"id": "46ca9fd60"}, {"id": "46ca9fd61"}], "title": "9.3. Audio Sample Format"}, {"refs": [{"id": "46ca9fd60"}], "title": "9.3.2. Magnitude of the audio samples"}, {"refs": [{"id": "ref-for-idl-long"}], "title": "10.6. ImageTrackList Interface"}, {"refs": [{"id": "ref-for-idl-long\u2460"}], "title": "10.6.2. Attributes"}], "external": true};
+window.dfnpanelData['eec1be2d'] = {"dfnID": "eec1be2d", "url": "https://webidl.spec.whatwg.org/#idl-float", "dfnText": "float", "refSections": [{"refs": [{"id": "ref-for-idl-float"}, {"id": "ref-for-idl-float\u2460"}], "title": "9.2. AudioData Interface"}, {"refs": [{"id": "ref-for-idl-float\u2461"}], "title": "9.2.3. Attributes"}, {"refs": [{"id": "a18079a10"}, {"id": "a18079a11"}], "title": "9.3. Audio Sample Format"}, {"refs": [{"id": "a18079a12"}], "title": "9.3.2. Magnitude of the audio samples"}], "external": true};
+window.dfnpanelData['f8de33a3'] = {"dfnID": "f8de33a3", "url": "https://webidl.spec.whatwg.org/#idl-long", "dfnText": "long", "refSections": [{"refs": [{"id": "46ca9fd60"}, {"id": "46ca9fd61"}], "title": "9.3. Audio Sample Format"}, {"refs": [{"id": "46ca9fd62"}], "title": "9.3.2. Magnitude of the audio samples"}, {"refs": [{"id": "ref-for-idl-long"}], "title": "10.6. ImageTrackList Interface"}, {"refs": [{"id": "ref-for-idl-long\u2460"}], "title": "10.6.2. Attributes"}], "external": true};
 window.dfnpanelData['9aeb0a82'] = {"dfnID": "9aeb0a82", "url": "https://webidl.spec.whatwg.org/#idl-long-long", "dfnText": "long long", "refSections": [{"refs": [{"id": "ref-for-idl-long-long"}, {"id": "ref-for-idl-long-long\u2460"}], "title": "8.1. EncodedAudioChunk Interface"}, {"refs": [{"id": "ref-for-idl-long-long\u2461"}], "title": "8.1.3. Attributes"}, {"refs": [{"id": "ref-for-idl-long-long\u2462"}, {"id": "ref-for-idl-long-long\u2463"}], "title": "8.2. EncodedVideoChunk Interface"}, {"refs": [{"id": "ref-for-idl-long-long\u2464"}], "title": "8.2.3. Attributes"}, {"refs": [{"id": "ref-for-idl-long-long\u2465"}, {"id": "ref-for-idl-long-long\u2466"}], "title": "9.2. AudioData Interface"}, {"refs": [{"id": "ref-for-idl-long-long\u2467"}], "title": "9.2.3. Attributes"}, {"refs": [{"id": "ref-for-idl-long-long\u2468"}, {"id": "ref-for-idl-long-long\u2460\u24ea"}, {"id": "ref-for-idl-long-long\u2460\u2460"}], "title": "9.4. VideoFrame Interface"}, {"refs": [{"id": "ref-for-idl-long-long\u2460\u2461"}], "title": "9.4.3. Attributes"}], "external": true};
 window.dfnpanelData['9cce47fd'] = {"dfnID": "9cce47fd", "url": "https://webidl.spec.whatwg.org/#idl-sequence", "dfnText": "sequence", "refSections": [{"refs": [{"id": "ref-for-idl-sequence"}, {"id": "ref-for-idl-sequence\u2460"}], "title": "9.4. VideoFrame Interface"}, {"refs": [{"id": "ref-for-idl-sequence\u2461"}], "title": "9.5. VideoFrame CopyTo() Options"}], "external": true};
 window.dfnpanelData['3b5f2424'] = {"dfnID": "3b5f2424", "url": "https://webidl.spec.whatwg.org/#the-given-value", "dfnText": "the given value", "refSections": [{"refs": [{"id": "ref-for-the-given-value"}], "title": "10.7.2. Attributes"}], "external": true};
