@@ -3277,6 +3277,8 @@ dictionary VideoFrameBufferInit {
   [EnforceRange] unsigned long displayHeight;
 
   VideoColorSpaceInit colorSpace;
+
+  sequence<ArrayBuffer> transfer = [];
 };
 
 dictionary VideoFrameMetadata {
@@ -3421,23 +3423,33 @@ dictionary VideoFrameMetadata {
 3. Let |overrideRect| be `undefined`.
 4. If |init|.{{VideoFrameBufferInit/visibleRect}} [=map/exists=], assign its
     value to |overrideRect|.
-4. Let |parsedRect| be the result of running the [=VideoFrame/Parse Visible
+5. Let |parsedRect| be the result of running the [=VideoFrame/Parse Visible
         Rect=] algorithm with |defaultRect|, |overrideRect|,
         |init|.{{VideoFrameBufferInit/codedWidth}},
         |init|.{{VideoFrameBufferInit/codedHeight}}, and
         |init|.{{VideoFrameBufferInit/format}}.
-5. If |parsedRect| is an exception, return |parsedRect|.
-6. Let |optLayout| be `undefined`.
-7. If |options|.{{VideoFrameBufferInit/layout}} [=map/exists=], assign its value
+6. If |parsedRect| is an exception, return |parsedRect|.
+7. Let |optLayout| be `undefined`.
+8. If |options|.{{VideoFrameBufferInit/layout}} [=map/exists=], assign its value
     to |optLayout|.
-8. Let |combinedLayout| be the result of running the [=VideoFrame/Compute
+9. Let |combinedLayout| be the result of running the [=VideoFrame/Compute
     Layout and Allocation Size=] algorithm with |parsedRect|,
     |init|.{{VideoFrameBufferInit/format}}, and |optLayout|.
-9. If |combinedLayout| is an exception, throw |combinedLayout|.
-10. If `data.byteLength` is less than |combinedLayout|’s
+10. If |combinedLayout| is an exception, throw |combinedLayout|.
+11. If `data.byteLength` is less than |combinedLayout|’s
     [=combined buffer layout/allocationSize=], throw a {{TypeError}}.
-11. Let |resource| be a new [=media resource=] containing a copy of |data|. Use
-        {{VideoFrameBufferInit/visibleRect}} and {{VideoFrameBufferInit/layout}}
+12. If |init|.{{VideoFrameBufferInit/transfer}} contains more than one reference
+     to the same {{ArrayBuffer}}, then throw a {{DataCloneError}} {{DOMException}}.
+13. For each |transferable| in |init|.{{VideoFrameBufferInit/transfer}}:
+     1. If {{platform object/[[Detached]]}} internal slot is `true`,
+         then throw a {{DataCloneError}} {{DOMException}}.
+14. If |init|.{{VideoFrameBufferInit/transfer}} contains an {{ArrayBuffer}}
+    referenced by |data| the User Agent <em class="rfc2119">MAY</em> choose to:
+    1. Let |resource| be a new [=media resource=] referencing pixel data in
+        |data|.
+15. Otherwise:
+    1. Let |resource| be a new [=media resource=] containing a copy of |data|.
+        Use {{VideoFrameBufferInit/visibleRect}} and {{VideoFrameBufferInit/layout}}
         to determine where in |data| the pixels for each plane reside.
 
         The User Agent <em class="rfc2119">MAY</em> choose to allocate
@@ -3449,18 +3461,21 @@ dictionary VideoFrameMetadata {
         reposition the visible rectangle within |resource|. The final position
         will be reflected by {{VideoFrame/visibleRect}}.
 
-12. Let |resourceCodedWidth| be the coded width of |resource|.
-13. Let |resourceCodedHeight| be the coded height of |resource|.
-14. Let |resourceVisibleLeft| be the left offset for the visible rectangle of
+16. For each |transferable| in |init|.{{VideoFrameBufferInit/transfer}}:
+    1. Perform [DetachArrayBuffer](https://tc39.es/ecma262/#sec-detacharraybuffer)
+        on |transferable|
+17. Let |resourceCodedWidth| be the coded width of |resource|.
+18. Let |resourceCodedHeight| be the coded height of |resource|.
+19. Let |resourceVisibleLeft| be the left offset for the visible rectangle of
     |resource|.
-15. Let |resourceVisibleTop| be the top offset for the visible rectangle of
+20. Let |resourceVisibleTop| be the top offset for the visible rectangle of
     |resource|.
 
     ISSUE: The spec <em class="rfc2119">SHOULD</em> provide definitions (and
       possibly diagrams) for coded size, visible rectangle, and display size.
       See [#166](https://github.com/w3c/webcodecs/issues/166).
 
-16. Let |frame| be a new {{VideoFrame}} object initialized as follows:
+21. Let |frame| be a new {{VideoFrame}} object initialized as follows:
     1. Assign |resourceCodedWidth|, |resourceCodedHeight|,
         |resourceVisibleLeft|, and |resourceVisibleTop| to
         {{VideoFrame/[[coded width]]}}, {{VideoFrame/[[coded height]]}},
@@ -3470,11 +3485,11 @@ dictionary VideoFrameMetadata {
         1. Let |truncatedVisibleWidth| be the value of
             {{VideoFrameBufferInit/visibleRect}}.{{DOMRectInit/width}} after
             truncating.
-        1. Assign |truncatedVisibleWidth| to {{VideoFrame/[[visible width]]}}.
+        2. Assign |truncatedVisibleWidth| to {{VideoFrame/[[visible width]]}}.
         3. Let |truncatedVisibleHeight| be the value of
             {{VideoFrameBufferInit/visibleRect}}.{{DOMRectInit/height}} after
             truncating.
-        2. Assign |truncatedVisibleHeight| to {{VideoFrame/[[visible height]]}}.
+        4. Assign |truncatedVisibleHeight| to {{VideoFrame/[[visible height]]}}.
     3. Otherwise:
         1. Assign {{VideoFrame/[[coded width]]}} to
             {{VideoFrame/[[visible width]]}}.
@@ -3497,7 +3512,7 @@ dictionary VideoFrameMetadata {
         {{VideoFrame/[[color space]]}}.
     10. Assign the result of calling [=Copy VideoFrame metadata=]
         with |init|'s {{VideoFrameInit/metadata}} to |frame|.{{VideoFrame/[[metadata]]}}.
-17. Return |frame|.
+22. Return |frame|.
 
 ### Attributes ###{#videoframe-attributes}
 : <dfn attribute for=VideoFrame>format</dfn>
