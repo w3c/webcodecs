@@ -3972,11 +3972,12 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
             |sampleBytes|.
         6. Let |computedLayout| be a new [=computed plane layout=].
         7. Set |computedLayout|'s [=computed plane layout/sourceTop=] to the
-            ceiling of the division of truncated |parsedRect|.{{DOMRectInit/y}}
-            by |sampleHeight|.
+            result of the division of truncated |parsedRect|.{{DOMRectInit/y}}
+            by |sampleHeight|, rounded up to the nearest integer.
         8. Set |computedLayout|'s [=computed plane layout/sourceHeight=] to the
-            ceiling of the division of truncated
-            |parsedRect|.{{DOMRectInit/height}} by |sampleHeight|.
+            result of the division of truncated
+            |parsedRect|.{{DOMRectInit/height}} by |sampleHeight|, rounded up
+            to the nearest integer.
         9. Set |computedLayout|'s [=computed plane layout/sourceLeftBytes=] to
             the result of the integer division of
             truncated |parsedRect|.{{DOMRectInit/x}} by |sampleWidthBytes|.
@@ -4234,10 +4235,11 @@ is its own [=equivalent opaque format=].
     the image, in {{VideoFrame/codedHeight}} rows of {{VideoFrame/codedWidth}}
     samples.
 
-    The U and V planes have a number of rows equal to the ceiling of the
-    division of {{VideoFrame/codedHeight}} by 2. Each row has a number of
-    samples equal to the ceiling of the division of {{VideoFrame/codedWidth}} by
-    2. Samples are arranged starting at the top left of the image.
+    The U and V planes have a number of rows equal to the result of the
+    division of {{VideoFrame/codedHeight}} by 2, rounded up to the nearest
+    integer. Each row has a number of samples equal to the result of the
+    division of {{VideoFrame/codedWidth}} by 2, rounded up to the nearest
+    integer. Samples are arranged starting at the top left of the image.
 
     The visible rectangle offset ({{VideoFrame/visibleRect}}.{{DOMRectInit/x}}
     and {{VideoFrame/visibleRect}}.{{DOMRectInit/y}}) MUST be even.
@@ -4260,10 +4262,11 @@ is its own [=equivalent opaque format=].
     top left of the image, in {{VideoFrame/codedHeight}} rows of
     {{VideoFrame/codedWidth}} samples.
 
-    The U and V planes have a number of rows equal to the ceiling of the
-    division of {{VideoFrame/codedHeight}} by 2. Each row has a number of
-    samples equal to the ceiling of the division of {{VideoFrame/codedWidth}} by
-    2. Samples are arranged starting at the top left of the image.
+    The U and V planes have a number of rows equal to the result of the
+    division of {{VideoFrame/codedHeight}} by 2, rounded up to the nearest
+    integer. Each row has a number of samples equal to the result of the
+    division of {{VideoFrame/codedWidth}} by 2, rounded up to the nearest
+    integer. Samples are arranged starting at the top left of the image.
 
     The visible rectangle offset ({{VideoFrame/visibleRect}}.{{DOMRectInit/x}}
     and {{VideoFrame/visibleRect}}.{{DOMRectInit/y}}) MUST be even.
@@ -4288,9 +4291,9 @@ is its own [=equivalent opaque format=].
     {{VideoFrame/codedWidth}} samples.
 
     The U and V planes have {{VideoFrame/codedHeight}} rows. Each row has a
-    number of samples equal to the ceiling of the division of
-    {{VideoFrame/codedWidth}} by 2. Samples are arranged starting at the top
-    left of the image.
+    number of samples equal to the result of the division of
+    {{VideoFrame/codedWidth}} by 2, rounded up to the nearest integer. Samples
+    are arranged starting at the top left of the image.
 
     The visible rectangle offset ({{VideoFrame/visibleRect}}.{{DOMRectInit/x}})
     MUST be even.
@@ -4328,9 +4331,10 @@ is its own [=equivalent opaque format=].
     {{VideoFrame/codedWidth}} samples.
 
     The UV plane is composed of interleaved U and V values, in a number of
-    rows equal to the ceiling of the division of {{VideoFrame/codedHeight}}
-    by 2. Each row has a number of elements equal to the ceiling of the division
-    of {{VideoFrame/codedWidth}} by 2. Each element is composed of two Chroma
+    rows equal to the result of the division of {{VideoFrame/codedHeight}}
+    by 2, rounded up to the nearest integer. Each row has a number of elements
+    equal to the result of the division of {{VideoFrame/codedWidth}} by 2,
+    rounded up to the nearest integer. Each element is composed of two Chroma
     samples, the U and V samples, in that order. Samples are arranged starting
     at the top left of the image.
 
