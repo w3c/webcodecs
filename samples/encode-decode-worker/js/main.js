@@ -9,6 +9,7 @@ let latencyPref = "realtime", bitPref = "variable";
 let hw = "no-preference";
 let streamWorker;
 let inputStream, outputStream;
+let videoSource;
 const rate = document.querySelector('#rate');
 const connectButton = document.querySelector('#connect');
 const stopButton = document.querySelector('#stop');
