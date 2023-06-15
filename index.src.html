@@ -5577,9 +5577,9 @@ Security Considerations{#security-considerations}
 
 The primary security impact is that features of this API make it easier for an
 attacker to exploit vulnerabilities in the underlying platform codecs.
-Additionally, new abilities to configure and control the codecs <em
-class="rfc2119">MAY</em> allow for new exploits that rely on a specific
-configuration and/or sequence of control operations.
+Additionally, new abilities to configure and control the codecs can allow for
+new exploits that rely on a specific configuration and/or sequence of control
+operations.
 
 Platform codecs are historically an internal detail of APIs like
 {{HTMLMediaElement}}, [[WEBAUDIO]], and [[WebRTC]]. In this way, it has always
@@ -5604,9 +5604,9 @@ exploits being able to read user data.
 
 An additional concern is exposing the underlying codecs to input mutation race
 conditions. Specifically, it <em class="rfc2119">SHOULD</em> not be possible for
-a site to mutate a codec input or output while the underlying codec <em
-class="rfc2119">MAY</em> still be operating on that data.  This concern is
-mitigated by ensuring that input and output interfaces are immutable.
+a site to mutate a codec input or output while the underlying codec is still
+operating on that data.  This concern is mitigated by ensuring that input and
+output interfaces are immutable.
 
 Privacy Considerations{#privacy-considerations}
 ===============================================
@@ -5614,25 +5614,23 @@ Privacy Considerations{#privacy-considerations}
 The primary privacy impact is an increased ability to fingerprint users by
 querying for different codec capabilities to establish a codec feature profile.
 Much of this profile is already exposed by existing APIs. Such profiles are very
-unlikely to be uniquely identifying, but <em class="rfc2119">MAY</em> be used
-with other metrics to create a fingerprint.
+unlikely to be uniquely identifying, but can be used with other metrics to
+create a fingerprint.
 
-An attacker <em class="rfc2119">MAY</em> accumulate a codec feature profile by
-calling `IsConfigSupported()` methods with a number of different configuration
-dictionaries. Similarly, an attacker <em class="rfc2119">MAY</em> attempt to
-`configure()` a codec with different configuration dictionaries and observe
-which configurations are accepted.
+An attacker can accumulate a codec feature profile by calling
+`IsConfigSupported()` methods with a number of different configuration
+dictionaries. Similarly, an attacker can attempt to `configure()` a codec with
+different configuration dictionaries and observe which configurations are
+accepted.
 
-Attackers <em class="rfc2119">MAY</em> also use existing APIs to establish much
-of the codec feature profile. For example, the [[media-capabilities]]
-{{decodingInfo()}} API describes what types of decoders are supported and its
-{{powerEfficient}} attribute <em class="rfc2119">MAY</em> signal when a decoder
-uses hardware acceleration. Similarly, the [[WebRTC]]
-{{RTCRtpSender/getCapabilities()}} API <em class="rfc2119">MAY</em> be used to
-determine what types of encoders are supported and the
-{{RTCPeerConnection/getStats()}} API <em class="rfc2119">MAY</em> be used to
-determine when an encoder uses hardware acceleration. WebCodecs will expose some
-additional information in the form of low level codec features.
+Attackers can also use existing APIs to establish much of the codec feature
+profile. For example, the [[media-capabilities]] {{decodingInfo()}} API
+describes what types of decoders are supported and its {{powerEfficient}}
+attribute can signal when a decoder uses hardware acceleration. Similarly, the
+[[WebRTC]] {{RTCRtpSender/getCapabilities()}} API can be used to determine what
+types of encoders are supported and the {{RTCPeerConnection/getStats()}} API can
+be used to determine when an encoder uses hardware acceleration. WebCodecs will
+expose some additional information in the form of low level codec features.
 
 A codec feature profile alone is unlikely to be uniquely identifying. Underlying
 codecs are often implemented entirely in software (be it part of the User Agent
@@ -5641,9 +5639,9 @@ software will have a common set of capabilities. Additionally, underlying codecs
 are often implemented with hardware acceleration, but such hardware is mass
 produced and devices of a particular class and manufacture date (e.g. flagship
 phones manufactured in 2020) will often have common capabilities. There will be
-outliers (some users <em class="rfc2119">MAY</em> run outdated versions of
-software codecs or use a rare mix of custom assembled hardware), but most of the
-time a given codec feature profile is shared by a large group of users.
+outliers (some users can be running outdated versions of software codecs or use
+a rare mix of custom assembled hardware), but most of the time a given codec
+feature profile is shared by a large group of users.
 
 Segmenting groups of users by codec feature profile still amounts to a bit of
 entropy that can be combined with other metrics to uniquely identify a user.
