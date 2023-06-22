@@ -5,10 +5,9 @@
   <title>WebCodecs</title>
   <meta content="ED" name="w3c-status">
   <link href="https://www.w3.org/StyleSheets/TR/2021/W3C-ED" rel="stylesheet">
-  <link href="https://www.w3.org/2008/site/images/favicon.ico" rel="icon">
-  <meta content="Bikeshed version 5fcd28d6d, updated Tue May 30 13:12:11 2023 -0700" name="generator">
+  <meta content="Bikeshed version 516eaf3cf, updated Tue Jun 20 13:48:28 2023 -0700" name="generator">
   <link href="https://www.w3.org/TR/webcodecs/" rel="canonical">
-  <meta content="a7ea13268468ccda5578ee6dd95df3b32cadc1c5" name="document-revision">
+  <meta content="203730ea3c4bab576692e10919a0962bb07629f9" name="document-revision">
 <style>
 main > dl > dd {
   margin-bottom: 1em;
@@ -673,7 +672,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
   <div class="head">
    <p data-fill-with="logo"><a class="logo" href="https://www.w3.org/"> <img alt="W3C" height="48" src="https://www.w3.org/StyleSheets/TR/2021/logos/W3C" width="72"> </a> </p>
    <h1 class="p-name no-ref" id="title">WebCodecs</h1>
-   <p id="w3c-state"><a href="https://www.w3.org/standards/types#ED">Editor’s Draft</a>, <time class="dt-updated" datetime="2023-06-08">8 June 2023</time></p>
+   <p id="w3c-state"><a href="https://www.w3.org/standards/types#ED">Editor’s Draft</a>, <time class="dt-updated" datetime="2023-06-22">22 June 2023</time></p>
    <details open>
     <summary>More details about this document</summary>
     <div data-fill-with="spec-metadata">
@@ -699,7 +698,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
     </div>
    </details>
    <div data-fill-with="warning"></div>
-   <p class="copyright" data-fill-with="copyright"><a href="https://www.w3.org/Consortium/Legal/ipr-notice#Copyright">Copyright</a> © 2023 <a href="https://www.w3.org/">World Wide Web Consortium</a>. <abbr title="World Wide Web Consortium">W3C</abbr><sup>®</sup> <a href="https://www.w3.org/Consortium/Legal/ipr-notice#Legal_Disclaimer">liability</a>, <a href="https://www.w3.org/Consortium/Legal/ipr-notice#W3C_Trademarks">trademark</a> and <a href="https://www.w3.org/Consortium/Legal/2015/copyright-software-and-document" rel="license">permissive document license</a> rules apply. </p>
+   <p class="copyright" data-fill-with="copyright"><a href="https://www.w3.org/Consortium/Legal/ipr-notice#Copyright">Copyright</a> © 2023 <a href="https://www.w3.org/">World Wide Web Consortium</a>. <abbr title="World Wide Web Consortium">W3C</abbr><sup>®</sup> <a href="https://www.w3.org/Consortium/Legal/ipr-notice#Legal_Disclaimer">liability</a>, <a href="https://www.w3.org/Consortium/Legal/ipr-notice#W3C_Trademarks">trademark</a> and <a href="https://www.w3.org/Consortium/Legal/copyright-software" rel="license" title="W3C Software and Document License">permissive document license</a> rules apply. </p>
    <hr title="Separator for header">
   </div>
   <div class="p-summary" data-fill-with="abstract">
@@ -6618,8 +6617,9 @@ if it is:</p>
    <h2 class="heading settled" data-level="12" id="security-considerations"><span class="secno">12. </span><span class="content">Security Considerations</span><a class="self-link" href="#security-considerations"></a></h2>
    <p>The primary security impact is that features of this API make it easier for an
 attacker to exploit vulnerabilities in the underlying platform codecs.
-Additionally, new abilities to configure and control the codecs <em class="rfc2119">MAY</em> allow for new exploits that rely on a specific
-configuration and/or sequence of control operations.</p>
+Additionally, new abilities to configure and control the codecs can allow for
+new exploits that rely on a specific configuration and/or sequence of control
+operations.</p>
    <p>Platform codecs are historically an internal detail of APIs like <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/media.html#htmlmediaelement" id="ref-for-htmlmediaelement">HTMLMediaElement</a></code>, <a data-link-type="biblio" href="#biblio-webaudio" title="Web Audio API">[WEBAUDIO]</a>, and <a data-link-type="biblio" href="#biblio-webrtc" title="WebRTC: Real-Time Communication in Browsers">[WebRTC]</a>. In this way, it has always
 been possible to attack the underlying codecs by using malformed media
 files/streams and invoking the various API control methods.</p>
@@ -6637,24 +6637,25 @@ processes with restricted privileges (sandbox) as a barrier against successful
 exploits being able to read user data.</p>
    <p>An additional concern is exposing the underlying codecs to input mutation race
 conditions. Specifically, it <em class="rfc2119">SHOULD</em> not be possible for
-a site to mutate a codec input or output while the underlying codec <em class="rfc2119">MAY</em> still be operating on that data.  This concern is
-mitigated by ensuring that input and output interfaces are immutable.</p>
+a site to mutate a codec input or output while the underlying codec is still
+operating on that data.  This concern is mitigated by ensuring that input and
+output interfaces are immutable.</p>
    <h2 class="heading settled" data-level="13" id="privacy-considerations"><span class="secno">13. </span><span class="content">Privacy Considerations</span><a class="self-link" href="#privacy-considerations"></a></h2>
    <p>The primary privacy impact is an increased ability to fingerprint users by
 querying for different codec capabilities to establish a codec feature profile.
 Much of this profile is already exposed by existing APIs. Such profiles are very
-unlikely to be uniquely identifying, but <em class="rfc2119">MAY</em> be used
-with other metrics to create a fingerprint.</p>
-   <p>An attacker <em class="rfc2119">MAY</em> accumulate a codec feature profile by
-calling <code>IsConfigSupported()</code> methods with a number of different configuration
-dictionaries. Similarly, an attacker <em class="rfc2119">MAY</em> attempt to <code>configure()</code> a codec with different configuration dictionaries and observe
-which configurations are accepted.</p>
-   <p>Attackers <em class="rfc2119">MAY</em> also use existing APIs to establish much
-of the codec feature profile. For example, the <a data-link-type="biblio" href="#biblio-media-capabilities" title="Media Capabilities">[media-capabilities]</a> <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/media-capabilities/#dom-mediacapabilities-decodinginfo" id="ref-for-dom-mediacapabilities-decodinginfo">decodingInfo()</a></code> API describes what types of decoders are supported and its <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/media-capabilities/#dom-mediacapabilitiesinfo-powerefficient" id="ref-for-dom-mediacapabilitiesinfo-powerefficient">powerEfficient</a></code> attribute <em class="rfc2119">MAY</em> signal when a decoder
-uses hardware acceleration. Similarly, the <a data-link-type="biblio" href="#biblio-webrtc" title="WebRTC: Real-Time Communication in Browsers">[WebRTC]</a> <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webrtc-pc/#dom-rtcrtpsender-getcapabilities" id="ref-for-dom-rtcrtpsender-getcapabilities">getCapabilities()</a></code> API <em class="rfc2119">MAY</em> be used to
-determine what types of encoders are supported and the <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webrtc-pc/#widl-RTCPeerConnection-getStats-Promise-RTCStatsReport--MediaStreamTrack-selector" id="ref-for-widl-RTCPeerConnection-getStats-Promise-RTCStatsReport--MediaStreamTrack-selector">getStats()</a></code> API <em class="rfc2119">MAY</em> be used to
-determine when an encoder uses hardware acceleration. WebCodecs will expose some
-additional information in the form of low level codec features.</p>
+unlikely to be uniquely identifying, but can be used with other metrics to
+create a fingerprint.</p>
+   <p>An attacker can accumulate a codec feature profile by calling <code>IsConfigSupported()</code> methods with a number of different configuration
+dictionaries. Similarly, an attacker can attempt to <code>configure()</code> a codec with
+different configuration dictionaries and observe which configurations are
+accepted.</p>
+   <p>Attackers can also use existing APIs to establish much of the codec feature
+profile. For example, the <a data-link-type="biblio" href="#biblio-media-capabilities" title="Media Capabilities">[media-capabilities]</a> <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/media-capabilities/#dom-mediacapabilities-decodinginfo" id="ref-for-dom-mediacapabilities-decodinginfo">decodingInfo()</a></code> API
+describes what types of decoders are supported and its <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/media-capabilities/#dom-mediacapabilitiesinfo-powerefficient" id="ref-for-dom-mediacapabilitiesinfo-powerefficient">powerEfficient</a></code> attribute can signal when a decoder uses hardware acceleration. Similarly, the <a data-link-type="biblio" href="#biblio-webrtc" title="WebRTC: Real-Time Communication in Browsers">[WebRTC]</a> <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webrtc-pc/#dom-rtcrtpsender-getcapabilities" id="ref-for-dom-rtcrtpsender-getcapabilities">getCapabilities()</a></code> API can be used to determine what
+types of encoders are supported and the <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webrtc-pc/#widl-RTCPeerConnection-getStats-Promise-RTCStatsReport--MediaStreamTrack-selector" id="ref-for-widl-RTCPeerConnection-getStats-Promise-RTCStatsReport--MediaStreamTrack-selector">getStats()</a></code> API can
+be used to determine when an encoder uses hardware acceleration. WebCodecs will
+expose some additional information in the form of low level codec features.</p>
    <p>A codec feature profile alone is unlikely to be uniquely identifying. Underlying
 codecs are often implemented entirely in software (be it part of the User Agent
 binary or part of the operating system), such that all users who run that
@@ -6662,9 +6663,9 @@ software will have a common set of capabilities. Additionally, underlying codecs
 are often implemented with hardware acceleration, but such hardware is mass
 produced and devices of a particular class and manufacture date (e.g. flagship
 phones manufactured in 2020) will often have common capabilities. There will be
-outliers (some users <em class="rfc2119">MAY</em> run outdated versions of
-software codecs or use a rare mix of custom assembled hardware), but most of the
-time a given codec feature profile is shared by a large group of users.</p>
+outliers (some users can be running outdated versions of software codecs or use
+a rare mix of custom assembled hardware), but most of the time a given codec
+feature profile is shared by a large group of users.</p>
    <p>Segmenting groups of users by codec feature profile still amounts to a bit of
 entropy that can be combined with other metrics to uniquely identify a user.
 User Agents <em class="rfc2119">MAY</em> partially mitigate this by returning an
