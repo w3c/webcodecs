@@ -42,10 +42,12 @@ export class MP4PullDemuxer extends PullDemuxerBase {
       };
     } else {
       return {
-        codec: this.videoTrack.codec,
+        // Browser doesn't support parsing full vp8 codec (eg: `vp08.00.41.08`),
+        // they only support `vp8`.
+        codec: this.videoTrack.codec.startsWith('vp08') ? 'vp8' : this.videoTrack.codec,
         displayWidth: this.videoTrack.track_width,
         displayHeight: this.videoTrack.track_height,
-        description: this._getAvcDescription(this.source.getAvccBox())
+        description: this._getDescription(this.source.getDescriptionBox())
       }
     }
   }
@@ -64,9 +66,9 @@ export class MP4PullDemuxer extends PullDemuxerBase {
     });
   }
 
-  _getAvcDescription(avccBox) {
+  _getDescription(descriptionBox) {
     const stream = new DataStream(undefined, 0, DataStream.BIG_ENDIAN);
-    avccBox.write(stream);
+    descriptionBox.write(stream);
     return new Uint8Array(stream.buffer, 8);  // Remove the box header.
   }
 
@@ -94,7 +96,6 @@ export class MP4PullDemuxer extends PullDemuxerBase {
     console.assert(this._pending_read_resolver);
     this.source.start(this._onSamples.bind(this));
     return promise;
-
   }
 
   _onSamples(samples) {
@@ -167,9 +168,14 @@ class MP4Source {
     return new Promise((resolver) => { this._info_resolver = resolver; });
   }
 
-  getAvccBox() {
+  getDescriptionBox() {
     // TODO: make sure this is coming from the right track.
-    return this.file.moov.traks[0].mdia.minf.stbl.stsd.entries[0].avcC
+    const entry = this.file.moov.traks[0].mdia.minf.stbl.stsd.entries[0];
+    const box = entry.avcC || entry.hvcC || entry.vpcC || entry.av1C;
+    if (!box) {
+      throw new Error("avcC, hvcC, vpcC, or av1C box not found!");
+    }
+    return box;
   }
 
   getAudioSpecificConfig() {

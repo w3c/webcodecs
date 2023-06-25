@@ -60,21 +60,18 @@ class MP4Demuxer {
   }
 
   // Get the appropriate `description` for a specific track. Assumes that the
-  // track is H.264 or H.265.
+  // track is H.264, H.265, VP8, VP9, or AV1.
   #description(track) {
     const trak = this.#file.getTrackById(track.id);
     for (const entry of trak.mdia.minf.stbl.stsd.entries) {
-      if (entry.avcC || entry.hvcC) {
+      const box = entry.avcC || entry.hvcC || entry.vpcC || entry.av1C;
+      if (box) {
         const stream = new DataStream(undefined, 0, DataStream.BIG_ENDIAN);
-        if (entry.avcC) {
-          entry.avcC.write(stream);
-        } else {
-          entry.hvcC.write(stream);
-        }
+        box.write(stream);
         return new Uint8Array(stream.buffer, 8);  // Remove the box header.
       }
     }
-    throw "avcC or hvcC not found";
+    throw new Error("avcC, hvcC, vpcC, or av1C box not found");
   }
 
   #onReady(info) {
@@ -83,7 +80,9 @@ class MP4Demuxer {
 
     // Generate and emit an appropriate VideoDecoderConfig.
     this.#onConfig({
-      codec: track.codec,
+      // Browser doesn't support parsing full vp8 codec (eg: `vp08.00.41.08`),
+      // they only support `vp8`.
+      codec: track.codec.startsWith('vp08') ? 'vp8' : track.codec,
       codedHeight: track.video.height,
       codedWidth: track.video.width,
       description: this.#description(track),

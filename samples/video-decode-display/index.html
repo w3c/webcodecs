@@ -17,16 +17,35 @@
   <p>
     Renderer:
     <label for="renderer_2d">
-      <input id="renderer_2d" type="radio" name="renderer" value="2d"> 2D
+      <input id="renderer_2d" type="radio" name="renderer" value="2d" checked> 2D
     </label>
     <label for="renderer_webgl">
-      <input id="renderer_webgl" type="radio" name="renderer" value="webgl" checked> WebGL
+      <input id="renderer_webgl" type="radio" name="renderer" value="webgl"> WebGL
     </label>
     <label for="renderer_webgl2">
       <input id="renderer_webgl2" type="radio" name="renderer" value="webgl2"> WebGL 2
     </label>
     <label for="renderer_webgpu">
       <input id="renderer_webgpu" type="radio" name="renderer" value="webgpu"> WebGPU
+    </label>
+  </p>
+
+  <p>
+    Video Codec:
+    <label for="video_codec_h264">
+      <input id="video_codec_h264" type="radio" name="video_codec" value="avc" checked> H.264
+    </label>
+    <label for="video_codec_h265">
+      <input id="video_codec_h265" type="radio" name="video_codec" value="hevc"> H.265
+    </label>
+    <label for="video_codec_vp8">
+      <input id="video_codec_vp8" type="radio" name="video_codec" value="vp8"> VP8
+    </label>
+    <label for="video_codec_vp9">
+      <input id="video_codec_vp9" type="radio" name="video_codec" value="vp9"> VP9
+    </label>
+    <label for="video_codec_av1">
+      <input id="video_codec_av1" type="radio" name="video_codec" value="av1"> AV1
     </label>
   </p>
 
@@ -68,7 +87,8 @@
 
     // Worker setup.
     function start() {
-      const dataUri = "../data/bbb_video_avc_frag.mp4";
+      const videoCodec = document.querySelector("input[name=\"video_codec\"]:checked").value;
+      const dataUri = `../data/bbb_video_${videoCodec}_frag.mp4`;
       const rendererName = document.querySelector("input[name=\"renderer\"]:checked").value;
       const canvas = document.querySelector("canvas").transferControlToOffscreen();
       const worker = new Worker("./worker.js");
