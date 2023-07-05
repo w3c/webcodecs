@@ -46,10 +46,27 @@
     with the appropriate HTTP headers.
   </p>
   <div id=controls>
-    <p id=loading>Loading...</p>
-    <button disabled=true>Play</button>
+    <p>
+      Video Codec:
+      <label for="video_codec_h264">
+        <input id="video_codec_h264" type="radio" name="video_codec" value="avc" checked> H.264
+      </label>
+      <label for="video_codec_h265">
+        <input id="video_codec_h265" type="radio" name="video_codec" value="hevc"> H.265
+      </label>
+      <label for="video_codec_vp8">
+        <input id="video_codec_vp8" type="radio" name="video_codec" value="vp8"> VP8
+      </label>
+      <label for="video_codec_vp9">
+        <input id="video_codec_vp9" type="radio" name="video_codec" value="vp9"> VP9
+      </label>
+      <label for="video_codec_av1">
+        <input id="video_codec_av1" type="radio" name="video_codec" value="av1"> AV1
+      </label>
+    </p>
+    <button>Play</button>
     <label for=volume>Volume</label>
-    <input id=volume type=range value=0.8 min=0 max=1.0 step=0.01></input>
+    <input id=volume type=range value=0.8 min=0 max=1.0 step=0.01 disabled></input>
   </div>
   <canvas width=1280 height=720></canvas>
 </div>
@@ -65,35 +82,47 @@ let offscreenCanvas = canvas.transferControlToOffscreen();
 // Instantiate the "media worker" and start loading the files. The worker will
 // house and drive the demuxers and decoders.
 let mediaWorker = new Worker('./media_worker.js');
-mediaWorker.postMessage({command: 'initialize',
-                         audioFile: '../data/bbb_audio_aac_frag.mp4',
-                         videoFile: '../data/bbb_video_avc_frag.mp4',
-                         canvas: offscreenCanvas},
-                        {transfer: [offscreenCanvas]});
 
-// Wait for worker initialization. Use metadata to init the WebAudioController.
-let initResolver = null;
-let initDone = new Promise(resolver => (initResolver = resolver));
+let initDone = false;
+
 let audioController = new WebAudioController();
-mediaWorker.addEventListener('message', (e) => {
-  console.assert(e.data.command == 'initialize-done');
-  audioController.initialize(e.data.sampleRate, e.data.channelCount,
-                      e.data.sharedArrayBuffer);
-  initResolver();
-  initResolver = null;
-});
-await initDone;
 
 // Set up volume slider.
 $('#volume').onchange = (e) => { audioController.setVolume(e.target.value); }
 
-// Enable play now that we're loaded
 let playButton = $('button');
-let loadingElement = $('#loading');
-playButton.disabled = false;
-loadingElement.innerText = 'Ready! Click play.'
+playButton.onclick = async () => {
+  if (!initDone) {
+    document.querySelectorAll("input[name=\"video_codec\"]").forEach(input => input.disabled = true);
+    playButton.innerText = "Loading...";
+    playButton.disabled = true;
 
-playButton.onclick = () => {
+    // Wait for worker initialization. Use metadata to init the WebAudioController.
+    await new Promise(resolve => {
+      const videoCodec = `${document.querySelector("input[name=\"video_codec\"]:checked").value}`;
+      mediaWorker.postMessage(
+        {
+          command: 'initialize',
+          audioFile: '../data/bbb_audio_aac_frag.mp4',
+          videoFile: `../data/bbb_video_${videoCodec}_frag.mp4`,
+          canvas: offscreenCanvas
+        },
+        { transfer: [offscreenCanvas] }
+      );
+
+      mediaWorker.addEventListener('message', (e) => {
+        console.assert(e.data.command == 'initialize-done');
+        audioController.initialize(e.data.sampleRate, e.data.channelCount, e.data.sharedArrayBuffer);
+        initDone = true;
+        resolve();
+      });
+    });
+    playButton.innerText = "Play";
+    playButton.disabled = false;
+    $('#volume').disabled = false;
+  }
+  
+  // Enable play now that we're loaded
   if (playButton.innerText == "Play") {
     console.log("playback start");
 
