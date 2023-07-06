@@ -7,7 +7,7 @@
   <link href="https://www.w3.org/StyleSheets/TR/2021/W3C-ED" rel="stylesheet">
   <meta content="Bikeshed version 5edf5e459, updated Thu Jun 22 11:28:01 2023 -0700" name="generator">
   <link href="https://www.w3.org/TR/webcodecs/" rel="canonical">
-  <meta content="6185cec02e54aa79409b97c7c402ef79d4572b94" name="document-revision">
+  <meta content="c414b9c43d2f080c34b5d642fd7e299935227188" name="document-revision">
 <style>
 main > dl > dd {
   margin-bottom: 1em;
@@ -6615,48 +6615,51 @@ if it is:</p>
      <p>An <code class="idl"><a data-link-type="idl" href="#audiodecoder" id="ref-for-audiodecoder⑥">AudioDecoder</a></code>, when its tab is audibly playing audio.</p>
    </ul>
    <h2 class="heading settled" data-level="12" id="security-considerations"><span class="secno">12. </span><span class="content">Security Considerations</span><a class="self-link" href="#security-considerations"></a></h2>
-   <p>The primary security impact is that features of this API make it easier for an
+   <div class="non-normative">
+     This section is non-normative. 
+    <p>The primary security impact is that features of this API make it easier for an
 attacker to exploit vulnerabilities in the underlying platform codecs.
 Additionally, new abilities to configure and control the codecs can allow for
 new exploits that rely on a specific configuration and/or sequence of control
 operations.</p>
-   <p>Platform codecs are historically an internal detail of APIs like <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/media.html#htmlmediaelement" id="ref-for-htmlmediaelement">HTMLMediaElement</a></code>, <a data-link-type="biblio" href="#biblio-webaudio" title="Web Audio API">[WEBAUDIO]</a>, and <a data-link-type="biblio" href="#biblio-webrtc" title="WebRTC: Real-Time Communication in Browsers">[WebRTC]</a>. In this way, it has always
+    <p>Platform codecs are historically an internal detail of APIs like <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/media.html#htmlmediaelement" id="ref-for-htmlmediaelement">HTMLMediaElement</a></code>, <a data-link-type="biblio" href="#biblio-webaudio" title="Web Audio API">[WEBAUDIO]</a>, and <a data-link-type="biblio" href="#biblio-webrtc" title="WebRTC: Real-Time Communication in Browsers">[WebRTC]</a>. In this way, it has always
 been possible to attack the underlying codecs by using malformed media
 files/streams and invoking the various API control methods.</p>
-   <p>For example, you can send any stream to a decoder by first wrapping that stream
+    <p>For example, you can send any stream to a decoder by first wrapping that stream
 in a media container (e.g. mp4) and setting that as the <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/media.html#dom-media-src" id="ref-for-dom-media-src">src</a></code> of an <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/media.html#htmlmediaelement" id="ref-for-htmlmediaelement①">HTMLMediaElement</a></code>. You can then cause the underlying video decoder to
 be <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-reset" id="ref-for-dom-videodecoder-reset①">reset()</a></code> by setting a new value for <code>&lt;video>.currentTime</code>.</p>
-   <p>WebCodecs makes such attacks easier by exposing low level control when inputs
+    <p>WebCodecs makes such attacks easier by exposing low level control when inputs
 are provided and direct access to invoke the codec control methods. This also
 affords attackers the ability to invoke sequences of control methods that were
 not previously possible via the higher level APIs.</p>
-   <p>The Working Group expects User Agents to mitigate this risk by extensively
+    <p>The Working Group expects User Agents to mitigate this risk by extensively
 fuzzing their implementation with random inputs and control method invocations.
 Additionally, User Agents are encouraged to isolate their underlying codecs in
 processes with restricted privileges (sandbox) as a barrier against successful
 exploits being able to read user data.</p>
-   <p>An additional concern is exposing the underlying codecs to input mutation race
-conditions. Specifically, it <em class="rfc2119">SHOULD</em> not be possible for
-a site to mutate a codec input or output while the underlying codec is still
-operating on that data.  This concern is mitigated by ensuring that input and
-output interfaces are immutable.</p>
-   <h2 class="heading settled" data-level="13" id="privacy-considerations"><span class="secno">13. </span><span class="content">Privacy Considerations</span><a class="self-link" href="#privacy-considerations"></a></h2>
-   <p>The primary privacy impact is an increased ability to fingerprint users by
+    <p>An additional concern is exposing the underlying codecs to input mutation race
+conditions, such as allowing a site to mutate a codec input or output while
+the underlying codec is still operating on that data. This concern is mitigated
+by ensuring that input and output interfaces are immutable.</p>
+    <h2 class="heading settled" data-level="13" id="privacy-considerations"><span class="secno">13. </span><span class="content">Privacy Considerations</span><a class="self-link" href="#privacy-considerations"></a></h2>
+    <div class="non-normative">
+      This section is non-normative. 
+     <p>The primary privacy impact is an increased ability to fingerprint users by
 querying for different codec capabilities to establish a codec feature profile.
 Much of this profile is already exposed by existing APIs. Such profiles are very
 unlikely to be uniquely identifying, but can be used with other metrics to
 create a fingerprint.</p>
-   <p>An attacker can accumulate a codec feature profile by calling <code>IsConfigSupported()</code> methods with a number of different configuration
+     <p>An attacker can accumulate a codec feature profile by calling <code>IsConfigSupported()</code> methods with a number of different configuration
 dictionaries. Similarly, an attacker can attempt to <code>configure()</code> a codec with
 different configuration dictionaries and observe which configurations are
 accepted.</p>
-   <p>Attackers can also use existing APIs to establish much of the codec feature
+     <p>Attackers can also use existing APIs to establish much of the codec feature
 profile. For example, the <a data-link-type="biblio" href="#biblio-media-capabilities" title="Media Capabilities">[media-capabilities]</a> <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/media-capabilities/#dom-mediacapabilities-decodinginfo" id="ref-for-dom-mediacapabilities-decodinginfo">decodingInfo()</a></code> API
 describes what types of decoders are supported and its <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/media-capabilities/#dom-mediacapabilitiesinfo-powerefficient" id="ref-for-dom-mediacapabilitiesinfo-powerefficient">powerEfficient</a></code> attribute can signal when a decoder uses hardware acceleration. Similarly, the <a data-link-type="biblio" href="#biblio-webrtc" title="WebRTC: Real-Time Communication in Browsers">[WebRTC]</a> <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webrtc-pc/#dom-rtcrtpsender-getcapabilities" id="ref-for-dom-rtcrtpsender-getcapabilities">getCapabilities()</a></code> API can be used to determine what
 types of encoders are supported and the <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webrtc-pc/#widl-RTCPeerConnection-getStats-Promise-RTCStatsReport--MediaStreamTrack-selector" id="ref-for-widl-RTCPeerConnection-getStats-Promise-RTCStatsReport--MediaStreamTrack-selector">getStats()</a></code> API can
 be used to determine when an encoder uses hardware acceleration. WebCodecs will
 expose some additional information in the form of low level codec features.</p>
-   <p>A codec feature profile alone is unlikely to be uniquely identifying. Underlying
+     <p>A codec feature profile alone is unlikely to be uniquely identifying. Underlying
 codecs are often implemented entirely in software (be it part of the User Agent
 binary or part of the operating system), such that all users who run that
 software will have a common set of capabilities. Additionally, underlying codecs
@@ -6666,7 +6669,7 @@ phones manufactured in 2020) will often have common capabilities. There will be
 outliers (some users can be running outdated versions of software codecs or use
 a rare mix of custom assembled hardware), but most of the time a given codec
 feature profile is shared by a large group of users.</p>
-   <p>Segmenting groups of users by codec feature profile still amounts to a bit of
+     <p>Segmenting groups of users by codec feature profile still amounts to a bit of
 entropy that can be combined with other metrics to uniquely identify a user.
 User Agents <em class="rfc2119">MAY</em> partially mitigate this by returning an
 error whenever a site attempts to exhaustively probe for codec capabilities.
@@ -6674,31 +6677,33 @@ Additionally, User Agents <em class="rfc2119">MAY</em> implement a "privacy
 budget", which depletes as authors use WebCodecs and other identifying APIs.
 Upon exhaustion of the privacy budget, codec capabilities could be reduced to a
 common baseline or prompt for user approval.</p>
-   <h2 class="heading settled" data-level="14" id="best-practices-developers"><span class="secno">14. </span><span class="content">Best Practices for Authors Using WebCodecs</span><a class="self-link" href="#best-practices-developers"></a></h2>
-   <div class="non-normative">
-     This section is non-normative. 
-    <p>While WebCodecs internally operates on background threads, authors working with
+     <h2 class="heading settled" data-level="14" id="best-practices-developers"><span class="secno">14. </span><span class="content">Best Practices for Authors Using WebCodecs</span><a class="self-link" href="#best-practices-developers"></a></h2>
+     <div class="non-normative">
+       This section is non-normative. 
+      <p>While WebCodecs internally operates on background threads, authors working with
   realtime media or in contended main thread environments are encouraged to ensure their
   media pipelines operate in worker contexts entirely independent of the main
   thread where possible. For example, realtime media processing of <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe⑦①">VideoFrame</a></code>s
   are generally to be done in a worker context.</p>
-    <p>The main thread has significant potential for high contention and jank that can
+      <p>The main thread has significant potential for high contention and jank that can
   go unnoticed in development, yet degrade inconsistently across devices and User
   Agents in the field -- potentially dramatically impacting the end user
   experience. Ensuring the media pipeline is decoupled from the main thread helps
   provide a smooth experience for end users.</p>
-    <p>Authors using the main thread for their media pipeline ought to be sure of
+      <p>Authors using the main thread for their media pipeline ought to be sure of
   their target frame rates, main thread workload, how their application will be
   embedded, and the class of devices their users will be using.</p>
-   </div>
-   <h2 class="heading settled" data-level="15" id="acknowledgements"><span class="secno">15. </span><span class="content">Acknowledgements</span><a class="self-link" href="#acknowledgements"></a></h2>
-   <p>The editors would like to thank Alex Russell, Chris Needham, Dale Curtis, Dan
+     </div>
+     <h2 class="heading settled" data-level="15" id="acknowledgements"><span class="secno">15. </span><span class="content">Acknowledgements</span><a class="self-link" href="#acknowledgements"></a></h2>
+     <p>The editors would like to thank Alex Russell, Chris Needham, Dale Curtis, Dan
 Sanders, Eugene Zemtsov, Francois Daoust, Guido Urdaneta, Harald Alvestrand,
 Jan-Ivar Bruaroey, Jer Noble, Mark Foltz, Peter Thatcher, Steve Anton, Matt
 Wolenetz, Rijubrata Bhaumik, Thomas Guilbert, Tuukka Toivonen, and Youenn Fablet
 for their contributions to this specification. Thank you also to the many
 others who contributed to the specification, including through their
 participation on the mailing list and in the issues.</p>
+    </div>
+   </div>
   </main>
   <div data-fill-with="conformance">
    <h2 class="no-ref no-num heading settled" id="w3c-conformance"><span class="content">Conformance</span><a class="self-link" href="#w3c-conformance"></a></h2>
@@ -7897,8 +7902,6 @@ participation on the mailing list and in the issues.</p>
    <dd>Anne van Kesteren; et al. <a href="https://html.spec.whatwg.org/multipage/"><cite>HTML Standard</cite></a>. Living Standard. URL: <a href="https://html.spec.whatwg.org/multipage/">https://html.spec.whatwg.org/multipage/</a>
    <dt id="biblio-infra">[INFRA]
    <dd>Anne van Kesteren; Domenic Denicola. <a href="https://infra.spec.whatwg.org/"><cite>Infra Standard</cite></a>. Living Standard. URL: <a href="https://infra.spec.whatwg.org/">https://infra.spec.whatwg.org/</a>
-   <dt id="biblio-media-capabilities">[MEDIA-CAPABILITIES]
-   <dd>Jean-Yves Avenard; Will Cassella. <a href="https://w3c.github.io/media-capabilities/"><cite>Media Capabilities</cite></a>. URL: <a href="https://w3c.github.io/media-capabilities/">https://w3c.github.io/media-capabilities/</a>
    <dt id="biblio-mediastream-recording">[MEDIASTREAM-RECORDING]
    <dd>Miguel Casas-sanchez. <a href="https://w3c.github.io/mediacapture-record/"><cite>MediaStream Recording</cite></a>. URL: <a href="https://w3c.github.io/mediacapture-record/">https://w3c.github.io/mediacapture-record/</a>
    <dt id="biblio-mimesniff">[MIMESNIFF]
@@ -7911,8 +7914,6 @@ participation on the mailing list and in the issues.</p>
    <dd>Amelia Bellamy-Royds; et al. <a href="https://svgwg.org/svg2-draft/"><cite>Scalable Vector Graphics (SVG) 2</cite></a>. URL: <a href="https://svgwg.org/svg2-draft/">https://svgwg.org/svg2-draft/</a>
    <dt id="biblio-webidl">[WEBIDL]
    <dd>Edgar Chen; Timothy Gu. <a href="https://webidl.spec.whatwg.org/"><cite>Web IDL Standard</cite></a>. Living Standard. URL: <a href="https://webidl.spec.whatwg.org/">https://webidl.spec.whatwg.org/</a>
-   <dt id="biblio-webrtc">[WebRTC]
-   <dd>Cullen Jennings; et al. <a href="https://w3c.github.io/webrtc-pc/"><cite>WebRTC: Real-Time Communication in Browsers</cite></a>. URL: <a href="https://w3c.github.io/webrtc-pc/">https://w3c.github.io/webrtc-pc/</a>
    <dt id="biblio-webrtc-svc">[WebRTC-SVC]
    <dd>Bernard Aboba. <a href="https://w3c.github.io/webrtc-svc/"><cite>Scalable Video Coding (SVC) Extension for WebRTC</cite></a>. URL: <a href="https://w3c.github.io/webrtc-svc/">https://w3c.github.io/webrtc-svc/</a>
   </dl>
@@ -7920,6 +7921,8 @@ participation on the mailing list and in the issues.</p>
   <dl>
    <dt id="biblio-h273">[H.273]
    <dd><a href="https://www.itu.int/rec/T-REC-H.273/en"><cite>Coding-independent code points for video signal type identification</cite></a>. December 2016. URL: <a href="https://www.itu.int/rec/T-REC-H.273/en">https://www.itu.int/rec/T-REC-H.273/en</a>
+   <dt id="biblio-media-capabilities">[MEDIA-CAPABILITIES]
+   <dd>Jean-Yves Avenard; Will Cassella. <a href="https://w3c.github.io/media-capabilities/"><cite>Media Capabilities</cite></a>. URL: <a href="https://w3c.github.io/media-capabilities/">https://w3c.github.io/media-capabilities/</a>
    <dt id="biblio-media-source-2">[MEDIA-SOURCE-2]
    <dd>Matthew Wolenetz; Mark Watson. <a href="https://w3c.github.io/media-source/"><cite>Media Source Extensions™</cite></a>. URL: <a href="https://w3c.github.io/media-source/">https://w3c.github.io/media-source/</a>
    <dt id="biblio-rfc6381">[RFC6381]
@@ -7932,6 +7935,8 @@ participation on the mailing list and in the issues.</p>
    <dd>Chris Cunningham; Paul Adenot; Bernard Aboba. <a href="https://w3c.github.io/webcodecs/codec_registry.html"><cite>WebCodecs Codec Registry</cite></a>. URL: <a href="https://w3c.github.io/webcodecs/codec_registry.html">https://w3c.github.io/webcodecs/codec_registry.html</a>
    <dt id="biblio-webcodecs-video-frame-metadata-registry">[WEBCODECS-VIDEO-FRAME-METADATA-REGISTRY]
    <dd>Youenn Fablet. <a href="https://w3c.github.io/webcodecs/video_frame_metadata_registry.html"><cite>WebCodecs VideoFrame Metadata Registry</cite></a>. ED. URL: <a href="https://w3c.github.io/webcodecs/video_frame_metadata_registry.html">https://w3c.github.io/webcodecs/video_frame_metadata_registry.html</a>
+   <dt id="biblio-webrtc">[WebRTC]
+   <dd>Cullen Jennings; et al. <a href="https://w3c.github.io/webrtc-pc/"><cite>WebRTC: Real-Time Communication in Browsers</cite></a>. URL: <a href="https://w3c.github.io/webrtc-pc/">https://w3c.github.io/webrtc-pc/</a>
   </dl>
   <h2 class="no-num no-ref heading settled" id="idl-index"><span class="content">IDL Index</span><a class="self-link" href="#idl-index"></a></h2>
 <pre class="idl highlight def">[<a class="idl-code" data-link-type="extended-attribute" href="https://webidl.spec.whatwg.org/#Exposed"><c- g>Exposed</c-></a>=(<c- n>Window</c->,<c- n>DedicatedWorker</c->), <a class="idl-code" data-link-type="extended-attribute" href="https://webidl.spec.whatwg.org/#SecureContext"><c- g>SecureContext</c-></a>]
