@@ -2727,6 +2727,7 @@ dictionary AudioDataInit {
   [EnforceRange] required unsigned long numberOfChannels;
   [EnforceRange] required long long timestamp;  // microseconds
   required BufferSource data;
+  sequence<ArrayBuffer> transfer = [];
 };
 </xmp>
 
@@ -2758,7 +2759,12 @@ dictionary AudioDataInit {
   AudioData(init)
 </dfn>
 1. If |init| is not a [=valid AudioDataInit=], throw a {{TypeError}}.
-2. Let |frame| be a new {{AudioData}} object, initialized as follows:
+2. If |init|.{{AudioDataInit/transfer}} contains more than one reference
+     to the same {{ArrayBuffer}}, then throw a {{DataCloneError}} {{DOMException}}.
+3. For each |transferable| in |init|.{{AudioDataInit/transfer}}:
+     1. If {{platform object/[[Detached]]}} internal slot is `true`,
+         then throw a {{DataCloneError}} {{DOMException}}.
+4. Let |frame| be a new {{AudioData}} object, initialized as follows:
     1. Assign `false` to {{platform object/[[Detached]]}}.
     2. Assign |init|.{{AudioDataInit/format}} to
         {{AudioData/[[format]]}}.
@@ -2770,11 +2776,20 @@ dictionary AudioDataInit {
         {{AudioData/[[number of channels]]}}.
     6. Assign |init|.{{AudioDataInit/timestamp}} to
         {{AudioData/[[timestamp]]}}.
-    7. Let |resource| be a [=media resource=] containing a copy of
-        |init|.{{AudioDataInit/data}}.
-    8. Let |resourceReference| be a reference to |resource|.
-    9. Assign |resourceReference| to {{AudioData/[[resource reference]]}}.
-3. Return |frame|.
+    7. If |init|.{{AudioDataInit/transfer}} contains an {{ArrayBuffer}}
+        referenced by |init|.{{AudioDataInit/data}} the User Agent
+        <em class="rfc2119">MAY</em> choose to:
+          1. Let |resource| be a new [=media resource=] referencing sample data
+               in |data|.
+    8. Otherwise:
+        1. Let |resource| be a [=media resource=] containing a copy of
+            |init|.{{AudioDataInit/data}}.
+    9. Let |resourceReference| be a reference to |resource|.
+    10. Assign |resourceReference| to {{AudioData/[[resource reference]]}}.
+5. For each |transferable| in |init|.{{AudioDataInit/transfer}}:
+    1. Perform [DetachArrayBuffer](https://tc39.es/ecma262/#sec-detacharraybuffer)
+        on |transferable|
+6. Return |frame|.
 
 ### Attributes ###{#audiodata-attributes}
 
