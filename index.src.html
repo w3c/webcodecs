@@ -4810,29 +4810,34 @@ interface ImageDecoder {
 
     When invoked, run these steps:
     1. If |init| is not [=valid ImageDecoderInit=], throw a {{TypeError}}.
-    2. Let |d| be a new {{ImageDecoder}} object. In the steps below, all
+    2. If |init|.{{ImageDecoderInit/transfer}} contains more than one reference
+        to the same {{ArrayBuffer}}, then throw a {{DataCloneError}} {{DOMException}}.
+    3. For each |transferable| in |init|.{{ImageDecoderInit/transfer}}:
+        1. If {{platform object/[[Detached]]}} internal slot is `true`,
+            then throw a {{DataCloneError}} {{DOMException}}.
+    4. Let |d| be a new {{ImageDecoder}} object. In the steps below, all
         mentions of {{ImageDecoder}} members apply to |d| unless stated
         otherwise.
-    3. Assign a new [=queue=] to {{ImageDecoder/[[control message queue]]}}.
-    4. Assign `false` to {{ImageDecoder/[[message queue blocked]]}}.
-    5. Assign the result of starting a new [=parallel queue=] to
+    5. Assign a new [=queue=] to {{ImageDecoder/[[control message queue]]}}.
+    6. Assign `false` to {{ImageDecoder/[[message queue blocked]]}}.
+    7. Assign the result of starting a new [=parallel queue=] to
         {{ImageDecoder/[[codec work queue]]}}.
-    6. Assign {{ImageDecoder/[[ImageTrackList]]}} a new {{ImageTrackList}}
+    8. Assign {{ImageDecoder/[[ImageTrackList]]}} a new {{ImageTrackList}}
         initialized as follows:
         1. Assign a new [=list=] to {{ImageTrackList/[[track list]]}}.
         2. Assign `-1` to {{ImageTrackList/[[selected index]]}}.
-    7. Assign {{ImageDecoderInit/type}} to {{ImageDecoder/[[type]]}}.
-    8. Assign `null` to {{ImageDecoder/[[codec implementation]]}}.
-    9. If `init.preferAnimation` [=map/exists=], assign `init.preferAnimation`
+    9. Assign {{ImageDecoderInit/type}} to {{ImageDecoder/[[type]]}}.
+    10. Assign `null` to {{ImageDecoder/[[codec implementation]]}}.
+    11. If `init.preferAnimation` [=map/exists=], assign `init.preferAnimation`
         to the {{ImageDecoder/[[prefer animation]]}} internal slot. Otherwise,
         assign 'null' to {{ImageDecoder/[[prefer animation]]}} internal slot.
-    10. Assign a new [=list=] to {{ImageDecoder/[[pending decode promises]]}}.
-    11. Assign `-1` to {{ImageDecoder/[[internal selected track index]]}}.
-    12. Assign `false` to {{ImageDecoder/[[tracks established]]}}.
-    13. Assign `false` to {{ImageDecoder/[[closed]]}}.
-    14. Assign a new [=map=] to {{ImageDecoder/[[progressive frame
+    12. Assign a new [=list=] to {{ImageDecoder/[[pending decode promises]]}}.
+    13. Assign `-1` to {{ImageDecoder/[[internal selected track index]]}}.
+    14. Assign `false` to {{ImageDecoder/[[tracks established]]}}.
+    15. Assign `false` to {{ImageDecoder/[[closed]]}}.
+    16. Assign a new [=map=] to {{ImageDecoder/[[progressive frame
         generations]]}}.
-    15. If |init|'s {{ImageDecoderInit/data}} member is of type
+    17. If |init|'s {{ImageDecoderInit/data}} member is of type
         {{ReadableStream}}:
         1. Assign a new [=list=] to {{ImageDecoder/[[encoded data]]}}.
         2. Assign `false` to {{ImageDecoder/[[complete]]}}
@@ -4843,16 +4848,25 @@ interface ImageDecoder {
             {{ImageDecoderInit/data}}.
         6. In parallel, perform the [=Fetch Stream Data Loop=] on |d| with
             |reader|.
-    16. Otherwise:
+    18. Otherwise:
         1. Assert that `init.data` is of type {{BufferSource}}.
-        2. Assign a copy of `init.data` to  {{ImageDecoder/[[encoded data]]}}.
-        3. Assign `true` to {{ImageDecoder/[[complete]]}}.
-        4. Reslove {{ImageDecoder/[[completed promise]]}}.
-        5. Queue a control message to [=configure the image decoder=] with
+        2. If |init|.{{ImageDecoderInit/transfer}} contains an {{ArrayBuffer}}
+            referenced by |init|.{{ImageDecoderInit/data}} the User Agent
+            <em class="rfc2119">MAY</em> choose to:
+            1. Let {{ImageDecoder/[[encoded data]]}} reference bytes in |data|
+                representing an encoded image.
+        3. Otherwise:
+            1. Assign a copy of `init.data` to  {{ImageDecoder/[[encoded data]]}}.
+        4. Assign `true` to {{ImageDecoder/[[complete]]}}.
+        5. Resolve {{ImageDecoder/[[completed promise]]}}.
+        6. Queue a control message to [=configure the image decoder=] with
             |init|.
-        6. Queue a control message to [=decode track metadata=].
-        7. [=Process the control message queue=].
-    17. return |d|.
+        7. Queue a control message to [=decode track metadata=].
+        8. [=Process the control message queue=].
+    19. For each |transferable| in |init|.{{ImageDecoderInit/transfer}}:
+        1. Perform [DetachArrayBuffer](https://tc39.es/ecma262/#sec-detacharraybuffer)
+            on |transferable|
+    20. return |d|.
 
     [=Running a control message=] to <dfn>configure the image decoder</dfn>
     means running these steps:
@@ -5278,6 +5292,7 @@ dictionary ImageDecoderInit {
   [EnforceRange] unsigned long desiredWidth;
   [EnforceRange] unsigned long desiredHeight;
   boolean preferAnimation;
+  sequence<ArrayBuffer> transfer = [];
 };
 </xmp>
 </pre>
