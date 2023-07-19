@@ -152,7 +152,7 @@ class pipeline {
 
    EncodeVideoStream(self, config) {
      return new TransformStream({
-       start(controller) {
+       async start(controller) {
          this.frameCounter = 0;
          this.seqNo = 0;
          this.keyframeIndex = 0;
@@ -196,17 +196,17 @@ class pipeline {
              self.postMessage({severity: 'fatal', text: `Encoder error: ${e.message}`});
            }
          });
-         VideoEncoder.isConfigSupported(config).then((encoderSupport) => {
-           if(encoderSupport.supported) {
+         try {
+           const encoderSupport = await VideoEncoder.isConfigSupported(config);
+           if (encoderSupport.supported) {
              this.encoder.configure(encoderSupport.config);
              self.postMessage({text: 'Encoder successfully configured:\n' + JSON.stringify(encoderSupport.config)});
            } else {
              self.postMessage({severity: 'fatal', text: 'Config not supported:\n' + JSON.stringify(encoderSupport.config)});
            }
-         })
-         .catch((e) => {
-            self.postMessage({severity: 'fatal', text: `Configuration error: ${e.message}`});
-         })
+         } catch (e) {
+           self.postMessage({severity: 'fatal', text: `Configuration error: ${e.message}`});
+         }
        },
        transform(frame, controller) {
          if (this.pending_outputs <= 30) {
