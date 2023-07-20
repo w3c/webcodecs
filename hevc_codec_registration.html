@@ -7,7 +7,7 @@
   <link href="https://www.w3.org/StyleSheets/TR/2021/W3C-ED" rel="stylesheet">
   <meta content="Bikeshed version d29f71adb, updated Wed Jul 19 11:08:56 2023 -0700" name="generator">
   <link href="https://www.w3.org/TR/webcodecs-hevc-codec-registration/" rel="canonical">
-  <meta content="210a3d66f3028540722e1d7bb60692a33bda3a95" name="document-revision">
+  <meta content="c462aa44c1979e657dd847600ebb1c0f2f36c2ed" name="document-revision">
 <style>/* Boilerplate: style-autolinks */
 .css.css, .property.property, .descriptor.descriptor {
     color: var(--a-normal-text);
@@ -648,7 +648,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
   <div class="head">
    <p data-fill-with="logo"><a class="logo" href="https://www.w3.org/"> <img alt="W3C" height="48" src="https://www.w3.org/StyleSheets/TR/2021/logos/W3C" width="72"> </a> </p>
    <h1 class="p-name no-ref" id="title">HEVC (H.265) WebCodecs Registration</h1>
-   <p id="w3c-state"><a href="https://www.w3.org/standards/types#ED">Editor’s Draft</a>, <time class="dt-updated" datetime="2023-07-19">19 July 2023</time></p>
+   <p id="w3c-state"><a href="https://www.w3.org/standards/types#ED">Editor’s Draft</a>, <time class="dt-updated" datetime="2023-07-20">20 July 2023</time></p>
    <details open>
     <summary>More details about this document</summary>
     <div data-fill-with="spec-metadata">
@@ -719,8 +719,13 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
       <li><a href="#hevc-encoder-config"><span class="secno">5.1</span> <span class="content">HevcEncoderConfig</span></a>
       <li><a href="#hevc-bitstream-format"><span class="secno">5.2</span> <span class="content">HevcBitstreamFormat</span></a>
      </ol>
-    <li><a href="#privacy-considerations"><span class="secno">6</span> <span class="content">Privacy Considerations</span></a>
-    <li><a href="#security-considerations"><span class="secno">7</span> <span class="content">Security Considerations</span></a>
+    <li>
+     <a href="#videoencoderencodeoptions-extensions"><span class="secno">6</span> <span class="content">VideoEncoderEncodeOptions extensions</span></a>
+     <ol class="toc">
+      <li><a href="#hevc-encode-options"><span class="secno">6.1</span> <span class="content">VideoEncoderEncodeOptionsForHevc</span></a>
+     </ol>
+    <li><a href="#privacy-considerations"><span class="secno">7</span> <span class="content">Privacy Considerations</span></a>
+    <li><a href="#security-considerations"><span class="secno">8</span> <span class="content">Security Considerations</span></a>
     <li>
      <a href="#w3c-conformance"><span class="secno"></span> <span class="content">Conformance</span></a>
      <ol class="toc">
@@ -822,10 +827,31 @@ mechanisms for packaging the bitstream.</p>
         section 8.3. This format is commonly used in .MP4 files, where the
         player generally has random access to the media data.</p>
    </dl>
-   <h2 class="heading settled" data-level="6" id="privacy-considerations"><span class="secno">6. </span><span class="content">Privacy Considerations</span><a class="self-link" href="#privacy-considerations"></a></h2>
+   <h2 class="heading settled" data-level="6" id="videoencoderencodeoptions-extensions"><span class="secno">6. </span><span class="content">VideoEncoderEncodeOptions extensions</span><a class="self-link" href="#videoencoderencodeoptions-extensions"></a></h2>
+<pre class="idl highlight def"><c- b>partial</c-> <c- b>dictionary</c-> <a class="idl-code" data-link-type="dictionary" href="https://w3c.github.io/webcodecs/#dictdef-videoencoderencodeoptions" id="ref-for-dictdef-videoencoderencodeoptions"><c- g>VideoEncoderEncodeOptions</c-></a> {
+  <a data-link-type="idl-name" href="#dictdef-videoencoderencodeoptionsforhevc" id="ref-for-dictdef-videoencoderencodeoptionsforhevc"><c- n>VideoEncoderEncodeOptionsForHevc</c-></a> <a class="idl-code" data-link-type="dict-member" data-type="VideoEncoderEncodeOptionsForHevc " href="#dom-videoencoderencodeoptions-hevc" id="ref-for-dom-videoencoderencodeoptions-hevc"><c- g>hevc</c-></a>;
+};
+
+</pre>
+   <dl>
+    <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoEncoderEncodeOptions" data-dfn-type="dict-member" data-export id="dom-videoencoderencodeoptions-hevc"><code>hevc</code></dfn>, <span> of type <a data-link-type="idl-name" href="#dictdef-videoencoderencodeoptionsforhevc" id="ref-for-dictdef-videoencoderencodeoptionsforhevc①">VideoEncoderEncodeOptionsForHevc</a></span>
+    <dd> Contains codec specific encode options for the <a data-link-type="biblio" href="#biblio-itu-t-rec-h265" title="H.265 : High efficiency video coding">[ITU-T-REC-H.265]</a> codec. 
+   </dl>
+   <h3 class="heading settled" data-level="6.1" id="hevc-encode-options"><span class="secno">6.1. </span><span class="content">VideoEncoderEncodeOptionsForHevc</span><a class="self-link" href="#hevc-encode-options"></a></h3>
+<pre class="idl highlight def"><c- b>dictionary</c-> <dfn class="dfn-paneled idl-code" data-dfn-type="dictionary" data-export id="dictdef-videoencoderencodeoptionsforhevc"><code><c- g>VideoEncoderEncodeOptionsForHevc</c-></code></dfn> {
+  <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-unsigned-short" id="ref-for-idl-unsigned-short"><c- b>unsigned</c-> <c- b>short</c-></a>? <a class="idl-code" data-link-type="dict-member" data-type="unsigned short? " href="#dom-videoencoderencodeoptionsforhevc-quantizer" id="ref-for-dom-videoencoderencodeoptionsforhevc-quantizer"><c- g>quantizer</c-></a>;
+};
+
+</pre>
+   <dl>
+    <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoEncoderEncodeOptionsForHevc" data-dfn-type="dict-member" data-export id="dom-videoencoderencodeoptionsforhevc-quantizer"><code>quantizer</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://webidl.spec.whatwg.org/#idl-unsigned-short" id="ref-for-idl-unsigned-short①">unsigned short</a>, nullable</span>
+    <dd> Sets per-frame quantizer value.
+    In <a data-link-type="biblio" href="#biblio-itu-t-rec-h265" title="H.265 : High efficiency video coding">[ITU-T-REC-H.265]</a> the quantizer threshold can be varied from 0 to 51. 
+   </dl>
+   <h2 class="heading settled" data-level="7" id="privacy-considerations"><span class="secno">7. </span><span class="content">Privacy Considerations</span><a class="self-link" href="#privacy-considerations"></a></h2>
    <p>Please refer to the section <a href="https://w3c.github.io/webcodecs/#privacy-considerations">Privacy
 Considerations</a> in <a data-link-type="biblio" href="#biblio-webcodecs" title="WebCodecs">[WEBCODECS]</a>.</p>
-   <h2 class="heading settled" data-level="7" id="security-considerations"><span class="secno">7. </span><span class="content">Security Considerations</span><a class="self-link" href="#security-considerations"></a></h2>
+   <h2 class="heading settled" data-level="8" id="security-considerations"><span class="secno">8. </span><span class="content">Security Considerations</span><a class="self-link" href="#security-considerations"></a></h2>
    <p>Please refer to the section <a href="https://w3c.github.io/webcodecs/#security-considerations">Security
 Considerations</a> in <a data-link-type="biblio" href="#biblio-webcodecs" title="WebCodecs">[WEBCODECS]</a>.</p>
   </main>
@@ -868,10 +894,13 @@ Considerations</a> in <a data-link-type="biblio" href="#biblio-webcodecs" title=
     hevc
     <ul>
      <li><a href="#dom-videoencoderconfig-hevc">dict-member for VideoEncoderConfig</a><span>, in § 5</span>
+     <li><a href="#dom-videoencoderencodeoptions-hevc">dict-member for VideoEncoderEncodeOptions</a><span>, in § 6</span>
      <li><a href="#dom-hevcbitstreamformat-hevc">enum-value for HevcBitstreamFormat</a><span>, in § 5.2</span>
     </ul>
    <li><a href="#enumdef-hevcbitstreamformat">HevcBitstreamFormat</a><span>, in § 5.2</span>
    <li><a href="#dictdef-hevcencoderconfig">HevcEncoderConfig</a><span>, in § 5.1</span>
+   <li><a href="#dom-videoencoderencodeoptionsforhevc-quantizer">quantizer</a><span>, in § 6.1</span>
+   <li><a href="#dictdef-videoencoderencodeoptionsforhevc">VideoEncoderEncodeOptionsForHevc</a><span>, in § 6.1</span>
   </ul>
   <h3 class="no-num no-ref heading settled" id="index-defined-elsewhere"><span class="content">Terms defined by reference</span><a class="self-link" href="#index-defined-elsewhere"></a></h3>
   <ul class="index">
@@ -881,11 +910,17 @@ Considerations</a> in <a data-link-type="biblio" href="#biblio-webcodecs" title=
      <li><span class="dfn-paneled" id="5ab730d7">"key"</span>
      <li><span class="dfn-paneled" id="25947f98">EncodedVideoChunk</span>
      <li><span class="dfn-paneled" id="4c67f0b7">VideoEncoderConfig</span>
+     <li><span class="dfn-paneled" id="6cce5d95">VideoEncoderEncodeOptions</span>
      <li><span class="dfn-paneled" id="a4200c1b">[[internal data]]</span>
      <li><span class="dfn-paneled" id="05d4d94c">[[output callback]]</span>
      <li><span class="dfn-paneled" id="89df1b66">[[type]]</span>
      <li><span class="dfn-paneled" id="b67c6424">decoderConfig</span>
      <li><span class="dfn-paneled" id="c59901b3">description</span>
+    </ul>
+   <li>
+    <a data-link-type="biblio">[WEBIDL]</a> defines the following terms:
+    <ul>
+     <li><span class="dfn-paneled" id="450958f7">unsigned short</span>
     </ul>
   </ul>
   <h2 class="no-num no-ref heading settled" id="references"><span class="content">References</span><a class="self-link" href="#references"></a></h2>
@@ -895,6 +930,8 @@ Considerations</a> in <a data-link-type="biblio" href="#biblio-webcodecs" title=
    <dd>S. Bradner. <a href="https://datatracker.ietf.org/doc/html/rfc2119"><cite>Key words for use in RFCs to Indicate Requirement Levels</cite></a>. March 1997. Best Current Practice. URL: <a href="https://datatracker.ietf.org/doc/html/rfc2119">https://datatracker.ietf.org/doc/html/rfc2119</a>
    <dt id="biblio-webcodecs">[WEBCODECS]
    <dd>Paul Adenot; Bernard Aboba; Eugene Zemtsov. <a href="https://w3c.github.io/webcodecs/"><cite>WebCodecs</cite></a>. URL: <a href="https://w3c.github.io/webcodecs/">https://w3c.github.io/webcodecs/</a>
+   <dt id="biblio-webidl">[WEBIDL]
+   <dd>Edgar Chen; Timothy Gu. <a href="https://webidl.spec.whatwg.org/"><cite>Web IDL Standard</cite></a>. Living Standard. URL: <a href="https://webidl.spec.whatwg.org/">https://webidl.spec.whatwg.org/</a>
   </dl>
   <h3 class="no-num no-ref heading settled" id="informative"><span class="content">Informative References</span><a class="self-link" href="#informative"></a></h3>
   <dl>
@@ -919,6 +956,16 @@ Considerations</a> in <a data-link-type="biblio" href="#biblio-webcodecs" title=
 <c- b>enum</c-> <a href="#enumdef-hevcbitstreamformat"><code><c- g>HevcBitstreamFormat</c-></code></a> {
   <a class="idl-code" data-link-type="enum-value" href="#dom-hevcbitstreamformat-annexb"><c- s>"annexb"</c-></a>,
   <a class="idl-code" data-link-type="enum-value" href="#dom-hevcbitstreamformat-hevc"><c- s>"hevc"</c-></a>,
+};
+
+
+<c- b>partial</c-> <c- b>dictionary</c-> <a class="idl-code" data-link-type="dictionary" href="https://w3c.github.io/webcodecs/#dictdef-videoencoderencodeoptions"><c- g>VideoEncoderEncodeOptions</c-></a> {
+  <a data-link-type="idl-name" href="#dictdef-videoencoderencodeoptionsforhevc"><c- n>VideoEncoderEncodeOptionsForHevc</c-></a> <a class="idl-code" data-link-type="dict-member" data-type="VideoEncoderEncodeOptionsForHevc " href="#dom-videoencoderencodeoptions-hevc"><c- g>hevc</c-></a>;
+};
+
+
+<c- b>dictionary</c-> <a href="#dictdef-videoencoderencodeoptionsforhevc"><code><c- g>VideoEncoderEncodeOptionsForHevc</c-></code></a> {
+  <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-unsigned-short"><c- b>unsigned</c-> <c- b>short</c-></a>? <a class="idl-code" data-link-type="dict-member" data-type="unsigned short? " href="#dom-videoencoderencodeoptionsforhevc-quantizer"><c- g>quantizer</c-></a>;
 };
 
 
@@ -1234,17 +1281,22 @@ window.dfnpanelData = {};
 window.dfnpanelData['5ab730d7'] = {"dfnID": "5ab730d7", "url": "https://w3c.github.io/webcodecs/#dom-encodedvideochunktype-key", "dfnText": "\"key\"", "refSections": [{"refs": [{"id": "ref-for-dom-encodedvideochunktype-key"}, {"id": "ref-for-dom-encodedvideochunktype-key\u2460"}], "title": "4. EncodedVideoChunk type"}], "external": true};
 window.dfnpanelData['25947f98'] = {"dfnID": "25947f98", "url": "https://w3c.github.io/webcodecs/#encodedvideochunk", "dfnText": "EncodedVideoChunk", "refSections": [{"refs": [{"id": "ref-for-encodedvideochunk"}, {"id": "ref-for-encodedvideochunk\u2460"}], "title": "Unnumbered Section"}, {"refs": [{"id": "ref-for-encodedvideochunk\u2461"}], "title": "2. EncodedVideoChunk data"}, {"refs": [{"id": "ref-for-encodedvideochunk\u2462"}, {"id": "ref-for-encodedvideochunk\u2463"}, {"id": "ref-for-encodedvideochunk\u2464"}, {"id": "ref-for-encodedvideochunk\u2465"}, {"id": "ref-for-encodedvideochunk\u2466"}], "title": "4. EncodedVideoChunk type"}, {"refs": [{"id": "ref-for-encodedvideochunk\u2467"}], "title": "5.1. HevcEncoderConfig"}], "external": true};
 window.dfnpanelData['4c67f0b7'] = {"dfnID": "4c67f0b7", "url": "https://w3c.github.io/webcodecs/#dictdef-videoencoderconfig", "dfnText": "VideoEncoderConfig", "refSections": [{"refs": [{"id": "ref-for-dictdef-videoencoderconfig"}], "title": "Unnumbered Section"}, {"refs": [{"id": "ref-for-dictdef-videoencoderconfig\u2460"}], "title": "5. VideoEncoderConfig extensions"}], "external": true};
+window.dfnpanelData['6cce5d95'] = {"dfnID": "6cce5d95", "url": "https://w3c.github.io/webcodecs/#dictdef-videoencoderencodeoptions", "dfnText": "VideoEncoderEncodeOptions", "refSections": [{"refs": [{"id": "ref-for-dictdef-videoencoderencodeoptions"}], "title": "6. VideoEncoderEncodeOptions extensions"}], "external": true};
 window.dfnpanelData['a4200c1b'] = {"dfnID": "a4200c1b", "url": "https://w3c.github.io/webcodecs/#dom-encodedvideochunk-internal-data-slot", "dfnText": "[[internal data]]", "refSections": [{"refs": [{"id": "ref-for-dom-encodedvideochunk-internal-data-slot"}], "title": "Unnumbered Section"}, {"refs": [{"id": "ref-for-dom-encodedvideochunk-internal-data-slot\u2460"}, {"id": "ref-for-dom-encodedvideochunk-internal-data-slot\u2461"}, {"id": "ref-for-dom-encodedvideochunk-internal-data-slot\u2462"}, {"id": "ref-for-dom-encodedvideochunk-internal-data-slot\u2463"}], "title": "2. EncodedVideoChunk data"}], "external": true};
 window.dfnpanelData['05d4d94c'] = {"dfnID": "05d4d94c", "url": "https://w3c.github.io/webcodecs/#dom-videoencoder-output-callback-slot", "dfnText": "[[output callback]]", "refSections": [{"refs": [{"id": "ref-for-dom-videoencoder-output-callback-slot"}], "title": "5.2. HevcBitstreamFormat"}], "external": true};
 window.dfnpanelData['89df1b66'] = {"dfnID": "89df1b66", "url": "https://w3c.github.io/webcodecs/#dom-encodedvideochunk-type-slot", "dfnText": "[[type]]", "refSections": [{"refs": [{"id": "ref-for-dom-encodedvideochunk-type-slot"}], "title": "Unnumbered Section"}, {"refs": [{"id": "ref-for-dom-encodedvideochunk-type-slot\u2460"}, {"id": "ref-for-dom-encodedvideochunk-type-slot\u2461"}], "title": "4. EncodedVideoChunk type"}], "external": true};
 window.dfnpanelData['b67c6424'] = {"dfnID": "b67c6424", "url": "https://w3c.github.io/webcodecs/#dom-encodedvideochunkmetadata-decoderconfig", "dfnText": "decoderConfig", "refSections": [{"refs": [{"id": "ref-for-dom-encodedvideochunkmetadata-decoderconfig"}], "title": "5.2. HevcBitstreamFormat"}], "external": true};
 window.dfnpanelData['c59901b3'] = {"dfnID": "c59901b3", "url": "https://w3c.github.io/webcodecs/#dom-videodecoderconfig-description", "dfnText": "description", "refSections": [{"refs": [{"id": "ref-for-dom-videodecoderconfig-description"}], "title": "Unnumbered Section"}, {"refs": [{"id": "ref-for-dom-videodecoderconfig-description\u2460"}, {"id": "ref-for-dom-videodecoderconfig-description\u2461"}], "title": "3. VideoDecoderConfig description"}, {"refs": [{"id": "ref-for-dom-videodecoderconfig-description\u2462"}], "title": "4. EncodedVideoChunk type"}, {"refs": [{"id": "ref-for-dom-videodecoderconfig-description\u2463"}], "title": "5.2. HevcBitstreamFormat"}], "external": true};
+window.dfnpanelData['450958f7'] = {"dfnID": "450958f7", "url": "https://webidl.spec.whatwg.org/#idl-unsigned-short", "dfnText": "unsigned short", "refSections": [{"refs": [{"id": "ref-for-idl-unsigned-short"}, {"id": "ref-for-idl-unsigned-short\u2460"}], "title": "6.1. VideoEncoderEncodeOptionsForHevc"}], "external": true};
 window.dfnpanelData['dom-videoencoderconfig-hevc'] = {"dfnID": "dom-videoencoderconfig-hevc", "url": "#dom-videoencoderconfig-hevc", "dfnText": "hevc", "refSections": [{"refs": [{"id": "ref-for-dom-videoencoderconfig-hevc"}], "title": "5. VideoEncoderConfig extensions"}], "external": false};
 window.dfnpanelData['dictdef-hevcencoderconfig'] = {"dfnID": "dictdef-hevcencoderconfig", "url": "#dictdef-hevcencoderconfig", "dfnText": "HevcEncoderConfig", "refSections": [{"refs": [{"id": "ref-for-dictdef-hevcencoderconfig"}, {"id": "ref-for-dictdef-hevcencoderconfig\u2460"}], "title": "5. VideoEncoderConfig extensions"}], "external": false};
 window.dfnpanelData['dom-hevcencoderconfig-format'] = {"dfnID": "dom-hevcencoderconfig-format", "url": "#dom-hevcencoderconfig-format", "dfnText": "format", "refSections": [{"refs": [{"id": "ref-for-dom-hevcencoderconfig-format"}], "title": "5.1. HevcEncoderConfig"}], "external": false};
 window.dfnpanelData['enumdef-hevcbitstreamformat'] = {"dfnID": "enumdef-hevcbitstreamformat", "url": "#enumdef-hevcbitstreamformat", "dfnText": "HevcBitstreamFormat", "refSections": [{"refs": [{"id": "ref-for-enumdef-hevcbitstreamformat"}, {"id": "ref-for-enumdef-hevcbitstreamformat\u2460"}, {"id": "ref-for-enumdef-hevcbitstreamformat\u2461"}], "title": "5.1. HevcEncoderConfig"}, {"refs": [{"id": "ref-for-enumdef-hevcbitstreamformat\u2462"}], "title": "5.2. HevcBitstreamFormat"}], "external": false};
 window.dfnpanelData['dom-hevcbitstreamformat-annexb'] = {"dfnID": "dom-hevcbitstreamformat-annexb", "url": "#dom-hevcbitstreamformat-annexb", "dfnText": "annexb", "refSections": [{"refs": [{"id": "ref-for-dom-hevcbitstreamformat-annexb"}], "title": "2. EncodedVideoChunk data"}, {"refs": [{"id": "ref-for-dom-hevcbitstreamformat-annexb\u2460"}], "title": "3. VideoDecoderConfig description"}, {"refs": [{"id": "ref-for-dom-hevcbitstreamformat-annexb\u2461"}], "title": "4. EncodedVideoChunk type"}, {"refs": [{"id": "ref-for-dom-hevcbitstreamformat-annexb\u2462"}], "title": "5.2. HevcBitstreamFormat"}], "external": false};
 window.dfnpanelData['dom-hevcbitstreamformat-hevc'] = {"dfnID": "dom-hevcbitstreamformat-hevc", "url": "#dom-hevcbitstreamformat-hevc", "dfnText": "hevc", "refSections": [{"refs": [{"id": "ref-for-dom-hevcbitstreamformat-hevc"}], "title": "2. EncodedVideoChunk data"}, {"refs": [{"id": "ref-for-dom-hevcbitstreamformat-hevc\u2460"}], "title": "3. VideoDecoderConfig description"}, {"refs": [{"id": "ref-for-dom-hevcbitstreamformat-hevc\u2461"}, {"id": "ref-for-dom-hevcbitstreamformat-hevc\u2462"}], "title": "4. EncodedVideoChunk type"}, {"refs": [{"id": "ref-for-dom-hevcbitstreamformat-hevc\u2463"}], "title": "5.2. HevcBitstreamFormat"}], "external": false};
+window.dfnpanelData['dom-videoencoderencodeoptions-hevc'] = {"dfnID": "dom-videoencoderencodeoptions-hevc", "url": "#dom-videoencoderencodeoptions-hevc", "dfnText": "hevc", "refSections": [{"refs": [{"id": "ref-for-dom-videoencoderencodeoptions-hevc"}], "title": "6. VideoEncoderEncodeOptions extensions"}], "external": false};
+window.dfnpanelData['dictdef-videoencoderencodeoptionsforhevc'] = {"dfnID": "dictdef-videoencoderencodeoptionsforhevc", "url": "#dictdef-videoencoderencodeoptionsforhevc", "dfnText": "VideoEncoderEncodeOptionsForHevc", "refSections": [{"refs": [{"id": "ref-for-dictdef-videoencoderencodeoptionsforhevc"}, {"id": "ref-for-dictdef-videoencoderencodeoptionsforhevc\u2460"}], "title": "6. VideoEncoderEncodeOptions extensions"}], "external": false};
+window.dfnpanelData['dom-videoencoderencodeoptionsforhevc-quantizer'] = {"dfnID": "dom-videoencoderencodeoptionsforhevc-quantizer", "url": "#dom-videoencoderencodeoptionsforhevc-quantizer", "dfnText": "quantizer", "refSections": [{"refs": [{"id": "ref-for-dom-videoencoderencodeoptionsforhevc-quantizer"}], "title": "6.1. VideoEncoderEncodeOptionsForHevc"}], "external": false};
 </script>
 <script>/* Boilerplate: script-dom-helper */
 function query(sel) { return document.querySelector(sel); }
