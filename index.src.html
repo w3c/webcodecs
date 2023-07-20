@@ -1720,11 +1720,14 @@ Configurations{#configurations}
 <dfn>Check Configuration Support</dfn> (with |config|) {#config-support}
 ------------------------------------------------------------------------
 Run these steps:
-1. If |config| is an {{AudioDecoderConfig}} or {{VideoDecoderConfig}} and the
+1. If the <a>codec string</a> in |config|.codec is not a
+    <a>valid codec string</a> or is otherwise unrecognized by the UA,
+    return `false`.
+2. If |config| is an {{AudioDecoderConfig}} or {{VideoDecoderConfig}} and the
     User Agent can't provide a <a>codec</a> that can decode the exact profile
     (where present), level (where present), and constraint bits (where present)
     indicated by the <a>codec string</a> in |config|.codec, return `false`.
-2. If |config| is an {{AudioEncoderConfig}} or {{VideoEncoderConfig}}:
+3. If |config| is an {{AudioEncoderConfig}} or {{VideoEncoderConfig}}:
     1. If the <a>codec string</a> in |config|.codec contains a profile and the
         User Agent can't provide a <a>codec</a> that can encode the exact
         profile indicated by |config|.codec, return `false`.
@@ -1735,7 +1738,7 @@ Run these steps:
         the User Agent can't provide a <a>codec</a> that can produce an encoded
         bitstream at least as constrained as indicated by |config|.codec, return
         `false`.
-3. If the User Agent can provide a <a>codec</a> to support all entries of the
+4. If the User Agent can provide a <a>codec</a> to support all entries of the
     |config|, including applicable default values for keys that are not
     included, return `true`.
 
@@ -1749,7 +1752,7 @@ Run these steps:
         a best-effort basis given the resources that are available at the time
         of the query.
 
-2. Otherwise, return false.
+5. Otherwise, return false.
 
 <dfn>Clone Configuration</dfn> (with |config|) {#clone-config}
 --------------------------------------------------------------
@@ -1900,7 +1903,9 @@ dictionary AudioDecoderConfig {
 
 To check if an {{AudioDecoderConfig}} is a <dfn export>valid AudioDecoderConfig</dfn>,
     run these steps:
-1. If codec is not a <a>valid codec string</a>, return `false`.
+1. If {{AudioDecoderConfig/codec}} is empty after
+    [=strip leading and trailing ASCII whitespace|stripping leading and trailing ASCII whitespace=],
+    return `false`.
 2. Return `true`.
 
 <dl>
@@ -1942,8 +1947,9 @@ dictionary VideoDecoderConfig {
 
 To check if a {{VideoDecoderConfig}} is a <dfn export>valid VideoDecoderConfig</dfn>,
 run these steps:
-1. If {{VideoDecoderConfig/codec}} is not a <a>valid codec string</a>, return
-    `false`.
+1. If {{VideoDecoderConfig/codec}} is empty after
+    [=strip leading and trailing ASCII whitespace|stripping leading and trailing ASCII whitespace=],
+    return `false`.
 2. If one of {{VideoDecoderConfig/codedWidth}} or
     {{VideoDecoderConfig/codedHeight}} is provided but the other isn't,
     return `false`.
@@ -2043,8 +2049,9 @@ NOTE: Codec-specific extensions to {{AudioEncoderConfig}} are described in
 
 To check if an {{AudioEncoderConfig}} is a <dfn>valid AudioEncoderConfig</dfn>,
 run these steps:
-1. If {{AudioEncoderConfig/codec}} is not a <a>valid codec string</a>, return
-    `false`.
+1. If {{AudioEncoderConfig/codec}} is empty after
+    [=strip leading and trailing ASCII whitespace|stripping leading and trailing ASCII whitespace=],
+    return `false`.
 2. If the {{AudioEncoderConfig}} has a codec-specific extension and the corresponding
     registration in the [[WEBCODECS-CODEC-REGISTRY]] defines steps to check whether
     the extension is a valid extension, return the result of running those steps.
@@ -2098,8 +2105,9 @@ NOTE: Codec-specific extensions to {{VideoEncoderConfig}} are described in their
 
 To check if a {{VideoEncoderConfig}} is a <dfn>valid VideoEncoderConfig</dfn>,
     run these steps:
-1. If {{VideoEncoderConfig/codec}} is not a <a>valid codec string</a>, return
-    `false`.
+1. If {{VideoEncoderConfig/codec}} is empty after
+    [=strip leading and trailing ASCII whitespace|stripping leading and trailing ASCII whitespace=],
+    return `false`.
 2. If {{VideoEncoderConfig/width}} = 0 or {{VideoEncoderConfig/height}}
     = 0, return `false`.
 3. If {{VideoEncoderConfig/displayWidth}} = 0 or
