@@ -120,21 +120,21 @@ class pipeline {
            }
          });
        },
-       transform(chunk, controller) {
+       async transform(chunk, controller) {
          if (this.decoder.state != "closed") {
            if (chunk.type == "config") {
-              let config = JSON.parse(chunk.config);
-              VideoDecoder.isConfigSupported(config).then((decoderSupport) => {
-                if(decoderSupport.supported) {
-                  this.decoder.configure(decoderSupport.config);
-                  self.postMessage({text: 'Decoder successfully configured:\n' + JSON.stringify(decoderSupport.config)});
-                } else {
-                self.postMessage({severity: 'fatal', text: 'Config not supported:\n' + JSON.stringify(decoderSupport.config)});
-                }
-              })
-              .catch((e) => {
-                 self.postMessage({severity: 'fatal', text: `Configuration error: ${e.message}`});
-              })
+             let config = JSON.parse(chunk.config);
+             try {
+               const decoderSupport = await VideoDecoder.isConfigSupported(config);
+               if (decoderSupport.supported) { 
+                 this.decoder.configure(decoderSupport.config);
+                 self.postMessage({text: 'Decoder successfully configured:\n' + JSON.stringify(decoderSupport.config)});
+               } else {
+                 self.postMessage({severity: 'fatal', text: 'Config not supported:\n' + JSON.stringify(decoderSupport.config)});
+               }
+             } catch (e) {
+               self.postMessage({severity: 'fatal', text: `Configuration error: ${e.message}`});
+             }
            } else {
              try {
                const queue = this.decoder.decodeQueueSize;
