@@ -7,7 +7,7 @@
   <link href="https://www.w3.org/StyleSheets/TR/2021/W3C-ED" rel="stylesheet">
   <meta content="Bikeshed version d29f71adb, updated Wed Jul 19 11:08:56 2023 -0700" name="generator">
   <link href="https://www.w3.org/TR/webcodecs/" rel="canonical">
-  <meta content="c462aa44c1979e657dd847600ebb1c0f2f36c2ed" name="document-revision">
+  <meta content="0fef16ca7db1883aa7d5011f9e9baa8623bfa32c" name="document-revision">
 <style>
 main > dl > dd {
   margin-bottom: 1em;
@@ -672,7 +672,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
   <div class="head">
    <p data-fill-with="logo"><a class="logo" href="https://www.w3.org/"> <img alt="W3C" height="48" src="https://www.w3.org/StyleSheets/TR/2021/logos/W3C" width="72"> </a> </p>
    <h1 class="p-name no-ref" id="title">WebCodecs</h1>
-   <p id="w3c-state"><a href="https://www.w3.org/standards/types#ED">Editor’s Draft</a>, <time class="dt-updated" datetime="2023-07-20">20 July 2023</time></p>
+   <p id="w3c-state"><a href="https://www.w3.org/standards/types#ED">Editor’s Draft</a>, <time class="dt-updated" datetime="2023-07-26">26 July 2023</time></p>
    <details open>
     <summary>More details about this document</summary>
     <div data-fill-with="spec-metadata">
@@ -2846,23 +2846,26 @@ channel data.</p>
     Run these steps: 
    <ol>
     <li data-md>
+     <p>If the <a data-link-type="dfn" href="#codec-string" id="ref-for-codec-string">codec string</a> in <var>config</var>.codec is not a <a data-link-type="dfn" href="#valid-codec-string" id="ref-for-valid-codec-string">valid codec string</a> or is otherwise unrecognized by the User Agent,
+return <code>false</code>.</p>
+    <li data-md>
      <p>If <var>config</var> is an <code class="idl"><a data-link-type="idl" href="#dictdef-audiodecoderconfig" id="ref-for-dictdef-audiodecoderconfig⑦">AudioDecoderConfig</a></code> or <code class="idl"><a data-link-type="idl" href="#dictdef-videodecoderconfig" id="ref-for-dictdef-videodecoderconfig⑨">VideoDecoderConfig</a></code> and the
 User Agent can’t provide a <a data-link-type="dfn" href="#codec" id="ref-for-codec①①">codec</a> that can decode the exact profile
 (where present), level (where present), and constraint bits (where present)
-indicated by the <a data-link-type="dfn" href="#codec-string" id="ref-for-codec-string">codec string</a> in <var>config</var>.codec, return <code>false</code>.</p>
+indicated by the <a data-link-type="dfn" href="#codec-string" id="ref-for-codec-string①">codec string</a> in <var>config</var>.codec, return <code>false</code>.</p>
     <li data-md>
      <p>If <var>config</var> is an <code class="idl"><a data-link-type="idl" href="#dictdef-audioencoderconfig" id="ref-for-dictdef-audioencoderconfig③">AudioEncoderConfig</a></code> or <code class="idl"><a data-link-type="idl" href="#dictdef-videoencoderconfig" id="ref-for-dictdef-videoencoderconfig③">VideoEncoderConfig</a></code>:</p>
      <ol>
       <li data-md>
-       <p>If the <a data-link-type="dfn" href="#codec-string" id="ref-for-codec-string①">codec string</a> in <var>config</var>.codec contains a profile and the
+       <p>If the <a data-link-type="dfn" href="#codec-string" id="ref-for-codec-string②">codec string</a> in <var>config</var>.codec contains a profile and the
 User Agent can’t provide a <a data-link-type="dfn" href="#codec" id="ref-for-codec①②">codec</a> that can encode the exact
 profile indicated by <var>config</var>.codec, return <code>false</code>.</p>
       <li data-md>
-       <p>If the <a data-link-type="dfn" href="#codec-string" id="ref-for-codec-string②">codec string</a> in <var>config</var>.codec contains a level and the
+       <p>If the <a data-link-type="dfn" href="#codec-string" id="ref-for-codec-string③">codec string</a> in <var>config</var>.codec contains a level and the
 User Agent can’t provide a <a data-link-type="dfn" href="#codec" id="ref-for-codec①③">codec</a> that can encode to a level less
 than or equal to the level indicated by <var>config</var>.codec, return <code>false</code>.</p>
       <li data-md>
-       <p>If the <a data-link-type="dfn" href="#codec-string" id="ref-for-codec-string③">codec string</a> in <var>config</var>.codec contains constraint bits and
+       <p>If the <a data-link-type="dfn" href="#codec-string" id="ref-for-codec-string④">codec string</a> in <var>config</var>.codec contains constraint bits and
 the User Agent can’t provide a <a data-link-type="dfn" href="#codec" id="ref-for-codec①④">codec</a> that can produce an encoded
 bitstream at least as constrained as indicated by <var>config</var>.codec, return <code>false</code>.</p>
      </ol>
@@ -2988,13 +2991,14 @@ none at all.</p>
     run these steps:</p>
    <ol>
     <li data-md>
-     <p>If codec is not a <a data-link-type="dfn" href="#valid-codec-string" id="ref-for-valid-codec-string">valid codec string</a>, return <code>false</code>.</p>
+     <p>If <code class="idl"><a data-link-type="idl" href="#dom-audiodecoderconfig-codec" id="ref-for-dom-audiodecoderconfig-codec②">codec</a></code> is empty after <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#strip-leading-and-trailing-ascii-whitespace" id="ref-for-strip-leading-and-trailing-ascii-whitespace">stripping leading and trailing ASCII whitespace</a>,
+return <code>false</code>.</p>
     <li data-md>
      <p>Return <code>true</code>.</p>
    </ol>
    <dl>
     <dt><dfn class="dfn-paneled idl-code" data-dfn-for="AudioDecoderConfig" data-dfn-type="dict-member" data-export id="dom-audiodecoderconfig-codec"><code>codec</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://webidl.spec.whatwg.org/#idl-DOMString" id="ref-for-idl-DOMString①">DOMString</a></span>
-    <dd>Contains a <a data-link-type="dfn" href="#codec-string" id="ref-for-codec-string④">codec string</a> in <var>config</var>.codec describing the codec.
+    <dd>Contains a <a data-link-type="dfn" href="#codec-string" id="ref-for-codec-string⑤">codec string</a> in <var>config</var>.codec describing the codec.
     <dt><dfn class="dfn-paneled idl-code" data-dfn-for="AudioDecoderConfig" data-dfn-type="dict-member" data-export id="dom-audiodecoderconfig-samplerate"><code>sampleRate</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://webidl.spec.whatwg.org/#idl-unsigned-long" id="ref-for-idl-unsigned-long①②">unsigned long</a></span>
     <dd>The number of frame samples per second.
     <dt><dfn class="dfn-paneled idl-code" data-dfn-for="AudioDecoderConfig" data-dfn-type="dict-member" data-export id="dom-audiodecoderconfig-numberofchannels"><code>numberOfChannels</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://webidl.spec.whatwg.org/#idl-unsigned-long" id="ref-for-idl-unsigned-long①③">unsigned long</a></span>
@@ -3003,7 +3007,7 @@ none at all.</p>
     <dd>
       A sequence of codec specific bytes, commonly known as extradata. 
      <p class="note" role="note"><span class="marker">NOTE:</span> The registrations in the <a data-link-type="biblio" href="#biblio-webcodecs-codec-registry" title="WebCodecs Codec Registry">[WEBCODECS-CODEC-REGISTRY]</a> describe whether/how to
-        populate this sequence, corresponding to the provided <code class="idl"><a data-link-type="idl" href="#dom-audiodecoderconfig-codec" id="ref-for-dom-audiodecoderconfig-codec②">codec</a></code>.</p>
+        populate this sequence, corresponding to the provided <code class="idl"><a data-link-type="idl" href="#dom-audiodecoderconfig-codec" id="ref-for-dom-audiodecoderconfig-codec③">codec</a></code>.</p>
    </dl>
    <h3 class="heading settled" data-level="7.6" id="video-decoder-config"><span class="secno">7.6. </span><span class="content">VideoDecoderConfig</span><a class="self-link" href="#video-decoder-config"></a></h3>
 <pre class="idl highlight def"><c- b>dictionary</c-> <dfn class="dfn-paneled idl-code" data-dfn-type="dictionary" data-export id="dictdef-videodecoderconfig"><code><c- g>VideoDecoderConfig</c-></code></dfn> {
@@ -3022,7 +3026,8 @@ none at all.</p>
 run these steps:</p>
    <ol>
     <li data-md>
-     <p>If <code class="idl"><a data-link-type="idl" href="#dom-videodecoderconfig-codec" id="ref-for-dom-videodecoderconfig-codec①">codec</a></code> is not a <a data-link-type="dfn" href="#valid-codec-string" id="ref-for-valid-codec-string①">valid codec string</a>, return <code>false</code>.</p>
+     <p>If <code class="idl"><a data-link-type="idl" href="#dom-videodecoderconfig-codec" id="ref-for-dom-videodecoderconfig-codec①">codec</a></code> is empty after <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#strip-leading-and-trailing-ascii-whitespace" id="ref-for-strip-leading-and-trailing-ascii-whitespace①">stripping leading and trailing ASCII whitespace</a>,
+return <code>false</code>.</p>
     <li data-md>
      <p>If one of <code class="idl"><a data-link-type="idl" href="#dom-videodecoderconfig-codedwidth" id="ref-for-dom-videodecoderconfig-codedwidth①">codedWidth</a></code> or <code class="idl"><a data-link-type="idl" href="#dom-videodecoderconfig-codedheight" id="ref-for-dom-videodecoderconfig-codedheight①">codedHeight</a></code> is provided but the other isn’t,
 return <code>false</code>.</p>
@@ -3089,7 +3094,8 @@ return <code>false</code>.</p>
 run these steps:</p>
    <ol>
     <li data-md>
-     <p>If <code class="idl"><a data-link-type="idl" href="#dom-audioencoderconfig-codec" id="ref-for-dom-audioencoderconfig-codec②">codec</a></code> is not a <a data-link-type="dfn" href="#valid-codec-string" id="ref-for-valid-codec-string②">valid codec string</a>, return <code>false</code>.</p>
+     <p>If <code class="idl"><a data-link-type="idl" href="#dom-audioencoderconfig-codec" id="ref-for-dom-audioencoderconfig-codec②">codec</a></code> is empty after <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#strip-leading-and-trailing-ascii-whitespace" id="ref-for-strip-leading-and-trailing-ascii-whitespace②">stripping leading and trailing ASCII whitespace</a>,
+return <code>false</code>.</p>
     <li data-md>
      <p>If the <code class="idl"><a data-link-type="idl" href="#dictdef-audioencoderconfig" id="ref-for-dictdef-audioencoderconfig①⓪">AudioEncoderConfig</a></code> has a codec-specific extension and the corresponding
 registration in the <a data-link-type="biblio" href="#biblio-webcodecs-codec-registry" title="WebCodecs Codec Registry">[WEBCODECS-CODEC-REGISTRY]</a> defines steps to check whether
@@ -3133,7 +3139,8 @@ the extension is a valid extension, return the result of running those steps.</p
     run these steps:</p>
    <ol>
     <li data-md>
-     <p>If <code class="idl"><a data-link-type="idl" href="#dom-videoencoderconfig-codec" id="ref-for-dom-videoencoderconfig-codec①">codec</a></code> is not a <a data-link-type="dfn" href="#valid-codec-string" id="ref-for-valid-codec-string③">valid codec string</a>, return <code>false</code>.</p>
+     <p>If <code class="idl"><a data-link-type="idl" href="#dom-videoencoderconfig-codec" id="ref-for-dom-videoencoderconfig-codec①">codec</a></code> is empty after <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#strip-leading-and-trailing-ascii-whitespace" id="ref-for-strip-leading-and-trailing-ascii-whitespace③">stripping leading and trailing ASCII whitespace</a>,
+return <code>false</code>.</p>
     <li data-md>
      <p>If <code class="idl"><a data-link-type="idl" href="#dom-videoencoderconfig-width" id="ref-for-dom-videoencoderconfig-width①">width</a></code> = 0 or <code class="idl"><a data-link-type="idl" href="#dom-videoencoderconfig-height" id="ref-for-dom-videoencoderconfig-height①">height</a></code> = 0, return <code>false</code>.</p>
     <li data-md>
@@ -3143,7 +3150,7 @@ the extension is a valid extension, return the result of running those steps.</p
    </ol>
    <dl>
     <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoEncoderConfig" data-dfn-type="dict-member" data-export id="dom-videoencoderconfig-codec"><code>codec</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://webidl.spec.whatwg.org/#idl-DOMString" id="ref-for-idl-DOMString⑧">DOMString</a></span>
-    <dd>Contains a <a data-link-type="dfn" href="#codec-string" id="ref-for-codec-string⑤">codec string</a> in <var>config</var>.codec describing the codec.
+    <dd>Contains a <a data-link-type="dfn" href="#codec-string" id="ref-for-codec-string⑥">codec string</a> in <var>config</var>.codec describing the codec.
     <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoEncoderConfig" data-dfn-type="dict-member" data-export id="dom-videoencoderconfig-width"><code>width</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://webidl.spec.whatwg.org/#idl-unsigned-long" id="ref-for-idl-unsigned-long③⓪">unsigned long</a></span>
     <dd>
       The encoded width of output <code class="idl"><a data-link-type="idl" href="#encodedvideochunk" id="ref-for-encodedvideochunk①③">EncodedVideoChunk</a></code>s in pixels, prior to any
@@ -7840,6 +7847,7 @@ participation on the mailing list and in the issues.</p>
      <li><span class="dfn-paneled" id="649608b9">list</span>
      <li><span class="dfn-paneled" id="3fca5a9e">map</span>
      <li><span class="dfn-paneled" id="47dfca75">queue</span>
+     <li><span class="dfn-paneled" id="a37f05fd">strip leading and trailing ascii whitespace</span>
      <li><span class="dfn-paneled" id="984221ca">struct</span>
     </ul>
    <li>
@@ -8883,6 +8891,7 @@ window.dfnpanelData['6b815fdd'] = {"dfnID": "6b815fdd", "url": "https://infra.sp
 window.dfnpanelData['649608b9'] = {"dfnID": "649608b9", "url": "https://infra.spec.whatwg.org/#list", "dfnText": "list", "refSections": [{"refs": [{"id": "ref-for-list"}], "title": "3.2. Constructors"}, {"refs": [{"id": "ref-for-list\u2460"}, {"id": "ref-for-list\u2461"}], "title": "3.5. Methods"}, {"refs": [{"id": "ref-for-list\u2462"}], "title": "4.2. Constructors"}, {"refs": [{"id": "ref-for-list\u2463"}, {"id": "ref-for-list\u2464"}], "title": "4.5. Methods"}, {"refs": [{"id": "ref-for-list\u2465"}], "title": "5.2. Constructors"}, {"refs": [{"id": "ref-for-list\u2466"}, {"id": "ref-for-list\u2467"}], "title": "5.5. Methods"}, {"refs": [{"id": "ref-for-list\u2468"}], "title": "6.2. Constructors"}, {"refs": [{"id": "ref-for-list\u2460\u24ea"}, {"id": "ref-for-list\u2460\u2460"}], "title": "6.5. Methods"}, {"refs": [{"id": "ref-for-list\u2460\u2461"}], "title": "9.4.4. Internal Structures"}, {"refs": [{"id": "ref-for-list\u2460\u2462"}, {"id": "ref-for-list\u2460\u2463"}], "title": "9.4.6. Algorithms"}, {"refs": [{"id": "ref-for-list\u2460\u2464"}, {"id": "ref-for-list\u2460\u2465"}, {"id": "ref-for-list\u2460\u2466"}], "title": "10.2.2. Constructor"}, {"refs": [{"id": "ref-for-list\u2460\u2467"}, {"id": "ref-for-list\u2460\u2468"}], "title": "10.2.5. Algorithms"}], "external": true};
 window.dfnpanelData['3fca5a9e'] = {"dfnID": "3fca5a9e", "url": "https://infra.spec.whatwg.org/#ordered-map", "dfnText": "map", "refSections": [{"refs": [{"id": "ref-for-ordered-map"}], "title": "10.2.2. Constructor"}], "external": true};
 window.dfnpanelData['47dfca75'] = {"dfnID": "47dfca75", "url": "https://infra.spec.whatwg.org/#queue", "dfnText": "queue", "refSections": [{"refs": [{"id": "ref-for-queue"}], "title": "2.2. Control Messages"}, {"refs": [{"id": "ref-for-queue\u2460"}], "title": "3.1. Internal Slots"}, {"refs": [{"id": "ref-for-queue\u2461"}], "title": "3.2. Constructors"}, {"refs": [{"id": "ref-for-queue\u2462"}], "title": "4.1. Internal Slots"}, {"refs": [{"id": "ref-for-queue\u2463"}], "title": "4.2. Constructors"}, {"refs": [{"id": "ref-for-queue\u2464"}], "title": "5.1. Internal Slots"}, {"refs": [{"id": "ref-for-queue\u2465"}], "title": "5.2. Constructors"}, {"refs": [{"id": "ref-for-queue\u2466"}], "title": "6.1. Internal Slots"}, {"refs": [{"id": "ref-for-queue\u2467"}], "title": "6.2. Constructors"}, {"refs": [{"id": "ref-for-queue\u2468"}], "title": "10.2.1. Internal Slots"}, {"refs": [{"id": "ref-for-queue\u2460\u24ea"}], "title": "10.2.2. Constructor"}], "external": true};
+window.dfnpanelData['a37f05fd'] = {"dfnID": "a37f05fd", "url": "https://infra.spec.whatwg.org/#strip-leading-and-trailing-ascii-whitespace", "dfnText": "strip leading and trailing ascii whitespace", "refSections": [{"refs": [{"id": "ref-for-strip-leading-and-trailing-ascii-whitespace"}], "title": "7.5. AudioDecoderConfig"}, {"refs": [{"id": "ref-for-strip-leading-and-trailing-ascii-whitespace\u2460"}], "title": "7.6. VideoDecoderConfig"}, {"refs": [{"id": "ref-for-strip-leading-and-trailing-ascii-whitespace\u2461"}], "title": "7.7. AudioEncoderConfig"}, {"refs": [{"id": "ref-for-strip-leading-and-trailing-ascii-whitespace\u2462"}], "title": "7.8. VideoEncoderConfig"}], "external": true};
 window.dfnpanelData['984221ca'] = {"dfnID": "984221ca", "url": "https://infra.spec.whatwg.org/#struct", "dfnText": "struct", "refSections": [{"refs": [{"id": "ref-for-struct"}, {"id": "ref-for-struct\u2460"}], "title": "9.4.4. Internal Structures"}, {"refs": [{"id": "ref-for-struct\u2461"}], "title": "10.2.5. Algorithms"}], "external": true};
 window.dfnpanelData['8ce82f3b'] = {"dfnID": "8ce82f3b", "url": "https://w3c.github.io/media-capabilities/#dom-mediacapabilities-decodinginfo", "dfnText": "decodingInfo(configuration)", "refSections": [{"refs": [{"id": "ref-for-dom-mediacapabilities-decodinginfo"}], "title": "13. Privacy Considerations"}], "external": true};
 window.dfnpanelData['17001025'] = {"dfnID": "17001025", "url": "https://w3c.github.io/media-capabilities/#dom-mediacapabilitiesinfo-powerefficient", "dfnText": "powerEfficient", "refSections": [{"refs": [{"id": "ref-for-dom-mediacapabilitiesinfo-powerefficient"}], "title": "13. Privacy Considerations"}], "external": true};
@@ -9108,11 +9117,11 @@ window.dfnpanelData['dom-audioencodersupport-config'] = {"dfnID": "dom-audioenco
 window.dfnpanelData['dictdef-videoencodersupport'] = {"dfnID": "dictdef-videoencodersupport", "url": "#dictdef-videoencodersupport", "dfnText": "VideoEncoderSupport", "refSections": [{"refs": [{"id": "ref-for-dictdef-videoencodersupport"}], "title": "6. VideoEncoder Interface"}, {"refs": [{"id": "ref-for-dictdef-videoencodersupport\u2460"}, {"id": "ref-for-dictdef-videoencodersupport\u2461"}], "title": "6.5. Methods"}], "external": false};
 window.dfnpanelData['dom-videoencodersupport-supported'] = {"dfnID": "dom-videoencodersupport-supported", "url": "#dom-videoencodersupport-supported", "dfnText": "supported", "refSections": [{"refs": [{"id": "ref-for-dom-videoencodersupport-supported"}], "title": "6.5. Methods"}, {"refs": [{"id": "ref-for-dom-videoencodersupport-supported\u2460"}, {"id": "ref-for-dom-videoencodersupport-supported\u2461"}], "title": "7.3.4. VideoEncoderSupport"}], "external": false};
 window.dfnpanelData['dom-videoencodersupport-config'] = {"dfnID": "dom-videoencodersupport-config", "url": "#dom-videoencodersupport-config", "dfnText": "config", "refSections": [{"refs": [{"id": "ref-for-dom-videoencodersupport-config"}, {"id": "ref-for-dom-videoencodersupport-config\u2460"}, {"id": "ref-for-dom-videoencodersupport-config\u2461"}], "title": "6.5. Methods"}, {"refs": [{"id": "ref-for-dom-videoencodersupport-config\u2462"}, {"id": "ref-for-dom-videoencodersupport-config\u2463"}], "title": "7.3.4. VideoEncoderSupport"}], "external": false};
-window.dfnpanelData['codec-string'] = {"dfnID": "codec-string", "url": "#codec-string", "dfnText": "Codec String", "refSections": [{"refs": [{"id": "ref-for-codec-string"}, {"id": "ref-for-codec-string\u2460"}, {"id": "ref-for-codec-string\u2461"}, {"id": "ref-for-codec-string\u2462"}], "title": "7.1. Check Configuration Support (with config)"}, {"refs": [{"id": "ref-for-codec-string\u2463"}], "title": "7.5. AudioDecoderConfig"}, {"refs": [{"id": "ref-for-codec-string\u2464"}], "title": "7.8. VideoEncoderConfig"}], "external": false};
-window.dfnpanelData['valid-codec-string'] = {"dfnID": "valid-codec-string", "url": "#valid-codec-string", "dfnText": "valid codec string", "refSections": [{"refs": [{"id": "ref-for-valid-codec-string"}], "title": "7.5. AudioDecoderConfig"}, {"refs": [{"id": "ref-for-valid-codec-string\u2460"}], "title": "7.6. VideoDecoderConfig"}, {"refs": [{"id": "ref-for-valid-codec-string\u2461"}], "title": "7.7. AudioEncoderConfig"}, {"refs": [{"id": "ref-for-valid-codec-string\u2462"}], "title": "7.8. VideoEncoderConfig"}], "external": false};
+window.dfnpanelData['codec-string'] = {"dfnID": "codec-string", "url": "#codec-string", "dfnText": "Codec String", "refSections": [{"refs": [{"id": "ref-for-codec-string"}, {"id": "ref-for-codec-string\u2460"}, {"id": "ref-for-codec-string\u2461"}, {"id": "ref-for-codec-string\u2462"}, {"id": "ref-for-codec-string\u2463"}], "title": "7.1. Check Configuration Support (with config)"}, {"refs": [{"id": "ref-for-codec-string\u2464"}], "title": "7.5. AudioDecoderConfig"}, {"refs": [{"id": "ref-for-codec-string\u2465"}], "title": "7.8. VideoEncoderConfig"}], "external": false};
+window.dfnpanelData['valid-codec-string'] = {"dfnID": "valid-codec-string", "url": "#valid-codec-string", "dfnText": "valid codec string", "refSections": [{"refs": [{"id": "ref-for-valid-codec-string"}], "title": "7.1. Check Configuration Support (with config)"}], "external": false};
 window.dfnpanelData['dictdef-audiodecoderconfig'] = {"dfnID": "dictdef-audiodecoderconfig", "url": "#dictdef-audiodecoderconfig", "dfnText": "AudioDecoderConfig", "refSections": [{"refs": [{"id": "ref-for-dictdef-audiodecoderconfig"}, {"id": "ref-for-dictdef-audiodecoderconfig\u2460"}], "title": "3. AudioDecoder Interface"}, {"refs": [{"id": "ref-for-dictdef-audiodecoderconfig\u2461"}], "title": "5.1. Internal Slots"}, {"refs": [{"id": "ref-for-dictdef-audiodecoderconfig\u2462"}], "title": "5.6. Algorithms"}, {"refs": [{"id": "ref-for-dictdef-audiodecoderconfig\u2463"}, {"id": "ref-for-dictdef-audiodecoderconfig\u2464"}, {"id": "ref-for-dictdef-audiodecoderconfig\u2465"}], "title": "5.7. EncodedAudioChunkMetadata"}, {"refs": [{"id": "ref-for-dictdef-audiodecoderconfig\u2466"}, {"id": "ref-for-dictdef-audiodecoderconfig\u2467"}], "title": "7.1. Check Configuration Support (with config)"}, {"refs": [{"id": "ref-for-dictdef-audiodecoderconfig\u2468"}, {"id": "ref-for-dictdef-audiodecoderconfig\u2460\u24ea"}, {"id": "ref-for-dictdef-audiodecoderconfig\u2460\u2460"}], "title": "7.3.1. AudioDecoderSupport"}, {"refs": [{"id": "ref-for-dictdef-audiodecoderconfig\u2460\u2461"}], "title": "7.5. AudioDecoderConfig"}], "external": false};
 window.dfnpanelData['valid-audiodecoderconfig'] = {"dfnID": "valid-audiodecoderconfig", "url": "#valid-audiodecoderconfig", "dfnText": "valid AudioDecoderConfig", "refSections": [{"refs": [{"id": "ref-for-valid-audiodecoderconfig"}, {"id": "ref-for-valid-audiodecoderconfig\u2460"}], "title": "3.5. Methods"}], "external": false};
-window.dfnpanelData['dom-audiodecoderconfig-codec'] = {"dfnID": "dom-audiodecoderconfig-codec", "url": "#dom-audiodecoderconfig-codec", "dfnText": "codec", "refSections": [{"refs": [{"id": "ref-for-dom-audiodecoderconfig-codec"}], "title": "5.6. Algorithms"}, {"refs": [{"id": "ref-for-dom-audiodecoderconfig-codec\u2460"}, {"id": "ref-for-dom-audiodecoderconfig-codec\u2461"}], "title": "7.5. AudioDecoderConfig"}], "external": false};
+window.dfnpanelData['dom-audiodecoderconfig-codec'] = {"dfnID": "dom-audiodecoderconfig-codec", "url": "#dom-audiodecoderconfig-codec", "dfnText": "codec", "refSections": [{"refs": [{"id": "ref-for-dom-audiodecoderconfig-codec"}], "title": "5.6. Algorithms"}, {"refs": [{"id": "ref-for-dom-audiodecoderconfig-codec\u2460"}, {"id": "ref-for-dom-audiodecoderconfig-codec\u2461"}, {"id": "ref-for-dom-audiodecoderconfig-codec\u2462"}], "title": "7.5. AudioDecoderConfig"}], "external": false};
 window.dfnpanelData['dom-audiodecoderconfig-samplerate'] = {"dfnID": "dom-audiodecoderconfig-samplerate", "url": "#dom-audiodecoderconfig-samplerate", "dfnText": "sampleRate", "refSections": [{"refs": [{"id": "ref-for-dom-audiodecoderconfig-samplerate"}], "title": "5.6. Algorithms"}, {"refs": [{"id": "ref-for-dom-audiodecoderconfig-samplerate\u2460"}], "title": "7.5. AudioDecoderConfig"}], "external": false};
 window.dfnpanelData['dom-audiodecoderconfig-numberofchannels'] = {"dfnID": "dom-audiodecoderconfig-numberofchannels", "url": "#dom-audiodecoderconfig-numberofchannels", "dfnText": "numberOfChannels", "refSections": [{"refs": [{"id": "ref-for-dom-audiodecoderconfig-numberofchannels"}], "title": "5.6. Algorithms"}, {"refs": [{"id": "ref-for-dom-audiodecoderconfig-numberofchannels\u2460"}], "title": "7.5. AudioDecoderConfig"}], "external": false};
 window.dfnpanelData['dom-audiodecoderconfig-description'] = {"dfnID": "dom-audiodecoderconfig-description", "url": "#dom-audiodecoderconfig-description", "dfnText": "description", "refSections": [{"refs": [{"id": "ref-for-dom-audiodecoderconfig-description"}, {"id": "ref-for-dom-audiodecoderconfig-description\u2460"}], "title": "5.6. Algorithms"}, {"refs": [{"id": "ref-for-dom-audiodecoderconfig-description\u2461"}], "title": "7.5. AudioDecoderConfig"}], "external": false};
