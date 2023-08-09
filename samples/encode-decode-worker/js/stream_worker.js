@@ -130,10 +130,10 @@ class pipeline {
                  this.decoder.configure(decoderSupport.config);
                  self.postMessage({text: 'Decoder successfully configured:\n' + JSON.stringify(decoderSupport.config)});
                } else {
-                 self.postMessage({severity: 'fatal', text: 'Config not supported:\n' + JSON.stringify(decoderSupport.config)});
+                 self.postMessage({severity: 'fatal', text: 'Decoder Config not supported:\n' + JSON.stringify(decoderSupport.config)});
                }
              } catch (e) {
-               self.postMessage({severity: 'fatal', text: `Configuration error: ${e.message}`});
+               self.postMessage({severity: 'fatal', text: `Decoder Configuration error: ${e.message}`});
              }
            } else {
              try {
@@ -161,6 +161,7 @@ class pipeline {
          this.encoder = encoder = new VideoEncoder({
            output: (chunk, cfg) => {
              if (cfg.decoderConfig) {
+               cfg.decoderConfig.hardwareAcceleration = config.decHwAcceleration;
                const decoderConfig = JSON.stringify(cfg.decoderConfig);
                self.postMessage({text: 'Configuration: ' + decoderConfig});
                const configChunk =
@@ -197,15 +198,15 @@ class pipeline {
            }
          });
          try {
-           const encoderSupport = await VideoEncoder.isConfigSupported(config);
-           if (encoderSupport.supported) {
+             const encoderSupport = await VideoEncoder.isConfigSupported(config);
+             if (encoderSupport.supported) {
              this.encoder.configure(encoderSupport.config);
              self.postMessage({text: 'Encoder successfully configured:\n' + JSON.stringify(encoderSupport.config)});
            } else {
              self.postMessage({severity: 'fatal', text: 'Config not supported:\n' + JSON.stringify(encoderSupport.config)});
            }
          } catch (e) {
-           self.postMessage({severity: 'fatal', text: `Configuration error: ${e.message}`});
+            self.postMessage({severity: 'fatal', text: `Configuration error: ${e.message}`});
          }
        },
        transform(frame, controller) {
@@ -229,16 +230,18 @@ class pipeline {
    }
 
    stop() {
-     const encqueue_stats = encqueue_report();
-     const decqueue_stats = decqueue_report();
-     self.postMessage({text: 'Encoder Queue report: ' + JSON.stringify(encqueue_stats)});
-     self.postMessage({text: 'Decoder Queue report: ' + JSON.stringify(decqueue_stats)});
-     if (stopped) return;
-     stopped = true;
-     this.stopped = true;
-     self.postMessage({text: 'stop() called'});
      if (encoder.state != "closed") encoder.close();
      if (decoder.state != "closed") decoder.close();
+     stopped = true;
+     this.stopped = true; 
+     const len = encqueue_aggregate.all.length;
+     if (len > 1) {
+       const encqueue_stats = encqueue_report();
+       const decqueue_stats = decqueue_report();
+       self.postMessage({severity: 'chart'});
+       self.postMessage({text: 'Encoder Queue report: ' + JSON.stringify(encqueue_stats)});
+       self.postMessage({text: 'Decoder Queue report: ' + JSON.stringify(decqueue_stats)});
+     }
      self.postMessage({text: 'stop(): frame, encoder and decoder closed'});
      return;
    }

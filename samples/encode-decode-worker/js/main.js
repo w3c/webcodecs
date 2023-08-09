@@ -6,19 +6,28 @@ let stopped = false;
 let preferredCodec ="VP8";
 let mode = "L1T3";
 let latencyPref = "realtime", bitPref = "variable";
-let hw = "no-preference";
+let encHw = "no-preference", decHw = "no-preference";
 let streamWorker;
 let inputStream, outputStream;
-let videoSource;
+let metrics = {
+   all: [],
+};
+let e2e = {
+   all: [],
+};
+
 const rate = document.querySelector('#rate');
 const connectButton = document.querySelector('#connect');
 const stopButton = document.querySelector('#stop');
 const codecButtons = document.querySelector('#codecButtons');
 const resButtons = document.querySelector('#resButtons');
 const modeButtons = document.querySelector('#modeButtons');
-const hwButtons = document.querySelector('#hwButtons');
+const decHwButtons = document.querySelector('#decHwButtons');
+const encHwButtons = document.querySelector('#encHwButtons');
+const chart2_div = document.getElementById('chart2_div');
 const videoSelect = document.querySelector('select#videoSource');
 const selectors = [videoSelect];
+chart2_div.style.display = "none";
 connectButton.disabled = false;
 stopButton.disabled = true;
 
@@ -35,6 +44,34 @@ const cinema4KConstraints = {video: {width: {exact: 4096}, height: {exact: 2160}
 const eightKConstraints = {video: {width: {min: 7680}, height: {min: 4320}}};
 
 let constraints = qvgaConstraints;
+
+function metrics_update(data) {
+  metrics.all.push(data);
+}
+
+function metrics_report() {
+  metrics.all.sort((a, b) =>  {
+    return (100000 * (a.mediaTime - b.mediaTime) + a.output - b.output);
+  });
+  const len = metrics.all.length;
+  let j = 0;
+  for (let i = 0; i < len ; i++ ) {
+    if (metrics.all[i].output == 1) {
+      const frameno = metrics.all[i].presentedFrames;
+      const g2g = metrics.all[i].expectedDisplayTime - metrics.all[i-1].captureTime;
+      const mediaTime = metrics.all[i].mediaTime;
+      const captureTime = metrics.all[i-1].captureTime;
+      const expectedDisplayTime = metrics.all[i].expectedDisplayTime;
+      const delay = metrics.all[i].expectedDisplayTime - metrics.all[i-1].expectedDisplayTime;
+      const data = [frameno, g2g];
+      e2e.all.push(data);
+    }
+  }
+  // addToEventLog('Data dump: ' + JSON.stringify(e2e.all));
+  return {
+     count: e2e.all.length
+  };
+}
 
 function addToEventLog(text, severity = 'info') {
   let log = document.querySelector('textarea');
@@ -132,15 +169,21 @@ function getModeValue(radio) {
   addToEventLog('Mode selected: ' + mode);
 }
 
-function getHwValue(radio) {
-  hw = radio.value;
-  addToEventLog('Hardware Acceleration preference: ' + hw);
+function getDecHwValue(radio) {
+  decHw = radio.value;
+  addToEventLog('Decoder Hardware Acceleration preference: ' + decHw);
+}
+
+function getEncHwValue(radio) {
+  encHw = radio.value;
+  addToEventLog('Encoder Hardware Acceleration preference: ' + encHw);
 }
 
 function stop() {
   stopped = true;
   stopButton.disabled = true;
   connectButton.disabled = true;
+  chart2_div.style.display = "initial";
   streamWorker.postMessage({ type: "stop" });
   try {
     inputStream.cancel();
@@ -159,13 +202,15 @@ function stop() {
 document.addEventListener('DOMContentLoaded', async function(event) {
   if (stopped) return;
   addToEventLog('DOM Content Loaded');
-
-  if (typeof MediaStreamTrackProcessor === 'undefined' ||
-      typeof MediaStreamTrackGenerator === 'undefined') {
-    addToEventLog('Your browser does not support the experimental Mediacapture-transform API.\n' +
-        'Please launch with the --enable-blink-features=WebCodecs,MediaStreamInsertableStreams flag','fatal');
+  
+  // Need to support standard mediacapture-transform implementations
+  
+  if (typeof MediaStreamTrackProcessor === 'undefined' || 
+      typeof MediaStreamTrackGenerator === 'undefined') { 
+    addToEventLog('Your browser does not support the MSTP and MSTG APIs.', 'fatal');
     return;
-  }
+  } 
+
   try {
     gotDevices(await navigator.mediaDevices.enumerateDevices());
   } catch (e) {
@@ -179,9 +224,32 @@ document.addEventListener('DOMContentLoaded', async function(event) {
   // Create a new worker.
   streamWorker = new Worker("js/stream_worker.js");
   addToEventLog('Worker created.');
-  // Print messages from the worker in the text area.
+
   streamWorker.addEventListener('message', function(e) {
-    addToEventLog('Worker msg: ' + e.data.text, e.data.severity);
+    if (e.data.severity != 'chart'){
+       addToEventLog('Worker msg: ' + e.data.text, e.data.severity);
+    } else {
+      // draw the glass-glass latency chart
+      metrics_report();
+      google.charts.load('current', {'packages':['corechart']});
+      google.charts.setOnLoadCallback(() => {
+        let data = new google.visualization.DataTable();
+        // addToEventLog('Data dump: ' + JSON.stringify(e2e.all));
+        data.addColumn('number', 'Frame Number');
+        data.addColumn('number', 'Glass-Glass Latency (ms)');
+        data.addRows(e2e.all);
+        let options = {
+          width:  900,
+          height: 500,
+          title: 'Glass-Glass Latency (ms) versus Frame Number',
+          haxis: {title: 'Frame Number'},
+          vaxis: {title: 'Glass-Glass Latency'},
+          legend: 'none'
+        };
+        let chart = new google.visualization.ScatterChart(chart2_div);
+        chart.draw(data, options);
+      });
+    }
   }, false);
 
   stopButton.onclick = () => {
@@ -192,7 +260,8 @@ document.addEventListener('DOMContentLoaded', async function(event) {
   connectButton.onclick = () => {
     connectButton.disabled = true;
     stopButton.disabled = false;
-    hwButtons.style.display = "none";
+    decHwButtons.style.display = "none";
+    encHwButtons.style.display = "none";
     prefButtons.style.display = "none";
     bitButtons.style.display = "none";
     codecButtons.style.display = "none";
@@ -226,6 +295,36 @@ document.addEventListener('DOMContentLoaded', async function(event) {
       outputStream = generator.writable;
       document.getElementById('outputVideo').srcObject = new MediaStream([generator]);
 
+      // Initialize variables
+      let paint_count = 0;
+      let start_time = 0.0;
+
+      const recordOutputFrames = (now, metadata) => {
+        metadata.output = 1.;
+        metadata.time = now;
+        if( start_time == 0.0 ) start_time = now;
+        let elapsed = (now - start_time)/1000.;
+        let fps = (++paint_count / elapsed).toFixed(3);
+        metadata.fps = fps;
+        metrics_update(metadata);
+        outputVideo.requestVideoFrameCallback(recordOutputFrames);
+      };
+
+      outputVideo.requestVideoFrameCallback(recordOutputFrames);
+
+      const recordInputFrames = (now, metadata) => {
+        metadata.output = 0;
+        metadata.time = now;
+        if( start_time == 0.0 ) start_time = now;
+        let elapsed = (now - start_time)/1000.;
+        let fps = (++paint_count / elapsed).toFixed(3);
+        metadata.fps = fps;
+        metrics_update(metadata);
+        inputVideo.requestVideoFrameCallback(recordInputFrames);
+      };
+
+      inputVideo.requestVideoFrameCallback(recordInputFrames);
+
       //Create video Encoder configuration
       const vConfig = {
          keyInterval: keygap,
@@ -244,7 +343,8 @@ document.addEventListener('DOMContentLoaded', async function(event) {
         codec: preferredCodec,
         width: ts.width/vConfig.resolutionScale,
         height: ts.height/vConfig.resolutionScale,
-        hardwareAcceleration: hw,
+        hardwareAcceleration: encHw,
+        decHwAcceleration: decHw,
         bitrate: rate, 
         framerate: ts.frameRate/vConfig.framerateScale,
         keyInterval: vConfig.keyInterval,

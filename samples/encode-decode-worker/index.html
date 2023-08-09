@@ -11,7 +11,7 @@
     <meta id="theme-color" name="theme-color" content="#ffffff">
     <base target="_blank">
 
-    <title>WebCodecs in Worker</title>
+    <title>WebCodecs in Worker + RVFC</title>
     <link rel="stylesheet" href="css/main.css">
 
     <style>
@@ -57,7 +57,7 @@
 
 <body>
 <div>
-  <h2>WebCodecs in Worker</h2>
+  <h2>WebCodecs in Worker + RVFC</h2>
 </div>
 
 <textarea id="vLog" style="width: 640px; height: 360px"></textarea>
@@ -89,13 +89,23 @@
    <label for="AV1">AV1</label><br>
 </div>
 
-<div id="hwButtons">
-<p>Hardware Acceleration Preference:</p>
-   <input type="radio" id="hw" name="hwAccel" value="prefer-hardware" onchange="getHwValue(this)">
+<div id="encHwButtons">
+<p>Encoder Hardware Acceleration Preference:</p>
+   <input type="radio" id="hw" name="encHwAccel" value="prefer-hardware" onchange="getEncHwValue(this)">
    <label for="hw">Prefer Hardware</label><br>
-   <input type="radio" id="sw"  name="hwAccel" value="prefer-software" onchange="getHwValue(this)">
+   <input type="radio" id="sw"  name="encHwAccel" value="prefer-software" onchange="getEncHwValue(this)">
    <label for="sw">Prefer Software</label><br>
-   <input type="radio" id="no-pref"  name="hwAccel" value="no-preference" checked="checked" onchange="getHwValue(this)">
+   <input type="radio" id="no-pref"  name="encHwAccel" value="no-preference" checked="checked" onchange="getEncHwValue(this)">
+   <label for="no-pref">No Preference</label><br>
+</div>
+
+<div id="decHwButtons">
+<p>Decoder Hardware Acceleration Preference:</p>
+   <input type="radio" id="hw" name="decHwAccel" value="prefer-hardware" onchange="getDecHwValue(this)">
+   <label for="hw">Prefer Hardware</label><br>
+   <input type="radio" id="sw"  name="decHwAccel" value="prefer-software" onchange="getDecHwValue(this)">
+   <label for="sw">Prefer Software</label><br>
+   <input type="radio" id="no-pref"  name="decHwAccel" value="no-preference" checked="checked" onchange="getDecHwValue(this)">
    <label for="no-pref">No Preference</label><br>
 </div>
 
@@ -143,6 +153,8 @@
    <label for="eightK">8K</label><br>
 </div>
 
+<div id="chart2_div" style="width: 900px; height: 500px;"></div>
+
 <div class="select">
    <label for="videoSource">Video source: </label><select id="videoSource"></select>
 </div>
@@ -154,6 +166,7 @@
 <br/></br>
 <button id="connect">Start</button>
 <button id="stop">Stop</button>
+<script src="https://www.gstatic.com/charts/loader.js"></script>
 <script src="js/main.js"></script>
 </body>
 </html>
