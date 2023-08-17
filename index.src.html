@@ -3950,13 +3950,8 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
 ::  1. Let |defaultRect| be the result of performing the getter steps for
         {{VideoFrame/visibleRect}}.
     2. Let |overrideRect| be `undefined`.
-    3. If |options|.{{VideoFrameCopyToOptions/rect}} [=map/exists=]:
-        1. Assign the value of |options|.{{VideoFrameCopyToOptions/rect}} to
-            |overrideRect|.
-        2. Let |validAlignment| be the result of running the
-            [=VideoFrame/Verify Rect Size Alignment=] algorithm with
-            |overrideRect| and {{VideoFrame/[[format]]}}.
-        3. If |validAlignment| is `false`, throw a {{TypeError}}.
+    3. If |options|.{{VideoFrameCopyToOptions/rect}} [=map/exists=], assign the
+        value of |options|.{{VideoFrameCopyToOptions/rect}} to |overrideRect|.
     4. Let |parsedRect| be the result of running the [=VideoFrame/Parse Visible
         Rect=] algorithm with |defaultRect|, |overrideRect|,
         {{VideoFrame/[[coded width]]}}, {{VideoFrame/[[coded height]]}}, and
@@ -3986,25 +3981,6 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
             return `false`.
         5. If |rect|.{{DOMRectReadOnly/y}} is not a multiple of |sampleHeight|,
             return `false`.
-        8. Increment |planeIndex| by `1`.
-    5. Return `true`.
-
-: <dfn for=VideoFrame>Verify Rect Size Alignment</dfn> (with |format| and
-    |rect|)
-:: 1. If |format| is `null`, return `true`.
-    2. Let |planeIndex| be `0`.
-    3. Let |numPlanes| be the number of planes as defined by |format|.
-    4. While |planeIndex| is less than |numPlanes|:
-        1. Let |plane| be the Plane identified by |planeIndex| as defined by
-            |format|.
-        2. Let |sampleWidth| be the horizontal [=sub-sampling factor=] of each
-            subsample for |plane|.
-        3. Let |sampleHeight| be the vertical [=sub-sampling factor=] of each
-            subsample for |plane|.
-        6. If |rect|.{{DOMRectReadOnly/width}} is not a multiple of
-            |sampleWidth|, return `false`.
-        7. If |rect|.{{DOMRectReadOnly/height}} is not a multiple of
-            |sampleHeight|, return `false`.
         8. Increment |planeIndex| by `1`.
     5. Return `true`.
 
@@ -4048,11 +4024,12 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
             |sampleBytes|.
         6. Let |computedLayout| be a new [=computed plane layout=].
         7. Set |computedLayout|'s [=computed plane layout/sourceTop=] to the
-            result of the integer division of
-            truncated |parsedRect|.{{DOMRectInit/y}} by |sampleHeight|.
+            result of the division of truncated |parsedRect|.{{DOMRectInit/y}}
+            by |sampleHeight|, rounded up to the nearest integer.
         8. Set |computedLayout|'s [=computed plane layout/sourceHeight=] to the
-            result of the integer division of
-            truncated |parsedRect|.{{DOMRectInit/height}} by |sampleHeight|
+            result of the division of truncated
+            |parsedRect|.{{DOMRectInit/height}} by |sampleHeight|, rounded up
+            to the nearest integer.
         9. Set |computedLayout|'s [=computed plane layout/sourceLeftBytes=] to
             the result of the integer division of
             truncated |parsedRect|.{{DOMRectInit/x}} by |sampleWidthBytes|.
@@ -4227,7 +4204,7 @@ A {{PlaneLayout}} is a dictionary specifying the offset and stride of a
 {{VideoFrame}} plane once copied to a {{BufferSource}}. A sequence of
 {{PlaneLayout}}s <em class="rfc2119">MAY</em> be provided to {{VideoFrame}}'s
 {{VideoFrame/copyTo()}} to specify how the plane is laid out in the destination
-{{BufferSource}}}.  Alternatively, callers can inspect {{VideoFrame/copyTo()}}'s
+{{BufferSource}}.  Alternatively, callers can inspect {{VideoFrame/copyTo()}}'s
 returned sequence of {{PlaneLayout}}s to learn the offset and stride for
 planes as decided by the User Agent.
 
@@ -4306,25 +4283,24 @@ is its own [=equivalent opaque format=].
     Each sample in this format is 8 bits.
 
     There are {{VideoFrame/codedWidth}} * {{VideoFrame/codedHeight}} samples
-    (and therefore bytes) in the Y plane, arranged starting at the top left in
-    the image, in {{VideoFrame/codedHeight}} lines of {{VideoFrame/codedWidth}}
+    (and therefore bytes) in the Y plane, arranged starting at the top left of
+    the image, in {{VideoFrame/codedHeight}} rows of {{VideoFrame/codedWidth}}
     samples.
 
-    There is {{VideoFrame/codedWidth}} * {{VideoFrame/codedHeight}} / 4 samples
-    (and therefore bytes) in the two U and V planes, arranged starting at the
-    top left in the image, in {{VideoFrame/codedHeight}} / 2 lines of
-    {{VideoFrame/codedWidth}} / 2 samples.
+    The U and V planes have a number of rows equal to the result of the
+    division of {{VideoFrame/codedHeight}} by 2, rounded up to the nearest
+    integer. Each row has a number of samples equal to the result of the
+    division of {{VideoFrame/codedWidth}} by 2, rounded up to the nearest
+    integer. Samples are arranged starting at the top left of the image.
 
-    The {{VideoFrame/codedWidth}} and {{VideoFrame/codedHeight}} MUST be even.
-    Similarly, the visible rectangle offset
-    ({{VideoFrame/visibleRect}}.{{DOMRectInit/x}} and
-    {{VideoFrame/visibleRect}}.{{DOMRectInit/y}}) MUST be even.
+    The visible rectangle offset ({{VideoFrame/visibleRect}}.{{DOMRectInit/x}}
+    and {{VideoFrame/visibleRect}}.{{DOMRectInit/y}}) MUST be even.
   </dd>
   <dt><dfn enum-value for=VideoPixelFormat>I420A</dfn></dt>
   <dd>
 
     This format is composed of four distinct planes, one plane of Luma, two
-    planes of Chroma, denoted Y, U and V, and one place of alpha values, all
+    planes of Chroma, denoted Y, U and V, and one plane of alpha values, all
     present in this order. It is also often refered to as Planar YUV 4:2:0 with
     an alpha channel.
 
@@ -4333,20 +4309,19 @@ is its own [=equivalent opaque format=].
 
     Each sample in this format is 8 bits.
 
-    There are {{VideoFrame/codedWidth}} * {{VideoFrame/codedHeight}} samples (and
-    therefore bytes) in the Y and alpha plane, arranged starting at the top left
-    in the image, in {{VideoFrame/codedHeight}} lines of
+    There are {{VideoFrame/codedWidth}} * {{VideoFrame/codedHeight}} samples
+    (and therefore bytes) in the Y and alpha planes, arranged starting at the
+    top left of the image, in {{VideoFrame/codedHeight}} rows of
     {{VideoFrame/codedWidth}} samples.
 
-    There are {{VideoFrame/codedWidth}} * {{VideoFrame/codedHeight}} / 4 samples
-    (and therefore bytes) in the two U and V planes, arranged starting at the
-    top left in the image, in {{VideoFrame/codedHeight}} / 2 lines of
-    {{VideoFrame/codedWidth}} / 2 samples.
+    The U and V planes have a number of rows equal to the result of the
+    division of {{VideoFrame/codedHeight}} by 2, rounded up to the nearest
+    integer. Each row has a number of samples equal to the result of the
+    division of {{VideoFrame/codedWidth}} by 2, rounded up to the nearest
+    integer. Samples are arranged starting at the top left of the image.
 
-    The {{VideoFrame/codedWidth}} and {{VideoFrame/codedHeight}} MUST be even.
-    Similarly, the visible rectangle offset
-    ({{VideoFrame/visibleRect}}.{{DOMRectInit/x}} and
-    {{VideoFrame/visibleRect}}.{{DOMRectInit/y}}) MUST be even.
+    The visible rectangle offset ({{VideoFrame/visibleRect}}.{{DOMRectInit/x}}
+    and {{VideoFrame/visibleRect}}.{{DOMRectInit/y}}) MUST be even.
 
     {{I420A}}'s [=equivalent opaque format=] is {{I420}}.
   </dd>
@@ -4362,19 +4337,18 @@ is its own [=equivalent opaque format=].
 
     Each sample in this format is 8 bits.
 
-    There are {{VideoFrame/codedWidth}} * {{VideoFrame/codedHeight}} samples (and
-    therefore bytes) in the Y plane, arranged starting at the top left in the
-    image, in {{VideoFrame/codedHeight}} lines of {{VideoFrame/codedWidth}}
-    samples.
-
-    There are {{VideoFrame/codedWidth}} * {{VideoFrame/codedHeight}} / 2 samples
-    (and therefore bytes) in the two U and V planes, arranged starting at the
-    top left in the image, in {{VideoFrame/codedHeight}} / 2 lines of
+    There are {{VideoFrame/codedWidth}} * {{VideoFrame/codedHeight}} samples
+    (and therefore bytes) in the Y and plane, arranged starting at the top left
+    of the image, in {{VideoFrame/codedHeight}} rows of
     {{VideoFrame/codedWidth}} samples.
 
-    The {{VideoFrame/codedHeight}} MUST be even. Similarly, the visible
-    rectangle offset ({{VideoFrame/visibleRect}}.{{DOMRectInit/x}} and
-    {{VideoFrame/visibleRect}}.{{DOMRectInit/y}}) MUST be even.
+    The U and V planes have {{VideoFrame/codedHeight}} rows. Each row has a
+    number of samples equal to the result of the division of
+    {{VideoFrame/codedWidth}} by 2, rounded up to the nearest integer. Samples
+    are arranged starting at the top left of the image.
+
+    The visible rectangle offset ({{VideoFrame/visibleRect}}.{{DOMRectInit/x}})
+    MUST be even.
   </dd>
   <dt><dfn enum-value for=VideoPixelFormat>I444</dfn></dt>
   <dd>
@@ -4386,10 +4360,10 @@ is its own [=equivalent opaque format=].
     Each sample in this format is 8 bits. This format does not use
     [=sub-sampling=].
 
-    There are {{VideoFrame/codedWidth}} * {{VideoFrame/codedHeight}} samples (and
-    therefore bytes) in all three planes, arranged starting at the top left in the
-    image, in {{VideoFrame/codedHeight}} lines of {{VideoFrame/codedWidth}}
-    samples.
+    There are {{VideoFrame/codedWidth}} * {{VideoFrame/codedHeight}} samples
+    (and therefore bytes) in all three planes, arranged starting at the top left
+    of the image, in {{VideoFrame/codedHeight}} rows of
+    {{VideoFrame/codedWidth}} samples.
   </dd>
   <dt><dfn enum-value for=VideoPixelFormat>NV12</dfn></dt>
   <dd>
@@ -4403,22 +4377,21 @@ is its own [=equivalent opaque format=].
 
     Each sample in this format is 8 bits.
 
-    There are {{VideoFrame/codedWidth}} * {{VideoFrame/codedHeight}} samples (and
-    therefore bytes) in the Y plane, arranged starting at the top left in the
-    image, in {{VideoFrame/codedHeight}} lines of {{VideoFrame/codedWidth}}
-    samples.
+    There are {{VideoFrame/codedWidth}} * {{VideoFrame/codedHeight}} samples
+    (and therefore bytes) in the Y and plane, arranged starting at the top left
+    of the image, in {{VideoFrame/codedHeight}} rows of
+    {{VideoFrame/codedWidth}} samples.
 
-    The UV planes is composed of interleaved U and V values, in
-    {{VideoFrame/codedWidth}} * {{VideoFrame/codedHeight}} / 4 elements (of two
-    bytes each), arranged starting at the top left in the image, in
-    {{VideoFrame/codedHeight}} / 2 lines of {{VideoFrame/codedWidth}} / 2
-    elements. Each element is composed of a two Chroma values, the U and V
-    value, in this order.
+    The UV plane is composed of interleaved U and V values, in a number of
+    rows equal to the result of the division of {{VideoFrame/codedHeight}}
+    by 2, rounded up to the nearest integer. Each row has a number of elements
+    equal to the result of the division of {{VideoFrame/codedWidth}} by 2,
+    rounded up to the nearest integer. Each element is composed of two Chroma
+    samples, the U and V samples, in that order. Samples are arranged starting
+    at the top left of the image.
 
-    The {{VideoFrame/codedWidth}} and {{VideoFrame/codedHeight}} MUST be even.
-    Similarly, the visible rectangle offset
-    ({{VideoFrame/visibleRect}}.{{DOMRectInit/x}} and
-    {{VideoFrame/visibleRect}}.{{DOMRectInit/y}}) MUST be even.
+    The visible rectangle offset ({{VideoFrame/visibleRect}}.{{DOMRectInit/x}}
+    and {{VideoFrame/visibleRect}}.{{DOMRectInit/y}}) MUST be even.
 
     <div class=example>
     An image in the NV12 pixel format that is 16 pixels wide and 10 pixels tall
@@ -4455,7 +4428,7 @@ is its own [=equivalent opaque format=].
 
     There are {{VideoFrame/codedWidth}} * {{VideoFrame/codedHeight}} * 4 samples
     (and therefore bytes) in the single plane, arranged starting at the top
-    left in the image, in {{VideoFrame/codedHeight}} lines of
+    left of the image, in {{VideoFrame/codedHeight}} rows of
     {{VideoFrame/codedWidth}} samples.
 
     {{RGBA}}'s [=equivalent opaque format=] is {{RGBX}}.
@@ -4471,7 +4444,7 @@ is its own [=equivalent opaque format=].
 
     There are {{VideoFrame/codedWidth}} * {{VideoFrame/codedHeight}} * 4 samples
     (and therefore bytes) in the single plane, arranged starting at the top left
-    in the image, in {{VideoFrame/codedHeight}} lines of
+    of the image, in {{VideoFrame/codedHeight}} rows of
     {{VideoFrame/codedWidth}} samples.
   </dd>
   <dt><dfn enum-value for=VideoPixelFormat>BGRA</dfn></dt>
@@ -4484,7 +4457,7 @@ is its own [=equivalent opaque format=].
 
     There are {{VideoFrame/codedWidth}} * {{VideoFrame/codedHeight}} * 4 samples
     (and therefore bytes) in the single plane, arranged starting at the top left
-    in the image, in {{VideoFrame/codedHeight}} lines of
+    of the image, in {{VideoFrame/codedHeight}} rows of
     {{VideoFrame/codedWidth}} samples.
 
     {{BGRA}}'s [=equivalent opaque format=] is {{BGRX}}.
@@ -4500,7 +4473,7 @@ is its own [=equivalent opaque format=].
 
     There are {{VideoFrame/codedWidth}} * {{VideoFrame/codedHeight}} * 4 samples
     (and therefore bytes) in the single plane, arranged starting at the top left
-    in the image, in {{VideoFrame/codedHeight}} lines of
+    of the image, in {{VideoFrame/codedHeight}} rows of
     {{VideoFrame/codedWidth}} samples.
   </dd>
 </dl>
