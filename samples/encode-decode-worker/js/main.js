@@ -32,7 +32,7 @@ connectButton.disabled = false;
 stopButton.disabled = true;
 
 videoSelect.onchange = function () {
-  videoSource = videoSelect.value; 
+  videoSource = videoSelect.value;
 };
 
 const qvgaConstraints   = {video: {width: 320,  height: 240}};
@@ -94,7 +94,7 @@ function gotDevices(deviceInfos) {
     if (deviceInfo.kind === 'videoinput') {
       option.text = deviceInfo.label || `camera ${videoSelect.length + 1}`;
       videoSelect.appendChild(option);
-    } 
+    }
   }
   selectors.forEach((select, selectorIndex) => {
     if (Array.prototype.slice.call(select.childNodes).some(n => n.value === values[selectorIndex])) {
@@ -202,14 +202,14 @@ function stop() {
 document.addEventListener('DOMContentLoaded', async function(event) {
   if (stopped) return;
   addToEventLog('DOM Content Loaded');
-  
+
   // Need to support standard mediacapture-transform implementations
-  
-  if (typeof MediaStreamTrackProcessor === 'undefined' || 
-      typeof MediaStreamTrackGenerator === 'undefined') { 
+
+  if (typeof MediaStreamTrackProcessor === 'undefined' ||
+      typeof MediaStreamTrackGenerator === 'undefined') {
     addToEventLog('Your browser does not support the MSTP and MSTG APIs.', 'fatal');
     return;
-  } 
+  }
 
   try {
     gotDevices(await navigator.mediaDevices.enumerateDevices());
@@ -231,24 +231,24 @@ document.addEventListener('DOMContentLoaded', async function(event) {
     } else {
       // draw the glass-glass latency chart
       metrics_report();
-      google.charts.load('current', {'packages':['corechart']});
-      google.charts.setOnLoadCallback(() => {
-        let data = new google.visualization.DataTable();
-        // addToEventLog('Data dump: ' + JSON.stringify(e2e.all));
-        data.addColumn('number', 'Frame Number');
-        data.addColumn('number', 'Glass-Glass Latency (ms)');
-        data.addRows(e2e.all);
-        let options = {
-          width:  900,
-          height: 500,
-          title: 'Glass-Glass Latency (ms) versus Frame Number',
-          haxis: {title: 'Frame Number'},
-          vaxis: {title: 'Glass-Glass Latency'},
-          legend: 'none'
-        };
-        let chart = new google.visualization.ScatterChart(chart2_div);
-        chart.draw(data, options);
-      });
+      const x = e2e.all.map(item => item[0]);
+      const y = e2e.all.map(item => item[1]);
+      Plotly.newPlot(chart2_div, [{
+        x,
+        y,
+        mode: 'markers',
+        type: 'scatter',
+    }], {
+      xaxis: {
+        title: 'Frame number',
+        autorange: true,
+      },
+      yaxis: {
+        title: 'Glass-Glass-Latency (ms)',
+        autorange: true,
+      },
+      title: 'Glass-Glass Latency (ms) versus Frame Number',
+    });
     }
   }, false);
 
@@ -274,7 +274,7 @@ document.addEventListener('DOMContentLoaded', async function(event) {
 
   async function startMedia() {
     if (stopped) return;
-    addToEventLog('startMedia called'); 
+    addToEventLog('startMedia called');
     try {
       // Collect the bitrate
       const rate = document.getElementById('rate').value;
@@ -331,11 +331,11 @@ document.addEventListener('DOMContentLoaded', async function(event) {
          resolutionScale: 1,
          framerateScale: 1.0,
       };
-   
+
       let ssrcArr = new Uint32Array(1);
       window.crypto.getRandomValues(ssrcArr);
       const ssrc = ssrcArr[0];
-  
+
       const config = {
         alpha: "discard",
         latencyMode: latencyPref,
@@ -345,7 +345,7 @@ document.addEventListener('DOMContentLoaded', async function(event) {
         height: ts.height/vConfig.resolutionScale,
         hardwareAcceleration: encHw,
         decHwAcceleration: decHw,
-        bitrate: rate, 
+        bitrate: rate,
         framerate: ts.frameRate/vConfig.framerateScale,
         keyInterval: vConfig.keyInterval,
         ssrc:  ssrc
@@ -365,7 +365,7 @@ document.addEventListener('DOMContentLoaded', async function(event) {
           config.codec = "hvc1.1.6.L123.00"; // Main profile, level 4.1, main Tier
           config.hevc = { format: "annexb" };
           config.pt = 2;
-          break; 
+          break;
         case "VP8":
           config.codec = "vp8";
           config.pt = 3;
