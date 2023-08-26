@@ -15,6 +15,9 @@ let metrics = {
 let e2e = {
    all: [],
 };
+let display_metrics = {
+   all: [],
+};
 
 const rate = document.querySelector('#rate');
 const connectButton = document.querySelector('#connect');
@@ -64,7 +67,9 @@ function metrics_report() {
       const expectedDisplayTime = metrics.all[i].expectedDisplayTime;
       const delay = metrics.all[i].expectedDisplayTime - metrics.all[i-1].expectedDisplayTime;
       const data = [frameno, g2g];
+      const info = {frameno: frameno, g2g: g2g, mediaTime: mediaTime, captureTime: captureTime, expectedDisplayTime: expectedDisplayTime, delay: delay};
       e2e.all.push(data);
+      display_metrics.all.push(info);
     }
   }
   // addToEventLog('Data dump: ' + JSON.stringify(e2e.all));
@@ -231,11 +236,17 @@ document.addEventListener('DOMContentLoaded', async function(event) {
     } else {
       // draw the glass-glass latency chart
       metrics_report();
-      const x = e2e.all.map(item => item[0]);
-      const y = e2e.all.map(item => item[1]);
+      const e2eX = e2e.all.map(item => item[0]);
+      const e2eY = e2e.all.map(item => item[1]);
+      const labels = e2e.all.map((item, index) => {
+        return Object.keys(display_metrics.all[index]).map(key => {
+          return `${key}: ${display_metrics.all[index][key]}`;
+        }).join('<br>');
+      });
       Plotly.newPlot(chart2_div, [{
-        x,
-        y,
+        x: e2eX,
+        y: e2eY,
+        text: labels,
         mode: 'markers',
         type: 'scatter',
     }], {
