@@ -245,7 +245,7 @@ Each [=codec=] instance has an internal slot named
 
 Each [=codec=] instance has an internal slot named
 <dfn>[[codec implementation]]</dfn> that refers to the underlying platform
-encoder or decoder. Except for assignment, any steps that reference
+encoder or decoder. Except for the initial assignment, any steps that reference
 [=[[codec implementation]]=] will be enqueued to the [=[[codec work queue]]=].
 
 Each [=codec=] instance has a unique <dfn>codec task source</dfn>. Tasks
@@ -381,19 +381,20 @@ Methods {#audiodecoder-methods}
 
     [=Running a control message=] to configure the decoder means running
     these steps:
-    1. Let |supported| be the result of running the <a>Check Configuration
-        Support</a> algorithm with |config|.
-    2. If |supported| is `true`, assign
-        {{AudioDecoder/[[codec implementation]]}} with an implementation
-        supporting |config|.
-    3. Otherwise, run the <a>Close AudioDecoder</a> algorithm with
-        {{NotSupportedError}} and return `"processed"`.
-    4. Assign `true` to {{AudioDecoder/[[message queue blocked]]}}.
-    5. Enqueue the following steps to {{AudioDecoder/[[codec work queue]]}}:
-        1. Configure {{AudioDecoder/[[codec implementation]]}} with |config|.
-        2. Assign `false` to {{AudioDecoder/[[message queue blocked]]}}.
-        3. [=Queue a task=] to [=Process the control message queue=].
-    6. Return `"processed"`.
+    1. Assign `true` to {{AudioDecoder/[[message queue blocked]]}}.
+    1. Enqueue the following steps to {{AudioDecoder/[[codec work queue]]}}:
+        1. Let |supported| be the result of running the <a>Check Configuration
+            Support</a> algorithm with |config|.
+        2. If |supported| is `false`, [=queue a task=] to run the <a>Close
+            AudioDecoder</a> algorithm with {{NotSupportedError}} and abort
+            these steps.
+        3. If needed, assign {{AudioDecoder/[[codec implementation]]}} with an
+            implementation supporting |config|.
+        4. Configure {{AudioDecoder/[[codec implementation]]}} with |config|.
+        5. [=queue a task=] to run the following steps:
+            1. Assign `false` to {{AudioDecoder/[[message queue blocked]]}}.
+            2. [=Queue a task=] to [=Process the control message queue=].
+    3. Return `"processed"`.
   </dd>
 
   <dt><dfn method for=AudioDecoder>decode(chunk)</dfn></dt>
@@ -509,14 +510,16 @@ Methods {#audiodecoder-methods}
     3. Let |checkSupportQueue| be the result of starting a new <a>parallel
         queue</a>.
     4. Enqueue the following steps to |checkSupportQueue|:
-        1. Let |decoderSupport| be a newly constructed
-            {{AudioDecoderSupport}}, initialized as follows:
-            1. Set {{AudioDecoderSupport/config}} to the result of running the
-                <a>Clone Configuration</a> algorithm with |config|.
-            2. Set {{AudioDecoderSupport/supported}} to the result of running
-                the <a>Check Configuration Support</a> algorithm with |config|.
-        2. Resolve |p| with |decoderSupport|.
-    5. Return  |p|.
+        1. Let |supported| be the result of running
+            the <a>Check Configuration Support</a> algorithm with |config|.
+        2. [=Queue a task=] to run the following steps:
+            1. Let |decoderSupport| be a newly constructed
+                {{AudioDecoderSupport}}, initialized as follows:
+                1. Set {{AudioDecoderSupport/config}} to the result of running the
+                    <a>Clone Configuration</a> algorithm with |config|.
+                2. Set {{AudioDecoderSupport/supported}} to |supported|.
+            2. Resolve |p| with |decoderSupport|.
+    5. Return |p|.
   </dd>
 </dl>
 
@@ -576,7 +579,7 @@ Algorithms {#audiodecoder-algorithms}
     3. Clear {{AudioDecoder/[[codec implementation]]}} and release associated
         [=system resources=].
     4. If |exception| is not an {{AbortError}} {{DOMException}},
-        [=queue a task=] to invoke the {{AudioDecoder/[[error callback]]}} with |exception|.
+        invoke the {{AudioDecoder/[[error callback]]}} with |exception|.
   </dd>
 </dl>
 
@@ -712,20 +715,20 @@ Methods {#videodecoder-methods}
 
     [=Running a control message=] to configure the decoder means running
     these steps:
-    1. Let |supported| be the result of running the <a>Check Configuration
-        Support</a> algorithm with |config|.
-    2. If |supported| is `true`, assign
-        {{VideoDecoder/[[codec implementation]]}} with an implementation
-        supporting |config|.
-    3. Otherwise, run the <a>Close VideoDecoder</a> algorithm with
-        {{NotSupportedError}} and return `"processed"`.
-    4. Assign `true` to {{VideoDecoder/[[message queue blocked]]}}.
-    5. Enqueue the following steps to {{VideoDecoder/[[codec work queue]]}}:
-        1. Configure {{VideoDecoder/[[codec implementation]]}} with |config|.
-        2. Set {{VideoDecoder/[[active decoder config]]}} to `config`.
-        3. Assign `false` to {{VideoDecoder/[[message queue blocked]]}}.
-        4. [=Queue a task=] to [=Process the control message queue=].
-    6. Return `"processed"`.
+    1. Assign `true` to {{VideoDecoder/[[message queue blocked]]}}.
+    1. Enqueue the following steps to {{VideoDecoder/[[codec work queue]]}}:
+        1. Let |supported| be the result of running the <a>Check Configuration
+            Support</a> algorithm with |config|.
+        2. If |supported| is `false`, [=queue a task=] to run the <a>Close
+            VideoDecoder</a> algorithm with {{NotSupportedError}} and abort
+            these steps.
+        3. If needed, assign {{VideoDecoder/[[codec implementation]]}} with an
+            implementation supporting |config|.
+        4. Configure {{VideoDecoder/[[codec implementation]]}} with |config|.
+        5. [=queue a task=] to run the following steps:
+            1. Assign `false` to {{VideoDecoder/[[message queue blocked]]}}.
+            2. [=Queue a task=] to [=Process the control message queue=].
+    3. Return `"processed"`.
   </dd>
 
   <dt><dfn method for=VideoDecoder>decode(chunk)</dfn></dt>
@@ -852,14 +855,16 @@ Methods {#videodecoder-methods}
     3. Let |checkSupportQueue| be the result of starting a new <a>parallel
         queue</a>.
     4. Enqueue the following steps to |checkSupportQueue|:
-        1. Let |decoderSupport| be a newly constructed
-            {{VideoDecoderSupport}}, initialized as follows:
-            1. Set {{VideoDecoderSupport/config}} to the result of running the
-                <a>Clone Configuration</a> algorithm with |config|.
-            2. Set {{VideoDecoderSupport/supported}} to the result of running
-                the <a>Check Configuration Support</a> algorithm with |config|.
-        2. Resolve |p| with |decoderSupport|.
-    5. Return  |p|.
+        1. Let |supported| be the result of running
+            the <a>Check Configuration Support</a> algorithm with |config|.
+        2. [=Queue a task=] to run the following steps:
+            1. Let |decoderSupport| be a newly constructed
+                {{VideoDecoderSupport}}, initialized as follows:
+                1. Set {{VideoDecoderSupport/config}} to the result of running the
+                    <a>Clone Configuration</a> algorithm with |config|.
+                2. Set {{VideoDecoderSupport/supported}} to |supported|.
+            2. Resolve |p| with |decoderSupport|.
+    5. Return |p|.
   </dd>
 </dl>
 
@@ -929,7 +934,7 @@ Algorithms {#videodecoder-algorithms}
     3. Clear {{VideoDecoder/[[codec implementation]]}} and release associated
         [=system resources=].
     4. If |exception| is not an {{AbortError}} {{DOMException}},
-        [=queue a task=] to invoke the {{VideoDecoder/[[error callback]]}} with |exception|.
+        invoke the {{VideoDecoder/[[error callback]]}} with |exception|.
   </dd>
 </dl>
 
@@ -1065,20 +1070,20 @@ Methods {#audioencoder-methods}
 
     [=Running a control message=] to configure the encoder means performing
     these steps:
-    1. Let |supported| be the result of running the <a>Check Configuration
-        Support</a> algorithm with |config|.
-    2. If |supported| is `true`, assign
-        {{AudioEncoder/[[codec implementation]]}} with an implementation
-        supporting |config|.
-    3. Otherwise, run the <a>Close AudioEncoder</a> algorithm with
-        {{NotSupportedError}} and return `"processed"`.
-    4. Assign `true` to {{AudioEncoder/[[message queue blocked]]}}.
-    5. Enqueue the following steps to {{AudioEncoder/[[codec work queue]]}}:
-        1. Configure {{AudioEncoder/[[codec implementation]]}} with |config|.
-        2. Set {{AudioEncoder/[[active encoder config]]}} to `config`.
-        3. Assign `false` to {{AudioEncoder/[[message queue blocked]]}}.
-        4. [=Queue a task=] to [=Process the control message queue=].
-    6. Return `"processed"`.
+    1. Assign `true` to {{AudioEncoder/[[message queue blocked]]}}.
+    2. Enqueue the following steps to {{AudioEncoder/[[codec work queue]]}}:
+        1. Let |supported| be the result of running the <a>Check Configuration
+            Support</a> algorithm with |config|.
+        2. If |supported| is `false`, [=queue a task=] to run the <a>Close
+            AudioEncoder</a> algorithm with {{NotSupportedError}} and abort
+            these steps.
+        3. If needed, assign {{AudioEncoder/[[codec implementation]]}} with an
+            implementation supporting |config|.
+        4. Configure {{AudioEncoder/[[codec implementation]]}} with |config|.
+        5. [=queue a task=] to run the following steps:
+            1. Assign `false` to {{AudioEncoder/[[message queue blocked]]}}.
+            2. [=Queue a task=] to [=Process the control message queue=].
+    3. Return `"processed"`.
   </dd>
 
   <dt><dfn method for=AudioEncoder>encode(data)</dfn></dt>
@@ -1188,14 +1193,16 @@ Methods {#audioencoder-methods}
     3. Let |checkSupportQueue| be the result of starting a new <a>parallel
         queue</a>.
     4. Enqueue the following steps to |checkSupportQueue|:
-        1. Let |encoderSupport| be a newly constructed
-            {{AudioEncoderSupport}}, initialized as follows:
-            1. Set {{AudioEncoderSupport/config}} to the result of running the
-                <a>Clone Configuration</a> algorithm with |config|.
-            2. Set {{AudioEncoderSupport/supported}} to the result of running
-                the <a>Check Configuration Support</a> algorithm with |config|.
-        2. Resolve |p| with |encoderSupport|.
-    5. Return  |p|.
+        1. Let |supported| be the result of running
+            the <a>Check Configuration Support</a> algorithm with |config|.
+        2. [=Queue a task=] to run the following steps:
+            1. Let |encoderSupport| be a newly constructed
+                {{AudioEncoderSupport}}, initialized as follows:
+                1. Set {{AudioEncoderSupport/config}} to the result of running the
+                    <a>Clone Configuration</a> algorithm with |config|.
+                2. Set {{AudioEncoderSupport/supported}} to |supported|.
+            2. Resolve |p| with |encoderSupport|.
+    5. Return |p|.
   </dd>
 </dl>
 
@@ -1285,8 +1292,7 @@ Algorithms {#audioencoder-algorithms}
     3. Clear {{AudioEncoder/[[codec implementation]]}} and release associated
         [=system resources=].
     4. If |exception| is not an {{AbortError}} {{DOMException}},
-        [=queue a task=] to invoke the
-        {{AudioEncoder/[[error callback]]}} with |exception|.
+        invoke the {{AudioEncoder/[[error callback]]}} with |exception|.
   </dd>
 </dl>
 
@@ -1439,20 +1445,20 @@ Methods {#videoencoder-methods}
 
     [=Running a control message=] to configure the encoder means performing
     these steps:
-    1. Let |supported| be the result of running the <a>Check Configuration
-        Support</a> algorithm with |config|.
-    2. If |supported| is `true`, assign
-        {{VideoEncoder/[[codec implementation]]}} with an implementation
-        supporting |config|.
-    3. Otherwise, run the <a>Close VideoEncoder</a> algorithm with
-        {{NotSupportedError}} and return `"processed"`.
-    4. Assign `true` to {{VideoEncoder/[[message queue blocked]]}}.
-    5. Enqueue the following steps to {{VideoEncoder/[[codec work queue]]}}:
-        1. Configure {{VideoEncoder/[[codec implementation]]}} with |config|.
-        2. Set {{VideoEncoder/[[active encoder config]]}} to `config`.
-        3. Assign `false` to {{VideoEncoder/[[message queue blocked]]}}.
-        4. [=Queue a task=] to [=Process the control message queue=].
-    6. Return `"processed"`.
+    1. Assign `true` to {{VideoEncoder/[[message queue blocked]]}}.
+    1. Enqueue the following steps to {{VideoEncoder/[[codec work queue]]}}:
+        1. Let |supported| be the result of running the <a>Check Configuration
+            Support</a> algorithm with |config|.
+        2. If |supported| is `false`, [=queue a task=] to run the <a>Close
+            VideoEncoder</a> algorithm with {{NotSupportedError}} and abort
+            these steps.
+        3. If needed, assign {{VideoEncoder/[[codec implementation]]}} with an
+            implementation supporting |config|.
+        4. Configure {{VideoEncoder/[[codec implementation]]}} with |config|.
+        5. [=queue a task=] to run the following steps:
+            1. Assign `false` to {{VideoEncoder/[[message queue blocked]]}}.
+            2. [=Queue a task=] to [=Process the control message queue=].
+    3. Return `"processed"`.
   </dd>
 
   <dt><dfn method for=VideoEncoder>encode(|frame|, |options|)</dfn></dt>
@@ -1562,14 +1568,16 @@ Methods {#videoencoder-methods}
     3. Let |checkSupportQueue| be the result of starting a new <a>parallel
         queue</a>.
     4. Enqueue the following steps to |checkSupportQueue|:
-        1. Let |encoderSupport| be a newly constructed
-            {{VideoEncoderSupport}}, initialized as follows:
-            1. Set {{VideoEncoderSupport/config}} to the result of running the
-                <a>Clone Configuration</a> algorithm with |config|.
-            2. Set {{VideoEncoderSupport/supported}} to the result of running
-                the <a>Check Configuration Support</a> algorithm with |config|.
-        2. Resolve |p| with |encoderSupport|.
-    5. Return  |p|.
+        1. Let |supported| be the result of running
+            the <a>Check Configuration Support</a> algorithm with |config|.
+        2. [=Queue a task=] to run the following steps:
+            1. Let |encoderSupport| be a newly constructed
+                {{VideoEncoderSupport}}, initialized as follows:
+                1. Set {{VideoEncoderSupport/config}} to the result of running the
+                    <a>Clone Configuration</a> algorithm with |config|.
+                2. Set {{VideoEncoderSupport/supported}} to |supported|.
+           2. Resolve |p| with |encoderSupport|.
+    5. Return |p|.
   </dd>
 </dl>
 
@@ -1674,8 +1682,7 @@ Algorithms {#videoencoder-algorithms}
     3. Clear {{VideoEncoder/[[codec implementation]]}} and release associated
         [=system resources=].
     4. If |exception| is not an {{AbortError}} {{DOMException}},
-        [=queue a task=] to invoke the {{VideoEncoder/[[error callback]]}} with
-        |exception|.
+        invoke the {{VideoEncoder/[[error callback]]}} with |exception|.
   </dd>
 </dl>
 
