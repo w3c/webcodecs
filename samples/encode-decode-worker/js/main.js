@@ -3,8 +3,8 @@
 let preferredResolution;
 let mediaStream, bitrate = 100000;
 let stopped = false;
-let preferredCodec ="VP8";
-let mode = "L1T3";
+let preferredCodec ="H264";
+let mode = "L1T1";
 let latencyPref = "realtime", bitPref = "variable";
 let encHw = "no-preference", decHw = "no-preference";
 let streamWorker;
