@@ -5,9 +5,9 @@
   <title>WebCodecs</title>
   <meta content="ED" name="w3c-status">
   <link href="https://www.w3.org/StyleSheets/TR/2021/W3C-ED" rel="stylesheet">
-  <meta content="Bikeshed version 6edc88947, updated Thu Aug 17 11:18:09 2023 -0700" name="generator">
+  <meta content="Bikeshed version 82ce88815, updated Thu Sep 7 16:33:55 2023 -0700" name="generator">
   <link href="https://www.w3.org/TR/webcodecs/" rel="canonical">
-  <meta content="261401a02ff2fd7e1d3351e3257fe0ef96848fde" name="document-revision">
+  <meta content="3856bbf7091a292b18ac32e703f18ae666a6e17c" name="document-revision">
 <style>
 main > dl > dd {
   margin-bottom: 1em;
@@ -672,7 +672,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
   <div class="head">
    <p data-fill-with="logo"><a class="logo" href="https://www.w3.org/"> <img alt="W3C" height="48" src="https://www.w3.org/StyleSheets/TR/2021/logos/W3C" width="72"> </a> </p>
    <h1 class="p-name no-ref" id="title">WebCodecs</h1>
-   <p id="w3c-state"><a href="https://www.w3.org/standards/types#ED">Editor’s Draft</a>, <time class="dt-updated" datetime="2023-08-26">26 August 2023</time></p>
+   <p id="w3c-state"><a href="https://www.w3.org/standards/types#ED">Editor’s Draft</a>, <time class="dt-updated" datetime="2023-09-28">28 September 2023</time></p>
    <details open>
     <summary>More details about this document</summary>
     <div data-fill-with="spec-metadata">
@@ -1061,7 +1061,7 @@ and should remain in the <a data-link-type="dfn" href="#control-message-queue" i
    <h3 class="heading settled" data-level="2.3" id="codec-work-parallel-queue"><span class="secno">2.3. </span><span class="content">Codec Work Parallel Queue</span><a class="self-link" href="#codec-work-parallel-queue"></a></h3>
    <p>Each <a data-link-type="dfn" href="#codec" id="ref-for-codec④">codec</a> instance has an internal slot named <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="codec-work-queue">[[codec work queue]]</dfn> that is a <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/infrastructure.html#parallel-queue" id="ref-for-parallel-queue①">parallel queue</a>.</p>
    <p>Each <a data-link-type="dfn" href="#codec" id="ref-for-codec⑤">codec</a> instance has an internal slot named <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="codec-implementation">[[codec implementation]]</dfn> that refers to the underlying platform
-encoder or decoder. Except for assignment, any steps that reference <a data-link-type="dfn" href="#codec-implementation" id="ref-for-codec-implementation">[[codec implementation]]</a> will be enqueued to the <a data-link-type="dfn" href="#codec-work-queue" id="ref-for-codec-work-queue">[[codec work queue]]</a>.</p>
+encoder or decoder. Except for the initial assignment, any steps that reference <a data-link-type="dfn" href="#codec-implementation" id="ref-for-codec-implementation">[[codec implementation]]</a> will be enqueued to the <a data-link-type="dfn" href="#codec-work-queue" id="ref-for-codec-work-queue">[[codec work queue]]</a>.</p>
    <p>Each <a data-link-type="dfn" href="#codec" id="ref-for-codec⑥">codec</a> instance has a unique <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="codec-task-source">codec task source</dfn>. Tasks <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task" id="ref-for-queue-a-task">queued</a> from the <a data-link-type="dfn" href="#codec-work-queue" id="ref-for-codec-work-queue①">[[codec work queue]]</a> to the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#event-loop" id="ref-for-event-loop">event loop</a> will use the <a data-link-type="dfn" href="#codec-task-source" id="ref-for-codec-task-source">codec task source</a>.</p>
    <h2 class="heading settled" data-level="3" id="audiodecoder-interface"><span class="secno">3. </span><span class="content">AudioDecoder Interface</span><a class="self-link" href="#audiodecoder-interface"></a></h2>
 <pre class="idl highlight def">[<a class="idl-code" data-link-type="extended-attribute" href="https://webidl.spec.whatwg.org/#Exposed" id="ref-for-Exposed"><c- g>Exposed</c-></a>=(<c- n>Window</c->,<c- n>DedicatedWorker</c->), <a class="idl-code" data-link-type="extended-attribute" href="https://webidl.spec.whatwg.org/#SecureContext" id="ref-for-SecureContext"><c- g>SecureContext</c-></a>]
@@ -1210,24 +1210,30 @@ decreased.</p>
     these steps:</p>
      <ol>
       <li data-md>
-       <p>Let <var>supported</var> be the result of running the <a data-link-type="dfn" href="#check-configuration-support" id="ref-for-check-configuration-support">Check Configuration
-Support</a> algorithm with <var>config</var>.</p>
-      <li data-md>
-       <p>If <var>supported</var> is <code>true</code>, assign <code class="idl"><a data-link-type="idl" href="#dom-audiodecoder-codec-implementation-slot" id="ref-for-dom-audiodecoder-codec-implementation-slot③">[[codec implementation]]</a></code> with an implementation
-supporting <var>config</var>.</p>
-      <li data-md>
-       <p>Otherwise, run the <a data-link-type="dfn" href="#close-audiodecoder" id="ref-for-close-audiodecoder">Close AudioDecoder</a> algorithm with <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#notsupportederror" id="ref-for-notsupportederror①">NotSupportedError</a></code> and return <code>"processed"</code>.</p>
-      <li data-md>
        <p>Assign <code>true</code> to <code class="idl"><a data-link-type="idl" href="#dom-audiodecoder-message-queue-blocked-slot" id="ref-for-dom-audiodecoder-message-queue-blocked-slot①">[[message queue blocked]]</a></code>.</p>
       <li data-md>
        <p>Enqueue the following steps to <code class="idl"><a data-link-type="idl" href="#dom-audiodecoder-codec-work-queue-slot" id="ref-for-dom-audiodecoder-codec-work-queue-slot①">[[codec work queue]]</a></code>:</p>
        <ol>
         <li data-md>
+         <p>Let <var>supported</var> be the result of running the <a data-link-type="dfn" href="#check-configuration-support" id="ref-for-check-configuration-support">Check Configuration
+Support</a> algorithm with <var>config</var>.</p>
+        <li data-md>
+         <p>If <var>supported</var> is <code>false</code>, <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task" id="ref-for-queue-a-task①">queue a task</a> to run the <a data-link-type="dfn" href="#close-audiodecoder" id="ref-for-close-audiodecoder">Close
+AudioDecoder</a> algorithm with <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#notsupportederror" id="ref-for-notsupportederror①">NotSupportedError</a></code> and abort
+these steps.</p>
+        <li data-md>
+         <p>If needed, assign <code class="idl"><a data-link-type="idl" href="#dom-audiodecoder-codec-implementation-slot" id="ref-for-dom-audiodecoder-codec-implementation-slot③">[[codec implementation]]</a></code> with an
+implementation supporting <var>config</var>.</p>
+        <li data-md>
          <p>Configure <code class="idl"><a data-link-type="idl" href="#dom-audiodecoder-codec-implementation-slot" id="ref-for-dom-audiodecoder-codec-implementation-slot④">[[codec implementation]]</a></code> with <var>config</var>.</p>
         <li data-md>
-         <p>Assign <code>false</code> to <code class="idl"><a data-link-type="idl" href="#dom-audiodecoder-message-queue-blocked-slot" id="ref-for-dom-audiodecoder-message-queue-blocked-slot②">[[message queue blocked]]</a></code>.</p>
-        <li data-md>
-         <p><a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task" id="ref-for-queue-a-task①">Queue a task</a> to <a data-link-type="dfn" href="#process-the-control-message-queue" id="ref-for-process-the-control-message-queue②">Process the control message queue</a>.</p>
+         <p><a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task" id="ref-for-queue-a-task②">queue a task</a> to run the following steps:</p>
+         <ol>
+          <li data-md>
+           <p>Assign <code>false</code> to <code class="idl"><a data-link-type="idl" href="#dom-audiodecoder-message-queue-blocked-slot" id="ref-for-dom-audiodecoder-message-queue-blocked-slot②">[[message queue blocked]]</a></code>.</p>
+          <li data-md>
+           <p><a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task" id="ref-for-queue-a-task③">Queue a task</a> to <a data-link-type="dfn" href="#process-the-control-message-queue" id="ref-for-process-the-control-message-queue②">Process the control message queue</a>.</p>
+         </ol>
        </ol>
       <li data-md>
        <p>Return <code>"processed"</code>.</p>
@@ -1274,9 +1280,9 @@ assign <code>true</code> to <code class="idl"><a data-link-type="idl" href="#dom
          <p>Attempt to use <code class="idl"><a data-link-type="idl" href="#dom-audiodecoder-codec-implementation-slot" id="ref-for-dom-audiodecoder-codec-implementation-slot⑥">[[codec implementation]]</a></code> to decode
 the chunk.</p>
         <li data-md>
-         <p>If decoding results in an error, <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task" id="ref-for-queue-a-task②">queue a task</a> to run the <a data-link-type="dfn" href="#close-audiodecoder" id="ref-for-close-audiodecoder①">Close AudioDecoder</a> algorithm with <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#encodingerror" id="ref-for-encodingerror">EncodingError</a></code> and return.</p>
+         <p>If decoding results in an error, <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task" id="ref-for-queue-a-task④">queue a task</a> to run the <a data-link-type="dfn" href="#close-audiodecoder" id="ref-for-close-audiodecoder①">Close AudioDecoder</a> algorithm with <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#encodingerror" id="ref-for-encodingerror">EncodingError</a></code> and return.</p>
         <li data-md>
-         <p>If <code class="idl"><a data-link-type="idl" href="#dom-audiodecoder-codec-saturated-slot" id="ref-for-dom-audiodecoder-codec-saturated-slot③">[[codec saturated]]</a></code> equals <code>true</code> and <code class="idl"><a data-link-type="idl" href="#dom-audiodecoder-codec-implementation-slot" id="ref-for-dom-audiodecoder-codec-implementation-slot⑦">[[codec implementation]]</a></code> is no longer <a data-link-type="dfn" href="#saturated" id="ref-for-saturated①">saturated</a>, <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task" id="ref-for-queue-a-task③">queue a task</a> to perform the following steps:</p>
+         <p>If <code class="idl"><a data-link-type="idl" href="#dom-audiodecoder-codec-saturated-slot" id="ref-for-dom-audiodecoder-codec-saturated-slot③">[[codec saturated]]</a></code> equals <code>true</code> and <code class="idl"><a data-link-type="idl" href="#dom-audiodecoder-codec-implementation-slot" id="ref-for-dom-audiodecoder-codec-implementation-slot⑦">[[codec implementation]]</a></code> is no longer <a data-link-type="dfn" href="#saturated" id="ref-for-saturated①">saturated</a>, <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task" id="ref-for-queue-a-task⑤">queue a task</a> to perform the following steps:</p>
          <ol>
           <li data-md>
            <p>Assign <code>false</code> to <code class="idl"><a data-link-type="idl" href="#dom-audiodecoder-codec-saturated-slot" id="ref-for-dom-audiodecoder-codec-saturated-slot④">[[codec saturated]]</a></code>.</p>
@@ -1287,7 +1293,7 @@ the chunk.</p>
          <p>Let <var>decoded outputs</var> be a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list" id="ref-for-list①">list</a> of decoded audio data outputs
 emitted by <code class="idl"><a data-link-type="idl" href="#dom-audiodecoder-codec-implementation-slot" id="ref-for-dom-audiodecoder-codec-implementation-slot⑧">[[codec implementation]]</a></code>.</p>
         <li data-md>
-         <p>If <var>decoded outputs</var> is not empty, <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task" id="ref-for-queue-a-task④">queue a task</a> to run the <a data-link-type="dfn" href="#output-audiodata" id="ref-for-output-audiodata">Output AudioData</a> algorithm with <var>decoded outputs</var>.</p>
+         <p>If <var>decoded outputs</var> is not empty, <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task" id="ref-for-queue-a-task⑥">queue a task</a> to run the <a data-link-type="dfn" href="#output-audiodata" id="ref-for-output-audiodata">Output AudioData</a> algorithm with <var>decoded outputs</var>.</p>
        </ol>
       <li data-md>
        <p>Return <code>"processed"</code>.</p>
@@ -1324,7 +1330,7 @@ emitted by <code class="idl"><a data-link-type="idl" href="#dom-audiodecoder-cod
          <p>Let <var>decoded outputs</var> be a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list" id="ref-for-list②">list</a> of decoded audio data outputs
 emitted by <code class="idl"><a data-link-type="idl" href="#dom-audiodecoder-codec-implementation-slot" id="ref-for-dom-audiodecoder-codec-implementation-slot①⓪">[[codec implementation]]</a></code>.</p>
         <li data-md>
-         <p><a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task" id="ref-for-queue-a-task⑤">Queue a task</a> to perform these steps:</p>
+         <p><a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task" id="ref-for-queue-a-task⑦">Queue a task</a> to perform these steps:</p>
          <ol>
           <li data-md>
            <p>If <var>decoded outputs</var> is not empty, run the <a data-link-type="dfn" href="#output-audiodata" id="ref-for-output-audiodata①">Output AudioData</a> algorithm with <var>decoded outputs</var>.</p>
@@ -1365,16 +1371,22 @@ queue</a>.</p>
        <p>Enqueue the following steps to <var>checkSupportQueue</var>:</p>
        <ol>
         <li data-md>
-         <p>Let <var>decoderSupport</var> be a newly constructed <code class="idl"><a data-link-type="idl" href="#dictdef-audiodecodersupport" id="ref-for-dictdef-audiodecodersupport②">AudioDecoderSupport</a></code>, initialized as follows:</p>
+         <p>Let <var>supported</var> be the result of running
+the <a data-link-type="dfn" href="#check-configuration-support" id="ref-for-check-configuration-support①">Check Configuration Support</a> algorithm with <var>config</var>.</p>
+        <li data-md>
+         <p><a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task" id="ref-for-queue-a-task⑧">Queue a task</a> to run the following steps:</p>
          <ol>
           <li data-md>
-           <p>Set <code class="idl"><a data-link-type="idl" href="#dom-audiodecodersupport-config" id="ref-for-dom-audiodecodersupport-config②">config</a></code> to the result of running the <a data-link-type="dfn" href="#clone-configuration" id="ref-for-clone-configuration">Clone Configuration</a> algorithm with <var>config</var>.</p>
+           <p>Let <var>decoderSupport</var> be a newly constructed <code class="idl"><a data-link-type="idl" href="#dictdef-audiodecodersupport" id="ref-for-dictdef-audiodecodersupport②">AudioDecoderSupport</a></code>, initialized as follows:</p>
+           <ol>
+            <li data-md>
+             <p>Set <code class="idl"><a data-link-type="idl" href="#dom-audiodecodersupport-config" id="ref-for-dom-audiodecodersupport-config②">config</a></code> to the result of running the <a data-link-type="dfn" href="#clone-configuration" id="ref-for-clone-configuration">Clone Configuration</a> algorithm with <var>config</var>.</p>
+            <li data-md>
+             <p>Set <code class="idl"><a data-link-type="idl" href="#dom-audiodecodersupport-supported" id="ref-for-dom-audiodecodersupport-supported">supported</a></code> to <var>supported</var>.</p>
+           </ol>
           <li data-md>
-           <p>Set <code class="idl"><a data-link-type="idl" href="#dom-audiodecodersupport-supported" id="ref-for-dom-audiodecodersupport-supported">supported</a></code> to the result of running
-the <a data-link-type="dfn" href="#check-configuration-support" id="ref-for-check-configuration-support①">Check Configuration Support</a> algorithm with <var>config</var>.</p>
+           <p>Resolve <var>p</var> with <var>decoderSupport</var>.</p>
          </ol>
-        <li data-md>
-         <p>Resolve <var>p</var> with <var>decoderSupport</var>.</p>
        </ol>
       <li data-md>
        <p>Return <var>p</var>.</p>
@@ -1390,7 +1402,7 @@ the <a data-link-type="dfn" href="#check-configuration-support" id="ref-for-chec
       <li data-md>
        <p>Assign <code>true</code> to <code class="idl"><a data-link-type="idl" href="#dom-audiodecoder-dequeue-event-scheduled-slot" id="ref-for-dom-audiodecoder-dequeue-event-scheduled-slot②">[[dequeue event scheduled]]</a></code>.</p>
       <li data-md>
-       <p><a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task" id="ref-for-queue-a-task⑥">Queue a task</a> to run the following steps:</p>
+       <p><a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task" id="ref-for-queue-a-task⑨">Queue a task</a> to run the following steps:</p>
        <ol>
         <li data-md>
          <p>Fire a simple event named <code class="idl"><a data-link-type="idl" href="#eventdef-audiodecoder-dequeue" id="ref-for-eventdef-audiodecoder-dequeue②">dequeue</a></code> at <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#this" id="ref-for-this">this</a>.</p>
@@ -1471,7 +1483,8 @@ output for the previous configuration.</p>
       <li data-md>
        <p>Clear <code class="idl"><a data-link-type="idl" href="#dom-audiodecoder-codec-implementation-slot" id="ref-for-dom-audiodecoder-codec-implementation-slot①②">[[codec implementation]]</a></code> and release associated <a data-link-type="dfn" href="#system-resources" id="ref-for-system-resources①">system resources</a>.</p>
       <li data-md>
-       <p>If <var>exception</var> is not an <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#aborterror" id="ref-for-aborterror②">AbortError</a></code> <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-DOMException" id="ref-for-idl-DOMException③">DOMException</a></code>, <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task" id="ref-for-queue-a-task⑦">queue a task</a> to invoke the <code class="idl"><a data-link-type="idl" href="#dom-audiodecoder-error-callback-slot" id="ref-for-dom-audiodecoder-error-callback-slot①">[[error callback]]</a></code> with <var>exception</var>.</p>
+       <p>If <var>exception</var> is not an <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#aborterror" id="ref-for-aborterror②">AbortError</a></code> <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-DOMException" id="ref-for-idl-DOMException③">DOMException</a></code>,
+invoke the <code class="idl"><a data-link-type="idl" href="#dom-audiodecoder-error-callback-slot" id="ref-for-dom-audiodecoder-error-callback-slot①">[[error callback]]</a></code> with <var>exception</var>.</p>
      </ol>
    </dl>
    <h2 class="heading settled" data-level="4" id="videodecoder-interface"><span class="secno">4. </span><span class="content">VideoDecoder Interface</span><a class="self-link" href="#videodecoder-interface"></a></h2>
@@ -1626,26 +1639,30 @@ decreased.</p>
     these steps:</p>
      <ol>
       <li data-md>
-       <p>Let <var>supported</var> be the result of running the <a data-link-type="dfn" href="#check-configuration-support" id="ref-for-check-configuration-support②">Check Configuration
-Support</a> algorithm with <var>config</var>.</p>
-      <li data-md>
-       <p>If <var>supported</var> is <code>true</code>, assign <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-codec-implementation-slot" id="ref-for-dom-videodecoder-codec-implementation-slot③">[[codec implementation]]</a></code> with an implementation
-supporting <var>config</var>.</p>
-      <li data-md>
-       <p>Otherwise, run the <a data-link-type="dfn" href="#close-videodecoder" id="ref-for-close-videodecoder">Close VideoDecoder</a> algorithm with <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#notsupportederror" id="ref-for-notsupportederror③">NotSupportedError</a></code> and return <code>"processed"</code>.</p>
-      <li data-md>
        <p>Assign <code>true</code> to <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-message-queue-blocked-slot" id="ref-for-dom-videodecoder-message-queue-blocked-slot①">[[message queue blocked]]</a></code>.</p>
       <li data-md>
        <p>Enqueue the following steps to <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-codec-work-queue-slot" id="ref-for-dom-videodecoder-codec-work-queue-slot①">[[codec work queue]]</a></code>:</p>
        <ol>
         <li data-md>
+         <p>Let <var>supported</var> be the result of running the <a data-link-type="dfn" href="#check-configuration-support" id="ref-for-check-configuration-support②">Check Configuration
+Support</a> algorithm with <var>config</var>.</p>
+        <li data-md>
+         <p>If <var>supported</var> is <code>false</code>, <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task" id="ref-for-queue-a-task①⓪">queue a task</a> to run the <a data-link-type="dfn" href="#close-videodecoder" id="ref-for-close-videodecoder">Close
+VideoDecoder</a> algorithm with <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#notsupportederror" id="ref-for-notsupportederror③">NotSupportedError</a></code> and abort
+these steps.</p>
+        <li data-md>
+         <p>If needed, assign <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-codec-implementation-slot" id="ref-for-dom-videodecoder-codec-implementation-slot③">[[codec implementation]]</a></code> with an
+implementation supporting <var>config</var>.</p>
+        <li data-md>
          <p>Configure <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-codec-implementation-slot" id="ref-for-dom-videodecoder-codec-implementation-slot④">[[codec implementation]]</a></code> with <var>config</var>.</p>
         <li data-md>
-         <p>Set <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-active-decoder-config-slot" id="ref-for-dom-videodecoder-active-decoder-config-slot①">[[active decoder config]]</a></code> to <code>config</code>.</p>
-        <li data-md>
-         <p>Assign <code>false</code> to <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-message-queue-blocked-slot" id="ref-for-dom-videodecoder-message-queue-blocked-slot②">[[message queue blocked]]</a></code>.</p>
-        <li data-md>
-         <p><a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task" id="ref-for-queue-a-task⑧">Queue a task</a> to <a data-link-type="dfn" href="#process-the-control-message-queue" id="ref-for-process-the-control-message-queue⑦">Process the control message queue</a>.</p>
+         <p><a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task" id="ref-for-queue-a-task①①">queue a task</a> to run the following steps:</p>
+         <ol>
+          <li data-md>
+           <p>Assign <code>false</code> to <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-message-queue-blocked-slot" id="ref-for-dom-videodecoder-message-queue-blocked-slot②">[[message queue blocked]]</a></code>.</p>
+          <li data-md>
+           <p><a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task" id="ref-for-queue-a-task①②">Queue a task</a> to <a data-link-type="dfn" href="#process-the-control-message-queue" id="ref-for-process-the-control-message-queue⑦">Process the control message queue</a>.</p>
+         </ol>
        </ol>
       <li data-md>
        <p>Return <code>"processed"</code>.</p>
@@ -1699,9 +1716,9 @@ assign <code>true</code> to <code class="idl"><a data-link-type="idl" href="#dom
          <p>Attempt to use <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-codec-implementation-slot" id="ref-for-dom-videodecoder-codec-implementation-slot⑦">[[codec implementation]]</a></code> to decode
 the chunk.</p>
         <li data-md>
-         <p>If decoding results in an error, <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task" id="ref-for-queue-a-task⑨">queue a task</a> to run the <a data-link-type="dfn" href="#close-videodecoder" id="ref-for-close-videodecoder①">Close VideoDecoder</a> algorithm with <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#encodingerror" id="ref-for-encodingerror①">EncodingError</a></code> and return.</p>
+         <p>If decoding results in an error, <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task" id="ref-for-queue-a-task①③">queue a task</a> to run the <a data-link-type="dfn" href="#close-videodecoder" id="ref-for-close-videodecoder①">Close VideoDecoder</a> algorithm with <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#encodingerror" id="ref-for-encodingerror①">EncodingError</a></code> and return.</p>
         <li data-md>
-         <p>If <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-codec-saturated-slot" id="ref-for-dom-videodecoder-codec-saturated-slot③">[[codec saturated]]</a></code> equals <code>true</code> and <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-codec-implementation-slot" id="ref-for-dom-videodecoder-codec-implementation-slot⑧">[[codec implementation]]</a></code> is no longer <a data-link-type="dfn" href="#saturated" id="ref-for-saturated③">saturated</a>, <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task" id="ref-for-queue-a-task①⓪">queue a task</a> to perform the following steps:</p>
+         <p>If <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-codec-saturated-slot" id="ref-for-dom-videodecoder-codec-saturated-slot③">[[codec saturated]]</a></code> equals <code>true</code> and <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-codec-implementation-slot" id="ref-for-dom-videodecoder-codec-implementation-slot⑧">[[codec implementation]]</a></code> is no longer <a data-link-type="dfn" href="#saturated" id="ref-for-saturated③">saturated</a>, <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task" id="ref-for-queue-a-task①④">queue a task</a> to perform the following steps:</p>
          <ol>
           <li data-md>
            <p>Assign <code>false</code> to <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-codec-saturated-slot" id="ref-for-dom-videodecoder-codec-saturated-slot④">[[codec saturated]]</a></code>.</p>
@@ -1713,7 +1730,7 @@ the chunk.</p>
 emitted by <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-codec-implementation-slot" id="ref-for-dom-videodecoder-codec-implementation-slot⑨">[[codec implementation]]</a></code> in
 presentation order.</p>
         <li data-md>
-         <p>If <var>decoded outputs</var> is not empty, <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task" id="ref-for-queue-a-task①①">queue a task</a> to run the <a data-link-type="dfn" href="#output-videoframes" id="ref-for-output-videoframes">Output VideoFrame</a> algorithm with <var>decoded outputs</var>.</p>
+         <p>If <var>decoded outputs</var> is not empty, <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task" id="ref-for-queue-a-task①⑤">queue a task</a> to run the <a data-link-type="dfn" href="#output-videoframes" id="ref-for-output-videoframes">Output VideoFrame</a> algorithm with <var>decoded outputs</var>.</p>
        </ol>
       <li data-md>
        <p>Return <code>"processed"</code>.</p>
@@ -1750,7 +1767,7 @@ presentation order.</p>
          <p>Let <var>decoded outputs</var> be a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list" id="ref-for-list⑤">list</a> of decoded video data outputs
 emitted by <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-codec-implementation-slot" id="ref-for-dom-videodecoder-codec-implementation-slot①①">[[codec implementation]]</a></code>.</p>
         <li data-md>
-         <p><a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task" id="ref-for-queue-a-task①②">Queue a task</a> to perform these steps:</p>
+         <p><a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task" id="ref-for-queue-a-task①⑥">Queue a task</a> to perform these steps:</p>
          <ol>
           <li data-md>
            <p>If <var>decoded outputs</var> is not empty, run the <a data-link-type="dfn" href="#output-videoframes" id="ref-for-output-videoframes①">Output VideoFrame</a> algorithm with <var>decoded outputs</var>.</p>
@@ -1791,16 +1808,22 @@ queue</a>.</p>
        <p>Enqueue the following steps to <var>checkSupportQueue</var>:</p>
        <ol>
         <li data-md>
-         <p>Let <var>decoderSupport</var> be a newly constructed <code class="idl"><a data-link-type="idl" href="#dictdef-videodecodersupport" id="ref-for-dictdef-videodecodersupport②">VideoDecoderSupport</a></code>, initialized as follows:</p>
+         <p>Let <var>supported</var> be the result of running
+the <a data-link-type="dfn" href="#check-configuration-support" id="ref-for-check-configuration-support③">Check Configuration Support</a> algorithm with <var>config</var>.</p>
+        <li data-md>
+         <p><a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task" id="ref-for-queue-a-task①⑦">Queue a task</a> to run the following steps:</p>
          <ol>
           <li data-md>
-           <p>Set <code class="idl"><a data-link-type="idl" href="#dom-videodecodersupport-config" id="ref-for-dom-videodecodersupport-config②">config</a></code> to the result of running the <a data-link-type="dfn" href="#clone-configuration" id="ref-for-clone-configuration①">Clone Configuration</a> algorithm with <var>config</var>.</p>
+           <p>Let <var>decoderSupport</var> be a newly constructed <code class="idl"><a data-link-type="idl" href="#dictdef-videodecodersupport" id="ref-for-dictdef-videodecodersupport②">VideoDecoderSupport</a></code>, initialized as follows:</p>
+           <ol>
+            <li data-md>
+             <p>Set <code class="idl"><a data-link-type="idl" href="#dom-videodecodersupport-config" id="ref-for-dom-videodecodersupport-config②">config</a></code> to the result of running the <a data-link-type="dfn" href="#clone-configuration" id="ref-for-clone-configuration①">Clone Configuration</a> algorithm with <var>config</var>.</p>
+            <li data-md>
+             <p>Set <code class="idl"><a data-link-type="idl" href="#dom-videodecodersupport-supported" id="ref-for-dom-videodecodersupport-supported">supported</a></code> to <var>supported</var>.</p>
+           </ol>
           <li data-md>
-           <p>Set <code class="idl"><a data-link-type="idl" href="#dom-videodecodersupport-supported" id="ref-for-dom-videodecodersupport-supported">supported</a></code> to the result of running
-the <a data-link-type="dfn" href="#check-configuration-support" id="ref-for-check-configuration-support③">Check Configuration Support</a> algorithm with <var>config</var>.</p>
+           <p>Resolve <var>p</var> with <var>decoderSupport</var>.</p>
          </ol>
-        <li data-md>
-         <p>Resolve <var>p</var> with <var>decoderSupport</var>.</p>
        </ol>
       <li data-md>
        <p>Return <var>p</var>.</p>
@@ -1816,7 +1839,7 @@ the <a data-link-type="dfn" href="#check-configuration-support" id="ref-for-chec
       <li data-md>
        <p>Assign <code>true</code> to <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-dequeue-event-scheduled-slot" id="ref-for-dom-videodecoder-dequeue-event-scheduled-slot②">[[dequeue event scheduled]]</a></code>.</p>
       <li data-md>
-       <p><a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task" id="ref-for-queue-a-task①③">Queue a task</a> to run the following steps:</p>
+       <p><a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task" id="ref-for-queue-a-task①⑧">Queue a task</a> to run the following steps:</p>
        <ol>
         <li data-md>
          <p>Fire a simple event named <code class="idl"><a data-link-type="idl" href="#eventdef-videodecoder-dequeue" id="ref-for-eventdef-videodecoder-dequeue②">dequeue</a></code> at <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#this" id="ref-for-this①">this</a>.</p>
@@ -1836,7 +1859,7 @@ the <a data-link-type="dfn" href="#check-configuration-support" id="ref-for-chec
         <li data-md>
          <p>Let <var>displayAspectWidth</var> and <var>displayAspectHeight</var> be undefined.</p>
         <li data-md>
-         <p>If <code class="idl"><a data-link-type="idl" href="#dom-videodecoderconfig-displayaspectwidth" id="ref-for-dom-videodecoderconfig-displayaspectwidth">displayAspectWidth</a></code> and <code class="idl"><a data-link-type="idl" href="#dom-videodecoderconfig-displayaspectheight" id="ref-for-dom-videodecoderconfig-displayaspectheight">displayAspectHeight</a></code> <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#map-exists" id="ref-for-map-exists">exist</a> in the <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-active-decoder-config-slot" id="ref-for-dom-videodecoder-active-decoder-config-slot②">[[active decoder config]]</a></code>, assign their values to <var>displayAspectWidth</var> and <var>displayAspectHeight</var> respectively.</p>
+         <p>If <code class="idl"><a data-link-type="idl" href="#dom-videodecoderconfig-displayaspectwidth" id="ref-for-dom-videodecoderconfig-displayaspectwidth">displayAspectWidth</a></code> and <code class="idl"><a data-link-type="idl" href="#dom-videodecoderconfig-displayaspectheight" id="ref-for-dom-videodecoderconfig-displayaspectheight">displayAspectHeight</a></code> <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#map-exists" id="ref-for-map-exists">exist</a> in the <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-active-decoder-config-slot" id="ref-for-dom-videodecoder-active-decoder-config-slot①">[[active decoder config]]</a></code>, assign their values to <var>displayAspectWidth</var> and <var>displayAspectHeight</var> respectively.</p>
         <li data-md>
          <p>Let <var>colorSpace</var> be the <code class="idl"><a data-link-type="idl" href="#videocolorspace" id="ref-for-videocolorspace">VideoColorSpace</a></code> for <var>output</var> as detected
 by the codec implementation. If no <code class="idl"><a data-link-type="idl" href="#videocolorspace" id="ref-for-videocolorspace①">VideoColorSpace</a></code> is detected,
@@ -1846,7 +1869,7 @@ let <var>colorSpace</var> be <code>undefined</code>.</p>
     basis. The exact method of detection is implementer defined and
     codec-specific.  Authors can override the detected <code class="idl"><a data-link-type="idl" href="#videocolorspace" id="ref-for-videocolorspace③">VideoColorSpace</a></code> by providing a <code class="idl"><a data-link-type="idl" href="#dom-videodecoderconfig-colorspace" id="ref-for-dom-videodecoderconfig-colorspace">colorSpace</a></code> in the <code class="idl"><a data-link-type="idl" href="#dictdef-videodecoderconfig" id="ref-for-dictdef-videodecoderconfig③">VideoDecoderConfig</a></code>.</p>
         <li data-md>
-         <p>If <code class="idl"><a data-link-type="idl" href="#dom-videodecoderconfig-colorspace" id="ref-for-dom-videodecoderconfig-colorspace①">colorSpace</a></code> <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#map-exists" id="ref-for-map-exists①">exists</a> in the <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-active-decoder-config-slot" id="ref-for-dom-videodecoder-active-decoder-config-slot③">[[active decoder config]]</a></code>, assign its value to <var>colorSpace</var>.</p>
+         <p>If <code class="idl"><a data-link-type="idl" href="#dom-videodecoderconfig-colorspace" id="ref-for-dom-videodecoderconfig-colorspace①">colorSpace</a></code> <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#map-exists" id="ref-for-map-exists①">exists</a> in the <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-active-decoder-config-slot" id="ref-for-dom-videodecoder-active-decoder-config-slot②">[[active decoder config]]</a></code>, assign its value to <var>colorSpace</var>.</p>
         <li data-md>
          <p>Let <var>frame</var> be the result of running the <a data-link-type="dfn" href="#create-a-videoframe" id="ref-for-create-a-videoframe">Create a VideoFrame</a> algorithm with <var>output</var>, <var>timestamp</var>, <var>duration</var>, <var>displayAspectWidth</var>, <var>displayAspectHeight</var>, and <var>colorSpace</var>.</p>
         <li data-md>
@@ -1894,7 +1917,8 @@ output for the previous configuration.</p>
       <li data-md>
        <p>Clear <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-codec-implementation-slot" id="ref-for-dom-videodecoder-codec-implementation-slot①③">[[codec implementation]]</a></code> and release associated <a data-link-type="dfn" href="#system-resources" id="ref-for-system-resources③">system resources</a>.</p>
       <li data-md>
-       <p>If <var>exception</var> is not an <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#aborterror" id="ref-for-aborterror⑤">AbortError</a></code> <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-DOMException" id="ref-for-idl-DOMException⑦">DOMException</a></code>, <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task" id="ref-for-queue-a-task①④">queue a task</a> to invoke the <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-error-callback-slot" id="ref-for-dom-videodecoder-error-callback-slot①">[[error callback]]</a></code> with <var>exception</var>.</p>
+       <p>If <var>exception</var> is not an <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#aborterror" id="ref-for-aborterror⑤">AbortError</a></code> <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-DOMException" id="ref-for-idl-DOMException⑦">DOMException</a></code>,
+invoke the <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-error-callback-slot" id="ref-for-dom-videodecoder-error-callback-slot①">[[error callback]]</a></code> with <var>exception</var>.</p>
      </ol>
    </dl>
    <h2 class="heading settled" data-level="5" id="audioencoder-interface"><span class="secno">5. </span><span class="content">AudioEncoder Interface</span><a class="self-link" href="#audioencoder-interface"></a></h2>
@@ -2050,26 +2074,30 @@ decreased.</p>
     these steps:</p>
      <ol>
       <li data-md>
-       <p>Let <var>supported</var> be the result of running the <a data-link-type="dfn" href="#check-configuration-support" id="ref-for-check-configuration-support④">Check Configuration
-Support</a> algorithm with <var>config</var>.</p>
-      <li data-md>
-       <p>If <var>supported</var> is <code>true</code>, assign <code class="idl"><a data-link-type="idl" href="#dom-audioencoder-codec-implementation-slot" id="ref-for-dom-audioencoder-codec-implementation-slot③">[[codec implementation]]</a></code> with an implementation
-supporting <var>config</var>.</p>
-      <li data-md>
-       <p>Otherwise, run the <a data-link-type="dfn" href="#close-audioencoder" id="ref-for-close-audioencoder">Close AudioEncoder</a> algorithm with <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#notsupportederror" id="ref-for-notsupportederror⑤">NotSupportedError</a></code> and return <code>"processed"</code>.</p>
-      <li data-md>
        <p>Assign <code>true</code> to <code class="idl"><a data-link-type="idl" href="#dom-audioencoder-message-queue-blocked-slot" id="ref-for-dom-audioencoder-message-queue-blocked-slot①">[[message queue blocked]]</a></code>.</p>
       <li data-md>
        <p>Enqueue the following steps to <code class="idl"><a data-link-type="idl" href="#dom-audioencoder-codec-work-queue-slot" id="ref-for-dom-audioencoder-codec-work-queue-slot①">[[codec work queue]]</a></code>:</p>
        <ol>
         <li data-md>
+         <p>Let <var>supported</var> be the result of running the <a data-link-type="dfn" href="#check-configuration-support" id="ref-for-check-configuration-support④">Check Configuration
+Support</a> algorithm with <var>config</var>.</p>
+        <li data-md>
+         <p>If <var>supported</var> is <code>false</code>, <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task" id="ref-for-queue-a-task①⑨">queue a task</a> to run the <a data-link-type="dfn" href="#close-audioencoder" id="ref-for-close-audioencoder">Close
+AudioEncoder</a> algorithm with <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#notsupportederror" id="ref-for-notsupportederror⑤">NotSupportedError</a></code> and abort
+these steps.</p>
+        <li data-md>
+         <p>If needed, assign <code class="idl"><a data-link-type="idl" href="#dom-audioencoder-codec-implementation-slot" id="ref-for-dom-audioencoder-codec-implementation-slot③">[[codec implementation]]</a></code> with an
+implementation supporting <var>config</var>.</p>
+        <li data-md>
          <p>Configure <code class="idl"><a data-link-type="idl" href="#dom-audioencoder-codec-implementation-slot" id="ref-for-dom-audioencoder-codec-implementation-slot④">[[codec implementation]]</a></code> with <var>config</var>.</p>
         <li data-md>
-         <p>Set <code class="idl"><a data-link-type="idl" href="#dom-audioencoder-active-encoder-config-slot" id="ref-for-dom-audioencoder-active-encoder-config-slot①">[[active encoder config]]</a></code> to <code>config</code>.</p>
-        <li data-md>
-         <p>Assign <code>false</code> to <code class="idl"><a data-link-type="idl" href="#dom-audioencoder-message-queue-blocked-slot" id="ref-for-dom-audioencoder-message-queue-blocked-slot②">[[message queue blocked]]</a></code>.</p>
-        <li data-md>
-         <p><a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task" id="ref-for-queue-a-task①⑤">Queue a task</a> to <a data-link-type="dfn" href="#process-the-control-message-queue" id="ref-for-process-the-control-message-queue①②">Process the control message queue</a>.</p>
+         <p><a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task" id="ref-for-queue-a-task②⓪">queue a task</a> to run the following steps:</p>
+         <ol>
+          <li data-md>
+           <p>Assign <code>false</code> to <code class="idl"><a data-link-type="idl" href="#dom-audioencoder-message-queue-blocked-slot" id="ref-for-dom-audioencoder-message-queue-blocked-slot②">[[message queue blocked]]</a></code>.</p>
+          <li data-md>
+           <p><a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task" id="ref-for-queue-a-task②①">Queue a task</a> to <a data-link-type="dfn" href="#process-the-control-message-queue" id="ref-for-process-the-control-message-queue①②">Process the control message queue</a>.</p>
+         </ol>
        </ol>
       <li data-md>
        <p>Return <code>"processed"</code>.</p>
@@ -2110,9 +2138,9 @@ assign <code>true</code> to <code class="idl"><a data-link-type="idl" href="#dom
          <p>Attempt to use <code class="idl"><a data-link-type="idl" href="#dom-audioencoder-codec-implementation-slot" id="ref-for-dom-audioencoder-codec-implementation-slot⑥">[[codec implementation]]</a></code> to encode
 the <a data-link-type="dfn" href="#media-resource" id="ref-for-media-resource②">media resource</a> described by <var>dataClone</var>.</p>
         <li data-md>
-         <p>If encoding results in an error, <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task" id="ref-for-queue-a-task①⑥">queue a task</a> to run the <a data-link-type="dfn" href="#close-audioencoder" id="ref-for-close-audioencoder①">Close AudioEncoder</a> algorithm with <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#encodingerror" id="ref-for-encodingerror②">EncodingError</a></code> and return.</p>
+         <p>If encoding results in an error, <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task" id="ref-for-queue-a-task②②">queue a task</a> to run the <a data-link-type="dfn" href="#close-audioencoder" id="ref-for-close-audioencoder①">Close AudioEncoder</a> algorithm with <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#encodingerror" id="ref-for-encodingerror②">EncodingError</a></code> and return.</p>
         <li data-md>
-         <p>If <code class="idl"><a data-link-type="idl" href="#dom-audioencoder-codec-saturated-slot" id="ref-for-dom-audioencoder-codec-saturated-slot③">[[codec saturated]]</a></code> equals <code>true</code> and <code class="idl"><a data-link-type="idl" href="#dom-audioencoder-codec-implementation-slot" id="ref-for-dom-audioencoder-codec-implementation-slot⑦">[[codec implementation]]</a></code> is no longer <a data-link-type="dfn" href="#saturated" id="ref-for-saturated⑤">saturated</a>, <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task" id="ref-for-queue-a-task①⑦">queue a task</a> to perform the following steps:</p>
+         <p>If <code class="idl"><a data-link-type="idl" href="#dom-audioencoder-codec-saturated-slot" id="ref-for-dom-audioencoder-codec-saturated-slot③">[[codec saturated]]</a></code> equals <code>true</code> and <code class="idl"><a data-link-type="idl" href="#dom-audioencoder-codec-implementation-slot" id="ref-for-dom-audioencoder-codec-implementation-slot⑦">[[codec implementation]]</a></code> is no longer <a data-link-type="dfn" href="#saturated" id="ref-for-saturated⑤">saturated</a>, <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task" id="ref-for-queue-a-task②③">queue a task</a> to perform the following steps:</p>
          <ol>
           <li data-md>
            <p>Assign <code>false</code> to <code class="idl"><a data-link-type="idl" href="#dom-audioencoder-codec-saturated-slot" id="ref-for-dom-audioencoder-codec-saturated-slot④">[[codec saturated]]</a></code>.</p>
@@ -2123,7 +2151,7 @@ the <a data-link-type="dfn" href="#media-resource" id="ref-for-media-resource②
          <p>Let <var>encoded outputs</var> be a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list" id="ref-for-list⑦">list</a> of encoded audio data outputs
 emitted by <code class="idl"><a data-link-type="idl" href="#dom-audioencoder-codec-implementation-slot" id="ref-for-dom-audioencoder-codec-implementation-slot⑧">[[codec implementation]]</a></code>.</p>
         <li data-md>
-         <p>If <var>encoded outputs</var> is not empty, <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task" id="ref-for-queue-a-task①⑧">queue a task</a> to run the <a data-link-type="dfn" href="#output-encodedaudiochunks" id="ref-for-output-encodedaudiochunks">Output EncodedAudioChunks</a> algorithm with <var>encoded outputs</var>.</p>
+         <p>If <var>encoded outputs</var> is not empty, <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task" id="ref-for-queue-a-task②④">queue a task</a> to run the <a data-link-type="dfn" href="#output-encodedaudiochunks" id="ref-for-output-encodedaudiochunks">Output EncodedAudioChunks</a> algorithm with <var>encoded outputs</var>.</p>
        </ol>
       <li data-md>
        <p>Return <code>"processed"</code>.</p>
@@ -2158,7 +2186,7 @@ emitted by <code class="idl"><a data-link-type="idl" href="#dom-audioencoder-cod
          <p>Let <var>encoded outputs</var> be a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list" id="ref-for-list⑧">list</a> of encoded audio data outputs
 emitted by <code class="idl"><a data-link-type="idl" href="#dom-audioencoder-codec-implementation-slot" id="ref-for-dom-audioencoder-codec-implementation-slot①⓪">[[codec implementation]]</a></code>.</p>
         <li data-md>
-         <p><a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task" id="ref-for-queue-a-task①⑨">Queue a task</a> to perform these steps:</p>
+         <p><a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task" id="ref-for-queue-a-task②⑤">Queue a task</a> to perform these steps:</p>
          <ol>
           <li data-md>
            <p>If <var>encoded outputs</var> is not empty, run the <a data-link-type="dfn" href="#output-encodedaudiochunks" id="ref-for-output-encodedaudiochunks①">Output EncodedAudioChunks</a> algorithm with <var>encoded outputs</var>.</p>
@@ -2199,16 +2227,22 @@ queue</a>.</p>
        <p>Enqueue the following steps to <var>checkSupportQueue</var>:</p>
        <ol>
         <li data-md>
-         <p>Let <var>encoderSupport</var> be a newly constructed <code class="idl"><a data-link-type="idl" href="#dictdef-audioencodersupport" id="ref-for-dictdef-audioencodersupport②">AudioEncoderSupport</a></code>, initialized as follows:</p>
+         <p>Let <var>supported</var> be the result of running
+the <a data-link-type="dfn" href="#check-configuration-support" id="ref-for-check-configuration-support⑤">Check Configuration Support</a> algorithm with <var>config</var>.</p>
+        <li data-md>
+         <p><a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task" id="ref-for-queue-a-task②⑥">Queue a task</a> to run the following steps:</p>
          <ol>
           <li data-md>
-           <p>Set <code class="idl"><a data-link-type="idl" href="#dom-audioencodersupport-config" id="ref-for-dom-audioencodersupport-config②">config</a></code> to the result of running the <a data-link-type="dfn" href="#clone-configuration" id="ref-for-clone-configuration②">Clone Configuration</a> algorithm with <var>config</var>.</p>
+           <p>Let <var>encoderSupport</var> be a newly constructed <code class="idl"><a data-link-type="idl" href="#dictdef-audioencodersupport" id="ref-for-dictdef-audioencodersupport②">AudioEncoderSupport</a></code>, initialized as follows:</p>
+           <ol>
+            <li data-md>
+             <p>Set <code class="idl"><a data-link-type="idl" href="#dom-audioencodersupport-config" id="ref-for-dom-audioencodersupport-config②">config</a></code> to the result of running the <a data-link-type="dfn" href="#clone-configuration" id="ref-for-clone-configuration②">Clone Configuration</a> algorithm with <var>config</var>.</p>
+            <li data-md>
+             <p>Set <code class="idl"><a data-link-type="idl" href="#dom-audioencodersupport-supported" id="ref-for-dom-audioencodersupport-supported">supported</a></code> to <var>supported</var>.</p>
+           </ol>
           <li data-md>
-           <p>Set <code class="idl"><a data-link-type="idl" href="#dom-audioencodersupport-supported" id="ref-for-dom-audioencodersupport-supported">supported</a></code> to the result of running
-the <a data-link-type="dfn" href="#check-configuration-support" id="ref-for-check-configuration-support⑤">Check Configuration Support</a> algorithm with <var>config</var>.</p>
+           <p>Resolve <var>p</var> with <var>encoderSupport</var>.</p>
          </ol>
-        <li data-md>
-         <p>Resolve <var>p</var> with <var>encoderSupport</var>.</p>
        </ol>
       <li data-md>
        <p>Return <var>p</var>.</p>
@@ -2224,7 +2258,7 @@ the <a data-link-type="dfn" href="#check-configuration-support" id="ref-for-chec
       <li data-md>
        <p>Assign <code>true</code> to <code class="idl"><a data-link-type="idl" href="#dom-audioencoder-dequeue-event-scheduled-slot" id="ref-for-dom-audioencoder-dequeue-event-scheduled-slot②">[[dequeue event scheduled]]</a></code>.</p>
       <li data-md>
-       <p><a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task" id="ref-for-queue-a-task②⓪">Queue a task</a> to run the following steps:</p>
+       <p><a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task" id="ref-for-queue-a-task②⑦">Queue a task</a> to run the following steps:</p>
        <ol>
         <li data-md>
          <p>Fire a simple event named <code class="idl"><a data-link-type="idl" href="#eventdef-audioencoder-dequeue" id="ref-for-eventdef-audioencoder-dequeue②">dequeue</a></code> at <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#this" id="ref-for-this②">this</a>.</p>
@@ -2258,7 +2292,7 @@ from <var>output</var>.</p>
         <li data-md>
          <p>Let <var>chunkMetadata</var> be a new <code class="idl"><a data-link-type="idl" href="#dictdef-encodedaudiochunkmetadata" id="ref-for-dictdef-encodedaudiochunkmetadata①">EncodedAudioChunkMetadata</a></code>.</p>
         <li data-md>
-         <p>Let <var>encoderConfig</var> be the <code class="idl"><a data-link-type="idl" href="#dom-audioencoder-active-encoder-config-slot" id="ref-for-dom-audioencoder-active-encoder-config-slot②">[[active encoder config]]</a></code>.</p>
+         <p>Let <var>encoderConfig</var> be the <code class="idl"><a data-link-type="idl" href="#dom-audioencoder-active-encoder-config-slot" id="ref-for-dom-audioencoder-active-encoder-config-slot①">[[active encoder config]]</a></code>.</p>
         <li data-md>
          <p>Let <var>outputConfig</var> be a new <code class="idl"><a data-link-type="idl" href="#dictdef-audiodecoderconfig" id="ref-for-dictdef-audiodecoderconfig③">AudioDecoderConfig</a></code> that describes <var>output</var>. Initialize <var>outputConfig</var> as follows:</p>
          <ol>
@@ -2296,7 +2330,7 @@ not <a data-link-type="dfn" href="#equal-dictionaries" id="ref-for-equal-diction
       <li data-md>
        <p>Set <code class="idl"><a data-link-type="idl" href="#dom-audioencoder-state-slot" id="ref-for-dom-audioencoder-state-slot⑦">[[state]]</a></code> to <code>"unconfigured"</code>.</p>
       <li data-md>
-       <p>Set <code class="idl"><a data-link-type="idl" href="#dom-audioencoder-active-encoder-config-slot" id="ref-for-dom-audioencoder-active-encoder-config-slot③">[[active encoder config]]</a></code> to <code>null</code>.</p>
+       <p>Set <code class="idl"><a data-link-type="idl" href="#dom-audioencoder-active-encoder-config-slot" id="ref-for-dom-audioencoder-active-encoder-config-slot②">[[active encoder config]]</a></code> to <code>null</code>.</p>
       <li data-md>
        <p>Set <code class="idl"><a data-link-type="idl" href="#dom-audioencoder-active-output-config-slot" id="ref-for-dom-audioencoder-active-output-config-slot③">[[active output config]]</a></code> to <code>null</code>.</p>
       <li data-md>
@@ -2332,7 +2366,8 @@ output for the previous configuration.</p>
       <li data-md>
        <p>Clear <code class="idl"><a data-link-type="idl" href="#dom-audioencoder-codec-implementation-slot" id="ref-for-dom-audioencoder-codec-implementation-slot①③">[[codec implementation]]</a></code> and release associated <a data-link-type="dfn" href="#system-resources" id="ref-for-system-resources⑤">system resources</a>.</p>
       <li data-md>
-       <p>If <var>exception</var> is not an <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#aborterror" id="ref-for-aborterror⑧">AbortError</a></code> <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-DOMException" id="ref-for-idl-DOMException①①">DOMException</a></code>, <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task" id="ref-for-queue-a-task②①">queue a task</a> to invoke the <code class="idl"><a data-link-type="idl" href="#dom-audioencoder-error-callback-slot" id="ref-for-dom-audioencoder-error-callback-slot①">[[error callback]]</a></code> with <var>exception</var>.</p>
+       <p>If <var>exception</var> is not an <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#aborterror" id="ref-for-aborterror⑧">AbortError</a></code> <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-DOMException" id="ref-for-idl-DOMException①①">DOMException</a></code>,
+invoke the <code class="idl"><a data-link-type="idl" href="#dom-audioencoder-error-callback-slot" id="ref-for-dom-audioencoder-error-callback-slot①">[[error callback]]</a></code> with <var>exception</var>.</p>
      </ol>
    </dl>
    <h3 class="heading settled" data-level="5.7" id="encoded-audio-chunk-metadata"><span class="secno">5.7. </span><span class="content">EncodedAudioChunkMetadata</span><a class="self-link" href="#encoded-audio-chunk-metadata"></a></h3>
@@ -2501,26 +2536,30 @@ decreased.</p>
     these steps:</p>
      <ol>
       <li data-md>
-       <p>Let <var>supported</var> be the result of running the <a data-link-type="dfn" href="#check-configuration-support" id="ref-for-check-configuration-support⑥">Check Configuration
-Support</a> algorithm with <var>config</var>.</p>
-      <li data-md>
-       <p>If <var>supported</var> is <code>true</code>, assign <code class="idl"><a data-link-type="idl" href="#dom-videoencoder-codec-implementation-slot" id="ref-for-dom-videoencoder-codec-implementation-slot③">[[codec implementation]]</a></code> with an implementation
-supporting <var>config</var>.</p>
-      <li data-md>
-       <p>Otherwise, run the <a data-link-type="dfn" href="#close-videoencoder" id="ref-for-close-videoencoder">Close VideoEncoder</a> algorithm with <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#notsupportederror" id="ref-for-notsupportederror⑦">NotSupportedError</a></code> and return <code>"processed"</code>.</p>
-      <li data-md>
        <p>Assign <code>true</code> to <code class="idl"><a data-link-type="idl" href="#dom-videoencoder-message-queue-blocked-slot" id="ref-for-dom-videoencoder-message-queue-blocked-slot①">[[message queue blocked]]</a></code>.</p>
       <li data-md>
        <p>Enqueue the following steps to <code class="idl"><a data-link-type="idl" href="#dom-videoencoder-codec-work-queue-slot" id="ref-for-dom-videoencoder-codec-work-queue-slot①">[[codec work queue]]</a></code>:</p>
        <ol>
         <li data-md>
+         <p>Let <var>supported</var> be the result of running the <a data-link-type="dfn" href="#check-configuration-support" id="ref-for-check-configuration-support⑥">Check Configuration
+Support</a> algorithm with <var>config</var>.</p>
+        <li data-md>
+         <p>If <var>supported</var> is <code>false</code>, <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task" id="ref-for-queue-a-task②⑧">queue a task</a> to run the <a data-link-type="dfn" href="#close-videoencoder" id="ref-for-close-videoencoder">Close
+VideoEncoder</a> algorithm with <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#notsupportederror" id="ref-for-notsupportederror⑦">NotSupportedError</a></code> and abort
+these steps.</p>
+        <li data-md>
+         <p>If needed, assign <code class="idl"><a data-link-type="idl" href="#dom-videoencoder-codec-implementation-slot" id="ref-for-dom-videoencoder-codec-implementation-slot③">[[codec implementation]]</a></code> with an
+implementation supporting <var>config</var>.</p>
+        <li data-md>
          <p>Configure <code class="idl"><a data-link-type="idl" href="#dom-videoencoder-codec-implementation-slot" id="ref-for-dom-videoencoder-codec-implementation-slot④">[[codec implementation]]</a></code> with <var>config</var>.</p>
         <li data-md>
-         <p>Set <code class="idl"><a data-link-type="idl" href="#dom-videoencoder-active-encoder-config-slot" id="ref-for-dom-videoencoder-active-encoder-config-slot①">[[active encoder config]]</a></code> to <code>config</code>.</p>
-        <li data-md>
-         <p>Assign <code>false</code> to <code class="idl"><a data-link-type="idl" href="#dom-videoencoder-message-queue-blocked-slot" id="ref-for-dom-videoencoder-message-queue-blocked-slot②">[[message queue blocked]]</a></code>.</p>
-        <li data-md>
-         <p><a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task" id="ref-for-queue-a-task②②">Queue a task</a> to <a data-link-type="dfn" href="#process-the-control-message-queue" id="ref-for-process-the-control-message-queue①⑦">Process the control message queue</a>.</p>
+         <p><a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task" id="ref-for-queue-a-task②⑨">queue a task</a> to run the following steps:</p>
+         <ol>
+          <li data-md>
+           <p>Assign <code>false</code> to <code class="idl"><a data-link-type="idl" href="#dom-videoencoder-message-queue-blocked-slot" id="ref-for-dom-videoencoder-message-queue-blocked-slot②">[[message queue blocked]]</a></code>.</p>
+          <li data-md>
+           <p><a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task" id="ref-for-queue-a-task③⓪">Queue a task</a> to <a data-link-type="dfn" href="#process-the-control-message-queue" id="ref-for-process-the-control-message-queue①⑦">Process the control message queue</a>.</p>
+         </ol>
        </ol>
       <li data-md>
        <p>Return <code>"processed"</code>.</p>
@@ -2561,9 +2600,9 @@ assign <code>true</code> to <code class="idl"><a data-link-type="idl" href="#dom
          <p>Attempt to use <code class="idl"><a data-link-type="idl" href="#dom-videoencoder-codec-implementation-slot" id="ref-for-dom-videoencoder-codec-implementation-slot⑥">[[codec implementation]]</a></code> to encode
 the <var>frameClone</var> according to <var>options</var>.</p>
         <li data-md>
-         <p>If encoding results in an error, <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task" id="ref-for-queue-a-task②③">queue a task</a> to run the <a data-link-type="dfn" href="#close-videoencoder" id="ref-for-close-videoencoder①">Close VideoEncoder</a> algorithm with <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#encodingerror" id="ref-for-encodingerror③">EncodingError</a></code> and return.</p>
+         <p>If encoding results in an error, <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task" id="ref-for-queue-a-task③①">queue a task</a> to run the <a data-link-type="dfn" href="#close-videoencoder" id="ref-for-close-videoencoder①">Close VideoEncoder</a> algorithm with <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#encodingerror" id="ref-for-encodingerror③">EncodingError</a></code> and return.</p>
         <li data-md>
-         <p>If <code class="idl"><a data-link-type="idl" href="#dom-videoencoder-codec-saturated-slot" id="ref-for-dom-videoencoder-codec-saturated-slot③">[[codec saturated]]</a></code> equals <code>true</code> and <code class="idl"><a data-link-type="idl" href="#dom-videoencoder-codec-implementation-slot" id="ref-for-dom-videoencoder-codec-implementation-slot⑦">[[codec implementation]]</a></code> is no longer <a data-link-type="dfn" href="#saturated" id="ref-for-saturated⑦">saturated</a>, <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task" id="ref-for-queue-a-task②④">queue a task</a> to perform the following steps:</p>
+         <p>If <code class="idl"><a data-link-type="idl" href="#dom-videoencoder-codec-saturated-slot" id="ref-for-dom-videoencoder-codec-saturated-slot③">[[codec saturated]]</a></code> equals <code>true</code> and <code class="idl"><a data-link-type="idl" href="#dom-videoencoder-codec-implementation-slot" id="ref-for-dom-videoencoder-codec-implementation-slot⑦">[[codec implementation]]</a></code> is no longer <a data-link-type="dfn" href="#saturated" id="ref-for-saturated⑦">saturated</a>, <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task" id="ref-for-queue-a-task③②">queue a task</a> to perform the following steps:</p>
          <ol>
           <li data-md>
            <p>Assign <code>false</code> to <code class="idl"><a data-link-type="idl" href="#dom-videoencoder-codec-saturated-slot" id="ref-for-dom-videoencoder-codec-saturated-slot④">[[codec saturated]]</a></code>.</p>
@@ -2574,7 +2613,7 @@ the <var>frameClone</var> according to <var>options</var>.</p>
          <p>Let <var>encoded outputs</var> be a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list" id="ref-for-list①⓪">list</a> of encoded video data outputs
 emitted by <code class="idl"><a data-link-type="idl" href="#dom-videoencoder-codec-implementation-slot" id="ref-for-dom-videoencoder-codec-implementation-slot⑧">[[codec implementation]]</a></code>.</p>
         <li data-md>
-         <p>If <var>encoded outputs</var> is not empty, <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task" id="ref-for-queue-a-task②⑤">queue a task</a> to run the <a data-link-type="dfn" href="#output-encodedvideochunks" id="ref-for-output-encodedvideochunks">Output EncodedVideoChunks</a> algorithm with <var>encoded outputs</var>.</p>
+         <p>If <var>encoded outputs</var> is not empty, <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task" id="ref-for-queue-a-task③③">queue a task</a> to run the <a data-link-type="dfn" href="#output-encodedvideochunks" id="ref-for-output-encodedvideochunks">Output EncodedVideoChunks</a> algorithm with <var>encoded outputs</var>.</p>
        </ol>
       <li data-md>
        <p>Return <code>"processed"</code>.</p>
@@ -2609,7 +2648,7 @@ emitted by <code class="idl"><a data-link-type="idl" href="#dom-videoencoder-cod
          <p>Let <var>encoded outputs</var> be a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list" id="ref-for-list①①">list</a> of encoded video data outputs
 emitted by <code class="idl"><a data-link-type="idl" href="#dom-videoencoder-codec-implementation-slot" id="ref-for-dom-videoencoder-codec-implementation-slot①⓪">[[codec implementation]]</a></code>.</p>
         <li data-md>
-         <p><a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task" id="ref-for-queue-a-task②⑥">Queue a task</a> to perform these steps:</p>
+         <p><a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task" id="ref-for-queue-a-task③④">Queue a task</a> to perform these steps:</p>
          <ol>
           <li data-md>
            <p>If <var>encoded outputs</var> is not empty, run the <a data-link-type="dfn" href="#output-encodedvideochunks" id="ref-for-output-encodedvideochunks①">Output EncodedVideoChunks</a> algorithm with <var>encoded outputs</var>.</p>
@@ -2650,13 +2689,19 @@ queue</a>.</p>
        <p>Enqueue the following steps to <var>checkSupportQueue</var>:</p>
        <ol>
         <li data-md>
-         <p>Let <var>encoderSupport</var> be a newly constructed <code class="idl"><a data-link-type="idl" href="#dictdef-videoencodersupport" id="ref-for-dictdef-videoencodersupport②">VideoEncoderSupport</a></code>, initialized as follows:</p>
+         <p>Let <var>supported</var> be the result of running
+the <a data-link-type="dfn" href="#check-configuration-support" id="ref-for-check-configuration-support⑦">Check Configuration Support</a> algorithm with <var>config</var>.</p>
+        <li data-md>
+         <p><a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task" id="ref-for-queue-a-task③⑤">Queue a task</a> to run the following steps:</p>
          <ol>
           <li data-md>
-           <p>Set <code class="idl"><a data-link-type="idl" href="#dom-videoencodersupport-config" id="ref-for-dom-videoencodersupport-config②">config</a></code> to the result of running the <a data-link-type="dfn" href="#clone-configuration" id="ref-for-clone-configuration③">Clone Configuration</a> algorithm with <var>config</var>.</p>
-          <li data-md>
-           <p>Set <code class="idl"><a data-link-type="idl" href="#dom-videoencodersupport-supported" id="ref-for-dom-videoencodersupport-supported">supported</a></code> to the result of running
-the <a data-link-type="dfn" href="#check-configuration-support" id="ref-for-check-configuration-support⑦">Check Configuration Support</a> algorithm with <var>config</var>.</p>
+           <p>Let <var>encoderSupport</var> be a newly constructed <code class="idl"><a data-link-type="idl" href="#dictdef-videoencodersupport" id="ref-for-dictdef-videoencodersupport②">VideoEncoderSupport</a></code>, initialized as follows:</p>
+           <ol>
+            <li data-md>
+             <p>Set <code class="idl"><a data-link-type="idl" href="#dom-videoencodersupport-config" id="ref-for-dom-videoencodersupport-config②">config</a></code> to the result of running the <a data-link-type="dfn" href="#clone-configuration" id="ref-for-clone-configuration③">Clone Configuration</a> algorithm with <var>config</var>.</p>
+            <li data-md>
+             <p>Set <code class="idl"><a data-link-type="idl" href="#dom-videoencodersupport-supported" id="ref-for-dom-videoencodersupport-supported">supported</a></code> to <var>supported</var>.</p>
+           </ol>
          </ol>
         <li data-md>
          <p>Resolve <var>p</var> with <var>encoderSupport</var>.</p>
@@ -2675,7 +2720,7 @@ the <a data-link-type="dfn" href="#check-configuration-support" id="ref-for-chec
       <li data-md>
        <p>Assign <code>true</code> to <code class="idl"><a data-link-type="idl" href="#dom-videoencoder-dequeue-event-scheduled-slot" id="ref-for-dom-videoencoder-dequeue-event-scheduled-slot②">[[dequeue event scheduled]]</a></code>.</p>
       <li data-md>
-       <p><a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task" id="ref-for-queue-a-task②⑦">Queue a task</a> to run the following steps:</p>
+       <p><a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task" id="ref-for-queue-a-task③⑥">Queue a task</a> to run the following steps:</p>
        <ol>
         <li data-md>
          <p>Fire a simple event named <code class="idl"><a data-link-type="idl" href="#eventdef-videoencoder-dequeue" id="ref-for-eventdef-videoencoder-dequeue②">dequeue</a></code> at <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#this" id="ref-for-this③">this</a>.</p>
@@ -2710,7 +2755,7 @@ with <var>output</var>.</p>
         <li data-md>
          <p>Let <var>chunkMetadata</var> be a new <code class="idl"><a data-link-type="idl" href="#dictdef-encodedvideochunkmetadata" id="ref-for-dictdef-encodedvideochunkmetadata①">EncodedVideoChunkMetadata</a></code>.</p>
         <li data-md>
-         <p>Let <var>encoderConfig</var> be the <code class="idl"><a data-link-type="idl" href="#dom-videoencoder-active-encoder-config-slot" id="ref-for-dom-videoencoder-active-encoder-config-slot②">[[active encoder config]]</a></code>.</p>
+         <p>Let <var>encoderConfig</var> be the <code class="idl"><a data-link-type="idl" href="#dom-videoencoder-active-encoder-config-slot" id="ref-for-dom-videoencoder-active-encoder-config-slot①">[[active encoder config]]</a></code>.</p>
         <li data-md>
          <p>Let <var>outputConfig</var> be a <code class="idl"><a data-link-type="idl" href="#dictdef-videodecoderconfig" id="ref-for-dictdef-videodecoderconfig⑤">VideoDecoderConfig</a></code> that describes <var>output</var>. Initialize <var>outputConfig</var> as follows:</p>
          <ol>
@@ -2773,7 +2818,7 @@ temporal layer for <var>output</var>.</p>
       <li data-md>
        <p>Set <code class="idl"><a data-link-type="idl" href="#dom-videoencoder-state-slot" id="ref-for-dom-videoencoder-state-slot⑦">[[state]]</a></code> to <code>"unconfigured"</code>.</p>
       <li data-md>
-       <p>Set <code class="idl"><a data-link-type="idl" href="#dom-videoencoder-active-encoder-config-slot" id="ref-for-dom-videoencoder-active-encoder-config-slot③">[[active encoder config]]</a></code> to <code>null</code>.</p>
+       <p>Set <code class="idl"><a data-link-type="idl" href="#dom-videoencoder-active-encoder-config-slot" id="ref-for-dom-videoencoder-active-encoder-config-slot②">[[active encoder config]]</a></code> to <code>null</code>.</p>
       <li data-md>
        <p>Set <code class="idl"><a data-link-type="idl" href="#dom-videoencoder-active-output-config-slot" id="ref-for-dom-videoencoder-active-output-config-slot③">[[active output config]]</a></code> to <code>null</code>.</p>
       <li data-md>
@@ -2809,7 +2854,8 @@ output for the previous configuration.</p>
       <li data-md>
        <p>Clear <code class="idl"><a data-link-type="idl" href="#dom-videoencoder-codec-implementation-slot" id="ref-for-dom-videoencoder-codec-implementation-slot①③">[[codec implementation]]</a></code> and release associated <a data-link-type="dfn" href="#system-resources" id="ref-for-system-resources⑦">system resources</a>.</p>
       <li data-md>
-       <p>If <var>exception</var> is not an <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#aborterror" id="ref-for-aborterror①①">AbortError</a></code> <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-DOMException" id="ref-for-idl-DOMException①⑤">DOMException</a></code>, <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task" id="ref-for-queue-a-task②⑧">queue a task</a> to invoke the <code class="idl"><a data-link-type="idl" href="#dom-videoencoder-error-callback-slot" id="ref-for-dom-videoencoder-error-callback-slot①">[[error callback]]</a></code> with <var>exception</var>.</p>
+       <p>If <var>exception</var> is not an <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#aborterror" id="ref-for-aborterror①①">AbortError</a></code> <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-DOMException" id="ref-for-idl-DOMException①⑤">DOMException</a></code>,
+invoke the <code class="idl"><a data-link-type="idl" href="#dom-videoencoder-error-callback-slot" id="ref-for-dom-videoencoder-error-callback-slot①">[[error callback]]</a></code> with <var>exception</var>.</p>
      </ol>
    </dl>
    <h3 class="heading settled" data-level="6.7" id="encoded-video-chunk-metadata"><span class="secno">6.7. </span><span class="content">EncodedVideoChunkMetadata</span><a class="self-link" href="#encoded-video-chunk-metadata"></a></h3>
@@ -4701,7 +4747,7 @@ the position of <var>planeIndex</var></p>
            <p>Increment <var>planeIndex</var> by <code>1</code>.</p>
          </ol>
         <li data-md>
-         <p><a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task" id="ref-for-queue-a-task②⑨">Queue a task</a> to resolve <var>p</var>.</p>
+         <p><a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task" id="ref-for-queue-a-task③⑦">Queue a task</a> to resolve <var>p</var>.</p>
        </ol>
       <li data-md>
        <p>Return <var>p</var>.</p>
@@ -5807,7 +5853,7 @@ with the values given for <code class="idl"><a data-link-type="idl" href="#dom-i
         <li data-md>
          <p>Assign <code>false</code> to <code class="idl"><a data-link-type="idl" href="#dom-imagedecoder-message-queue-blocked-slot" id="ref-for-dom-imagedecoder-message-queue-blocked-slot②">[[message queue blocked]]</a></code>.</p>
         <li data-md>
-         <p><a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task" id="ref-for-queue-a-task③⓪">Queue a task</a> to <a data-link-type="dfn" href="#process-the-control-message-queue" id="ref-for-process-the-control-message-queue②③">Process the control message queue</a>.</p>
+         <p><a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task" id="ref-for-queue-a-task③⑧">Queue a task</a> to <a data-link-type="dfn" href="#process-the-control-message-queue" id="ref-for-process-the-control-message-queue②③">Process the control message queue</a>.</p>
        </ol>
       <li data-md>
        <p>Return <code>"processed"</code>.</p>
@@ -5926,7 +5972,7 @@ User Agent.</p>
           <li data-md>
            <p>If <code class="idl"><a data-link-type="idl" href="#dom-imagedecoder-closed-slot" id="ref-for-dom-imagedecoder-closed-slot②">[[closed]]</a></code> is <code>true</code>, abort these steps.</p>
           <li data-md>
-           <p>If <var>chunk</var> is not a Uint8Array object, <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task" id="ref-for-queue-a-task③①">queue a task</a> to run
+           <p>If <var>chunk</var> is not a Uint8Array object, <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task" id="ref-for-queue-a-task③⑨">queue a task</a> to run
 the <a data-link-type="dfn" href="#imagedecoder-close-imagedecoder" id="ref-for-imagedecoder-close-imagedecoder②">Close ImageDecoder</a> algorithm with a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#dataerror" id="ref-for-dataerror④">DataError</a></code> <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-DOMException" id="ref-for-idl-DOMException④⑥">DOMException</a></code> and abort these steps.</p>
           <li data-md>
            <p>Let <var>bytes</var> be the byte sequence represented by the Uint8Array
@@ -5952,7 +5998,7 @@ object.</p>
         <dd data-md>
          <ol>
           <li data-md>
-           <p><a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task" id="ref-for-queue-a-task③②">Queue a task</a> to run the <a data-link-type="dfn" href="#imagedecoder-close-imagedecoder" id="ref-for-imagedecoder-close-imagedecoder③">Close ImageDecoder</a> algorithm with a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#notreadableerror" id="ref-for-notreadableerror">NotReadableError</a></code> <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-DOMException" id="ref-for-idl-DOMException④⑦">DOMException</a></code></p>
+           <p><a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task" id="ref-for-queue-a-task④⓪">Queue a task</a> to run the <a data-link-type="dfn" href="#imagedecoder-close-imagedecoder" id="ref-for-imagedecoder-close-imagedecoder③">Close ImageDecoder</a> algorithm with a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#notreadableerror" id="ref-for-notreadableerror">NotReadableError</a></code> <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-DOMException" id="ref-for-idl-DOMException④⑦">DOMException</a></code></p>
          </ol>
        </dl>
       <li data-md>
@@ -5969,12 +6015,12 @@ object.</p>
 determine the number of tracks:</p>
        <ol>
         <li data-md>
-         <p>If <code class="idl"><a data-link-type="idl" href="#dom-imagedecoder-complete" id="ref-for-dom-imagedecoder-complete③">complete</a></code> is <code>true</code>, <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task" id="ref-for-queue-a-task③③">queue a task</a> to run the <a data-link-type="dfn" href="#imagedecoder-close-imagedecoder" id="ref-for-imagedecoder-close-imagedecoder④">Close ImageDecoder</a> algorithm.</p>
+         <p>If <code class="idl"><a data-link-type="idl" href="#dom-imagedecoder-complete" id="ref-for-dom-imagedecoder-complete③">complete</a></code> is <code>true</code>, <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task" id="ref-for-queue-a-task④①">queue a task</a> to run the <a data-link-type="dfn" href="#imagedecoder-close-imagedecoder" id="ref-for-imagedecoder-close-imagedecoder④">Close ImageDecoder</a> algorithm.</p>
         <li data-md>
          <p>Abort these steps.</p>
        </ol>
       <li data-md>
-       <p>If the number of tracks is found to be <code>0</code>, <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task" id="ref-for-queue-a-task③④">queue a task</a> to run the <a data-link-type="dfn" href="#imagedecoder-close-imagedecoder" id="ref-for-imagedecoder-close-imagedecoder⑤">Close ImageDecoder</a> algorithm and abort these steps.</p>
+       <p>If the number of tracks is found to be <code>0</code>, <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task" id="ref-for-queue-a-task④②">queue a task</a> to run the <a data-link-type="dfn" href="#imagedecoder-close-imagedecoder" id="ref-for-imagedecoder-close-imagedecoder⑤">Close ImageDecoder</a> algorithm and abort these steps.</p>
       <li data-md>
        <p>Let <var>newTrackList</var> be a new <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list" id="ref-for-list①⑧">list</a>.</p>
       <li data-md>
@@ -6018,7 +6064,7 @@ index]]</a></code>.</p>
       <li data-md>
        <p>Assign <code>true</code> to <code class="idl"><a data-link-type="idl" href="#dom-imagedecoder-tracks-established-slot" id="ref-for-dom-imagedecoder-tracks-established-slot④">[[tracks established]]</a></code>.</p>
       <li data-md>
-       <p><a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task" id="ref-for-queue-a-task③⑤">Queue a task</a> to perform the following steps:</p>
+       <p><a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task" id="ref-for-queue-a-task④③">Queue a task</a> to perform the following steps:</p>
        <ol>
         <li data-md>
          <p>Assign <var>newTrackList</var> to the <code class="idl"><a data-link-type="idl" href="#dom-imagedecoder-tracks" id="ref-for-dom-imagedecoder-tracks③">tracks</a></code> <code class="idl"><a data-link-type="idl" href="#dom-imagetracklist-track-list-slot" id="ref-for-dom-imagetracklist-track-list-slot①">[[track list]]</a></code> internal slot.</p>
@@ -6086,7 +6132,7 @@ and a <dfn class="dfn-paneled" data-dfn-for="track update struct" data-dfn-type=
       <li data-md>
        <p>If <var>tracksChanges</var> <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list-is-empty" id="ref-for-list-is-empty">is empty</a>, abort these steps.</p>
       <li data-md>
-       <p><a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task" id="ref-for-queue-a-task③⑥">Queue a task</a> to perform the following steps:</p>
+       <p><a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task" id="ref-for-queue-a-task④④">Queue a task</a> to perform the following steps:</p>
        <ol>
         <li data-md>
          <p>For each <var>update</var> in <var>trackChanges</var>:</p>
@@ -6264,7 +6310,7 @@ metadata without further decoding, assign that to <var>timestamp</var>.</p>
     <dd data-md>
      <ol>
       <li data-md>
-       <p><a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task" id="ref-for-queue-a-task③⑦">Queue a task</a> to perform these steps:</p>
+       <p><a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task" id="ref-for-queue-a-task④⑤">Queue a task</a> to perform these steps:</p>
        <ol>
         <li data-md>
          <p>If <code class="idl"><a data-link-type="idl" href="#dom-imagedecoder-closed-slot" id="ref-for-dom-imagedecoder-closed-slot⑤">[[closed]]</a></code>, abort these steps.</p>
@@ -6284,7 +6330,7 @@ metadata without further decoding, assign that to <var>timestamp</var>.</p>
       <li data-md>
        <p>If <code class="idl"><a data-link-type="idl" href="#dom-imagedecoder-complete" id="ref-for-dom-imagedecoder-complete⑦">complete</a></code> is <code>true</code>, let <var>exception</var> be a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#exceptiondef-rangeerror" id="ref-for-exceptiondef-rangeerror⑤">RangeError</a></code>. Otherwise, let <var>exception</var> be an <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#invalidstateerror" id="ref-for-invalidstateerror②⑧">InvalidStateError</a></code> <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-DOMException" id="ref-for-idl-DOMException④⑧">DOMException</a></code>.</p>
       <li data-md>
-       <p><a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task" id="ref-for-queue-a-task③⑧">Queue a task</a> to perform these steps:</p>
+       <p><a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task" id="ref-for-queue-a-task④⑥">Queue a task</a> to perform these steps:</p>
        <ol>
         <li data-md>
          <p>If <code class="idl"><a data-link-type="idl" href="#dom-imagedecoder-closed-slot" id="ref-for-dom-imagedecoder-closed-slot⑦">[[closed]]</a></code>, abort these steps.</p>
@@ -6300,7 +6346,7 @@ metadata without further decoding, assign that to <var>timestamp</var>.</p>
     <dd data-md>
      <ol>
       <li data-md>
-       <p><a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task" id="ref-for-queue-a-task③⑨">Queue a task</a> to perform these steps:</p>
+       <p><a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task" id="ref-for-queue-a-task④⑦">Queue a task</a> to perform these steps:</p>
        <ol>
         <li data-md>
          <p>If <code class="idl"><a data-link-type="idl" href="#dom-imagedecoder-closed-slot" id="ref-for-dom-imagedecoder-closed-slot⑧">[[closed]]</a></code>, abort these steps.</p>
@@ -8839,7 +8885,7 @@ window.dfnpanelData['552e1f12'] = {"dfnID": "552e1f12", "url": "https://html.spe
 window.dfnpanelData['20c0b7ef'] = {"dfnID": "20c0b7ef", "url": "https://html.spec.whatwg.org/multipage/imagebitmap-and-animations.html#dom-colorspaceconversion-none", "dfnText": "none", "refSections": [{"refs": [{"id": "ref-for-dom-colorspaceconversion-none"}], "title": "9.4.8. Rendering"}], "external": true};
 window.dfnpanelData['dc248371'] = {"dfnID": "dc248371", "url": "https://html.spec.whatwg.org/multipage/workers.html#concept-WorkerGlobalScope-owner-set", "dfnText": "owner set", "refSections": [{"refs": [{"id": "ref-for-concept-WorkerGlobalScope-owner-set"}], "title": "11. Resource Reclamation"}], "external": true};
 window.dfnpanelData['7de33c29'] = {"dfnID": "7de33c29", "url": "https://html.spec.whatwg.org/multipage/infrastructure.html#parallel-queue", "dfnText": "parallel queue", "refSections": [{"refs": [{"id": "ref-for-parallel-queue"}], "title": "2.1. Background"}, {"refs": [{"id": "ref-for-parallel-queue\u2460"}], "title": "2.3. Codec Work Parallel Queue"}, {"refs": [{"id": "ref-for-parallel-queue\u2461"}], "title": "3.1. Internal Slots"}, {"refs": [{"id": "ref-for-parallel-queue\u2462"}], "title": "3.2. Constructors"}, {"refs": [{"id": "ref-for-parallel-queue\u2463"}], "title": "3.5. Methods"}, {"refs": [{"id": "ref-for-parallel-queue\u2464"}], "title": "4.1. Internal Slots"}, {"refs": [{"id": "ref-for-parallel-queue\u2465"}], "title": "4.2. Constructors"}, {"refs": [{"id": "ref-for-parallel-queue\u2466"}], "title": "4.5. Methods"}, {"refs": [{"id": "ref-for-parallel-queue\u2467"}], "title": "5.1. Internal Slots"}, {"refs": [{"id": "ref-for-parallel-queue\u2468"}], "title": "5.2. Constructors"}, {"refs": [{"id": "ref-for-parallel-queue\u2460\u24ea"}], "title": "5.5. Methods"}, {"refs": [{"id": "ref-for-parallel-queue\u2460\u2460"}], "title": "6.1. Internal Slots"}, {"refs": [{"id": "ref-for-parallel-queue\u2460\u2461"}], "title": "6.2. Constructors"}, {"refs": [{"id": "ref-for-parallel-queue\u2460\u2462"}], "title": "6.5. Methods"}, {"refs": [{"id": "ref-for-parallel-queue\u2460\u2463"}], "title": "9.4.5. Methods"}, {"refs": [{"id": "ref-for-parallel-queue\u2460\u2464"}], "title": "10.2.1. Internal Slots"}, {"refs": [{"id": "ref-for-parallel-queue\u2460\u2465"}], "title": "10.2.2. Constructor"}], "external": true};
-window.dfnpanelData['9a517a7d'] = {"dfnID": "9a517a7d", "url": "https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task", "dfnText": "queue a task", "refSections": [{"refs": [{"id": "ref-for-queue-a-task"}], "title": "2.3. Codec Work Parallel Queue"}, {"refs": [{"id": "ref-for-queue-a-task\u2460"}, {"id": "ref-for-queue-a-task\u2461"}, {"id": "ref-for-queue-a-task\u2462"}, {"id": "ref-for-queue-a-task\u2463"}, {"id": "ref-for-queue-a-task\u2464"}], "title": "3.5. Methods"}, {"refs": [{"id": "ref-for-queue-a-task\u2465"}, {"id": "ref-for-queue-a-task\u2466"}], "title": "3.6. Algorithms"}, {"refs": [{"id": "ref-for-queue-a-task\u2467"}, {"id": "ref-for-queue-a-task\u2468"}, {"id": "ref-for-queue-a-task\u2460\u24ea"}, {"id": "ref-for-queue-a-task\u2460\u2460"}, {"id": "ref-for-queue-a-task\u2460\u2461"}], "title": "4.5. Methods"}, {"refs": [{"id": "ref-for-queue-a-task\u2460\u2462"}, {"id": "ref-for-queue-a-task\u2460\u2463"}], "title": "4.6. Algorithms"}, {"refs": [{"id": "ref-for-queue-a-task\u2460\u2464"}, {"id": "ref-for-queue-a-task\u2460\u2465"}, {"id": "ref-for-queue-a-task\u2460\u2466"}, {"id": "ref-for-queue-a-task\u2460\u2467"}, {"id": "ref-for-queue-a-task\u2460\u2468"}], "title": "5.5. Methods"}, {"refs": [{"id": "ref-for-queue-a-task\u2461\u24ea"}, {"id": "ref-for-queue-a-task\u2461\u2460"}], "title": "5.6. Algorithms"}, {"refs": [{"id": "ref-for-queue-a-task\u2461\u2461"}, {"id": "ref-for-queue-a-task\u2461\u2462"}, {"id": "ref-for-queue-a-task\u2461\u2463"}, {"id": "ref-for-queue-a-task\u2461\u2464"}, {"id": "ref-for-queue-a-task\u2461\u2465"}], "title": "6.5. Methods"}, {"refs": [{"id": "ref-for-queue-a-task\u2461\u2466"}, {"id": "ref-for-queue-a-task\u2461\u2467"}], "title": "6.6. Algorithms"}, {"refs": [{"id": "ref-for-queue-a-task\u2461\u2468"}], "title": "9.4.5. Methods"}, {"refs": [{"id": "ref-for-queue-a-task\u2462\u24ea"}], "title": "10.2.2. Constructor"}, {"refs": [{"id": "ref-for-queue-a-task\u2462\u2460"}, {"id": "ref-for-queue-a-task\u2462\u2461"}, {"id": "ref-for-queue-a-task\u2462\u2462"}, {"id": "ref-for-queue-a-task\u2462\u2463"}, {"id": "ref-for-queue-a-task\u2462\u2464"}, {"id": "ref-for-queue-a-task\u2462\u2465"}, {"id": "ref-for-queue-a-task\u2462\u2466"}, {"id": "ref-for-queue-a-task\u2462\u2467"}, {"id": "ref-for-queue-a-task\u2462\u2468"}], "title": "10.2.5. Algorithms"}], "external": true};
+window.dfnpanelData['9a517a7d'] = {"dfnID": "9a517a7d", "url": "https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task", "dfnText": "queue a task", "refSections": [{"refs": [{"id": "ref-for-queue-a-task"}], "title": "2.3. Codec Work Parallel Queue"}, {"refs": [{"id": "ref-for-queue-a-task\u2460"}, {"id": "ref-for-queue-a-task\u2461"}, {"id": "ref-for-queue-a-task\u2462"}, {"id": "ref-for-queue-a-task\u2463"}, {"id": "ref-for-queue-a-task\u2464"}, {"id": "ref-for-queue-a-task\u2465"}, {"id": "ref-for-queue-a-task\u2466"}, {"id": "ref-for-queue-a-task\u2467"}], "title": "3.5. Methods"}, {"refs": [{"id": "ref-for-queue-a-task\u2468"}], "title": "3.6. Algorithms"}, {"refs": [{"id": "ref-for-queue-a-task\u2460\u24ea"}, {"id": "ref-for-queue-a-task\u2460\u2460"}, {"id": "ref-for-queue-a-task\u2460\u2461"}, {"id": "ref-for-queue-a-task\u2460\u2462"}, {"id": "ref-for-queue-a-task\u2460\u2463"}, {"id": "ref-for-queue-a-task\u2460\u2464"}, {"id": "ref-for-queue-a-task\u2460\u2465"}, {"id": "ref-for-queue-a-task\u2460\u2466"}], "title": "4.5. Methods"}, {"refs": [{"id": "ref-for-queue-a-task\u2460\u2467"}], "title": "4.6. Algorithms"}, {"refs": [{"id": "ref-for-queue-a-task\u2460\u2468"}, {"id": "ref-for-queue-a-task\u2461\u24ea"}, {"id": "ref-for-queue-a-task\u2461\u2460"}, {"id": "ref-for-queue-a-task\u2461\u2461"}, {"id": "ref-for-queue-a-task\u2461\u2462"}, {"id": "ref-for-queue-a-task\u2461\u2463"}, {"id": "ref-for-queue-a-task\u2461\u2464"}, {"id": "ref-for-queue-a-task\u2461\u2465"}], "title": "5.5. Methods"}, {"refs": [{"id": "ref-for-queue-a-task\u2461\u2466"}], "title": "5.6. Algorithms"}, {"refs": [{"id": "ref-for-queue-a-task\u2461\u2467"}, {"id": "ref-for-queue-a-task\u2461\u2468"}, {"id": "ref-for-queue-a-task\u2462\u24ea"}, {"id": "ref-for-queue-a-task\u2462\u2460"}, {"id": "ref-for-queue-a-task\u2462\u2461"}, {"id": "ref-for-queue-a-task\u2462\u2462"}, {"id": "ref-for-queue-a-task\u2462\u2463"}, {"id": "ref-for-queue-a-task\u2462\u2464"}], "title": "6.5. Methods"}, {"refs": [{"id": "ref-for-queue-a-task\u2462\u2465"}], "title": "6.6. Algorithms"}, {"refs": [{"id": "ref-for-queue-a-task\u2462\u2466"}], "title": "9.4.5. Methods"}, {"refs": [{"id": "ref-for-queue-a-task\u2462\u2467"}], "title": "10.2.2. Constructor"}, {"refs": [{"id": "ref-for-queue-a-task\u2462\u2468"}, {"id": "ref-for-queue-a-task\u2463\u24ea"}, {"id": "ref-for-queue-a-task\u2463\u2460"}, {"id": "ref-for-queue-a-task\u2463\u2461"}, {"id": "ref-for-queue-a-task\u2463\u2462"}, {"id": "ref-for-queue-a-task\u2463\u2463"}, {"id": "ref-for-queue-a-task\u2463\u2464"}, {"id": "ref-for-queue-a-task\u2463\u2465"}, {"id": "ref-for-queue-a-task\u2463\u2466"}], "title": "10.2.5. Algorithms"}], "external": true};
 window.dfnpanelData['f32dc6c1'] = {"dfnID": "f32dc6c1", "url": "https://html.spec.whatwg.org/multipage/structured-data.html#serialization-steps", "dfnText": "serialization steps", "refSections": [{"refs": [{"id": "ref-for-serialization-steps"}], "title": "8.1.5. Serialization"}, {"refs": [{"id": "ref-for-serialization-steps\u2460"}], "title": "8.2.5. Serialization"}, {"refs": [{"id": "ref-for-serialization-steps\u2461"}], "title": "9.2.6. Transfer and Serialization"}, {"refs": [{"id": "ref-for-serialization-steps\u2462"}], "title": "9.4.7. Transfer and Serialization"}], "external": true};
 window.dfnpanelData['eb573143'] = {"dfnID": "eb573143", "url": "https://html.spec.whatwg.org/multipage/media.html#dom-media-src", "dfnText": "src", "refSections": [{"refs": [{"id": "ref-for-dom-media-src"}], "title": "12. Security Considerations"}], "external": true};
 window.dfnpanelData['25ce4994'] = {"dfnID": "25ce4994", "url": "https://html.spec.whatwg.org/multipage/structured-data.html#transfer-steps", "dfnText": "transfer steps", "refSections": [{"refs": [{"id": "ref-for-transfer-steps"}], "title": "9.2.6. Transfer and Serialization"}, {"refs": [{"id": "ref-for-transfer-steps\u2460"}], "title": "9.4.7. Transfer and Serialization"}], "external": true};
@@ -8973,7 +9019,7 @@ window.dfnpanelData['dom-videodecoder-codec-work-queue-slot'] = {"dfnID": "dom-v
 window.dfnpanelData['dom-videodecoder-codec-saturated-slot'] = {"dfnID": "dom-videodecoder-codec-saturated-slot", "url": "#dom-videodecoder-codec-saturated-slot", "dfnText": "[[codec saturated]]", "refSections": [{"refs": [{"id": "ref-for-dom-videodecoder-codec-saturated-slot"}], "title": "4.2. Constructors"}, {"refs": [{"id": "ref-for-dom-videodecoder-codec-saturated-slot\u2460"}, {"id": "ref-for-dom-videodecoder-codec-saturated-slot\u2461"}, {"id": "ref-for-dom-videodecoder-codec-saturated-slot\u2462"}, {"id": "ref-for-dom-videodecoder-codec-saturated-slot\u2463"}], "title": "4.5. Methods"}], "external": false};
 window.dfnpanelData['dom-videodecoder-output-callback-slot'] = {"dfnID": "dom-videodecoder-output-callback-slot", "url": "#dom-videodecoder-output-callback-slot", "dfnText": "[[output callback]]", "refSections": [{"refs": [{"id": "ref-for-dom-videodecoder-output-callback-slot"}], "title": "4.2. Constructors"}, {"refs": [{"id": "ref-for-dom-videodecoder-output-callback-slot\u2460"}], "title": "4.6. Algorithms"}], "external": false};
 window.dfnpanelData['dom-videodecoder-error-callback-slot'] = {"dfnID": "dom-videodecoder-error-callback-slot", "url": "#dom-videodecoder-error-callback-slot", "dfnText": "[[error callback]]", "refSections": [{"refs": [{"id": "ref-for-dom-videodecoder-error-callback-slot"}], "title": "4.2. Constructors"}, {"refs": [{"id": "ref-for-dom-videodecoder-error-callback-slot\u2460"}], "title": "4.6. Algorithms"}], "external": false};
-window.dfnpanelData['dom-videodecoder-active-decoder-config-slot'] = {"dfnID": "dom-videodecoder-active-decoder-config-slot", "url": "#dom-videodecoder-active-decoder-config-slot", "dfnText": "[[active decoder config]]", "refSections": [{"refs": [{"id": "ref-for-dom-videodecoder-active-decoder-config-slot"}], "title": "4.2. Constructors"}, {"refs": [{"id": "ref-for-dom-videodecoder-active-decoder-config-slot\u2460"}], "title": "4.5. Methods"}, {"refs": [{"id": "ref-for-dom-videodecoder-active-decoder-config-slot\u2461"}, {"id": "ref-for-dom-videodecoder-active-decoder-config-slot\u2462"}], "title": "4.6. Algorithms"}], "external": false};
+window.dfnpanelData['dom-videodecoder-active-decoder-config-slot'] = {"dfnID": "dom-videodecoder-active-decoder-config-slot", "url": "#dom-videodecoder-active-decoder-config-slot", "dfnText": "[[active decoder config]]", "refSections": [{"refs": [{"id": "ref-for-dom-videodecoder-active-decoder-config-slot"}], "title": "4.2. Constructors"}, {"refs": [{"id": "ref-for-dom-videodecoder-active-decoder-config-slot\u2460"}, {"id": "ref-for-dom-videodecoder-active-decoder-config-slot\u2461"}], "title": "4.6. Algorithms"}], "external": false};
 window.dfnpanelData['dom-videodecoder-key-chunk-required-slot'] = {"dfnID": "dom-videodecoder-key-chunk-required-slot", "url": "#dom-videodecoder-key-chunk-required-slot", "dfnText": "[[key chunk required]]", "refSections": [{"refs": [{"id": "ref-for-dom-videodecoder-key-chunk-required-slot"}], "title": "4.2. Constructors"}, {"refs": [{"id": "ref-for-dom-videodecoder-key-chunk-required-slot\u2460"}, {"id": "ref-for-dom-videodecoder-key-chunk-required-slot\u2461"}, {"id": "ref-for-dom-videodecoder-key-chunk-required-slot\u2462"}, {"id": "ref-for-dom-videodecoder-key-chunk-required-slot\u2463"}], "title": "4.5. Methods"}], "external": false};
 window.dfnpanelData['dom-videodecoder-state-slot'] = {"dfnID": "dom-videodecoder-state-slot", "url": "#dom-videodecoder-state-slot", "dfnText": "[[state]]", "refSections": [{"refs": [{"id": "ref-for-dom-videodecoder-state-slot"}], "title": "4.2. Constructors"}, {"refs": [{"id": "ref-for-dom-videodecoder-state-slot\u2460"}], "title": "4.3. Attributes"}, {"refs": [{"id": "ref-for-dom-videodecoder-state-slot\u2461"}, {"id": "ref-for-dom-videodecoder-state-slot\u2462"}, {"id": "ref-for-dom-videodecoder-state-slot\u2463"}, {"id": "ref-for-dom-videodecoder-state-slot\u2464"}], "title": "4.5. Methods"}], "external": false};
 window.dfnpanelData['dom-videodecoder-decodequeuesize-slot'] = {"dfnID": "dom-videodecoder-decodequeuesize-slot", "url": "#dom-videodecoder-decodequeuesize-slot", "dfnText": "[[decodeQueueSize]]", "refSections": [{"refs": [{"id": "ref-for-dom-videodecoder-decodequeuesize-slot"}], "title": "4.2. Constructors"}, {"refs": [{"id": "ref-for-dom-videodecoder-decodequeuesize-slot\u2460"}], "title": "4.3. Attributes"}, {"refs": [{"id": "ref-for-dom-videodecoder-decodequeuesize-slot\u2461"}, {"id": "ref-for-dom-videodecoder-decodequeuesize-slot\u2462"}], "title": "4.5. Methods"}, {"refs": [{"id": "ref-for-dom-videodecoder-decodequeuesize-slot\u2463"}, {"id": "ref-for-dom-videodecoder-decodequeuesize-slot\u2464"}], "title": "4.6. Algorithms"}], "external": false};
@@ -9004,7 +9050,7 @@ window.dfnpanelData['dom-audioencoder-codec-work-queue-slot'] = {"dfnID": "dom-a
 window.dfnpanelData['dom-audioencoder-codec-saturated-slot'] = {"dfnID": "dom-audioencoder-codec-saturated-slot", "url": "#dom-audioencoder-codec-saturated-slot", "dfnText": "[[codec saturated]]", "refSections": [{"refs": [{"id": "ref-for-dom-audioencoder-codec-saturated-slot"}], "title": "5.2. Constructors"}, {"refs": [{"id": "ref-for-dom-audioencoder-codec-saturated-slot\u2460"}, {"id": "ref-for-dom-audioencoder-codec-saturated-slot\u2461"}, {"id": "ref-for-dom-audioencoder-codec-saturated-slot\u2462"}, {"id": "ref-for-dom-audioencoder-codec-saturated-slot\u2463"}], "title": "5.5. Methods"}], "external": false};
 window.dfnpanelData['dom-audioencoder-output-callback-slot'] = {"dfnID": "dom-audioencoder-output-callback-slot", "url": "#dom-audioencoder-output-callback-slot", "dfnText": "[[output callback]]", "refSections": [{"refs": [{"id": "ref-for-dom-audioencoder-output-callback-slot"}], "title": "5.2. Constructors"}, {"refs": [{"id": "ref-for-dom-audioencoder-output-callback-slot\u2460"}], "title": "5.6. Algorithms"}], "external": false};
 window.dfnpanelData['dom-audioencoder-error-callback-slot'] = {"dfnID": "dom-audioencoder-error-callback-slot", "url": "#dom-audioencoder-error-callback-slot", "dfnText": "[[error callback]]", "refSections": [{"refs": [{"id": "ref-for-dom-audioencoder-error-callback-slot"}], "title": "5.2. Constructors"}, {"refs": [{"id": "ref-for-dom-audioencoder-error-callback-slot\u2460"}], "title": "5.6. Algorithms"}], "external": false};
-window.dfnpanelData['dom-audioencoder-active-encoder-config-slot'] = {"dfnID": "dom-audioencoder-active-encoder-config-slot", "url": "#dom-audioencoder-active-encoder-config-slot", "dfnText": "[[active encoder config]]", "refSections": [{"refs": [{"id": "ref-for-dom-audioencoder-active-encoder-config-slot"}], "title": "5.2. Constructors"}, {"refs": [{"id": "ref-for-dom-audioencoder-active-encoder-config-slot\u2460"}], "title": "5.5. Methods"}, {"refs": [{"id": "ref-for-dom-audioencoder-active-encoder-config-slot\u2461"}, {"id": "ref-for-dom-audioencoder-active-encoder-config-slot\u2462"}], "title": "5.6. Algorithms"}], "external": false};
+window.dfnpanelData['dom-audioencoder-active-encoder-config-slot'] = {"dfnID": "dom-audioencoder-active-encoder-config-slot", "url": "#dom-audioencoder-active-encoder-config-slot", "dfnText": "[[active encoder config]]", "refSections": [{"refs": [{"id": "ref-for-dom-audioencoder-active-encoder-config-slot"}], "title": "5.2. Constructors"}, {"refs": [{"id": "ref-for-dom-audioencoder-active-encoder-config-slot\u2460"}, {"id": "ref-for-dom-audioencoder-active-encoder-config-slot\u2461"}], "title": "5.6. Algorithms"}], "external": false};
 window.dfnpanelData['dom-audioencoder-active-output-config-slot'] = {"dfnID": "dom-audioencoder-active-output-config-slot", "url": "#dom-audioencoder-active-output-config-slot", "dfnText": "[[active output config]]", "refSections": [{"refs": [{"id": "ref-for-dom-audioencoder-active-output-config-slot"}], "title": "5.2. Constructors"}, {"refs": [{"id": "ref-for-dom-audioencoder-active-output-config-slot\u2460"}, {"id": "ref-for-dom-audioencoder-active-output-config-slot\u2461"}, {"id": "ref-for-dom-audioencoder-active-output-config-slot\u2462"}], "title": "5.6. Algorithms"}], "external": false};
 window.dfnpanelData['dom-audioencoder-state-slot'] = {"dfnID": "dom-audioencoder-state-slot", "url": "#dom-audioencoder-state-slot", "dfnText": "[[state]]", "refSections": [{"refs": [{"id": "ref-for-dom-audioencoder-state-slot"}], "title": "5.2. Constructors"}, {"refs": [{"id": "ref-for-dom-audioencoder-state-slot\u2460"}], "title": "5.3. Attributes"}, {"refs": [{"id": "ref-for-dom-audioencoder-state-slot\u2461"}, {"id": "ref-for-dom-audioencoder-state-slot\u2462"}, {"id": "ref-for-dom-audioencoder-state-slot\u2463"}, {"id": "ref-for-dom-audioencoder-state-slot\u2464"}], "title": "5.5. Methods"}, {"refs": [{"id": "ref-for-dom-audioencoder-state-slot\u2465"}, {"id": "ref-for-dom-audioencoder-state-slot\u2466"}, {"id": "ref-for-dom-audioencoder-state-slot\u2467"}], "title": "5.6. Algorithms"}], "external": false};
 window.dfnpanelData['dom-audioencoder-encodequeuesize-slot'] = {"dfnID": "dom-audioencoder-encodequeuesize-slot", "url": "#dom-audioencoder-encodequeuesize-slot", "dfnText": "[[encodeQueueSize]]", "refSections": [{"refs": [{"id": "ref-for-dom-audioencoder-encodequeuesize-slot"}], "title": "5.2. Constructors"}, {"refs": [{"id": "ref-for-dom-audioencoder-encodequeuesize-slot\u2460"}], "title": "5.3. Attributes"}, {"refs": [{"id": "ref-for-dom-audioencoder-encodequeuesize-slot\u2461"}, {"id": "ref-for-dom-audioencoder-encodequeuesize-slot\u2462"}], "title": "5.5. Methods"}, {"refs": [{"id": "ref-for-dom-audioencoder-encodequeuesize-slot\u2463"}, {"id": "ref-for-dom-audioencoder-encodequeuesize-slot\u2464"}], "title": "5.6. Algorithms"}], "external": false};
@@ -9037,7 +9083,7 @@ window.dfnpanelData['dom-videoencoder-codec-work-queue-slot'] = {"dfnID": "dom-v
 window.dfnpanelData['dom-videoencoder-codec-saturated-slot'] = {"dfnID": "dom-videoencoder-codec-saturated-slot", "url": "#dom-videoencoder-codec-saturated-slot", "dfnText": "[[codec saturated]]", "refSections": [{"refs": [{"id": "ref-for-dom-videoencoder-codec-saturated-slot"}], "title": "6.2. Constructors"}, {"refs": [{"id": "ref-for-dom-videoencoder-codec-saturated-slot\u2460"}, {"id": "ref-for-dom-videoencoder-codec-saturated-slot\u2461"}, {"id": "ref-for-dom-videoencoder-codec-saturated-slot\u2462"}, {"id": "ref-for-dom-videoencoder-codec-saturated-slot\u2463"}], "title": "6.5. Methods"}], "external": false};
 window.dfnpanelData['dom-videoencoder-output-callback-slot'] = {"dfnID": "dom-videoencoder-output-callback-slot", "url": "#dom-videoencoder-output-callback-slot", "dfnText": "[[output callback]]", "refSections": [{"refs": [{"id": "ref-for-dom-videoencoder-output-callback-slot"}], "title": "6.2. Constructors"}, {"refs": [{"id": "ref-for-dom-videoencoder-output-callback-slot\u2460"}], "title": "6.6. Algorithms"}], "external": false};
 window.dfnpanelData['dom-videoencoder-error-callback-slot'] = {"dfnID": "dom-videoencoder-error-callback-slot", "url": "#dom-videoencoder-error-callback-slot", "dfnText": "[[error callback]]", "refSections": [{"refs": [{"id": "ref-for-dom-videoencoder-error-callback-slot"}], "title": "6.2. Constructors"}, {"refs": [{"id": "ref-for-dom-videoencoder-error-callback-slot\u2460"}], "title": "6.6. Algorithms"}], "external": false};
-window.dfnpanelData['dom-videoencoder-active-encoder-config-slot'] = {"dfnID": "dom-videoencoder-active-encoder-config-slot", "url": "#dom-videoencoder-active-encoder-config-slot", "dfnText": "[[active encoder config]]", "refSections": [{"refs": [{"id": "ref-for-dom-videoencoder-active-encoder-config-slot"}], "title": "6.2. Constructors"}, {"refs": [{"id": "ref-for-dom-videoencoder-active-encoder-config-slot\u2460"}], "title": "6.5. Methods"}, {"refs": [{"id": "ref-for-dom-videoencoder-active-encoder-config-slot\u2461"}, {"id": "ref-for-dom-videoencoder-active-encoder-config-slot\u2462"}], "title": "6.6. Algorithms"}], "external": false};
+window.dfnpanelData['dom-videoencoder-active-encoder-config-slot'] = {"dfnID": "dom-videoencoder-active-encoder-config-slot", "url": "#dom-videoencoder-active-encoder-config-slot", "dfnText": "[[active encoder config]]", "refSections": [{"refs": [{"id": "ref-for-dom-videoencoder-active-encoder-config-slot"}], "title": "6.2. Constructors"}, {"refs": [{"id": "ref-for-dom-videoencoder-active-encoder-config-slot\u2460"}, {"id": "ref-for-dom-videoencoder-active-encoder-config-slot\u2461"}], "title": "6.6. Algorithms"}], "external": false};
 window.dfnpanelData['dom-videoencoder-active-output-config-slot'] = {"dfnID": "dom-videoencoder-active-output-config-slot", "url": "#dom-videoencoder-active-output-config-slot", "dfnText": "[[active output config]]", "refSections": [{"refs": [{"id": "ref-for-dom-videoencoder-active-output-config-slot"}], "title": "6.2. Constructors"}, {"refs": [{"id": "ref-for-dom-videoencoder-active-output-config-slot\u2460"}, {"id": "ref-for-dom-videoencoder-active-output-config-slot\u2461"}, {"id": "ref-for-dom-videoencoder-active-output-config-slot\u2462"}], "title": "6.6. Algorithms"}], "external": false};
 window.dfnpanelData['dom-videoencoder-state-slot'] = {"dfnID": "dom-videoencoder-state-slot", "url": "#dom-videoencoder-state-slot", "dfnText": "[[state]]", "refSections": [{"refs": [{"id": "ref-for-dom-videoencoder-state-slot"}], "title": "6.2. Constructors"}, {"refs": [{"id": "ref-for-dom-videoencoder-state-slot\u2460"}], "title": "6.3. Attributes"}, {"refs": [{"id": "ref-for-dom-videoencoder-state-slot\u2461"}, {"id": "ref-for-dom-videoencoder-state-slot\u2462"}, {"id": "ref-for-dom-videoencoder-state-slot\u2463"}, {"id": "ref-for-dom-videoencoder-state-slot\u2464"}], "title": "6.5. Methods"}, {"refs": [{"id": "ref-for-dom-videoencoder-state-slot\u2465"}, {"id": "ref-for-dom-videoencoder-state-slot\u2466"}, {"id": "ref-for-dom-videoencoder-state-slot\u2467"}], "title": "6.6. Algorithms"}], "external": false};
 window.dfnpanelData['dom-videoencoder-encodequeuesize-slot'] = {"dfnID": "dom-videoencoder-encodequeuesize-slot", "url": "#dom-videoencoder-encodequeuesize-slot", "dfnText": "[[encodeQueueSize]]", "refSections": [{"refs": [{"id": "ref-for-dom-videoencoder-encodequeuesize-slot"}], "title": "6.2. Constructors"}, {"refs": [{"id": "ref-for-dom-videoencoder-encodequeuesize-slot\u2460"}], "title": "6.3. Attributes"}, {"refs": [{"id": "ref-for-dom-videoencoder-encodequeuesize-slot\u2461"}, {"id": "ref-for-dom-videoencoder-encodequeuesize-slot\u2462"}], "title": "6.5. Methods"}, {"refs": [{"id": "ref-for-dom-videoencoder-encodequeuesize-slot\u2463"}, {"id": "ref-for-dom-videoencoder-encodequeuesize-slot\u2464"}], "title": "6.6. Algorithms"}], "external": false};
