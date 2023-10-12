@@ -2485,6 +2485,7 @@ dictionary EncodedAudioChunkInit {
   [EnforceRange] required long long timestamp;    // microseconds
   [EnforceRange] unsigned long long duration;     // microseconds
   required BufferSource data;
+  sequence<ArrayBuffer> transfer = [];
 };
 
 enum EncodedAudioChunkType {
@@ -2509,13 +2510,28 @@ enum EncodedAudioChunkType {
 <dfn constructor for=EncodedAudioChunk title="EncodedAudioChunk(init)">
   EncodedAudioChunk(init)
 </dfn>
-1. Let |chunk| be a new {{EncodedAudioChunk}} object, initialized as follows
+1. If |init|.{{EncodedAudioChunkInit/transfer}} contains more than one reference
+     to the same {{ArrayBuffer}}, then throw a {{DataCloneError}} {{DOMException}}.
+2. For each |transferable| in |init|.{{EncodedAudioChunkInit/transfer}}:
+     1. If {{platform object/[[Detached]]}} internal slot is `true`,
+         then throw a {{DataCloneError}} {{DOMException}}.
+3. Let |chunk| be a new {{EncodedAudioChunk}} object, initialized as follows
     1. Assign `init.type` to {{EncodedAudioChunk/[[type]]}}.
     2. Assign `init.timestamp` to {{EncodedAudioChunk/[[timestamp]]}}.
     3. If `init.duration` exists, assign it to
         {{EncodedAudioChunk/[[duration]]}}, or assign `null` otherwise.
-    4. Assign a copy of `init.data` to {{EncodedAudioChunk/[[internal data]]}}.
-    5. Assign `init.data.byteLength` to {{EncodedAudioChunk/[[byte length]]}};
+    4. Assign `init.data.byteLength` to {{EncodedAudioChunk/[[byte length]]}};
+    5. If |init|.{{EncodedAudioChunkInit/transfer}} contains an {{ArrayBuffer}}
+        referenced by |init|.{{EncodedAudioChunkInit/data}} the User Agent
+        <em class="rfc2119">MAY</em> choose to:
+          1. Let |resource| be a new [=media resource=] referencing sample data
+               in |init|.{{EncodedAudioChunkInit/data}}.
+    6. Otherwise:
+         1. Assign a copy of |init|.{{EncodedAudioChunkInit/data}}
+              to {{EncodedAudioChunk/[[internal data]]}}.
+4. For each |transferable| in |init|.{{EncodedAudioChunkInit/transfer}}:
+    1. Perform [DetachArrayBuffer](https://tc39.es/ecma262/#sec-detacharraybuffer)
+        on |transferable|
 5. Return |chunk|.
 
 ### Attributes ###{#encodedaudiochunk-attributes}
@@ -2575,6 +2591,7 @@ dictionary EncodedVideoChunkInit {
   [EnforceRange] required long long timestamp;        // microseconds
   [EnforceRange] unsigned long long duration;         // microseconds
   required AllowSharedBufferSource data;
+  sequence<ArrayBuffer> transfer = [];
 };
 
 enum EncodedVideoChunkType {
@@ -2599,15 +2616,30 @@ enum EncodedVideoChunkType {
 <dfn constructor for=EncodedVideoChunk title="EncodedVideoChunk(init)">
   EncodedVideoChunk(init)
 </dfn>
-1. Let |chunk| be a new {{EncodedVideoChunk}} object, initialized as follows
+1. If |init|.{{EncodedVideoChunkInit/transfer}} contains more than one reference
+     to the same {{ArrayBuffer}}, then throw a {{DataCloneError}} {{DOMException}}.
+2. For each |transferable| in |init|.{{EncodedVideoChunkInit/transfer}}:
+     1. If {{platform object/[[Detached]]}} internal slot is `true`,
+         then throw a {{DataCloneError}} {{DOMException}}.
+3. Let |chunk| be a new {{EncodedVideoChunk}} object, initialized as follows
     1. Assign `init.type` to {{EncodedVideoChunk/[[type]]}}.
     2. Assign `init.timestamp` to {{EncodedVideoChunk/[[timestamp]]}}.
     3. If duration is present in init, assign `init.duration` to
         {{EncodedVideoChunk/[[duration]]}}. Otherwise, assign `null` to
         {{EncodedVideoChunk/[[duration]]}}.
-    4. Assign a copy of `init.data` to {{EncodedVideoChunk/[[internal data]]}}.
-    5. Assign `init.data.byteLength` to {{EncodedVideoChunk/[[byte length]]}};
-3. Return |chunk|.
+    4. Assign `init.data.byteLength` to {{EncodedVideoChunk/[[byte length]]}};
+    5. If |init|.{{EncodedVideoChunkInit/transfer}} contains an {{ArrayBuffer}}
+        referenced by |init|.{{EncodedVideoChunkInit/data}} the User Agent
+        <em class="rfc2119">MAY</em> choose to:
+          1. Let |resource| be a new [=media resource=] referencing sample data
+               in |init|.{{EncodedVideoChunkInit/data}}.
+    6. Otherwise:
+         1. Assign a copy of |init|.{{EncodedVideoChunkInit/data}}
+              to {{EncodedVideoChunk/[[internal data]]}}.
+4. For each |transferable| in |init|.{{EncodedVideoChunkInit/transfer}}:
+    1. Perform [DetachArrayBuffer](https://tc39.es/ecma262/#sec-detacharraybuffer)
+        on |transferable|
+5. Return |chunk|.
 
 ### Attributes ###{#encodedvideochunk-attributes}
 : <dfn attribute for=EncodedVideoChunk>type</dfn>
@@ -5596,7 +5628,7 @@ Security Considerations{#security-considerations}
 
 <div class=non-normative>
 This section is non-normative.
-	
+
 The primary security impact is that features of this API make it easier for an
 attacker to exploit vulnerabilities in the underlying platform codecs.
 Additionally, new abilities to configure and control the codecs can allow for
