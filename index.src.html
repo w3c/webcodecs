@@ -47,8 +47,11 @@ spec: html; urlPrefix: https://html.spec.whatwg.org/multipage/;
         type: dfn; text: current playback position; url: media.html#current-playback-position
     type: dfn; text: live; url: infrastructure.html#live
 
-spec: webrtc-svc; urlPrefix: https://w3c.github.io/webrtc-svc/
+spec: webrtc-svc; urlPrefix: https://www.w3.org/TR/webrtc-svc/
     type: dfn; text: scalability mode identifier; url:#scalabilitymodes*
+
+spec: mst-content-hint; urlPrefix: https://www.w3.org/TR/mst-content-hint/
+    type: dfn; text: video content hints; url:#video-content-hints
 
 spec: ECMASCRIPT; urlPrefix: https://tc39.es/ecma262/
     type: dfn; text: the current Realm; url: #current-realm
@@ -2104,6 +2107,7 @@ dictionary VideoEncoderConfig {
   DOMString scalabilityMode;
   VideoEncoderBitrateMode bitrateMode = "variable";
   LatencyMode latencyMode = "quality";
+  DOMString contentHint;
 };
 </xmp>
 
@@ -2220,6 +2224,17 @@ To check if a {{VideoEncoderConfig}} is a <dfn>valid VideoEncoderConfig</dfn>,
   <dt><dfn dict-member for=VideoEncoderConfig>latencyMode</dfn></dt>
   <dd>
     Configures latency related behaviors for this codec. See {{LatencyMode}}.
+  </dd>
+  <dt><dfn dict-member for=VideoEncoderConfig>contentHint</dfn></dt>
+  <dd>
+    An encoding [=video content hint=] as defined by [[mst-content-hint]].
+
+    The User Agent <em class="rfc2119">MAY</em> use this hint to set
+    expectations about incoming {{VideoFrame}}s and to improve encoding quality.
+
+    The User Agent <em class="rfc2119">MUST NOT</em> refuse the configuration
+    if it doesn't support this content hint.
+    See {{VideoEncoder/isConfigSupported()}}.
   </dd>
 
 </dl>
