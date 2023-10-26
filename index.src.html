@@ -2028,9 +2028,9 @@ run these steps:
 
   <dt><dfn dict-member for=VideoDecoderConfig>optimizeForLatency</dfn></dt>
   <dd>
-    Hint that the selected decoder SHOULD be configured to minimize the number
-    of {{EncodedVideoChunk}}s that have to be decoded before a {{VideoFrame}}
-    is output.
+    Hint that the selected decoder <em class="rfc2119">SHOULD</em> be configured
+    to minimize the number of {{EncodedVideoChunk}}s that have to be decoded
+    before a {{VideoFrame}} is output.
 
     NOTE: In addition to User Agent and hardware limitations, some codec
         bitstreams require a minimum number of inputs before any output can be
@@ -2236,16 +2236,17 @@ enum HardwareAcceleration {
 
 When supported, hardware acceleration offloads encoding or decoding to
 specialized hardware. {{HardwareAcceleration/prefer-hardware}} and
-{{HardwareAcceleration/prefer-software}} are hints. While User Agents SHOULD
-respect these values when possible, User Agents may ignore these values in some
-or all circumstances for any reason.
+{{HardwareAcceleration/prefer-software}} are hints. While User Agents
+<em class="rfc2119">SHOULD</em> respect these values when possible, User
+Agents may ignore these values in some or all circumstances for any reason.
 
 To prevent fingerprinting, if a User Agent implements [[media-capabilities]],
-the User Agent MUST ensure rejection or acceptance of a given
-{{HardwareAcceleration}} preference reveals no additional information on top of
-what is inherent to the User Agent and revealed by [[media-capabilities]]. If a
-User Agent does not implement [[media-capabilities]] for reasons of
-fingerprinting, they SHOULD ignore the {{HardwareAcceleration}} preference.
+the User Agent <em class="rfc2119">MUST</em> ensure rejection or acceptance of
+a given {{HardwareAcceleration}} preference reveals no additional information
+on top of what is inherent to the User Agent and revealed by
+[[media-capabilities]]. If a User Agent does not implement
+[[media-capabilities]] for reasons of fingerprinting, they
+<em class="rfc2119">SHOULD</em> ignore the {{HardwareAcceleration}} preference.
 
 <div class='note'>
   NOTE: Good examples of when a User Agent can ignore
@@ -2395,9 +2396,10 @@ NOTE: Codec-specific extensions to {{VideoEncoderEncodeOptions}} are described i
 <dl>
   <dt><dfn dict-member for=VideoEncoderEncodeOptions>keyFrame</dfn></dt>
   <dd>
-    A value of `true` indicates that the given frame MUST be encoded as a key
-    frame. A value of `false` indicates that the User Agent has flexibility to
-    decide whether the frame will be encoded as a [=key frame=].
+    A value of `true` indicates that the given frame
+    <em class="rfc2119">MUST</em> be encoded as a key frame. A value of `false`
+    indicates that the User Agent has flexibility to decide whether the frame
+    will be encoded as a [=key frame=].
   </dd>
 </dl>
 
@@ -3245,24 +3247,26 @@ NOTE: There is no data type that can hold 24 bits of information conveniently,
 but audio content using 24-bit samples is common, so 32-bits integers are
 commonly used to hold 24-bit content.
 
-{{AudioData}} containing 24-bit samples SHOULD store those samples in {{s32}} or
-{{f32}}. When samples are stored in {{s32}}, each sample MUST be left-shifted by
-`8` bits. By virtue of this process, samples outside of the valid 24-bit range
-([-8388608, +8388607]) will be clipped. To avoid clipping and ensure lossless
-transport, samples <em class="rfc2119">MAY</em> be converted to {{f32}}.
+{{AudioData}} containing 24-bit samples <em class="rfc2119">SHOULD</em> store those
+samples in {{s32}} or {{f32}}. When samples are stored in {{s32}}, each sample
+<em class="rfc2119">MUST</em> be left-shifted by `8` bits. By virtue of this
+process, samples outside of the valid 24-bit range ([-8388608, +8388607]) will
+be clipped. To avoid clipping and ensure lossless transport, samples
+<em class="rfc2119">MAY</em> be converted to {{f32}}.
 
 NOTE: While clipping is unavoidable in {{u8}}, {{s16}}, and {{s32}} samples due
-to their storage types, implementations SHOULD take care not to clip internally
-when handling {{f32}} samples.
+to their storage types, implementations <em class="rfc2119">SHOULD</em> take
+care not to clip internally when handling {{f32}} samples.
 
 ### Audio channel ordering ### {#audio-channel-ordering}
 
 When decoding, the ordering of the audio channels in the resulting {{AudioData}}
-MUST be the same as what is present in the {{EncodedAudioChunk}}.
+<em class="rfc2119">MUST</em> be the same as what is present in the
+{{EncodedAudioChunk}}.
 
 When encoding, the ordering of the audio channels in the resulting
-{{EncodedAudioChunk}} MUST be the same as what is preset in the given
-{{AudioData}};
+{{EncodedAudioChunk}} <em class="rfc2119">MUST</em> be the same as what is
+preset in the given {{AudioData}}.
 
 In other terms, no channel reordering is performed when encoding and decoding.
 
@@ -3820,8 +3824,8 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
 :: 1. If |overrideColorSpace| is provided, return a new {{VideoColorSpace}}
         constructed with |overrideColorSpace|.
 
-        User Agents MAY replace `null` members of the provided
-        |overrideColorSpace| with guessed values as determined by implementer
+        User Agents <em class="rfc2119">MAY</em> replace `null` members of the
+        provided |overrideColorSpace| with guessed values as determined by implementer
         defined heuristics.
 
     2. Otherwise, if {{VideoFrame/[[format]]}} is an [=RGB format=] return a new
@@ -4333,7 +4337,8 @@ is its own [=equivalent opaque format=].
     integer. Samples are arranged starting at the top left of the image.
 
     The visible rectangle offset ({{VideoFrame/visibleRect}}.{{DOMRectInit/x}}
-    and {{VideoFrame/visibleRect}}.{{DOMRectInit/y}}) MUST be even.
+    and {{VideoFrame/visibleRect}}.{{DOMRectInit/y}})
+    <em class="rfc2119">MUST</em> be even.
   </dd>
   <dt><dfn enum-value for=VideoPixelFormat>I420A</dfn></dt>
   <dd>
@@ -4360,7 +4365,8 @@ is its own [=equivalent opaque format=].
     integer. Samples are arranged starting at the top left of the image.
 
     The visible rectangle offset ({{VideoFrame/visibleRect}}.{{DOMRectInit/x}}
-    and {{VideoFrame/visibleRect}}.{{DOMRectInit/y}}) MUST be even.
+    and {{VideoFrame/visibleRect}}.{{DOMRectInit/y}})
+    <em class="rfc2119">MUST</em> be even.
 
     {{I420A}}'s [=equivalent opaque format=] is {{I420}}.
   </dd>
@@ -4387,7 +4393,7 @@ is its own [=equivalent opaque format=].
     are arranged starting at the top left of the image.
 
     The visible rectangle offset ({{VideoFrame/visibleRect}}.{{DOMRectInit/x}})
-    MUST be even.
+    <em class="rfc2119">MUST</em> be even.
   </dd>
   <dt><dfn enum-value for=VideoPixelFormat>I444</dfn></dt>
   <dd>
@@ -4430,7 +4436,8 @@ is its own [=equivalent opaque format=].
     at the top left of the image.
 
     The visible rectangle offset ({{VideoFrame/visibleRect}}.{{DOMRectInit/x}}
-    and {{VideoFrame/visibleRect}}.{{DOMRectInit/y}}) MUST be even.
+    and {{VideoFrame/visibleRect}}.{{DOMRectInit/y}})
+    <em class="rfc2119">MUST</em> be even.
 
     <div class=example>
     An image in the NV12 pixel format that is 16 pixels wide and 10 pixels tall
@@ -5575,14 +5582,14 @@ interface ImageTrack {
 Resource Reclamation{#resource-reclamation}
 ==============================================
 
-When resources are constrained, a User Agent MAY proactively reclaim codecs.
-This is particularly true in the case where hardware codecs are limited, and
-shared accross web pages or platform apps.
+When resources are constrained, a User Agent <em class="rfc2119">MAY</em>
+proactively reclaim codecs. This is particularly true in the case where hardware
+codecs are limited, and shared accross web pages or platform apps.
 
-To <dfn>reclaim a codec</dfn>, a User Agent MUST run the appropriate
-close algorithm (amongst [=Close AudioDecoder=], [=Close AudioEncoder=],
-[=Close VideoDecoder=] and [=Close VideoEncoder=]) with a {{QuotaExceededError}}
-{{DOMException}}.
+To <dfn>reclaim a codec</dfn>, a User Agent <em class="rfc2119">MUST</em> run
+the appropriate close algorithm (amongst [=Close AudioDecoder=],
+[=Close AudioEncoder=], [=Close VideoDecoder=] and [=Close VideoEncoder=]) with
+a {{QuotaExceededError}} {{DOMException}}.
 
 The rules governing when a codec may be reclaimed depend on whether the codec is
 an [=active=] or [=inactive=] codec and/or a [=background=] codec.
@@ -5604,13 +5611,13 @@ A <dfn lt="background codec|background">background codec</dfn> is a codec whose
 {{ownerDocument}} (or [=owner set=]'s {{Document}}, for codecs in workers) has a
 {{Document/hidden}} attribute equal to `true`.
 
-A User Agent MUST only [=reclaim a codec=] that is either an
-[=inactive codec=], a [=background codec=], or both. A User Agent MUST NOT
-reclaim a codec that is both [=active=] and in the foreground, i.e. not a
-[=background codec=].
+A User Agent <em class="rfc2119">MUST</em> only [=reclaim a codec=] that is
+either an [=inactive codec=], a [=background codec=], or both. A User Agent
+<em class="rfc2119">MUST NOT</em> reclaim a codec that is both [=active=] and in
+the foreground, i.e. not a [=background codec=].
 
-Additionally, User Agents MUST NOT reclaim an [=active=] [=background=] codec
-if it is:
+Additionally, User Agents <em class="rfc2119">MUST NOT</em> reclaim an [=active=]
+[=background=] codec if it is:
     - An encoder, e.g. an {{AudioEncoder}} or {{VideoEncoder}}.
 
         NOTE: This prevents long running encode tasks from being interrupted.
