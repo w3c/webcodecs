@@ -7,7 +7,7 @@
   <link href="https://www.w3.org/StyleSheets/TR/2021/W3C-ED" rel="stylesheet">
   <meta content="Bikeshed version 82ce88815, updated Thu Sep 7 16:33:55 2023 -0700" name="generator">
   <link href="https://www.w3.org/TR/webcodecs/" rel="canonical">
-  <meta content="306e516d58e750d6a215b709b40bc816bac5fbed" name="document-revision">
+  <meta content="886f89835ac3c82e9f3c623a73fc0cbaeca06506" name="document-revision">
 <style>
 main > dl > dd {
   margin-bottom: 1em;
@@ -672,7 +672,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
   <div class="head">
    <p data-fill-with="logo"><a class="logo" href="https://www.w3.org/"> <img alt="W3C" height="48" src="https://www.w3.org/StyleSheets/TR/2021/logos/W3C" width="72"> </a> </p>
    <h1 class="p-name no-ref" id="title">WebCodecs</h1>
-   <p id="w3c-state"><a href="https://www.w3.org/standards/types#ED">Editor’s Draft</a>, <time class="dt-updated" datetime="2023-10-12">12 October 2023</time></p>
+   <p id="w3c-state"><a href="https://www.w3.org/standards/types#ED">Editor’s Draft</a>, <time class="dt-updated" datetime="2023-10-26">26 October 2023</time></p>
    <details open>
     <summary>More details about this document</summary>
     <div data-fill-with="spec-metadata">
@@ -3119,8 +3119,9 @@ return <code>false</code>.</p>
     <dd> Hint that configures hardware acceleration for this codec. See <code class="idl"><a data-link-type="idl" href="#enumdef-hardwareacceleration" id="ref-for-enumdef-hardwareacceleration②">HardwareAcceleration</a></code>. 
     <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoDecoderConfig" data-dfn-type="dict-member" data-export id="dom-videodecoderconfig-optimizeforlatency"><code>optimizeForLatency</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://webidl.spec.whatwg.org/#idl-boolean" id="ref-for-idl-boolean⑨">boolean</a></span>
     <dd>
-      Hint that the selected decoder SHOULD be configured to minimize the number
-    of <code class="idl"><a data-link-type="idl" href="#encodedvideochunk" id="ref-for-encodedvideochunk①②">EncodedVideoChunk</a></code>s that have to be decoded before a <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe⑨">VideoFrame</a></code> is output. 
+      Hint that the selected decoder <em class="rfc2119">SHOULD</em> be configured
+    to minimize the number of <code class="idl"><a data-link-type="idl" href="#encodedvideochunk" id="ref-for-encodedvideochunk①②">EncodedVideoChunk</a></code>s that have to be decoded
+    before a <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe⑨">VideoFrame</a></code> is output. 
      <p class="note" role="note"><span class="marker">NOTE:</span> In addition to User Agent and hardware limitations, some codec
         bitstreams require a minimum number of inputs before any output can be
         produced.</p>
@@ -3257,14 +3258,12 @@ return <code>false</code>.</p>
 };
 </pre>
    <p>When supported, hardware acceleration offloads encoding or decoding to
-specialized hardware. <code class="idl"><a data-link-type="idl" href="#dom-hardwareacceleration-prefer-hardware" id="ref-for-dom-hardwareacceleration-prefer-hardware①">prefer-hardware</a></code> and <code class="idl"><a data-link-type="idl" href="#dom-hardwareacceleration-prefer-software" id="ref-for-dom-hardwareacceleration-prefer-software①">prefer-software</a></code> are hints. While User Agents SHOULD
-respect these values when possible, User Agents may ignore these values in some
-or all circumstances for any reason.</p>
+specialized hardware. <code class="idl"><a data-link-type="idl" href="#dom-hardwareacceleration-prefer-hardware" id="ref-for-dom-hardwareacceleration-prefer-hardware①">prefer-hardware</a></code> and <code class="idl"><a data-link-type="idl" href="#dom-hardwareacceleration-prefer-software" id="ref-for-dom-hardwareacceleration-prefer-software①">prefer-software</a></code> are hints. While User Agents <em class="rfc2119">SHOULD</em> respect these values when possible, User
+Agents may ignore these values in some or all circumstances for any reason.</p>
    <p>To prevent fingerprinting, if a User Agent implements <a data-link-type="biblio" href="#biblio-media-capabilities" title="Media Capabilities">[media-capabilities]</a>,
-the User Agent MUST ensure rejection or acceptance of a given <code class="idl"><a data-link-type="idl" href="#enumdef-hardwareacceleration" id="ref-for-enumdef-hardwareacceleration⑥">HardwareAcceleration</a></code> preference reveals no additional information on top of
-what is inherent to the User Agent and revealed by <a data-link-type="biblio" href="#biblio-media-capabilities" title="Media Capabilities">[media-capabilities]</a>. If a
-User Agent does not implement <a data-link-type="biblio" href="#biblio-media-capabilities" title="Media Capabilities">[media-capabilities]</a> for reasons of
-fingerprinting, they SHOULD ignore the <code class="idl"><a data-link-type="idl" href="#enumdef-hardwareacceleration" id="ref-for-enumdef-hardwareacceleration⑦">HardwareAcceleration</a></code> preference.</p>
+the User Agent <em class="rfc2119">MUST</em> ensure rejection or acceptance of
+a given <code class="idl"><a data-link-type="idl" href="#enumdef-hardwareacceleration" id="ref-for-enumdef-hardwareacceleration⑥">HardwareAcceleration</a></code> preference reveals no additional information
+on top of what is inherent to the User Agent and revealed by <a data-link-type="biblio" href="#biblio-media-capabilities" title="Media Capabilities">[media-capabilities]</a>. If a User Agent does not implement <a data-link-type="biblio" href="#biblio-media-capabilities" title="Media Capabilities">[media-capabilities]</a> for reasons of fingerprinting, they <em class="rfc2119">SHOULD</em> ignore the <code class="idl"><a data-link-type="idl" href="#enumdef-hardwareacceleration" id="ref-for-enumdef-hardwareacceleration⑦">HardwareAcceleration</a></code> preference.</p>
    <div class="note" role="note">
      NOTE: Good examples of when a User Agent can ignore <code class="idl"><a data-link-type="idl" href="#dom-hardwareacceleration-prefer-hardware" id="ref-for-dom-hardwareacceleration-prefer-hardware②">prefer-hardware</a></code> or <code class="idl"><a data-link-type="idl" href="#dom-hardwareacceleration-prefer-software" id="ref-for-dom-hardwareacceleration-prefer-software②">prefer-software</a></code> are for reasons of user privacy or
   circumstances where the User Agent determines an alternative setting would
@@ -3392,9 +3391,8 @@ keys and values. For nested dictionaries, apply this definition recursively.
     their registrations in the <a data-link-type="biblio" href="#biblio-webcodecs-codec-registry" title="WebCodecs Codec Registry">[WEBCODECS-CODEC-REGISTRY]</a>.</p>
    <dl>
     <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoEncoderEncodeOptions" data-dfn-type="dict-member" data-export id="dom-videoencoderencodeoptions-keyframe"><code>keyFrame</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://webidl.spec.whatwg.org/#idl-boolean" id="ref-for-idl-boolean①①">boolean</a>, defaulting to <code>false</code></span>
-    <dd> A value of <code>true</code> indicates that the given frame MUST be encoded as a key
-    frame. A value of <code>false</code> indicates that the User Agent has flexibility to
-    decide whether the frame will be encoded as a <a data-link-type="dfn" href="#key-chunk" id="ref-for-key-chunk④">key frame</a>. 
+    <dd> A value of <code>true</code> indicates that the given frame <em class="rfc2119">MUST</em> be encoded as a key frame. A value of <code>false</code> indicates that the User Agent has flexibility to decide whether the frame
+    will be encoded as a <a data-link-type="dfn" href="#key-chunk" id="ref-for-key-chunk④">key frame</a>. 
    </dl>
    <h3 class="heading settled" data-level="7.14" id="video-encoder-bitrate-mode"><span class="secno">7.14. </span><span class="content">VideoEncoderBitrateMode</span><a class="self-link" href="#video-encoder-bitrate-mode"></a></h3>
 <pre class="idl highlight def"><c- b>enum</c-> <dfn class="dfn-paneled idl-code" data-dfn-type="enum" data-export id="enumdef-videoencoderbitratemode"><code><c- g>VideoEncoderBitrateMode</c-></code></dfn> {
@@ -4271,15 +4269,17 @@ An audio buffer comprised only of values equal to the <a data-link-type="dfn" hr
    <p class="note" role="note"><span class="marker">NOTE:</span> There is no data type that can hold 24 bits of information conveniently,
 but audio content using 24-bit samples is common, so 32-bits integers are
 commonly used to hold 24-bit content.</p>
-   <p><code class="idl"><a data-link-type="idl" href="#audiodata" id="ref-for-audiodata④②">AudioData</a></code> containing 24-bit samples SHOULD store those samples in <code class="idl"><a data-link-type="idl" href="#dom-audiosampleformat-s32" id="ref-for-dom-audiosampleformat-s32③">s32</a></code> or <code class="idl"><a data-link-type="idl" href="#dom-audiosampleformat-f32" id="ref-for-dom-audiosampleformat-f32③">f32</a></code>. When samples are stored in <code class="idl"><a data-link-type="idl" href="#dom-audiosampleformat-s32" id="ref-for-dom-audiosampleformat-s32④">s32</a></code>, each sample MUST be left-shifted by <code>8</code> bits. By virtue of this process, samples outside of the valid 24-bit range
-([-8388608, +8388607]) will be clipped. To avoid clipping and ensure lossless
-transport, samples <em class="rfc2119">MAY</em> be converted to <code class="idl"><a data-link-type="idl" href="#dom-audiosampleformat-f32" id="ref-for-dom-audiosampleformat-f32④">f32</a></code>.</p>
+   <p><code class="idl"><a data-link-type="idl" href="#audiodata" id="ref-for-audiodata④②">AudioData</a></code> containing 24-bit samples <em class="rfc2119">SHOULD</em> store those
+samples in <code class="idl"><a data-link-type="idl" href="#dom-audiosampleformat-s32" id="ref-for-dom-audiosampleformat-s32③">s32</a></code> or <code class="idl"><a data-link-type="idl" href="#dom-audiosampleformat-f32" id="ref-for-dom-audiosampleformat-f32③">f32</a></code>. When samples are stored in <code class="idl"><a data-link-type="idl" href="#dom-audiosampleformat-s32" id="ref-for-dom-audiosampleformat-s32④">s32</a></code>, each sample <em class="rfc2119">MUST</em> be left-shifted by <code>8</code> bits. By virtue of this
+process, samples outside of the valid 24-bit range ([-8388608, +8388607]) will
+be clipped. To avoid clipping and ensure lossless transport, samples <em class="rfc2119">MAY</em> be converted to <code class="idl"><a data-link-type="idl" href="#dom-audiosampleformat-f32" id="ref-for-dom-audiosampleformat-f32④">f32</a></code>.</p>
    <p class="note" role="note"><span class="marker">NOTE:</span> While clipping is unavoidable in <code class="idl"><a data-link-type="idl" href="#dom-audiosampleformat-u8" id="ref-for-dom-audiosampleformat-u8③">u8</a></code>, <code class="idl"><a data-link-type="idl" href="#dom-audiosampleformat-s16" id="ref-for-dom-audiosampleformat-s16③">s16</a></code>, and <code class="idl"><a data-link-type="idl" href="#dom-audiosampleformat-s32" id="ref-for-dom-audiosampleformat-s32⑤">s32</a></code> samples due
-to their storage types, implementations SHOULD take care not to clip internally
-when handling <code class="idl"><a data-link-type="idl" href="#dom-audiosampleformat-f32" id="ref-for-dom-audiosampleformat-f32⑤">f32</a></code> samples.</p>
+to their storage types, implementations <em class="rfc2119">SHOULD</em> take
+care not to clip internally when handling <code class="idl"><a data-link-type="idl" href="#dom-audiosampleformat-f32" id="ref-for-dom-audiosampleformat-f32⑤">f32</a></code> samples.</p>
    <h4 class="heading settled" data-level="9.3.3" id="audio-channel-ordering"><span class="secno">9.3.3. </span><span class="content">Audio channel ordering</span><a class="self-link" href="#audio-channel-ordering"></a></h4>
-   <p>When decoding, the ordering of the audio channels in the resulting <code class="idl"><a data-link-type="idl" href="#audiodata" id="ref-for-audiodata④③">AudioData</a></code> MUST be the same as what is present in the <code class="idl"><a data-link-type="idl" href="#encodedaudiochunk" id="ref-for-encodedaudiochunk①③">EncodedAudioChunk</a></code>.</p>
-   <p>When encoding, the ordering of the audio channels in the resulting <code class="idl"><a data-link-type="idl" href="#encodedaudiochunk" id="ref-for-encodedaudiochunk①④">EncodedAudioChunk</a></code> MUST be the same as what is preset in the given <code class="idl"><a data-link-type="idl" href="#audiodata" id="ref-for-audiodata④④">AudioData</a></code>;</p>
+   <p>When decoding, the ordering of the audio channels in the resulting <code class="idl"><a data-link-type="idl" href="#audiodata" id="ref-for-audiodata④③">AudioData</a></code> <em class="rfc2119">MUST</em> be the same as what is present in the <code class="idl"><a data-link-type="idl" href="#encodedaudiochunk" id="ref-for-encodedaudiochunk①③">EncodedAudioChunk</a></code>.</p>
+   <p>When encoding, the ordering of the audio channels in the resulting <code class="idl"><a data-link-type="idl" href="#encodedaudiochunk" id="ref-for-encodedaudiochunk①④">EncodedAudioChunk</a></code> <em class="rfc2119">MUST</em> be the same as what is
+preset in the given <code class="idl"><a data-link-type="idl" href="#audiodata" id="ref-for-audiodata④④">AudioData</a></code>.</p>
    <p>In other terms, no channel reordering is performed when encoding and decoding.</p>
    <p class="note" role="note"><span class="marker">NOTE:</span> The container either implies or specifies the channel mapping: the
 channel attributed to a particular channel index.</p>
@@ -4879,7 +4879,8 @@ and <code class="idl"><a data-link-type="idl" href="#dom-videoframe-visible-heig
      <ol>
       <li data-md>
        <p>If <var>overrideColorSpace</var> is provided, return a new <code class="idl"><a data-link-type="idl" href="#videocolorspace" id="ref-for-videocolorspace⑧">VideoColorSpace</a></code> constructed with <var>overrideColorSpace</var>.</p>
-       <p>User Agents MAY replace <code>null</code> members of the provided <var>overrideColorSpace</var> with guessed values as determined by implementer
+       <p>User Agents <em class="rfc2119">MAY</em> replace <code>null</code> members of the
+provided <var>overrideColorSpace</var> with guessed values as determined by implementer
 defined heuristics.</p>
       <li data-md>
        <p>Otherwise, if <code class="idl"><a data-link-type="idl" href="#dom-videoframe-format-slot" id="ref-for-dom-videoframe-format-slot⑨">[[format]]</a></code> is an <a data-link-type="dfn" href="#rgb-format" id="ref-for-rgb-format">RGB format</a> return a new
@@ -5439,7 +5440,7 @@ is its own <a data-link-type="dfn" href="#equivalent-opaque-format" id="ref-for-
     integer. Each row has a number of samples equal to the result of the
     division of <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedwidth" id="ref-for-dom-videoframe-codedwidth⑦">codedWidth</a></code> by 2, rounded up to the nearest
     integer. Samples are arranged starting at the top left of the image.</p>
-     <p>The visible rectangle offset (<code class="idl"><a data-link-type="idl" href="#dom-videoframe-visiblerect" id="ref-for-dom-videoframe-visiblerect⑦">visibleRect</a></code>.<code class="idl"><a data-link-type="idl" href="https://drafts.fxtf.org/geometry-1/#dom-domrectinit-x" id="ref-for-dom-domrectinit-x④">x</a></code> and <code class="idl"><a data-link-type="idl" href="#dom-videoframe-visiblerect" id="ref-for-dom-videoframe-visiblerect⑧">visibleRect</a></code>.<code class="idl"><a data-link-type="idl" href="https://drafts.fxtf.org/geometry-1/#dom-domrectinit-y" id="ref-for-dom-domrectinit-y④">y</a></code>) MUST be even.</p>
+     <p>The visible rectangle offset (<code class="idl"><a data-link-type="idl" href="#dom-videoframe-visiblerect" id="ref-for-dom-videoframe-visiblerect⑦">visibleRect</a></code>.<code class="idl"><a data-link-type="idl" href="https://drafts.fxtf.org/geometry-1/#dom-domrectinit-x" id="ref-for-dom-domrectinit-x④">x</a></code> and <code class="idl"><a data-link-type="idl" href="#dom-videoframe-visiblerect" id="ref-for-dom-videoframe-visiblerect⑧">visibleRect</a></code>.<code class="idl"><a data-link-type="idl" href="https://drafts.fxtf.org/geometry-1/#dom-domrectinit-y" id="ref-for-dom-domrectinit-y④">y</a></code>) <em class="rfc2119">MUST</em> be even.</p>
     <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoPixelFormat" data-dfn-type="enum-value" data-export data-lt="&quot;I420A&quot;|I420A" id="dom-videopixelformat-i420a"><code>I420A</code></dfn>
     <dd>
      <p>This format is composed of four distinct planes, one plane of Luma, two
@@ -5456,7 +5457,7 @@ is its own <a data-link-type="dfn" href="#equivalent-opaque-format" id="ref-for-
     integer. Each row has a number of samples equal to the result of the
     division of <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedwidth" id="ref-for-dom-videoframe-codedwidth①⓪">codedWidth</a></code> by 2, rounded up to the nearest
     integer. Samples are arranged starting at the top left of the image.</p>
-     <p>The visible rectangle offset (<code class="idl"><a data-link-type="idl" href="#dom-videoframe-visiblerect" id="ref-for-dom-videoframe-visiblerect⑨">visibleRect</a></code>.<code class="idl"><a data-link-type="idl" href="https://drafts.fxtf.org/geometry-1/#dom-domrectinit-x" id="ref-for-dom-domrectinit-x⑤">x</a></code> and <code class="idl"><a data-link-type="idl" href="#dom-videoframe-visiblerect" id="ref-for-dom-videoframe-visiblerect①⓪">visibleRect</a></code>.<code class="idl"><a data-link-type="idl" href="https://drafts.fxtf.org/geometry-1/#dom-domrectinit-y" id="ref-for-dom-domrectinit-y⑤">y</a></code>) MUST be even.</p>
+     <p>The visible rectangle offset (<code class="idl"><a data-link-type="idl" href="#dom-videoframe-visiblerect" id="ref-for-dom-videoframe-visiblerect⑨">visibleRect</a></code>.<code class="idl"><a data-link-type="idl" href="https://drafts.fxtf.org/geometry-1/#dom-domrectinit-x" id="ref-for-dom-domrectinit-x⑤">x</a></code> and <code class="idl"><a data-link-type="idl" href="#dom-videoframe-visiblerect" id="ref-for-dom-videoframe-visiblerect①⓪">visibleRect</a></code>.<code class="idl"><a data-link-type="idl" href="https://drafts.fxtf.org/geometry-1/#dom-domrectinit-y" id="ref-for-dom-domrectinit-y⑤">y</a></code>) <em class="rfc2119">MUST</em> be even.</p>
      <p><code class="idl"><a data-link-type="idl" href="#dom-videopixelformat-i420a" id="ref-for-dom-videopixelformat-i420a①">I420A</a></code>'s <a data-link-type="dfn" href="#equivalent-opaque-format" id="ref-for-equivalent-opaque-format③">equivalent opaque format</a> is <code class="idl"><a data-link-type="idl" href="#dom-videopixelformat-i420" id="ref-for-dom-videopixelformat-i420②">I420</a></code>.</p>
     <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoPixelFormat" data-dfn-type="enum-value" data-export data-lt="&quot;I422&quot;|I422" id="dom-videopixelformat-i422"><code>I422</code></dfn>
     <dd>
@@ -5472,8 +5473,7 @@ is its own <a data-link-type="dfn" href="#equivalent-opaque-format" id="ref-for-
      <p>The U and V planes have <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedheight" id="ref-for-dom-videoframe-codedheight①③">codedHeight</a></code> rows. Each row has a
     number of samples equal to the result of the division of <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedwidth" id="ref-for-dom-videoframe-codedwidth①③">codedWidth</a></code> by 2, rounded up to the nearest integer. Samples
     are arranged starting at the top left of the image.</p>
-     <p>The visible rectangle offset (<code class="idl"><a data-link-type="idl" href="#dom-videoframe-visiblerect" id="ref-for-dom-videoframe-visiblerect①①">visibleRect</a></code>.<code class="idl"><a data-link-type="idl" href="https://drafts.fxtf.org/geometry-1/#dom-domrectinit-x" id="ref-for-dom-domrectinit-x⑥">x</a></code>)
-    MUST be even.</p>
+     <p>The visible rectangle offset (<code class="idl"><a data-link-type="idl" href="#dom-videoframe-visiblerect" id="ref-for-dom-videoframe-visiblerect①①">visibleRect</a></code>.<code class="idl"><a data-link-type="idl" href="https://drafts.fxtf.org/geometry-1/#dom-domrectinit-x" id="ref-for-dom-domrectinit-x⑥">x</a></code>) <em class="rfc2119">MUST</em> be even.</p>
     <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoPixelFormat" data-dfn-type="enum-value" data-export data-lt="&quot;I444&quot;|I444" id="dom-videopixelformat-i444"><code>I444</code></dfn>
     <dd>
      <p>This format is composed of three distinct planes, one plane of Luma and two
@@ -5499,7 +5499,7 @@ is its own <a data-link-type="dfn" href="#equivalent-opaque-format" id="ref-for-
     rounded up to the nearest integer. Each element is composed of two Chroma
     samples, the U and V samples, in that order. Samples are arranged starting
     at the top left of the image.</p>
-     <p>The visible rectangle offset (<code class="idl"><a data-link-type="idl" href="#dom-videoframe-visiblerect" id="ref-for-dom-videoframe-visiblerect①②">visibleRect</a></code>.<code class="idl"><a data-link-type="idl" href="https://drafts.fxtf.org/geometry-1/#dom-domrectinit-x" id="ref-for-dom-domrectinit-x⑦">x</a></code> and <code class="idl"><a data-link-type="idl" href="#dom-videoframe-visiblerect" id="ref-for-dom-videoframe-visiblerect①③">visibleRect</a></code>.<code class="idl"><a data-link-type="idl" href="https://drafts.fxtf.org/geometry-1/#dom-domrectinit-y" id="ref-for-dom-domrectinit-y⑥">y</a></code>) MUST be even.</p>
+     <p>The visible rectangle offset (<code class="idl"><a data-link-type="idl" href="#dom-videoframe-visiblerect" id="ref-for-dom-videoframe-visiblerect①②">visibleRect</a></code>.<code class="idl"><a data-link-type="idl" href="https://drafts.fxtf.org/geometry-1/#dom-domrectinit-x" id="ref-for-dom-domrectinit-x⑦">x</a></code> and <code class="idl"><a data-link-type="idl" href="#dom-videoframe-visiblerect" id="ref-for-dom-videoframe-visiblerect①③">visibleRect</a></code>.<code class="idl"><a data-link-type="idl" href="https://drafts.fxtf.org/geometry-1/#dom-domrectinit-y" id="ref-for-dom-domrectinit-y⑥">y</a></code>) <em class="rfc2119">MUST</em> be even.</p>
      <div class="example" id="example-26ede914">
       <a class="self-link" href="#example-26ede914"></a> An image in the NV12 pixel format that is 16 pixels wide and 10 pixels tall
     will be arranged like so in memory: 
@@ -6705,11 +6705,11 @@ means running these steps:</p>
      </ol>
    </dl>
    <h2 class="heading settled" data-level="11" id="resource-reclamation"><span class="secno">11. </span><span class="content">Resource Reclamation</span><a class="self-link" href="#resource-reclamation"></a></h2>
-   <p>When resources are constrained, a User Agent MAY proactively reclaim codecs.
-This is particularly true in the case where hardware codecs are limited, and
-shared accross web pages or platform apps.</p>
-   <p>To <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="reclaim-a-codec">reclaim a codec</dfn>, a User Agent MUST run the appropriate
-close algorithm (amongst <a data-link-type="dfn" href="#close-audiodecoder" id="ref-for-close-audiodecoder③">Close AudioDecoder</a>, <a data-link-type="dfn" href="#close-audioencoder" id="ref-for-close-audioencoder③">Close AudioEncoder</a>, <a data-link-type="dfn" href="#close-videodecoder" id="ref-for-close-videodecoder③">Close VideoDecoder</a> and <a data-link-type="dfn" href="#close-videoencoder" id="ref-for-close-videoencoder③">Close VideoEncoder</a>) with a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#quotaexceedederror" id="ref-for-quotaexceedederror">QuotaExceededError</a></code> <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-DOMException" id="ref-for-idl-DOMException⑤④">DOMException</a></code>.</p>
+   <p>When resources are constrained, a User Agent <em class="rfc2119">MAY</em> proactively reclaim codecs. This is particularly true in the case where hardware
+codecs are limited, and shared accross web pages or platform apps.</p>
+   <p>To <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="reclaim-a-codec">reclaim a codec</dfn>, a User Agent <em class="rfc2119">MUST</em> run
+the appropriate close algorithm (amongst <a data-link-type="dfn" href="#close-audiodecoder" id="ref-for-close-audiodecoder③">Close AudioDecoder</a>, <a data-link-type="dfn" href="#close-audioencoder" id="ref-for-close-audioencoder③">Close AudioEncoder</a>, <a data-link-type="dfn" href="#close-videodecoder" id="ref-for-close-videodecoder③">Close VideoDecoder</a> and <a data-link-type="dfn" href="#close-videoencoder" id="ref-for-close-videoencoder③">Close VideoEncoder</a>) with
+a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#quotaexceedederror" id="ref-for-quotaexceedederror">QuotaExceededError</a></code> <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-DOMException" id="ref-for-idl-DOMException⑤④">DOMException</a></code>.</p>
    <p>The rules governing when a codec may be reclaimed depend on whether the codec is
 an <a data-link-type="dfn" href="#active-codec" id="ref-for-active-codec">active</a> or <a data-link-type="dfn" href="#inactive-codec" id="ref-for-inactive-codec">inactive</a> codec and/or a <a data-link-type="dfn" href="#background-codec" id="ref-for-background-codec">background</a> codec.</p>
    <p>An <dfn class="dfn-paneled" data-dfn-type="dfn" data-lt="active codec|active" data-noexport id="active-codec">active codec</dfn> is a codec that has
@@ -6721,10 +6721,10 @@ than <code>10 seconds</code> elapses between each <code>output()</code> callback
    <p>An <dfn class="dfn-paneled" data-dfn-type="dfn" data-lt="inactive codec|inactive" data-noexport id="inactive-codec">inactive codec</dfn> is any codec that does
 not meet the definition of an <a data-link-type="dfn" href="#active-codec" id="ref-for-active-codec②">active codec</a>.</p>
    <p>A <dfn class="dfn-paneled" data-dfn-type="dfn" data-lt="background codec|background" data-noexport id="background-codec">background codec</dfn> is a codec whose <code class="idl"><a data-link-type="idl" href="https://dom.spec.whatwg.org/#dom-node-ownerdocument" id="ref-for-dom-node-ownerdocument">ownerDocument</a></code> (or <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/workers.html#concept-WorkerGlobalScope-owner-set" id="ref-for-concept-WorkerGlobalScope-owner-set">owner set</a>'s <code class="idl"><a data-link-type="idl" href="https://dom.spec.whatwg.org/#document" id="ref-for-document">Document</a></code>, for codecs in workers) has a <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/interaction.html#dom-document-hidden" id="ref-for-dom-document-hidden">hidden</a></code> attribute equal to <code>true</code>.</p>
-   <p>A User Agent MUST only <a data-link-type="dfn" href="#reclaim-a-codec" id="ref-for-reclaim-a-codec">reclaim a codec</a> that is either an <a data-link-type="dfn" href="#inactive-codec" id="ref-for-inactive-codec①">inactive codec</a>, a <a data-link-type="dfn" href="#background-codec" id="ref-for-background-codec①">background codec</a>, or both. A User Agent MUST NOT
-reclaim a codec that is both <a data-link-type="dfn" href="#active-codec" id="ref-for-active-codec③">active</a> and in the foreground, i.e. not a <a data-link-type="dfn" href="#background-codec" id="ref-for-background-codec②">background codec</a>.</p>
-   <p>Additionally, User Agents MUST NOT reclaim an <a data-link-type="dfn" href="#active-codec" id="ref-for-active-codec④">active</a> <a data-link-type="dfn" href="#background-codec" id="ref-for-background-codec③">background</a> codec
-if it is:</p>
+   <p>A User Agent <em class="rfc2119">MUST</em> only <a data-link-type="dfn" href="#reclaim-a-codec" id="ref-for-reclaim-a-codec">reclaim a codec</a> that is
+either an <a data-link-type="dfn" href="#inactive-codec" id="ref-for-inactive-codec①">inactive codec</a>, a <a data-link-type="dfn" href="#background-codec" id="ref-for-background-codec①">background codec</a>, or both. A User Agent <em class="rfc2119">MUST NOT</em> reclaim a codec that is both <a data-link-type="dfn" href="#active-codec" id="ref-for-active-codec③">active</a> and in
+the foreground, i.e. not a <a data-link-type="dfn" href="#background-codec" id="ref-for-background-codec②">background codec</a>.</p>
+   <p>Additionally, User Agents <em class="rfc2119">MUST NOT</em> reclaim an <a data-link-type="dfn" href="#active-codec" id="ref-for-active-codec④">active</a> <a data-link-type="dfn" href="#background-codec" id="ref-for-background-codec③">background</a> codec if it is:</p>
    <ul>
     <li data-md>
      <p>An encoder, e.g. an <code class="idl"><a data-link-type="idl" href="#audioencoder" id="ref-for-audioencoder④">AudioEncoder</a></code> or <code class="idl"><a data-link-type="idl" href="#videoencoder" id="ref-for-videoencoder⑦">VideoEncoder</a></code>.</p>
