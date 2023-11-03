@@ -3749,7 +3749,8 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
         {{TypeError}}.
     6. Let |p| be a new {{Promise}}.
     7. Let |copyStepsQueue| be the result of starting a new [=parallel queue=].
-    8. Enqueue the following steps to |copyStepsQueue|:
+    8. Let |planeLayouts| be a new [=list=].
+    9. Enqueue the following steps to |copyStepsQueue|:
         1. Let resource be the [=media resource=] referenced by
             [[resource reference]].
         2. Let |numPlanes| be the number of planes as defined by
@@ -3765,13 +3766,16 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
                 |computedLayout|'s [=computed plane layout/sourceTop=] by
                 |sourceStride|
             4. Add |computedLayout|'s [=computed plane layout/sourceLeftBytes=]
-                to sourceOffset.
+                to |sourceOffset|.
             5. Let |destinationOffset| be |computedLayout|'s
                 [=computed plane layout/destinationOffset=].
             6. Let |rowBytes| be |computedLayout|'s
                 [=computed plane layout/sourceWidthBytes=].
-            7. Let |row| be `0`.
-            8. While |row| is less than |computedLayout|'s
+            7. Let |layout| be a new {{PlaneLayout}}, with
+                {{PlaneLayout/offset}} set to |destinationOffset| and
+                {{PlaneLayout/stride}} set to |rowBytes|.
+            8. Let |row| be `0`.
+            9. While |row| is less than |computedLayout|'s
                 [=computed plane layout/sourceHeight=]:
                 1. Copy |rowBytes| bytes from |resource| starting at
                     |sourceOffset| to |destination| starting at
@@ -3780,9 +3784,10 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
                 3. Increment |destinationOffset| by |computedLayout|'s
                     [=computed plane layout/destinationStride=].
                 4. Increment |row| by `1`.
-            9. Increment |planeIndex| by `1`.
-        5. [=Queue a task=] to resolve |p|.
-    9. Return |p|.
+            10. Increment |planeIndex| by `1`.
+            11. Append |layout| to |planeLayouts|.
+        5. [=Queue a task=] to resolve |p| with |planeLayouts|.
+    10. Return |p|.
 
 : <dfn method for=VideoFrame>clone()</dfn>
 :: Creates a new {{VideoFrame}} with a reference to the same
