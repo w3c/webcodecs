@@ -4091,25 +4091,23 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
             subsample for |plane|.
         4. Let |sampleHeight| be the vertical [=sub-sampling factor=] of each
             subsample for |plane|.
-        5. Let |sampleWidthBytes| be the product of multiplying |sampleWidth| by
-            |sampleBytes|.
-        6. Let |computedLayout| be a new [=computed plane layout=].
-        7. Set |computedLayout|'s [=computed plane layout/sourceTop=] to the
+        5. Let |computedLayout| be a new [=computed plane layout=].
+        6. Set |computedLayout|'s [=computed plane layout/sourceTop=] to the
             result of the division of truncated |parsedRect|.{{DOMRectInit/y}}
             by |sampleHeight|, rounded up to the nearest integer.
-        8. Set |computedLayout|'s [=computed plane layout/sourceHeight=] to the
+        7. Set |computedLayout|'s [=computed plane layout/sourceHeight=] to the
             result of the division of truncated
             |parsedRect|.{{DOMRectInit/height}} by |sampleHeight|, rounded up
             to the nearest integer.
-        9. Set |computedLayout|'s [=computed plane layout/sourceLeftBytes=] to
+        8. Set |computedLayout|'s [=computed plane layout/sourceLeftBytes=] to
             the result of the integer division of
             truncated |parsedRect|.{{DOMRectInit/x}} by |sampleWidth|,
             multiplied by |sampleBytes|.
-        10. Set |computedLayout|'s [=computed plane layout/sourceWidthBytes=] to
+        9. Set |computedLayout|'s [=computed plane layout/sourceWidthBytes=] to
             the result of the integer division of
             truncated |parsedRect|.{{DOMRectInit/width}} by |sampleHeight|,
             multiplied by |sampleBytes|.
-        11. If |layout| is not `undefined`:
+        10. If |layout| is not `undefined`:
             1. Let |planeLayout| be the {{PlaneLayout}} in |layout| at position
                 |planeIndex|.
             2. If |planeLayout|.{{PlaneLayout/stride}} is less than
@@ -4119,7 +4117,7 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
                 [=computed plane layout/destinationOffset=].
             4. Assign |planeLayout|.{{PlaneLayout/stride}} to |computedLayout|'s
                 [=computed plane layout/destinationStride=].
-        12. Otherwise:
+        11. Otherwise:
 
             NOTE: If an explicit layout was not provided, the following steps
                 default to tight packing.
@@ -4129,23 +4127,23 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
             2. Assign |computedLayout|'s
                 [=computed plane layout/sourceWidthBytes=] to
                 |computedLayout|'s [=computed plane layout/destinationStride=].
-        13. Let |planeSize| be the product of multiplying |computedLayout|'s
+        12. Let |planeSize| be the product of multiplying |computedLayout|'s
                 [=computed plane layout/destinationStride=] and
                 [=computed plane layout/sourceHeight=].
-        14. Let |planeEnd| be the sum of |planeSize| and |computedLayout|'s
+        13. Let |planeEnd| be the sum of |planeSize| and |computedLayout|'s
                 [=computed plane layout/destinationOffset=].
-        15. If |planeSize| or |planeEnd| is greater than maximum range of
+        14. If |planeSize| or |planeEnd| is greater than maximum range of
                 {{unsigned long}}, return a {{TypeError}}.
-        16. Append |planeEnd| to |endOffsets|.
-        17. Assign the maximum of |minAllocationSize| and |planeEnd| to
+        15. Append |planeEnd| to |endOffsets|.
+        16. Assign the maximum of |minAllocationSize| and |planeEnd| to
                 |minAllocationSize|.
 
                 NOTE: The above step uses a maximum to allow for the
                     possibility that user specified plane offsets reorder
                     planes.
 
-        18. Let |earlierPlaneIndex| be `0`.
-        19. While |earlierPlaneIndex| is less than |planeIndex|.
+        17. Let |earlierPlaneIndex| be `0`.
+        18. While |earlierPlaneIndex| is less than |planeIndex|.
             1. Let |earlierLayout| be `computedLayouts[earlierPlaneIndex]`.
             2. If `endOffsets[planeIndex]` is less than or equal to
                 |earlierLayout|'s [=computed plane layout/destinationOffset=] or
@@ -4158,8 +4156,8 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
 
             3. Otherwise, return a {{TypeError}}.
             4. Increment |earlierPlaneIndex| by `1`.
-        20. Append |computedLayout| to |computedLayouts|.
-        21. Increment |planeIndex| by `1`.
+        19. Append |computedLayout| to |computedLayouts|.
+        20. Increment |planeIndex| by `1`.
     8. Let |combinedLayout| be a new [=combined buffer layout=], initialized as
         follows:
         1. Assign |computedLayouts| to
