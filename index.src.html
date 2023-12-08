@@ -3748,7 +3748,7 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
 : <dfn method for=VideoFrame>copyTo(|destination|, |options|)</dfn>
 :: Asynchronously copies the planes of this frame into |destination| according
     to |options|. The format of the data is specified by {{VideoFrameCopyToOptions/format}},
-    if present, or the same as {{VideoFrame/format}}.
+    if present, otherwise {{VideoFrame/format}}.
 
     NOTE: Promises that are returned by several calls to
         {{VideoFrame/copyTo()}} are not guaranteed to resolve in the order they
@@ -4217,7 +4217,7 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
     5. If |format| is equal to {{BGRA}} or {{BGRX}}:
         1. Let |pixelIndex| be `0`
         2. While |pixelIndex| is less than `rect.width` multiplied by `rect.height`:
-            1. Swap items in |imageData|.{{ImageData/data}} at indexes `4 * pixelIndex`
+            1. Swap elements in |imageData|.{{ImageData/data}} at indexes `4 * pixelIndex`
                  and `4 * pixelIndex + 2`.
             2. Increment |pixelIndex| by `1`
     6. Let |init| be a new {{VideoFrameBufferInit}} constructed with
@@ -4322,8 +4322,8 @@ will enforce the following requirements:
     invalid to specify planes that overlap.
 : <dfn dict-member for=VideoFrameCopyToOptions>format</dfn>
 :: A {{VideoPixelFormat}} for the pixel data in the destination
-    {{BufferSource}}. Explicity values cab be:
-    {{RGBA}}, {{RGBX}}, {{BGRA}}, {{BGRX}} and the same as {{VideoFrame/format}}.
+    {{BufferSource}}. Explicit values cab be:
+    {{RGBA}}, {{RGBX}}, {{BGRA}}, {{BGRX}} or the same as {{VideoFrame/format}}.
     If unspecified, the {{VideoFrame/format}} is used.
 : <dfn dict-member for=VideoFrameCopyToOptions>colorSpace</dfn>
 :: A {{PredefinedColorSpace}} that <em class="rfc2119">SHALL</em> be used to as
