@@ -30,6 +30,7 @@ Markup Shorthands:css no, markdown yes, dfn yes
 
 <pre class=link-defaults>
 spec:html; type:attribute; text:hidden
+spec:html; type:enum-value; text:srgb
 spec:infra; type:dfn; text:list
 spec:infra; type:dfn; text:enqueue
 </pre>
@@ -3766,15 +3767,20 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
     5. If `destination.byteLength` is less than |combinedLayout|'s [=combined
         buffer layout/allocationSize=], return a promise rejected with a
         {{TypeError}}.
-    6. If `options.format` does not equal to {{VideoFrame/[[format]]}} and
-        `options.format` is equal to one of {{RGBA}}, {{RGBX}}, {{BGRA}}, {{BGRX}}
-        then:
-          1. Let |serializedOptions| be [$StructuredSerialize$](|options|)
-          2. Let |newOptions| be [$StructuredDeserialize$](|serializedOptions|, [=the current Realm=]).
-          3. Set |newOptions.format| to `undefined`
-          4. Let |rgbFrame| be the result of running the [=VideoFrame/Convert to RGB frame=]
-               algorithm with `options.format`, `options.rect`, and  `options.colorSpace`.
-          5. Return the result of calling {{VideoFrame/copyTo()}} on |rgbFrame| with
+    6. If |options|.{{VideoFrameCopyToOptions/format}} does not equal to
+        {{VideoFrame/[[format]]}} and |options|.{{VideoFrameCopyToOptions/format}}
+        is equal to one of {{RGBA}}, {{RGBX}}, {{BGRA}}, {{BGRX}} then:
+          1. Let |newOptions| be the result of running the <a>Clone Configuration</a>
+               algorithm with |options|.
+          2. Assign `undefined` to |newOptions|.{{VideoFrameCopyToOptions/format}}
+               and |newOptions|.{{VideoFrameCopyToOptions/rect}}.
+          3. Let |rect| be `undefined`.
+          4. If |options|.{{VideoFrameCopyToOptions/rect}} [=map/exists=], assign the
+               value of |options|.{{VideoFrameCopyToOptions/rect}} to |rect|.
+          5. Otherwise, assign the value of {{VideoFrame/visibleRect}} to |rect|.
+          6. Let |rgbFrame| be the result of running the [=VideoFrame/Convert to RGB frame=]
+               algorithm with |options|.{{VideoFrameCopyToOptions/format}}, |rect|, and  `options.colorSpace`.
+          7. Return the result of calling {{VideoFrame/copyTo()}} on |rgbFrame| with
                |destination| and |newOptions|.
     7. Let |p| be a new {{Promise}}.
     8. Let |copyStepsQueue| be the result of starting a new [=parallel queue=].
@@ -4322,13 +4328,13 @@ will enforce the following requirements:
     invalid to specify planes that overlap.
 : <dfn dict-member for=VideoFrameCopyToOptions>format</dfn>
 :: A {{VideoPixelFormat}} for the pixel data in the destination
-    {{BufferSource}}. Explicit values can be:
-    {{RGBA}}, {{RGBX}}, {{BGRA}}, {{BGRX}} or the same as {{VideoFrame/format}}.
+    {{BufferSource}}. Potential values are:
+    {{RGBA}}, {{RGBX}}, {{BGRA}}, {{BGRX}} and values of {{VideoFrame/format}}.
     If unspecified, the {{VideoFrame/format}} is used.
 : <dfn dict-member for=VideoFrameCopyToOptions>colorSpace</dfn>
 :: A {{PredefinedColorSpace}} that <em class="rfc2119">SHALL</em> be used to as
     a target color space for for the pixel data in the destination
-    {{BufferSource}}.
+    {{BufferSource}}. If unspecified, {{srgb}} is used.
 
 
 DOMRects in VideoFrame {#videoframe-domrect}
