@@ -3767,7 +3767,7 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
     5. If `destination.byteLength` is less than |combinedLayout|'s [=combined
         buffer layout/allocationSize=], return a promise rejected with a
         {{TypeError}}.
-    6. If |options|.{{VideoFrameCopyToOptions/format}} does not equal to
+    6. If |options|.{{VideoFrameCopyToOptions/format}} does not equal
         {{VideoFrame/[[format]]}} and |options|.{{VideoFrameCopyToOptions/format}}
         is equal to one of {{RGBA}}, {{RGBX}}, {{BGRA}}, {{BGRX}} then:
           1. Let |newOptions| be the result of running the <a>Clone Configuration</a>
@@ -4214,25 +4214,25 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
     2. Let |canvasSettings| be a new {{CanvasRenderingContext2DSettings}} with
         {{CanvasRenderingContext2DSettings/colorSpace}} set to |colorSpace|.
     3. Let |context| be the result of calling {{OffscreenCanvas/getContext()}}
-        on |canvas| with `"2d"` and |canvasSettings|
+        on |canvas| with `"2d"` and |canvasSettings|.
     3. Call {{CanvasDrawImage/drawImage()}} on |context| with
         `rect.x`, `rect.y`, `rect.width`, `rect.height`, `0`, `0`, `rect.width`,
         `rect.height`.
     4. Let |imageData| be the result of calling {{CanvasImageData/getImageData()}} with
         `0`, `0`, |rect.width|, |rect.height|.
     5. If |format| is equal to {{BGRA}} or {{BGRX}}:
-        1. Let |pixelIndex| be `0`
+        1. Let |pixelIndex| be `0`.
         2. While |pixelIndex| is less than `rect.width` multiplied by `rect.height`:
             1. Swap elements in |imageData|.{{ImageData/data}} at indexes `4 * pixelIndex`
                  and `4 * pixelIndex + 2`.
-            2. Increment |pixelIndex| by `1`
+            2. Increment |pixelIndex| by `1`.
     6. Let |init| be a new {{VideoFrameBufferInit}} constructed with
         {{VideoFrameBufferInit/format}} = |format|,
         {{VideoFrameBufferInit/codedWidth}} = `rect.width`,
-        {{VideoFrameBufferInit/codedHeight}} = `rect.height`
+        {{VideoFrameBufferInit/codedHeight}} = `rect.height`.
     7. Let |convertedFrame| be a new {{VideoFrame}} constructed with
-        |imageData|.{{ImageData/data}} and |init|
-    8. Return |convertedFrame|
+        |imageData|.{{ImageData/data}} and |init|.
+    8. Return |convertedFrame|.
 
 : <dfn for=VideoFrame>Copy VideoFrame metadata</dfn> (with |metadata|)
 :: 1. Let |metadataCopySerialized| be [$StructuredSerialize$](|metadata|).
@@ -4290,7 +4290,7 @@ value to {{ColorSpaceConversion/"none"}} disables color space conversion.
 
 VideoFrame CopyTo() Options {#videoframe-copyto-options}
 ------------------------------------------------------------
-Options to specify a rectangle of pixels to copy, their format and the offset
+Options to specify a rectangle of pixels to copy, their format, and the offset
 and stride of planes in the destination buffer.
 
 <xmp class='idl'>
@@ -4332,8 +4332,8 @@ will enforce the following requirements:
     {{RGBA}}, {{RGBX}}, {{BGRA}}, {{BGRX}} and values of {{VideoFrame/format}}.
     If unspecified or `null`, the {{VideoFrame/format}} is used.
 : <dfn dict-member for=VideoFrameCopyToOptions>colorSpace</dfn>
-:: A {{PredefinedColorSpace}} that <em class="rfc2119">SHALL</em> be used to as
-    a target color space for for the pixel data in the destination
+:: A {{PredefinedColorSpace}} that <em class="rfc2119">SHALL</em> be used as
+    a target color space for the pixel data in the destination
     {{BufferSource}}, but only if {{VideoFrameCopyToOptions/format}} is one of
     {{RGBA}}, {{RGBX}}, {{BGRA}}, {{BGRX}}, otherwise it is ignored.
     If unspecified or `null`, {{srgb}} is used.
