@@ -133,6 +133,10 @@ Definitions {#definitions}
 :: A grouping of {{EncodedVideoChunk}}s whose timestamp cadence produces a
     particular framerate. See {{VideoEncoderConfig/scalabilityMode}}.
 
+: <dfn>Spatial Layer</dfn>
+:: A grouping of {{EncodedVideoChunk}}s which produces a particular
+    resolution. See {{VideoEncoderConfig/scalabilityMode}}.
+
 : <dfn>Progressive Image</dfn>
 :: An image that supports decoding to multiple levels of detail, with lower
     levels becoming available while the encoded data is not yet fully buffered.
@@ -1652,11 +1656,20 @@ Algorithms {#videoencoder-algorithms}
                 |svc|.{{SvcOutputMetadata/temporalLayerId}}.
             4. Assign |svc| to
                 |chunkMetadata|.{{EncodedVideoChunkMetadata/svc}}.
-        8. If |encoderConfig|.{{VideoEncoderConfig/alpha}} is set to `"keep"`:
+        8. If |encoderConfig|.{{VideoEncoderConfig/scalabilityMode}}
+            describes multiple [=spatial layers=]:
+            1. Let |svc| be a new {{SvcOutputMetadata}} instance.
+            2. Let |spatial_layer_id| be the zero-based index describing the
+                spatial layer for |output|.
+            3. Assign |spatial_layer_id| to
+                |svc|.{{SvcOutputMetadata/spatialLayerId}}.
+            4. Assign |svc| to
+                |chunkMetadata|.{{EncodedVideoChunkMetadata/svc}}.
+        9. If |encoderConfig|.{{VideoEncoderConfig/alpha}} is set to `"keep"`:
             1. Let |alphaSideData| be the encoded alpha data in |output|.
             2. Assign |alphaSideData| to
                 |chunkMetadata|.{{EncodedVideoChunkMetadata/alphaSideData}}.
-        9. Invoke {{VideoEncoder/[[output callback]]}} with |chunk| and
+       10. Invoke {{VideoEncoder/[[output callback]]}} with |chunk| and
             |chunkMetadata|.
   </dd>
   <dt><dfn>Reset VideoEncoder</dfn> (with |exception|)</dt>
@@ -1704,6 +1717,9 @@ dictionary EncodedVideoChunkMetadata {
 
 dictionary SvcOutputMetadata {
   unsigned long temporalLayerId;
+  unsigned long spatialLayerId;
+  unsigned long long frameId;
+  sequence <unsigned long long> dependencies;
 };
 </xmp>
 
@@ -1723,7 +1739,17 @@ dictionary SvcOutputMetadata {
 :: A number that identifies the [=temporal layer=] for the associated
     {{EncodedVideoChunk}}.
 
+: <dfn dict-member for=SvcOutputMetadata>spatialLayerId</dfn>
+:: A number that identifies the [=spatial layer=] for the associated
+    {{EncodedVideoChunk}}.
 
+: <dfn dict-member for=SvcOutputMetadata>frameId</dfn>
+:: A number that identifies the associated {{EncodedVideoChunk}}.
+
+
+: <dfn dict-member for=SvcOutputMetadata>dependencies</dfn>
+:: A sequence containing the {{frameId}} values that the associated {{EncodedVideoChunk}} depends on.
+      
 Configurations{#configurations}
 ===============================
 
