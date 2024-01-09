@@ -16,7 +16,8 @@ Abstract: This registration is entered into the [[webcodecs-codec-registry]].
     codec-specific {{EncodedAudioChunk}} {{EncodedAudioChunk/[[internal data]]}}
     bytes, (3) the {{AudioDecoderConfig/description|AudioDecoderConfig.description}}
     bytes, (4) the values of {{EncodedAudioChunk}} {{EncodedAudioChunk/[[type]]}},
-    and (5) the codec-specific extensions to {{AudioEncoderConfig}}
+    (5) the {{AudioEncoderConfig/contentHint|AudioEncoderConfig.contentHint}}
+    mappings and (6) the codec-specific extensions to {{AudioEncoderConfig}}
 
     The registration is not intended to include any information on whether a
     codec format is encumbered by intellectual property claims. Implementers and
@@ -33,6 +34,12 @@ Markup Shorthands:css no, markdown yes, dfn yes
 </pre>
 
 
+<pre class='anchors'>
+spec: mst-content-hint; urlPrefix: https://www.w3.org/TR/mst-content-hint/
+    type: dfn; text: speech; url:#idl-def-AudioContentHint.speech
+    type: dfn; text: music; url:#idl-def-AudioContentHint.music
+</pre>
+
 <pre class='biblio'>
 {
   "OPUS": {
@@ -46,7 +53,7 @@ Markup Shorthands:css no, markdown yes, dfn yes
     "title": "RFC 7845: Ogg Encapsulation for the Opus Audio Codec",
     "publisher": "IETF",
     "date": "April 2016"
-  }
+  },
 }
 </pre>
 
@@ -88,6 +95,26 @@ Opus is always "{{EncodedAudioChunkType/key}}".
 
 NOTE: Once the initialization has succeeded, any packet can be decoded at any
 time without error, but this might not result in the expected audio output.
+
+AudioEncoderConfig.contentHint guidelines {#contenthint-guidelines}
+================================================
+
+The User Agent <em class="rfc2119">MUST</em> take into consideration the value
+of {{AudioEncoderConfig/contentHint}} when configuring an Opus encoder.
+
+If {{AudioEncoderConfig/contentHint}} is <code>"[=speech=]"</code>, the User Agent
+<em class="rfc2119">MUST</em> use encoder settings that are best for most
+VoIP/videoconference applications where listening quality and intelligibility
+matter most.
+
+If {{AudioEncoderConfig/contentHint}} is <code>"[=music=]"</code>, the User Agent
+<em class="rfc2119">MUST</em> use encoder settings that are best for
+broadcast/high-fidelity applications where the decoded audio should be as close
+as possible to the input.
+
+For all other values of {{AudioEncoderConfig/contentHint}}, the User Agent
+<em class="rfc2119">MAY</em> ignore the flag or choose encoder settings based on
+any additional signals and context.
 
 AudioEncoderConfig extensions {#audioencoderconfig-extensions}
 =============================================================
