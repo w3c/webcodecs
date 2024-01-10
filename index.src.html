@@ -52,6 +52,7 @@ spec: webrtc-svc; urlPrefix: https://www.w3.org/TR/webrtc-svc/
 
 spec: mst-content-hint; urlPrefix: https://www.w3.org/TR/mst-content-hint/
     type: dfn; text: video content hints; url:#video-content-hints
+    type: dfn; text: audio content hints; url:#audio-content-hints
 
 spec: ECMASCRIPT; urlPrefix: https://tc39.es/ecma262/
     type: dfn; text: the current Realm; url: #current-realm
@@ -2051,6 +2052,7 @@ dictionary AudioEncoderConfig {
   [EnforceRange] unsigned long numberOfChannels;
   [EnforceRange] unsigned long long bitrate;
   BitrateMode bitrateMode = "variable";
+  DOMString contentHint;
 };
 </xmp>
 
@@ -2089,6 +2091,29 @@ run these steps:
     NOTE: Not all audio codecs support specific {{BitrateMode}}s, Authors are
     encouraged to check by calling {{AudioEncoder/isConfigSupported()}} with
     |config|.
+  </dd>
+  <dt><dfn dict-member for=AudioEncoderConfig>contentHint</dfn></dt>
+  <dd>
+    An encoding [=audio content hint=] as defined by [[mst-content-hint]].
+
+    The User Agent <em class="rfc2119">MAY</em> use this hint to set
+    expectations about incoming {{AudioData}} and to improve encoding quality.
+    If using this hint:
+      - The User Agent <em class="rfc2119">MUST</em> respect other explicitly
+        set encoding options when configuring the encoder, whether they are
+        codec-specific encoding options or not.
+      - The User Agent <em class="rfc2119">SHOULD</em> make a best-effort
+        attempt to use additional configuration options to improve encoding
+        quality, according to the goals defined by the corresponding
+        [=audio content hint=].
+
+    NOTE: Some encoder options are implementation specific, and mappings between
+        {{AudioEncoderConfig/contentHint}} and those options cannot be
+        prescribed.
+
+    The User Agent <em class="rfc2119">MUST NOT</em> refuse the configuration
+    if it doesn't support this content hint.
+    See {{AudioEncoder/isConfigSupported()}}.
   </dd>
 </dl>
 
@@ -2233,13 +2258,22 @@ To check if a {{VideoEncoderConfig}} is a <dfn>valid VideoEncoderConfig</dfn>,
 
     The User Agent <em class="rfc2119">MAY</em> use this hint to set
     expectations about incoming {{VideoFrame}}s and to improve encoding quality.
+    If using this hint:
+      - The User Agent <em class="rfc2119">MUST</em> respect other explicitly
+        set encoding options when configuring the encoder, whether they are
+        codec-specific encoding options or not.
+      - The User Agent <em class="rfc2119">SHOULD</em> make a best-effort
+        attempt to use additional configuration options to improve encoding
+        quality, according to the goals defined by the corresponding
+        [=video content hint=].
+
+    NOTE: Some encoder options are implementation specific, and mappings between
+        {{VideoEncoderConfig/contentHint}} and those options cannot be
+        prescribed.
 
     The User Agent <em class="rfc2119">MUST NOT</em> refuse the configuration
     if it doesn't support this content hint.
     See {{VideoEncoder/isConfigSupported()}}.
-
-    NOTE: Any codec-specific encoding options take precedence over
-      {{contentHint}}.
   </dd>
 
 </dl>
