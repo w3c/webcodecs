@@ -7,7 +7,7 @@
   <link href="https://www.w3.org/StyleSheets/TR/2021/W3C-ED" rel="stylesheet">
   <meta content="Bikeshed version 82ce88815, updated Thu Sep 7 16:33:55 2023 -0700" name="generator">
   <link href="https://www.w3.org/TR/webcodecs/" rel="canonical">
-  <meta content="633313b9e25ca1890b9c86804ed2eed2627485a8" name="document-revision">
+  <meta content="26e792218ffba5af7cce19eb816e3b5de57ec745" name="document-revision">
 <style>
 main > dl > dd {
   margin-bottom: 1em;
@@ -672,7 +672,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
   <div class="head">
    <p data-fill-with="logo"><a class="logo" href="https://www.w3.org/"> <img alt="W3C" height="48" src="https://www.w3.org/StyleSheets/TR/2021/logos/W3C" width="72"> </a> </p>
    <h1 class="p-name no-ref" id="title">WebCodecs</h1>
-   <p id="w3c-state"><a href="https://www.w3.org/standards/types#ED">Editor’s Draft</a>, <time class="dt-updated" datetime="2024-02-01">1 February 2024</time></p>
+   <p id="w3c-state"><a href="https://www.w3.org/standards/types#ED">Editor’s Draft</a>, <time class="dt-updated" datetime="2024-02-06">6 February 2024</time></p>
    <details open>
     <summary>More details about this document</summary>
     <div data-fill-with="spec-metadata">
@@ -3259,11 +3259,23 @@ return <code>false</code>.</p>
     <dd>
       An encoding <a data-link-type="dfn" href="https://www.w3.org/TR/mst-content-hint/#video-content-hints" id="ref-for-video-content-hints">video content hint</a> as defined by <a data-link-type="biblio" href="#biblio-mst-content-hint" title="MediaStreamTrack Content Hints">[mst-content-hint]</a>. 
      <p>The User Agent <em class="rfc2119">MAY</em> use this hint to set
-    expectations about incoming <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe①④">VideoFrame</a></code>s and to improve encoding quality.</p>
+    expectations about incoming <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe①④">VideoFrame</a></code>s and to improve encoding quality.
+    If using this hint:</p>
+     <ul>
+      <li data-md>
+       <p>The User Agent <em class="rfc2119">MUST</em> respect other explicitly
+set encoding options when configuring the encoder, whether they are
+codec-specific encoding options or not.</p>
+      <li data-md>
+       <p>The User Agent <em class="rfc2119">SHOULD</em> make a best-effort
+attempt to use additional configuration options to improve encoding
+quality, according to the goals defined by the corresponding <a data-link-type="dfn" href="https://www.w3.org/TR/mst-content-hint/#video-content-hints" id="ref-for-video-content-hints①">video content hint</a>.</p>
+     </ul>
+     <p class="note" role="note"><span class="marker">NOTE:</span> Some encoder options are implementation specific, and mappings between <code class="idl"><a data-link-type="idl" href="#dom-videoencoderconfig-contenthint" id="ref-for-dom-videoencoderconfig-contenthint①">contentHint</a></code> and those options cannot be
+        prescribed.</p>
      <p>The User Agent <em class="rfc2119">MUST NOT</em> refuse the configuration
     if it doesn’t support this content hint.
     See <code class="idl"><a data-link-type="idl" href="#dom-videoencoder-isconfigsupported" id="ref-for-dom-videoencoder-isconfigsupported②">isConfigSupported()</a></code>.</p>
-     <p class="note" role="note"><span class="marker">NOTE:</span> Any codec-specific encoding options take precedence over <code class="idl"><a data-link-type="idl" href="#dom-videoencoderconfig-contenthint" id="ref-for-dom-videoencoderconfig-contenthint①">contentHint</a></code>.</p>
    </dl>
    <h3 class="heading settled" data-level="7.9" id="hardware-acceleration"><span class="secno">7.9. </span><span class="content">Hardware Acceleration</span><a class="self-link" href="#hardware-acceleration"></a></h3>
 <pre class="idl highlight def"><c- b>enum</c-> <dfn class="dfn-paneled idl-code" data-dfn-type="enum" data-export id="enumdef-hardwareacceleration"><code><c- g>HardwareAcceleration</c-></code></dfn> {
@@ -9000,7 +9012,7 @@ window.dfnpanelData['9debeed3'] = {"dfnID": "9debeed3", "url": "https://w3c.gith
 window.dfnpanelData['4d7cdab1'] = {"dfnID": "4d7cdab1", "url": "https://w3c.github.io/mediacapture-record/#dom-bitratemode-variable", "dfnText": "variable", "refSections": [{"refs": [{"id": "ref-for-dom-bitratemode-variable"}], "title": "7.7. AudioEncoderConfig"}], "external": true};
 window.dfnpanelData['16785ec4'] = {"dfnID": "16785ec4", "url": "https://mimesniff.spec.whatwg.org/#mime-type", "dfnText": "mime type", "refSections": [{"refs": [{"id": "ref-for-mime-type"}], "title": "7.4. Codec String"}], "external": true};
 window.dfnpanelData['1b04994c'] = {"dfnID": "1b04994c", "url": "https://mimesniff.spec.whatwg.org/#valid-mime-type", "dfnText": "valid mime type string", "refSections": [{"refs": [{"id": "ref-for-valid-mime-type"}], "title": "10.3. ImageDecoderInit Interface"}], "external": true};
-window.dfnpanelData['6b476808'] = {"dfnID": "6b476808", "url": "https://www.w3.org/TR/mst-content-hint/#video-content-hints", "dfnText": "video content hints", "refSections": [{"refs": [{"id": "ref-for-video-content-hints"}], "title": "7.8. VideoEncoderConfig"}], "external": true};
+window.dfnpanelData['6b476808'] = {"dfnID": "6b476808", "url": "https://www.w3.org/TR/mst-content-hint/#video-content-hints", "dfnText": "video content hints", "refSections": [{"refs": [{"id": "ref-for-video-content-hints"}, {"id": "ref-for-video-content-hints\u2460"}], "title": "7.8. VideoEncoderConfig"}], "external": true};
 window.dfnpanelData['59ed4e57'] = {"dfnID": "59ed4e57", "url": "https://streams.spec.whatwg.org/#readablestream", "dfnText": "ReadableStream", "refSections": [{"refs": [{"id": "ref-for-readablestream"}], "title": "10.2.2. Constructor"}, {"refs": [{"id": "ref-for-readablestream\u2460"}], "title": "10.2.5. Algorithms"}, {"refs": [{"id": "ref-for-readablestream\u2461"}, {"id": "ref-for-readablestream\u2462"}, {"id": "ref-for-readablestream\u2463"}], "title": "10.3. ImageDecoderInit Interface"}, {"refs": [{"id": "ref-for-readablestream\u2464"}], "title": "10.4. ImageDecodeOptions Interface"}, {"refs": [{"id": "ref-for-readablestream\u2465"}], "title": "10.7.2. Attributes"}], "external": true};
 window.dfnpanelData['43d35049'] = {"dfnID": "43d35049", "url": "https://streams.spec.whatwg.org/#read-request-chunk-steps", "dfnText": "chunk steps", "refSections": [{"refs": [{"id": "ref-for-read-request-chunk-steps"}], "title": "10.2.5. Algorithms"}], "external": true};
 window.dfnpanelData['f0e85418'] = {"dfnID": "f0e85418", "url": "https://streams.spec.whatwg.org/#read-request-close-steps", "dfnText": "close steps", "refSections": [{"refs": [{"id": "ref-for-read-request-close-steps"}], "title": "10.2.5. Algorithms"}], "external": true};
