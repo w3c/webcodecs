@@ -4315,21 +4315,37 @@ number and order of the planes. Each format is described in its own sub-section.
 enum VideoPixelFormat {
   // 4:2:0 Y, U, V
   "I420",
+  "I420P10",
+  "I420P12",
   // 4:2:0 Y, U, V, A
   "I420A",
+  "I420AP10",
+  "I420AP12",
   // 4:2:2 Y, U, V
   "I422",
+  "I422P10",
+  "I422P12",
+  // 4:2:2 Y, U, V, A
+  "I422A",
+  "I422AP10",
+  "I422AP12",
   // 4:4:4 Y, U, V
   "I444",
+  "I444P10",
+  "I444P12",
+  // 4:4:4 Y, U, V, A
+  "I444A",
+  "I444AP10",
+  "I444AP12",
   // 4:2:0 Y, UV
   "NV12",
-  // 32bpp RGBA
+  // 4:4:4 RGBA
   "RGBA",
-  // 32bpp RGBX (opaque)
+  // 4:4:4 RGBX (opaque)
   "RGBX",
-  // 32bpp BGRA
+  // 4:4:4 BGRA
   "BGRA",
-  // 32bpp BGRX (opaque)
+  // 4:4:4 BGRX (opaque)
   "BGRX",
 };
 </xmp>
@@ -4381,11 +4397,60 @@ is its own [=equivalent opaque format=].
     and {{VideoFrame/visibleRect}}.{{DOMRectInit/y}})
     <em class="rfc2119">MUST</em> be even.
   </dd>
+  <dt><dfn enum-value for=VideoPixelFormat>I420P10</dfn></dt>
+  <dd>
+    This format is composed of three distinct planes, one plane of Luma and two
+    planes of Chroma, denoted Y, U and V, and present in this order.
+
+    The U an V planes are [=sub-sampled=] horizontally and vertically by a
+    [=factor=] of 2 compared to the Y plane.
+
+    Each sample in this format is 10 bits, encoded as a 16-bit integer in
+    little-endian byte order.
+
+    There are {{VideoFrame/codedWidth}} * {{VideoFrame/codedHeight}} samples
+    in the Y plane, arranged starting at the top left of the image, in
+    {{VideoFrame/codedHeight}} rows of {{VideoFrame/codedWidth}} samples.
+
+    The U and V planes have a number of rows equal to the result of the
+    division of {{VideoFrame/codedHeight}} by 2, rounded up to the nearest
+    integer. Each row has a number of samples equal to the result of the
+    division of {{VideoFrame/codedWidth}} by 2, rounded up to the nearest
+    integer. Samples are arranged starting at the top left of the image.
+
+    The visible rectangle offset ({{VideoFrame/visibleRect}}.{{DOMRectInit/x}}
+    and {{VideoFrame/visibleRect}}.{{DOMRectInit/y}})
+    <em class="rfc2119">MUST</em> be even.
+  </dd>
+  <dt><dfn enum-value for=VideoPixelFormat>I420P12</dfn></dt>
+  <dd>
+    This format is composed of three distinct planes, one plane of Luma and two
+    planes of Chroma, denoted Y, U and V, and present in this order.
+
+    The U an V planes are [=sub-sampled=] horizontally and vertically by a
+    [=factor=] of 2 compared to the Y plane.
+
+    Each sample in this format is 12 bits, encoded as a 16-bit integer in
+    little-endian byte order.
+
+    There are {{VideoFrame/codedWidth}} * {{VideoFrame/codedHeight}} samples
+    in the Y plane, arranged starting at the top left of the image, in
+    {{VideoFrame/codedHeight}} rows of {{VideoFrame/codedWidth}} samples.
+
+    The U and V planes have a number of rows equal to the result of the
+    division of {{VideoFrame/codedHeight}} by 2, rounded up to the nearest
+    integer. Each row has a number of samples equal to the result of the
+    division of {{VideoFrame/codedWidth}} by 2, rounded up to the nearest
+    integer. Samples are arranged starting at the top left of the image.
+
+    The visible rectangle offset ({{VideoFrame/visibleRect}}.{{DOMRectInit/x}}
+    and {{VideoFrame/visibleRect}}.{{DOMRectInit/y}})
+    <em class="rfc2119">MUST</em> be even.
+  </dd>
   <dt><dfn enum-value for=VideoPixelFormat>I420A</dfn></dt>
   <dd>
-
     This format is composed of four distinct planes, one plane of Luma, two
-    planes of Chroma, denoted Y, U and V, and one plane of alpha values, all
+    planes of Chroma, denoted Y, U and V, and one plane of Alpha values, all
     present in this order. It is also often refered to as Planar YUV 4:2:0 with
     an alpha channel.
 
@@ -4395,7 +4460,7 @@ is its own [=equivalent opaque format=].
     Each sample in this format is 8 bits.
 
     There are {{VideoFrame/codedWidth}} * {{VideoFrame/codedHeight}} samples
-    (and therefore bytes) in the Y and alpha planes, arranged starting at the
+    (and therefore bytes) in the Y and Alpha planes, arranged starting at the
     top left of the image, in {{VideoFrame/codedHeight}} rows of
     {{VideoFrame/codedWidth}} samples.
 
@@ -4411,9 +4476,64 @@ is its own [=equivalent opaque format=].
 
     {{I420A}}'s [=equivalent opaque format=] is {{I420}}.
   </dd>
+  <dt><dfn enum-value for=VideoPixelFormat>I420AP10</dfn></dt>
+  <dd>
+    This format is composed of four distinct planes, one plane of Luma, two
+    planes of Chroma, denoted Y, U and V, and one plane of Alpha values, all
+    present in this order.
+
+    The U an V planes are [=sub-sampled=] horizontally and vertically by a
+    [=factor=] of 2 compared to the Y and Alpha planes.
+
+    Each sample in this format is 10 bits, encoded as a 16-bit integer in
+    little-endian byte order.
+
+    There are {{VideoFrame/codedWidth}} * {{VideoFrame/codedHeight}} samples
+    in the Y and Alpha planes, arranged starting at the top left of the image,
+    in {{VideoFrame/codedHeight}} rows of {{VideoFrame/codedWidth}} samples.
+
+    The U and V planes have a number of rows equal to the result of the
+    division of {{VideoFrame/codedHeight}} by 2, rounded up to the nearest
+    integer. Each row has a number of samples equal to the result of the
+    division of {{VideoFrame/codedWidth}} by 2, rounded up to the nearest
+    integer. Samples are arranged starting at the top left of the image.
+
+    The visible rectangle offset ({{VideoFrame/visibleRect}}.{{DOMRectInit/x}}
+    and {{VideoFrame/visibleRect}}.{{DOMRectInit/y}})
+    <em class="rfc2119">MUST</em> be even.
+
+    {{I420AP10}}'s [=equivalent opaque format=] is {{I420P10}}.
+  </dd>
+  <dt><dfn enum-value for=VideoPixelFormat>I420AP12</dfn></dt>
+  <dd>
+    This format is composed of four distinct planes, one plane of Luma, two
+    planes of Chroma, denoted Y, U and V, and one plane of Alpha values, all
+    present in this order.
+
+    The U an V planes are [=sub-sampled=] horizontally and vertically by a
+    [=factor=] of 2 compared to the Y and Alpha planes.
+
+    Each sample in this format is 12 bits, encoded as a 16-bit integer in
+    little-endian byte order.
+
+    There are {{VideoFrame/codedWidth}} * {{VideoFrame/codedHeight}} samples
+    in the Y and Alpha planes, arranged starting at the top left of the image,
+    in {{VideoFrame/codedHeight}} rows of {{VideoFrame/codedWidth}} samples.
+
+    The U and V planes have a number of rows equal to the result of the
+    division of {{VideoFrame/codedHeight}} by 2, rounded up to the nearest
+    integer. Each row has a number of samples equal to the result of the
+    division of {{VideoFrame/codedWidth}} by 2, rounded up to the nearest
+    integer. Samples are arranged starting at the top left of the image.
+
+    The visible rectangle offset ({{VideoFrame/visibleRect}}.{{DOMRectInit/x}}
+    and {{VideoFrame/visibleRect}}.{{DOMRectInit/y}})
+    <em class="rfc2119">MUST</em> be even.
+
+    {{I420AP12}}'s [=equivalent opaque format=] is {{I420P12}}.
+  </dd>
   <dt><dfn enum-value for=VideoPixelFormat>I422</dfn></dt>
   <dd>
-
     This format is composed of three distinct planes, one plane of Luma and two
     planes of Chroma, denoted Y, U and V, and present in this order. It is also
     often refered to as Planar YUV 4:2:2.
@@ -4433,27 +4553,236 @@ is its own [=equivalent opaque format=].
     {{VideoFrame/codedWidth}} by 2, rounded up to the nearest integer. Samples
     are arranged starting at the top left of the image.
 
-    The visible rectangle offset ({{VideoFrame/visibleRect}}.{{DOMRectInit/x}})
+    The visible rectangle horizontal offset
+    ({{VideoFrame/visibleRect}}.{{DOMRectInit/x}})
     <em class="rfc2119">MUST</em> be even.
+  </dd>
+  <dt><dfn enum-value for=VideoPixelFormat>I422P10</dfn></dt>
+  <dd>
+    This format is composed of three distinct planes, one plane of Luma and two
+    planes of Chroma, denoted Y, U and V, and present in this order.
+
+    The U an V planes are [=sub-sampled=] horizontally by a [=factor=] of 2
+    compared to the Y plane, and not [=sub-sampled=] vertically.
+
+    Each sample in this format is 10 bits, encoded as a 16-bit integer in
+    little-endian byte order.
+
+    There are {{VideoFrame/codedWidth}} * {{VideoFrame/codedHeight}} samples
+    in the Y plane, arranged starting at the top left of the image, in
+    {{VideoFrame/codedHeight}} rows of {{VideoFrame/codedWidth}} samples.
+
+    The U and V planes have {{VideoFrame/codedHeight}} rows. Each row has a
+    number of samples equal to the result of the division of
+    {{VideoFrame/codedWidth}} by 2, rounded up to the nearest integer.
+    Samples are arranged starting at the top left of the image.
+
+    The visible rectangle horizontal offset
+    ({{VideoFrame/visibleRect}}.{{DOMRectInit/x}})
+    <em class="rfc2119">MUST</em> be even.
+  </dd>
+  <dt><dfn enum-value for=VideoPixelFormat>I422P12</dfn></dt>
+  <dd>
+    This format is composed of three distinct planes, one plane of Luma and two
+    planes of Chroma, denoted Y, U and V, and present in this order.
+
+    The U an V planes are [=sub-sampled=] horizontally by a [=factor=] of 2
+    compared to the Y plane, and not [=sub-sampled=] vertically.
+
+    Each sample in this format is 12 bits, encoded as a 16-bit integer in
+    little-endian byte order.
+
+    There are {{VideoFrame/codedWidth}} * {{VideoFrame/codedHeight}} samples
+    in the Y plane, arranged starting at the top left of the image, in
+    {{VideoFrame/codedHeight}} rows of {{VideoFrame/codedWidth}} samples.
+
+    The U and V planes have {{VideoFrame/codedHeight}} rows. Each row has a
+    number of samples equal to the result of the division of
+    {{VideoFrame/codedWidth}} by 2, rounded up to the nearest integer.
+    Samples are arranged starting at the top left of the image.
+
+    The visible rectangle horizontal offset
+    ({{VideoFrame/visibleRect}}.{{DOMRectInit/x}})
+    <em class="rfc2119">MUST</em> be even.
+  </dd>
+  <dt><dfn enum-value for=VideoPixelFormat>I422A</dfn></dt>
+  <dd>
+    This format is composed of four distinct planes, one plane of Luma, two
+    planes of Chroma, denoted Y, U and V, and one plane of Alpha values, all
+    present in this order. It is also often refered to as Planar YUV 4:2:2 with
+    an alpha channel.
+
+    The U an V planes are [=sub-sampled=] horizontally by a [=factor=] of 2
+    compared to the Y and Alpha planes, and not [=sub-sampled=] vertically.
+
+    Each sample in this format is 8 bits.
+
+    There are {{VideoFrame/codedWidth}} * {{VideoFrame/codedHeight}} samples
+    (and therefore bytes) in the Y and Alpha planes, arranged starting at the
+    top left of the image, in {{VideoFrame/codedHeight}} rows of
+    {{VideoFrame/codedWidth}} samples.
+
+    The U and V planes have {{VideoFrame/codedHeight}} rows. Each row has a
+    number of samples equal to the result of the division of
+    {{VideoFrame/codedWidth}} by 2, rounded up to the nearest integer. Samples
+    are arranged starting at the top left of the image.
+
+    The visible rectangle horizontal offset
+    ({{VideoFrame/visibleRect}}.{{DOMRectInit/x}})
+    <em class="rfc2119">MUST</em> be even.
+
+    {{I422A}}'s [=equivalent opaque format=] is {{I422}}.
+  </dd>
+  <dt><dfn enum-value for=VideoPixelFormat>I422AP10</dfn></dt>
+  <dd>
+    This format is composed of four distinct planes, one plane of Luma, two
+    planes of Chroma, denoted Y, U and V, and one plane of Alpha values, all
+    present in this order.
+
+    The U an V planes are [=sub-sampled=] horizontally by a [=factor=] of 2
+    compared to the Y and Alpha planes, and not [=sub-sampled=] vertically.
+
+    Each sample in this format is 10 bits, encoded as a 16-bit integer in
+    little-endian byte order.
+
+    There are {{VideoFrame/codedWidth}} * {{VideoFrame/codedHeight}} samples
+    in the Y and Alpha planes, arranged starting at the top left of the image,
+    in {{VideoFrame/codedHeight}} rows of {{VideoFrame/codedWidth}} samples.
+
+    The U and V planes have {{VideoFrame/codedHeight}} rows. Each row has a
+    number of samples equal to the result of the division of
+    {{VideoFrame/codedWidth}} by 2, rounded up to the nearest integer.
+    Samples are arranged starting at the top left of the image.
+
+    The visible rectangle horizontal offset
+    ({{VideoFrame/visibleRect}}.{{DOMRectInit/x}})
+    <em class="rfc2119">MUST</em> be even.
+
+    {{I422AP10}}'s [=equivalent opaque format=] is {{I420P10}}.
+  </dd>
+  <dt><dfn enum-value for=VideoPixelFormat>I422AP12</dfn></dt>
+  <dd>
+    This format is composed of four distinct planes, one plane of Luma, two
+    planes of Chroma, denoted Y, U and V, and one plane of Alpha values, all
+    present in this order.
+
+    The U an V planes are [=sub-sampled=] horizontally by a [=factor=] of 2
+    compared to the Y and Alpha planes, and not [=sub-sampled=] vertically.
+
+    Each sample in this format is 12 bits, encoded as a 16-bit integer in
+    little-endian byte order.
+
+    There are {{VideoFrame/codedWidth}} * {{VideoFrame/codedHeight}} samples
+    in the Y and Alpha planes, arranged starting at the top left of the image,
+    in {{VideoFrame/codedHeight}} rows of {{VideoFrame/codedWidth}} samples.
+
+    The U and V planes have {{VideoFrame/codedHeight}} rows. Each row has a
+    number of samples equal to the result of the division of
+    {{VideoFrame/codedWidth}} by 2, rounded up to the nearest integer.
+    Samples are arranged starting at the top left of the image.
+
+    The visible rectangle horizontal offset
+    ({{VideoFrame/visibleRect}}.{{DOMRectInit/x}})
+    <em class="rfc2119">MUST</em> be even.
+
+    {{I422AP10}}'s [=equivalent opaque format=] is {{I420P10}}.
   </dd>
   <dt><dfn enum-value for=VideoPixelFormat>I444</dfn></dt>
   <dd>
-
     This format is composed of three distinct planes, one plane of Luma and two
     planes of Chroma, denoted Y, U and V, and present in this order. It is also
     often refered to as Planar YUV 4:4:4.
 
-    Each sample in this format is 8 bits. This format does not use
-    [=sub-sampling=].
+    This format does not use [=sub-sampling=].
+
+    Each sample in this format is 8 bits.
 
     There are {{VideoFrame/codedWidth}} * {{VideoFrame/codedHeight}} samples
     (and therefore bytes) in all three planes, arranged starting at the top left
     of the image, in {{VideoFrame/codedHeight}} rows of
     {{VideoFrame/codedWidth}} samples.
   </dd>
+  <dt><dfn enum-value for=VideoPixelFormat>I444P10</dfn></dt>
+  <dd>
+    This format is composed of three distinct planes, one plane of Luma and two
+    planes of Chroma, denoted Y, U and V, and present in this order.
+
+    This format does not use [=sub-sampling=].
+
+    Each sample in this format is 10 bits, encoded as a 16-bit integer in
+    little-endian byte order.
+
+    There are {{VideoFrame/codedWidth}} * {{VideoFrame/codedHeight}} samples
+    in all three planes, arranged starting at the top left of the image, in
+    {{VideoFrame/codedHeight}} rows of {{VideoFrame/codedWidth}} samples.
+  </dd>
+  <dt><dfn enum-value for=VideoPixelFormat>I444P12</dfn></dt>
+  <dd>
+    This format is composed of three distinct planes, one plane of Luma and two
+    planes of Chroma, denoted Y, U and V, and present in this order.
+
+    This format does not use [=sub-sampling=].
+
+    Each sample in this format is 12 bits, encoded as a 16-bit integer in
+    little-endian byte order.
+
+    There are {{VideoFrame/codedWidth}} * {{VideoFrame/codedHeight}} samples
+    in all three planes, arranged starting at the top left of the image, in
+    {{VideoFrame/codedHeight}} rows of {{VideoFrame/codedWidth}} samples.
+  </dd>
+  <dt><dfn enum-value for=VideoPixelFormat>I444A</dfn></dt>
+  <dd>
+    This format is composed of four distinct planes, one plane of Luma, two
+    planes of Chroma, denoted Y, U and V, and one plane of Alpha values, all
+    present in this order.
+
+    This format does not use [=sub-sampling=].
+
+    Each sample in this format is 8 bits.
+
+    There are {{VideoFrame/codedWidth}} * {{VideoFrame/codedHeight}} samples
+    (and therefore bytes) in all four planes, arranged starting at the top left
+    of the image, in {{VideoFrame/codedHeight}} rows of
+    {{VideoFrame/codedWidth}} samples.
+
+    {{I444A}}'s [=equivalent opaque format=] is {{I444}}.
+  </dd>
+  <dt><dfn enum-value for=VideoPixelFormat>I444AP10</dfn></dt>
+  <dd>
+    This format is composed of four distinct planes, one plane of Luma, two
+    planes of Chroma, denoted Y, U and V, and one plane of Alpha values, all
+    present in this order.
+
+    This format does not use [=sub-sampling=].
+
+    Each sample in this format is 10 bits, encoded as a 16-bit integer in
+    little-endian byte order.
+
+    There are {{VideoFrame/codedWidth}} * {{VideoFrame/codedHeight}} samples
+    in all four planes, arranged starting at the top left of the image,
+    in {{VideoFrame/codedHeight}} rows of {{VideoFrame/codedWidth}} samples.
+
+    {{I444AP10}}'s [=equivalent opaque format=] is {{I444P10}}.
+  </dd>
+  <dt><dfn enum-value for=VideoPixelFormat>I444AP12</dfn></dt>
+  <dd>
+    This format is composed of four distinct planes, one plane of Luma, two
+    planes of Chroma, denoted Y, U and V, and one plane of Alpha values, all
+    present in this order.
+
+    This format does not use [=sub-sampling=].
+
+    Each sample in this format is 12 bits, encoded as a 16-bit integer in
+    little-endian byte order.
+
+    There are {{VideoFrame/codedWidth}} * {{VideoFrame/codedHeight}} samples
+    in all four planes, arranged starting at the top left of the image,
+    in {{VideoFrame/codedHeight}} rows of {{VideoFrame/codedWidth}} samples.
+
+    {{I444AP10}}'s [=equivalent opaque format=] is {{I444P10}}.
+  </dd>
   <dt><dfn enum-value for=VideoPixelFormat>NV12</dfn></dt>
   <dd>
-
     This format is composed of two distinct planes, one plane of Luma and then
     another plane for the two Chroma components. The two planes are present in
     this order, and are refered to as respectively the Y plane and the UV plane.
@@ -4507,7 +4836,6 @@ is its own [=equivalent opaque format=].
   </dd>
   <dt><dfn enum-value for=VideoPixelFormat>RGBA</dfn></dt>
   <dd>
-
     This format is composed of a single plane, that encodes four components:
     Red, Green, Blue, and an alpha value, present in this order.
 
@@ -4522,7 +4850,6 @@ is its own [=equivalent opaque format=].
   </dd>
   <dt><dfn enum-value for=VideoPixelFormat>RGBX</dfn></dt>
   <dd>
-
     This format is composed of a single plane, that encodes four components:
     Red, Green, Blue, and a padding value, present in this order.
 
@@ -4536,7 +4863,6 @@ is its own [=equivalent opaque format=].
   </dd>
   <dt><dfn enum-value for=VideoPixelFormat>BGRA</dfn></dt>
   <dd>
-
     This format is composed of a single plane, that encodes four components:
     Blue, Green, Red, and an alpha value, present in this order.
 
@@ -4551,7 +4877,6 @@ is its own [=equivalent opaque format=].
   </dd>
   <dt><dfn enum-value for=VideoPixelFormat>BGRX</dfn></dt>
   <dd>
-
     This format is composed of a single plane, that encodes four components:
     Blue, Green, Red, and a padding value, present in this order.
 
