@@ -4235,6 +4235,10 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
         |imageData|.{{ImageData/data}} and |init|.
     8. Return |convertedFrame|.
 
+NOTE: User Agents don't have to execute the exact steps of this algorithm
+(e.g. create an {{OffscreenCanvas}}) as long as the {{VideoFrame}} returned by
+the algorithm is equal to the {{VideoFrame}} created via these steps.
+
 : <dfn for=VideoFrame>Copy VideoFrame metadata</dfn> (with |metadata|)
 :: 1. Let |metadataCopySerialized| be [$StructuredSerialize$](|metadata|).
     2. Let |metadataCopy| be [$StructuredDeserialize$](|metadataCopySerialized|, [=the current Realm=]).
@@ -4333,7 +4337,7 @@ will enforce the following requirements:
     {{BGRX}}. If unspecified or `null`, the the destination
     {{BufferSource}} will match {{VideoFrame/format}} .
 : <dfn dict-member for=VideoFrameCopyToOptions>colorSpace</dfn>
-:: A {{PredefinedColorSpace}} that <em class="rfc2119">SHALL</em> be used as
+:: A {{PredefinedColorSpace}} that <em class="rfc2119">MUST</em> be used as
     a target color space for the pixel data in the destination
     {{BufferSource}}, but only if {{VideoFrameCopyToOptions/format}} is one of
     {{RGBA}}, {{RGBX}}, {{BGRA}}, {{BGRX}}, otherwise it is ignored.
