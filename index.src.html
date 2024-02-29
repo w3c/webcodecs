@@ -3767,9 +3767,8 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
     5. If `destination.byteLength` is less than |combinedLayout|'s [=combined
         buffer layout/allocationSize=], return a promise rejected with a
         {{TypeError}}.
-    6. If |options|.{{VideoFrameCopyToOptions/format}} does not equal
-        {{VideoFrame/[[format]]}} and |options|.{{VideoFrameCopyToOptions/format}}
-        is equal to one of {{RGBA}}, {{RGBX}}, {{BGRA}}, {{BGRX}} then:
+    6. If |options|.{{VideoFrameCopyToOptions/format}} is equal to one of
+        {{RGBA}}, {{RGBX}}, {{BGRA}}, {{BGRX}} then:
           1. Let |newOptions| be the result of running the <a>Clone Configuration</a>
                algorithm with |options|.
           2. Assign `undefined` to |newOptions|.{{VideoFrameCopyToOptions/format}}
@@ -3782,10 +3781,12 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
                algorithm with |options|.{{VideoFrameCopyToOptions/format}}, |rect|, and  `options.colorSpace`.
           7. Return the result of calling {{VideoFrame/copyTo()}} on |rgbFrame| with
                |destination| and |newOptions|.
-    7. Let |p| be a new {{Promise}}.
-    8. Let |copyStepsQueue| be the result of starting a new [=parallel queue=].
-    9. Let |planeLayouts| be a new [=list=].
-    10. Enqueue the following steps to |copyStepsQueue|:
+    7. Otherwise, if |options|.{{VideoFrameCopyToOptions/format}} is not `undefined` or `null`
+        throw a {{NotSupportedError}} {{DOMException}}.
+    8. Let |p| be a new {{Promise}}.
+    9. Let |copyStepsQueue| be the result of starting a new [=parallel queue=].
+    10. Let |planeLayouts| be a new [=list=].
+    11. Enqueue the following steps to |copyStepsQueue|:
         1. Let resource be the [=media resource=] referenced by
             [[resource reference]].
         2. Let |numPlanes| be the number of planes as defined by
@@ -3822,7 +3823,7 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
             10. Increment |planeIndex| by `1`.
             11. Append |layout| to |planeLayouts|.
         5. [=Queue a task=] to resolve |p| with |planeLayouts|.
-    11. Return |p|.
+    12. Return |p|.
 
 : <dfn method for=VideoFrame>clone()</dfn>
 :: Creates a new {{VideoFrame}} with a reference to the same
@@ -4328,9 +4329,9 @@ will enforce the following requirements:
     invalid to specify planes that overlap.
 : <dfn dict-member for=VideoFrameCopyToOptions>format</dfn>
 :: A {{VideoPixelFormat}} for the pixel data in the destination
-    {{BufferSource}}. Potential values are:
-    {{RGBA}}, {{RGBX}}, {{BGRA}}, {{BGRX}} and values of {{VideoFrame/format}}.
-    If unspecified or `null`, the {{VideoFrame/format}} is used.
+    {{BufferSource}}. Potential values are: {{RGBA}}, {{RGBX}}, {{BGRA}},
+    {{BGRX}}. If unspecified or `null`, the the destination
+    {{BufferSource}} will match {{VideoFrame/format}} .
 : <dfn dict-member for=VideoFrameCopyToOptions>colorSpace</dfn>
 :: A {{PredefinedColorSpace}} that <em class="rfc2119">SHALL</em> be used as
     a target color space for the pixel data in the destination
