@@ -1916,8 +1916,8 @@ To check if an {{AudioDecoderConfig}} is a <dfn export>valid AudioDecoderConfig<
 1. If {{AudioDecoderConfig/codec}} is empty after
     [=strip leading and trailing ASCII whitespace|stripping leading and trailing ASCII whitespace=],
     return `false`.
-2. If the result of running  IsDetachedBuffer (described in
-    [[!ECMASCRIPT]]) on {{AudioDecoderConfig/description}} is `true`, return `false`.
+2. If {{AudioDecoderConfig/description}} is [[=BufferSource/detached=]], return
+     false.
 3. Return `true`.
 
 <dl>
@@ -1972,8 +1972,8 @@ run these steps:
     return `false`.
 5. If {{VideoDecoderConfig/displayAspectWidth}} = 0 or
     {{VideoDecoderConfig/displayAspectHeight}} = 0, return `false`.
-6. If the result of running  IsDetachedBuffer (described in
-    [[!ECMASCRIPT]]) on {{VideoDecoderConfig/description}} is `true`, return `false`.
+6. If {{VideoDecoderConfig/description}} is [[=BufferSource/detached=]],
+    return false.
 7. Return `true`.
 
 <dl>
@@ -5699,8 +5699,7 @@ run these steps:
 2. If |data| is of type {{ReadableStream}} and the ReadableStream is
     [=ReadableStream/disturbed=] or [=ReadableStream/locked=], return `false`.
 3. If |data| is of type {{BufferSource}}:
-    1. If the result of running  IsDetachedBuffer (described in
-        [[!ECMASCRIPT]]) on |data| is `true`, return `false`.
+    1. If |data| is [[=BufferSource/detached=]], return false.
     2. If |data| [=list/is empty=], return `false`.
 4. If {{ImageDecoderInit/desiredWidth}} [=map/exists=] and
     {{ImageDecoderInit/desiredHeight}} does not exist, return `false`.
