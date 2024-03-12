@@ -7,7 +7,7 @@
   <link href="https://www.w3.org/StyleSheets/TR/2021/W3C-ED" rel="stylesheet">
   <meta content="Bikeshed version 82ce88815, updated Thu Sep 7 16:33:55 2023 -0700" name="generator">
   <link href="https://www.w3.org/TR/webcodecs/" rel="canonical">
-  <meta content="d5a4ed2934b3c7249c31d6fae486c7049aa62fad" name="document-revision">
+  <meta content="c97f2989c9bd3e9bbca9b5a0f96a3ef029e7d7a0" name="document-revision">
 <style>
 main > dl > dd {
   margin-bottom: 1em;
@@ -672,7 +672,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
   <div class="head">
    <p data-fill-with="logo"><a class="logo" href="https://www.w3.org/"> <img alt="W3C" height="48" src="https://www.w3.org/StyleSheets/TR/2021/logos/W3C" width="72"> </a> </p>
    <h1 class="p-name no-ref" id="title">WebCodecs</h1>
-   <p id="w3c-state"><a href="https://www.w3.org/standards/types#ED">Editor’s Draft</a>, <time class="dt-updated" datetime="2024-02-29">29 February 2024</time></p>
+   <p id="w3c-state"><a href="https://www.w3.org/standards/types#ED">Editor’s Draft</a>, <time class="dt-updated" datetime="2024-03-12">12 March 2024</time></p>
    <details open>
     <summary>More details about this document</summary>
     <div data-fill-with="spec-metadata">
@@ -3040,7 +3040,8 @@ none at all.</p>
      <p>If <code class="idl"><a data-link-type="idl" href="#dom-audiodecoderconfig-codec" id="ref-for-dom-audiodecoderconfig-codec②">codec</a></code> is empty after <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#strip-leading-and-trailing-ascii-whitespace" id="ref-for-strip-leading-and-trailing-ascii-whitespace">stripping leading and trailing ASCII whitespace</a>,
 return <code>false</code>.</p>
     <li data-md>
-     <p>If the result of running  IsDetachedBuffer (described in <a data-link-type="biblio" href="#biblio-ecmascript" title="ECMAScript Language Specification">[ECMASCRIPT]</a>) on <code class="idl"><a data-link-type="idl" href="#dom-audiodecoderconfig-description" id="ref-for-dom-audiodecoderconfig-description③">description</a></code> is <code>true</code>, return <code>false</code>.</p>
+     <p>If <code class="idl"><a data-link-type="idl" href="#dom-audiodecoderconfig-description" id="ref-for-dom-audiodecoderconfig-description③">description</a></code> is [<a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#buffersource-detached" id="ref-for-buffersource-detached">detached</a>], return
+ false.</p>
     <li data-md>
      <p>Return <code>true</code>.</p>
    </ol>
@@ -3087,7 +3088,8 @@ return <code>false</code>.</p>
     <li data-md>
      <p>If <code class="idl"><a data-link-type="idl" href="#dom-videodecoderconfig-displayaspectwidth" id="ref-for-dom-videodecoderconfig-displayaspectwidth③">displayAspectWidth</a></code> = 0 or <code class="idl"><a data-link-type="idl" href="#dom-videodecoderconfig-displayaspectheight" id="ref-for-dom-videodecoderconfig-displayaspectheight③">displayAspectHeight</a></code> = 0, return <code>false</code>.</p>
     <li data-md>
-     <p>If the result of running  IsDetachedBuffer (described in <a data-link-type="biblio" href="#biblio-ecmascript" title="ECMAScript Language Specification">[ECMASCRIPT]</a>) on <code class="idl"><a data-link-type="idl" href="#dom-videodecoderconfig-description" id="ref-for-dom-videodecoderconfig-description②">description</a></code> is <code>true</code>, return <code>false</code>.</p>
+     <p>If <code class="idl"><a data-link-type="idl" href="#dom-videodecoderconfig-description" id="ref-for-dom-videodecoderconfig-description②">description</a></code> is [<a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#buffersource-detached" id="ref-for-buffersource-detached①">detached</a>],
+return false.</p>
     <li data-md>
      <p>Return <code>true</code>.</p>
    </ol>
@@ -6729,7 +6731,7 @@ run these steps:</p>
      <p>If <var>data</var> is of type <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#BufferSource" id="ref-for-BufferSource①⑤">BufferSource</a></code>:</p>
      <ol>
       <li data-md>
-       <p>If the result of running  IsDetachedBuffer (described in <a data-link-type="biblio" href="#biblio-ecmascript" title="ECMAScript Language Specification">[ECMASCRIPT]</a>) on <var>data</var> is <code>true</code>, return <code>false</code>.</p>
+       <p>If <var>data</var> is [<a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#buffersource-detached" id="ref-for-buffersource-detached②">detached</a>], return false.</p>
       <li data-md>
        <p>If <var>data</var> <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list-is-empty" id="ref-for-list-is-empty①">is empty</a>, return <code>false</code>.</p>
      </ol>
@@ -8279,6 +8281,7 @@ participation on the mailing list and in the issues.</p>
      <li><span class="dfn-paneled" id="82ca3efc">TypeError</span>
      <li><span class="dfn-paneled" id="d0b4a948">a promise rejected with</span>
      <li><span class="dfn-paneled" id="5372cca8">boolean</span>
+     <li><span class="dfn-paneled" id="e97b1447">detached</span>
      <li><span class="dfn-paneled" id="8c800cdf">double</span>
      <li><span class="dfn-paneled" id="eec1be2d">float</span>
      <li><span class="dfn-paneled" id="f8de33a3">long</span>
@@ -9313,6 +9316,7 @@ window.dfnpanelData['c3e881ef'] = {"dfnID": "c3e881ef", "url": "https://webidl.s
 window.dfnpanelData['82ca3efc'] = {"dfnID": "82ca3efc", "url": "https://webidl.spec.whatwg.org/#exceptiondef-typeerror", "dfnText": "TypeError", "refSections": [{"refs": [{"id": "ref-for-exceptiondef-typeerror"}, {"id": "ref-for-exceptiondef-typeerror\u2460"}], "title": "3.5. Methods"}, {"refs": [{"id": "ref-for-exceptiondef-typeerror\u2461"}, {"id": "ref-for-exceptiondef-typeerror\u2462"}], "title": "4.5. Methods"}, {"refs": [{"id": "ref-for-exceptiondef-typeerror\u2463"}, {"id": "ref-for-exceptiondef-typeerror\u2464"}, {"id": "ref-for-exceptiondef-typeerror\u2465"}], "title": "5.5. Methods"}, {"refs": [{"id": "ref-for-exceptiondef-typeerror\u2466"}, {"id": "ref-for-exceptiondef-typeerror\u2467"}, {"id": "ref-for-exceptiondef-typeerror\u2468"}], "title": "6.5. Methods"}, {"refs": [{"id": "ref-for-exceptiondef-typeerror\u2460\u24ea"}], "title": "8.1.4. Methods"}, {"refs": [{"id": "ref-for-exceptiondef-typeerror\u2460\u2460"}], "title": "8.2.4. Methods"}, {"refs": [{"id": "ref-for-exceptiondef-typeerror\u2460\u2461"}], "title": "9.2.2. Constructors"}, {"refs": [{"id": "ref-for-exceptiondef-typeerror\u2460\u2462"}, {"id": "ref-for-exceptiondef-typeerror\u2460\u2463"}, {"id": "ref-for-exceptiondef-typeerror\u2460\u2464"}, {"id": "ref-for-exceptiondef-typeerror\u2460\u2465"}], "title": "9.4.2. Constructors"}, {"refs": [{"id": "ref-for-exceptiondef-typeerror\u2460\u2466"}], "title": "9.4.5. Methods"}, {"refs": [{"id": "ref-for-exceptiondef-typeerror\u2460\u2467"}, {"id": "ref-for-exceptiondef-typeerror\u2460\u2468"}, {"id": "ref-for-exceptiondef-typeerror\u2461\u24ea"}, {"id": "ref-for-exceptiondef-typeerror\u2461\u2460"}, {"id": "ref-for-exceptiondef-typeerror\u2461\u2461"}, {"id": "ref-for-exceptiondef-typeerror\u2461\u2462"}, {"id": "ref-for-exceptiondef-typeerror\u2461\u2463"}, {"id": "ref-for-exceptiondef-typeerror\u2461\u2464"}, {"id": "ref-for-exceptiondef-typeerror\u2461\u2465"}, {"id": "ref-for-exceptiondef-typeerror\u2461\u2466"}], "title": "9.4.6. Algorithms"}, {"refs": [{"id": "ref-for-exceptiondef-typeerror\u2461\u2467"}], "title": "10.2.2. Constructor"}, {"refs": [{"id": "ref-for-exceptiondef-typeerror\u2461\u2468"}], "title": "10.2.4. Methods"}], "external": true};
 window.dfnpanelData['d0b4a948'] = {"dfnID": "d0b4a948", "url": "https://webidl.spec.whatwg.org/#a-promise-rejected-with", "dfnText": "a promise rejected with", "refSections": [{"refs": [{"id": "ref-for-a-promise-rejected-with"}, {"id": "ref-for-a-promise-rejected-with\u2460"}], "title": "3.5. Methods"}, {"refs": [{"id": "ref-for-a-promise-rejected-with\u2461"}, {"id": "ref-for-a-promise-rejected-with\u2462"}], "title": "4.5. Methods"}, {"refs": [{"id": "ref-for-a-promise-rejected-with\u2463"}, {"id": "ref-for-a-promise-rejected-with\u2464"}], "title": "5.5. Methods"}, {"refs": [{"id": "ref-for-a-promise-rejected-with\u2465"}, {"id": "ref-for-a-promise-rejected-with\u2466"}], "title": "6.5. Methods"}], "external": true};
 window.dfnpanelData['5372cca8'] = {"dfnID": "5372cca8", "url": "https://webidl.spec.whatwg.org/#idl-boolean", "dfnText": "boolean", "refSections": [{"refs": [{"id": "ref-for-idl-boolean"}, {"id": "ref-for-idl-boolean\u2460"}], "title": "7.3.1. AudioDecoderSupport"}, {"refs": [{"id": "ref-for-idl-boolean\u2461"}, {"id": "ref-for-idl-boolean\u2462"}], "title": "7.3.2. VideoDecoderSupport"}, {"refs": [{"id": "ref-for-idl-boolean\u2463"}, {"id": "ref-for-idl-boolean\u2464"}], "title": "7.3.3. AudioEncoderSupport"}, {"refs": [{"id": "ref-for-idl-boolean\u2465"}, {"id": "ref-for-idl-boolean\u2466"}], "title": "7.3.4. VideoEncoderSupport"}, {"refs": [{"id": "ref-for-idl-boolean\u2467"}, {"id": "ref-for-idl-boolean\u2468"}], "title": "7.6. VideoDecoderConfig"}, {"refs": [{"id": "ref-for-idl-boolean\u2460\u24ea"}, {"id": "ref-for-idl-boolean\u2460\u2460"}], "title": "7.13. VideoEncoderEncodeOptions"}, {"refs": [{"id": "ref-for-idl-boolean\u2460\u2461"}, {"id": "ref-for-idl-boolean\u2460\u2462"}], "title": "9.9. Video Color Space Interface"}, {"refs": [{"id": "ref-for-idl-boolean\u2460\u2463"}], "title": "9.9.3. Attributes"}, {"refs": [{"id": "ref-for-idl-boolean\u2460\u2464"}, {"id": "ref-for-idl-boolean\u2460\u2465"}], "title": "10.2. ImageDecoder Interface"}, {"refs": [{"id": "ref-for-idl-boolean\u2460\u2466"}], "title": "10.2.3. Attributes"}, {"refs": [{"id": "ref-for-idl-boolean\u2460\u2467"}, {"id": "ref-for-idl-boolean\u2460\u2468"}], "title": "10.3. ImageDecoderInit Interface"}, {"refs": [{"id": "ref-for-idl-boolean\u2461\u24ea"}, {"id": "ref-for-idl-boolean\u2461\u2460"}], "title": "10.4. ImageDecodeOptions Interface"}, {"refs": [{"id": "ref-for-idl-boolean\u2461\u2461"}, {"id": "ref-for-idl-boolean\u2461\u2462"}], "title": "10.5. ImageDecodeResult Interface"}, {"refs": [{"id": "ref-for-idl-boolean\u2461\u2463"}, {"id": "ref-for-idl-boolean\u2461\u2464"}], "title": "10.7. ImageTrack Interface"}, {"refs": [{"id": "ref-for-idl-boolean\u2461\u2465"}, {"id": "ref-for-idl-boolean\u2461\u2466"}], "title": "10.7.2. Attributes"}], "external": true};
+window.dfnpanelData['e97b1447'] = {"dfnID": "e97b1447", "url": "https://webidl.spec.whatwg.org/#buffersource-detached", "dfnText": "detached", "refSections": [{"refs": [{"id": "ref-for-buffersource-detached"}], "title": "7.5. AudioDecoderConfig"}, {"refs": [{"id": "ref-for-buffersource-detached\u2460"}], "title": "7.6. VideoDecoderConfig"}, {"refs": [{"id": "ref-for-buffersource-detached\u2461"}], "title": "10.3. ImageDecoderInit Interface"}], "external": true};
 window.dfnpanelData['8c800cdf'] = {"dfnID": "8c800cdf", "url": "https://webidl.spec.whatwg.org/#idl-double", "dfnText": "double", "refSections": [{"refs": [{"id": "ref-for-idl-double"}, {"id": "ref-for-idl-double\u2460"}], "title": "7.8. VideoEncoderConfig"}], "external": true};
 window.dfnpanelData['eec1be2d'] = {"dfnID": "eec1be2d", "url": "https://webidl.spec.whatwg.org/#idl-float", "dfnText": "float", "refSections": [{"refs": [{"id": "ref-for-idl-float"}, {"id": "ref-for-idl-float\u2460"}], "title": "9.2. AudioData Interface"}, {"refs": [{"id": "ref-for-idl-float\u2461"}], "title": "9.2.3. Attributes"}, {"refs": [{"id": "a18079a10"}, {"id": "a18079a11"}], "title": "9.3. Audio Sample Format"}, {"refs": [{"id": "a18079a12"}], "title": "9.3.2. Magnitude of the audio samples"}], "external": true};
 window.dfnpanelData['f8de33a3'] = {"dfnID": "f8de33a3", "url": "https://webidl.spec.whatwg.org/#idl-long", "dfnText": "long", "refSections": [{"refs": [{"id": "46ca9fd60"}, {"id": "46ca9fd61"}], "title": "9.3. Audio Sample Format"}, {"refs": [{"id": "46ca9fd62"}], "title": "9.3.2. Magnitude of the audio samples"}, {"refs": [{"id": "ref-for-idl-long"}], "title": "10.6. ImageTrackList Interface"}, {"refs": [{"id": "ref-for-idl-long\u2460"}], "title": "10.6.2. Attributes"}], "external": true};
