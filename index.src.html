@@ -2051,8 +2051,8 @@ AudioEncoderConfig{#audio-encoder-config}
 <xmp class='idl'>
 dictionary AudioEncoderConfig {
   required DOMString codec;
-  [EnforceRange] unsigned long sampleRate;
-  [EnforceRange] unsigned long numberOfChannels;
+  [EnforceRange] required unsigned long sampleRate;
+  [EnforceRange] required unsigned long numberOfChannels;
   [EnforceRange] unsigned long long bitrate;
   BitrateMode bitrateMode = "variable";
 };
@@ -2069,7 +2069,9 @@ run these steps:
 2. If the {{AudioEncoderConfig}} has a codec-specific extension and the corresponding
     registration in the [[WEBCODECS-CODEC-REGISTRY]] defines steps to check whether
     the extension is a valid extension, return the result of running those steps.
-3. Return `true`.
+3. If {{AudioEncoderConfig/sampleRate}} or {{AudioEncoderConfig/numberOfChannels}} are
+     equal to zero, return `false`.
+4. Return `true`.
 
 <dl>
   <dt><dfn dict-member for=AudioEncoderConfig>codec</dfn></dt>
