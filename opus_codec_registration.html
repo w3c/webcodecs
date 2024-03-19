@@ -7,7 +7,7 @@
   <link href="https://www.w3.org/StyleSheets/TR/2021/W3C-ED" rel="stylesheet">
   <meta content="Bikeshed version 82ce88815, updated Thu Sep 7 16:33:55 2023 -0700" name="generator">
   <link href="https://www.w3.org/TR/webcodecs-opus-codec-registration/" rel="canonical">
-  <meta content="0ecf0ffcd3d2dae17cd6bd704db7fdce63dfd1ee" name="document-revision">
+  <meta content="a5e076ebad239e42ef9469998927c75424dd0062" name="document-revision">
 <style>/* Boilerplate: style-autolinks */
 .css.css, .property.property, .descriptor.descriptor {
     color: var(--a-normal-text);
@@ -648,7 +648,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
   <div class="head">
    <p data-fill-with="logo"><a class="logo" href="https://www.w3.org/"> <img alt="W3C" height="48" src="https://www.w3.org/StyleSheets/TR/2021/logos/W3C" width="72"> </a> </p>
    <h1 class="p-name no-ref" id="title">Opus WebCodecs Registration</h1>
-   <p id="w3c-state"><a href="https://www.w3.org/standards/types#ED">Editor’s Draft</a>, <time class="dt-updated" datetime="2024-03-18">18 March 2024</time></p>
+   <p id="w3c-state"><a href="https://www.w3.org/standards/types#ED">Editor’s Draft</a>, <time class="dt-updated" datetime="2024-03-19">19 March 2024</time></p>
    <details open>
     <summary>More details about this document</summary>
     <div data-fill-with="spec-metadata">
@@ -717,6 +717,8 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
      <ol class="toc">
       <li><a href="#opus-encoder-config"><span class="secno">5.1</span> <span class="content">OpusEncoderConfig</span></a>
       <li><a href="#opus-bitstream-format"><span class="secno">5.2</span> <span class="content">OpusBitstreamFormat</span></a>
+      <li><a href="#opus-signal"><span class="secno">5.3</span> <span class="content">OpusSignal</span></a>
+      <li><a href="#opus-application"><span class="secno">5.4</span> <span class="content">OpusApplication</span></a>
      </ol>
     <li><a href="#privacy-considerations"><span class="secno">6</span> <span class="content">Privacy Considerations</span></a>
     <li><a href="#security-considerations"><span class="secno">7</span> <span class="content">Security Considerations</span></a>
@@ -774,6 +776,8 @@ time without error, but this might not result in the expected audio output.</p>
    <h3 class="heading settled" data-level="5.1" id="opus-encoder-config"><span class="secno">5.1. </span><span class="content">OpusEncoderConfig</span><a class="self-link" href="#opus-encoder-config"></a></h3>
 <pre class="idl highlight def"><c- b>dictionary</c-> <dfn class="dfn-paneled idl-code" data-dfn-type="dictionary" data-export id="dictdef-opusencoderconfig"><code><c- g>OpusEncoderConfig</c-></code></dfn> {
   <a data-link-type="idl-name" href="#enumdef-opusbitstreamformat" id="ref-for-enumdef-opusbitstreamformat"><c- n>OpusBitstreamFormat</c-></a> <a class="idl-code" data-default="&quot;opus&quot;" data-link-type="dict-member" data-type="OpusBitstreamFormat " href="#dom-opusencoderconfig-format" id="ref-for-dom-opusencoderconfig-format"><c- g>format</c-></a> = "opus";
+  <a data-link-type="idl-name" href="#enumdef-opussignal" id="ref-for-enumdef-opussignal"><c- n>OpusSignal</c-></a> <a class="idl-code" data-default="&quot;auto&quot;" data-link-type="dict-member" data-type="OpusSignal " href="#dom-opusencoderconfig-signal" id="ref-for-dom-opusencoderconfig-signal"><c- g>signal</c-></a> = "auto";
+  <a data-link-type="idl-name" href="#enumdef-opusapplication" id="ref-for-enumdef-opusapplication"><c- n>OpusApplication</c-></a> <a class="idl-code" data-default="&quot;audio&quot;" data-link-type="dict-member" data-type="OpusApplication " href="#dom-opusencoderconfig-application" id="ref-for-dom-opusencoderconfig-application"><c- g>application</c-></a> = "audio";
   [<a class="idl-code" data-link-type="extended-attribute" href="https://webidl.spec.whatwg.org/#EnforceRange" id="ref-for-EnforceRange"><c- g>EnforceRange</c-></a>] <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-unsigned-long-long" id="ref-for-idl-unsigned-long-long"><c- b>unsigned</c-> <c- b>long</c-> <c- b>long</c-></a> <a class="idl-code" data-default="20000" data-link-type="dict-member" data-type="unsigned long long " href="#dom-opusencoderconfig-frameduration" id="ref-for-dom-opusencoderconfig-frameduration"><c- g>frameDuration</c-></a> = 20000;
   [<a class="idl-code" data-link-type="extended-attribute" href="https://webidl.spec.whatwg.org/#EnforceRange" id="ref-for-EnforceRange①"><c- g>EnforceRange</c-></a>] <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-unsigned-long" id="ref-for-idl-unsigned-long"><c- b>unsigned</c-> <c- b>long</c-></a> <a class="idl-code" data-link-type="dict-member" data-type="unsigned long " href="#dom-opusencoderconfig-complexity" id="ref-for-dom-opusencoderconfig-complexity"><c- g>complexity</c-></a>;
   [<a class="idl-code" data-link-type="extended-attribute" href="https://webidl.spec.whatwg.org/#EnforceRange" id="ref-for-EnforceRange②"><c- g>EnforceRange</c-></a>] <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-unsigned-long" id="ref-for-idl-unsigned-long①"><c- b>unsigned</c-> <c- b>long</c-></a> <a class="idl-code" data-default="0" data-link-type="dict-member" data-type="unsigned long " href="#dom-opusencoderconfig-packetlossperc" id="ref-for-dom-opusencoderconfig-packetlossperc"><c- g>packetlossperc</c-></a> = 0;
@@ -797,6 +801,10 @@ which is described section 2.1.4 of <a data-link-type="biblio" href="#biblio-rfc
    <dl>
     <dt><dfn class="dfn-paneled idl-code" data-dfn-for="OpusEncoderConfig" data-dfn-type="dict-member" data-export id="dom-opusencoderconfig-format"><code>format</code></dfn>, <span> of type <a data-link-type="idl-name" href="#enumdef-opusbitstreamformat" id="ref-for-enumdef-opusbitstreamformat①">OpusBitstreamFormat</a>, defaulting to <code>"opus"</code></span>
     <dd> Configures the format of output <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webcodecs/#encodedaudiochunk" id="ref-for-encodedaudiochunk⑥">EncodedAudioChunk</a></code>s. See <code class="idl"><a data-link-type="idl" href="#enumdef-opusbitstreamformat" id="ref-for-enumdef-opusbitstreamformat②">OpusBitstreamFormat</a></code>. 
+    <dt><dfn class="dfn-paneled idl-code" data-dfn-for="OpusEncoderConfig" data-dfn-type="dict-member" data-export id="dom-opusencoderconfig-signal"><code>signal</code></dfn>, <span> of type <a data-link-type="idl-name" href="#enumdef-opussignal" id="ref-for-enumdef-opussignal①">OpusSignal</a>, defaulting to <code>"auto"</code></span>
+    <dd> Specificies the type of audio signal being encoded. See <code class="idl"><a data-link-type="idl" href="#enumdef-opussignal" id="ref-for-enumdef-opussignal②">OpusSignal</a></code>. 
+    <dt><dfn class="dfn-paneled idl-code" data-dfn-for="OpusEncoderConfig" data-dfn-type="dict-member" data-export id="dom-opusencoderconfig-application"><code>application</code></dfn>, <span> of type <a data-link-type="idl-name" href="#enumdef-opusapplication" id="ref-for-enumdef-opusapplication①">OpusApplication</a>, defaulting to <code>"audio"</code></span>
+    <dd> Specificies the encoder’s intended application. See <code class="idl"><a data-link-type="idl" href="#enumdef-opusapplication" id="ref-for-enumdef-opusapplication②">OpusApplication</a></code>. 
     <dt><dfn class="dfn-paneled idl-code" data-dfn-for="OpusEncoderConfig" data-dfn-type="dict-member" data-export id="dom-opusencoderconfig-frameduration"><code>frameDuration</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://webidl.spec.whatwg.org/#idl-unsigned-long-long" id="ref-for-idl-unsigned-long-long①">unsigned long long</a>, defaulting to <code>20000</code></span>
     <dd> Configures the frame duration, in microseconds, of output <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webcodecs/#encodedaudiochunk" id="ref-for-encodedaudiochunk⑦">EncodedAudioChunk</a></code>s. 
     <dt><dfn class="dfn-paneled idl-code" data-dfn-for="OpusEncoderConfig" data-dfn-type="dict-member" data-export id="dom-opusencoderconfig-complexity"><code>complexity</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://webidl.spec.whatwg.org/#idl-unsigned-long" id="ref-for-idl-unsigned-long②">unsigned long</a></span>
@@ -831,6 +839,42 @@ encoded audio stream.</p>
     <dd> No metadata are necessary to decode the encoded audio stream. 
     <dt><dfn class="dfn-paneled idl-code" data-dfn-for="OpusBitstreamFormat" data-dfn-type="enum-value" data-export data-lt="&quot;ogg&quot;|ogg" id="dom-opusbitstreamformat-ogg"><code>ogg</code></dfn>
     <dd> The metadata of the encoded audio stream are provided at configuration via <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webcodecs/#dom-audiodecoderconfig-description" id="ref-for-dom-audiodecoderconfig-description④">AudioDecoderConfig.description</a></code>. 
+   </dl>
+   <h3 class="heading settled" data-level="5.3" id="opus-signal"><span class="secno">5.3. </span><span class="content">OpusSignal</span><a class="self-link" href="#opus-signal"></a></h3>
+<pre class="idl highlight def"><c- b>enum</c-> <dfn class="dfn-paneled idl-code" data-dfn-type="enum" data-export id="enumdef-opussignal"><code><c- g>OpusSignal</c-></code></dfn> {
+  <a class="idl-code" data-link-type="enum-value" href="#dom-opussignal-auto" id="ref-for-dom-opussignal-auto"><c- s>"auto"</c-></a>,
+  <a class="idl-code" data-link-type="enum-value" href="#dom-opussignal-music" id="ref-for-dom-opussignal-music"><c- s>"music"</c-></a>,
+  <a class="idl-code" data-link-type="enum-value" href="#dom-opussignal-voice" id="ref-for-dom-opussignal-voice"><c- s>"voice"</c-></a>,
+};
+
+</pre>
+   <p>The <code class="idl"><a data-link-type="idl" href="#enumdef-opussignal" id="ref-for-enumdef-opussignal③">OpusSignal</a></code> indicates the default value for the type of signal being encoded.</p>
+   <dl>
+    <dt><dfn class="dfn-paneled idl-code" data-dfn-for="OpusSignal" data-dfn-type="enum-value" data-export data-lt="&quot;auto&quot;|auto" id="dom-opussignal-auto"><code>auto</code></dfn>
+    <dd> The audio signal is not specified to be of a particular type. 
+    <dt><dfn class="dfn-paneled idl-code" data-dfn-for="OpusSignal" data-dfn-type="enum-value" data-export data-lt="&quot;music&quot;|music" id="dom-opussignal-music"><code>music</code></dfn>
+    <dd> The audio signal is music. 
+    <dt><dfn class="dfn-paneled idl-code" data-dfn-for="OpusSignal" data-dfn-type="enum-value" data-export data-lt="&quot;voice&quot;|voice" id="dom-opussignal-voice"><code>voice</code></dfn>
+    <dd> The audio signal is voice or speech. 
+   </dl>
+   <h3 class="heading settled" data-level="5.4" id="opus-application"><span class="secno">5.4. </span><span class="content">OpusApplication</span><a class="self-link" href="#opus-application"></a></h3>
+<pre class="idl highlight def"><c- b>enum</c-> <dfn class="dfn-paneled idl-code" data-dfn-type="enum" data-export id="enumdef-opusapplication"><code><c- g>OpusApplication</c-></code></dfn> {
+  <a class="idl-code" data-link-type="enum-value" href="#dom-opusapplication-voip" id="ref-for-dom-opusapplication-voip"><c- s>"voip"</c-></a>,
+  <a class="idl-code" data-link-type="enum-value" href="#dom-opusapplication-audio" id="ref-for-dom-opusapplication-audio"><c- s>"audio"</c-></a>,
+  <a class="idl-code" data-link-type="enum-value" href="#dom-opusapplication-lowdelay" id="ref-for-dom-opusapplication-lowdelay"><c- s>"lowdelay"</c-></a>,
+};
+
+</pre>
+   <p>The <code class="idl"><a data-link-type="idl" href="#enumdef-opusapplication" id="ref-for-enumdef-opusapplication③">OpusApplication</a></code> indicates the default value for the encoder’s intended
+application.</p>
+   <dl>
+    <dt><dfn class="dfn-paneled idl-code" data-dfn-for="OpusApplication" data-dfn-type="enum-value" data-export data-lt="&quot;voip&quot;|voip" id="dom-opusapplication-voip"><code>voip</code></dfn>
+    <dd> Process signal for improved speech intelligibility. 
+    <dt><dfn class="dfn-paneled idl-code" data-dfn-for="OpusApplication" data-dfn-type="enum-value" data-export data-lt="&quot;audio&quot;|audio" id="dom-opusapplication-audio"><code>audio</code></dfn>
+    <dd> Favor faithfulness to the original input. 
+    <dt><dfn class="dfn-paneled idl-code" data-dfn-for="OpusApplication" data-dfn-type="enum-value" data-export data-lt="&quot;lowdelay&quot;|lowdelay" id="dom-opusapplication-lowdelay"><code>lowdelay</code></dfn>
+    <dd> Configure the minimum possible coding delay by disabling certain modes of
+    operation. 
    </dl>
    <h2 class="heading settled" data-level="6" id="privacy-considerations"><span class="secno">6. </span><span class="content">Privacy Considerations</span><a class="self-link" href="#privacy-considerations"></a></h2>
    <p>Please refer to the section <a href="https://w3c.github.io/webcodecs/#privacy-considerations">Privacy
@@ -870,9 +914,18 @@ Considerations</a> in <a data-link-type="biblio" href="#biblio-webcodecs" title=
   <h2 class="no-num no-ref heading settled" id="index"><span class="content">Index</span><a class="self-link" href="#index"></a></h2>
   <h3 class="no-num no-ref heading settled" id="index-defined-here"><span class="content">Terms defined by this specification</span><a class="self-link" href="#index-defined-here"></a></h3>
   <ul class="index">
+   <li><a href="#dom-opusencoderconfig-application">application</a><span>, in § 5.1</span>
+   <li><a href="#dom-opusapplication-audio">"audio"</a><span>, in § 5.4</span>
+   <li><a href="#dom-opusapplication-audio">audio</a><span>, in § 5.4</span>
+   <li><a href="#dom-opussignal-auto">"auto"</a><span>, in § 5.3</span>
+   <li><a href="#dom-opussignal-auto">auto</a><span>, in § 5.3</span>
    <li><a href="#dom-opusencoderconfig-complexity">complexity</a><span>, in § 5.1</span>
    <li><a href="#dom-opusencoderconfig-format">format</a><span>, in § 5.1</span>
    <li><a href="#dom-opusencoderconfig-frameduration">frameDuration</a><span>, in § 5.1</span>
+   <li><a href="#dom-opusapplication-lowdelay">"lowdelay"</a><span>, in § 5.4</span>
+   <li><a href="#dom-opusapplication-lowdelay">lowdelay</a><span>, in § 5.4</span>
+   <li><a href="#dom-opussignal-music">"music"</a><span>, in § 5.3</span>
+   <li><a href="#dom-opussignal-music">music</a><span>, in § 5.3</span>
    <li><a href="#dom-opusbitstreamformat-ogg">"ogg"</a><span>, in § 5.2</span>
    <li><a href="#dom-opusbitstreamformat-ogg">ogg</a><span>, in § 5.2</span>
    <li><a href="#dom-opusbitstreamformat-opus">"opus"</a><span>, in § 5.2</span>
@@ -882,11 +935,18 @@ Considerations</a> in <a data-link-type="biblio" href="#biblio-webcodecs" title=
      <li><a href="#dom-audioencoderconfig-opus">dict-member for AudioEncoderConfig</a><span>, in § 5</span>
      <li><a href="#dom-opusbitstreamformat-opus">enum-value for OpusBitstreamFormat</a><span>, in § 5.2</span>
     </ul>
+   <li><a href="#enumdef-opusapplication">OpusApplication</a><span>, in § 5.4</span>
    <li><a href="#enumdef-opusbitstreamformat">OpusBitstreamFormat</a><span>, in § 5.2</span>
    <li><a href="#dictdef-opusencoderconfig">OpusEncoderConfig</a><span>, in § 5.1</span>
+   <li><a href="#enumdef-opussignal">OpusSignal</a><span>, in § 5.3</span>
    <li><a href="#dom-opusencoderconfig-packetlossperc">packetlossperc</a><span>, in § 5.1</span>
+   <li><a href="#dom-opusencoderconfig-signal">signal</a><span>, in § 5.1</span>
    <li><a href="#dom-opusencoderconfig-usedtx">usedtx</a><span>, in § 5.1</span>
    <li><a href="#dom-opusencoderconfig-useinbandfec">useinbandfec</a><span>, in § 5.1</span>
+   <li><a href="#dom-opussignal-voice">"voice"</a><span>, in § 5.3</span>
+   <li><a href="#dom-opussignal-voice">voice</a><span>, in § 5.3</span>
+   <li><a href="#dom-opusapplication-voip">"voip"</a><span>, in § 5.4</span>
+   <li><a href="#dom-opusapplication-voip">voip</a><span>, in § 5.4</span>
   </ul>
   <h3 class="no-num no-ref heading settled" id="index-defined-elsewhere"><span class="content">Terms defined by reference</span><a class="self-link" href="#index-defined-elsewhere"></a></h3>
   <ul class="index">
@@ -938,6 +998,8 @@ Considerations</a> in <a data-link-type="biblio" href="#biblio-webcodecs" title=
 
 <c- b>dictionary</c-> <a href="#dictdef-opusencoderconfig"><code><c- g>OpusEncoderConfig</c-></code></a> {
   <a data-link-type="idl-name" href="#enumdef-opusbitstreamformat"><c- n>OpusBitstreamFormat</c-></a> <a class="idl-code" data-default="&quot;opus&quot;" data-link-type="dict-member" data-type="OpusBitstreamFormat " href="#dom-opusencoderconfig-format"><c- g>format</c-></a> = "opus";
+  <a data-link-type="idl-name" href="#enumdef-opussignal"><c- n>OpusSignal</c-></a> <a class="idl-code" data-default="&quot;auto&quot;" data-link-type="dict-member" data-type="OpusSignal " href="#dom-opusencoderconfig-signal"><c- g>signal</c-></a> = "auto";
+  <a data-link-type="idl-name" href="#enumdef-opusapplication"><c- n>OpusApplication</c-></a> <a class="idl-code" data-default="&quot;audio&quot;" data-link-type="dict-member" data-type="OpusApplication " href="#dom-opusencoderconfig-application"><c- g>application</c-></a> = "audio";
   [<a class="idl-code" data-link-type="extended-attribute" href="https://webidl.spec.whatwg.org/#EnforceRange"><c- g>EnforceRange</c-></a>] <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-unsigned-long-long"><c- b>unsigned</c-> <c- b>long</c-> <c- b>long</c-></a> <a class="idl-code" data-default="20000" data-link-type="dict-member" data-type="unsigned long long " href="#dom-opusencoderconfig-frameduration"><c- g>frameDuration</c-></a> = 20000;
   [<a class="idl-code" data-link-type="extended-attribute" href="https://webidl.spec.whatwg.org/#EnforceRange"><c- g>EnforceRange</c-></a>] <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-unsigned-long"><c- b>unsigned</c-> <c- b>long</c-></a> <a class="idl-code" data-link-type="dict-member" data-type="unsigned long " href="#dom-opusencoderconfig-complexity"><c- g>complexity</c-></a>;
   [<a class="idl-code" data-link-type="extended-attribute" href="https://webidl.spec.whatwg.org/#EnforceRange"><c- g>EnforceRange</c-></a>] <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-unsigned-long"><c- b>unsigned</c-> <c- b>long</c-></a> <a class="idl-code" data-default="0" data-link-type="dict-member" data-type="unsigned long " href="#dom-opusencoderconfig-packetlossperc"><c- g>packetlossperc</c-></a> = 0;
@@ -949,6 +1011,20 @@ Considerations</a> in <a data-link-type="biblio" href="#biblio-webcodecs" title=
 <c- b>enum</c-> <a href="#enumdef-opusbitstreamformat"><code><c- g>OpusBitstreamFormat</c-></code></a> {
   <a class="idl-code" data-link-type="enum-value" href="#dom-opusbitstreamformat-opus"><c- s>"opus"</c-></a>,
   <a class="idl-code" data-link-type="enum-value" href="#dom-opusbitstreamformat-ogg"><c- s>"ogg"</c-></a>,
+};
+
+
+<c- b>enum</c-> <a href="#enumdef-opussignal"><code><c- g>OpusSignal</c-></code></a> {
+  <a class="idl-code" data-link-type="enum-value" href="#dom-opussignal-auto"><c- s>"auto"</c-></a>,
+  <a class="idl-code" data-link-type="enum-value" href="#dom-opussignal-music"><c- s>"music"</c-></a>,
+  <a class="idl-code" data-link-type="enum-value" href="#dom-opussignal-voice"><c- s>"voice"</c-></a>,
+};
+
+
+<c- b>enum</c-> <a href="#enumdef-opusapplication"><code><c- g>OpusApplication</c-></code></a> {
+  <a class="idl-code" data-link-type="enum-value" href="#dom-opusapplication-voip"><c- s>"voip"</c-></a>,
+  <a class="idl-code" data-link-type="enum-value" href="#dom-opusapplication-audio"><c- s>"audio"</c-></a>,
+  <a class="idl-code" data-link-type="enum-value" href="#dom-opusapplication-lowdelay"><c- s>"lowdelay"</c-></a>,
 };
 
 
@@ -1274,6 +1350,8 @@ window.dfnpanelData['f14b47b8'] = {"dfnID": "f14b47b8", "url": "https://webidl.s
 window.dfnpanelData['dom-audioencoderconfig-opus'] = {"dfnID": "dom-audioencoderconfig-opus", "url": "#dom-audioencoderconfig-opus", "dfnText": "opus", "refSections": [{"refs": [{"id": "ref-for-dom-audioencoderconfig-opus"}], "title": "5. AudioEncoderConfig extensions"}], "external": false};
 window.dfnpanelData['dictdef-opusencoderconfig'] = {"dfnID": "dictdef-opusencoderconfig", "url": "#dictdef-opusencoderconfig", "dfnText": "OpusEncoderConfig", "refSections": [{"refs": [{"id": "ref-for-dictdef-opusencoderconfig"}, {"id": "ref-for-dictdef-opusencoderconfig\u2460"}], "title": "5. AudioEncoderConfig extensions"}, {"refs": [{"id": "ref-for-dictdef-opusencoderconfig\u2461"}], "title": "5.1. OpusEncoderConfig"}], "external": false};
 window.dfnpanelData['dom-opusencoderconfig-format'] = {"dfnID": "dom-opusencoderconfig-format", "url": "#dom-opusencoderconfig-format", "dfnText": "format", "refSections": [{"refs": [{"id": "ref-for-dom-opusencoderconfig-format"}], "title": "5.1. OpusEncoderConfig"}], "external": false};
+window.dfnpanelData['dom-opusencoderconfig-signal'] = {"dfnID": "dom-opusencoderconfig-signal", "url": "#dom-opusencoderconfig-signal", "dfnText": "signal", "refSections": [{"refs": [{"id": "ref-for-dom-opusencoderconfig-signal"}], "title": "5.1. OpusEncoderConfig"}], "external": false};
+window.dfnpanelData['dom-opusencoderconfig-application'] = {"dfnID": "dom-opusencoderconfig-application", "url": "#dom-opusencoderconfig-application", "dfnText": "application", "refSections": [{"refs": [{"id": "ref-for-dom-opusencoderconfig-application"}], "title": "5.1. OpusEncoderConfig"}], "external": false};
 window.dfnpanelData['dom-opusencoderconfig-frameduration'] = {"dfnID": "dom-opusencoderconfig-frameduration", "url": "#dom-opusencoderconfig-frameduration", "dfnText": "frameDuration", "refSections": [{"refs": [{"id": "ref-for-dom-opusencoderconfig-frameduration"}, {"id": "ref-for-dom-opusencoderconfig-frameduration\u2460"}], "title": "5.1. OpusEncoderConfig"}], "external": false};
 window.dfnpanelData['dom-opusencoderconfig-complexity'] = {"dfnID": "dom-opusencoderconfig-complexity", "url": "#dom-opusencoderconfig-complexity", "dfnText": "complexity", "refSections": [{"refs": [{"id": "ref-for-dom-opusencoderconfig-complexity"}, {"id": "ref-for-dom-opusencoderconfig-complexity\u2460"}], "title": "5.1. OpusEncoderConfig"}], "external": false};
 window.dfnpanelData['dom-opusencoderconfig-packetlossperc'] = {"dfnID": "dom-opusencoderconfig-packetlossperc", "url": "#dom-opusencoderconfig-packetlossperc", "dfnText": "packetlossperc", "refSections": [{"refs": [{"id": "ref-for-dom-opusencoderconfig-packetlossperc"}, {"id": "ref-for-dom-opusencoderconfig-packetlossperc\u2460"}], "title": "5.1. OpusEncoderConfig"}], "external": false};
@@ -1282,6 +1360,14 @@ window.dfnpanelData['dom-opusencoderconfig-usedtx'] = {"dfnID": "dom-opusencoder
 window.dfnpanelData['enumdef-opusbitstreamformat'] = {"dfnID": "enumdef-opusbitstreamformat", "url": "#enumdef-opusbitstreamformat", "dfnText": "OpusBitstreamFormat", "refSections": [{"refs": [{"id": "ref-for-enumdef-opusbitstreamformat"}, {"id": "ref-for-enumdef-opusbitstreamformat\u2460"}, {"id": "ref-for-enumdef-opusbitstreamformat\u2461"}], "title": "5.1. OpusEncoderConfig"}, {"refs": [{"id": "ref-for-enumdef-opusbitstreamformat\u2462"}], "title": "5.2. OpusBitstreamFormat"}], "external": false};
 window.dfnpanelData['dom-opusbitstreamformat-opus'] = {"dfnID": "dom-opusbitstreamformat-opus", "url": "#dom-opusbitstreamformat-opus", "dfnText": "opus", "refSections": [{"refs": [{"id": "ref-for-dom-opusbitstreamformat-opus"}], "title": "2. EncodedAudioChunk data"}, {"refs": [{"id": "ref-for-dom-opusbitstreamformat-opus\u2460"}], "title": "3. AudioDecoderConfig description"}, {"refs": [{"id": "ref-for-dom-opusbitstreamformat-opus\u2461"}], "title": "5.2. OpusBitstreamFormat"}], "external": false};
 window.dfnpanelData['dom-opusbitstreamformat-ogg'] = {"dfnID": "dom-opusbitstreamformat-ogg", "url": "#dom-opusbitstreamformat-ogg", "dfnText": "ogg", "refSections": [{"refs": [{"id": "ref-for-dom-opusbitstreamformat-ogg"}], "title": "2. EncodedAudioChunk data"}, {"refs": [{"id": "ref-for-dom-opusbitstreamformat-ogg\u2460"}], "title": "3. AudioDecoderConfig description"}, {"refs": [{"id": "ref-for-dom-opusbitstreamformat-ogg\u2461"}], "title": "5.2. OpusBitstreamFormat"}], "external": false};
+window.dfnpanelData['enumdef-opussignal'] = {"dfnID": "enumdef-opussignal", "url": "#enumdef-opussignal", "dfnText": "OpusSignal", "refSections": [{"refs": [{"id": "ref-for-enumdef-opussignal"}, {"id": "ref-for-enumdef-opussignal\u2460"}, {"id": "ref-for-enumdef-opussignal\u2461"}], "title": "5.1. OpusEncoderConfig"}, {"refs": [{"id": "ref-for-enumdef-opussignal\u2462"}], "title": "5.3. OpusSignal"}], "external": false};
+window.dfnpanelData['dom-opussignal-auto'] = {"dfnID": "dom-opussignal-auto", "url": "#dom-opussignal-auto", "dfnText": "auto", "refSections": [{"refs": [{"id": "ref-for-dom-opussignal-auto"}], "title": "5.3. OpusSignal"}], "external": false};
+window.dfnpanelData['dom-opussignal-music'] = {"dfnID": "dom-opussignal-music", "url": "#dom-opussignal-music", "dfnText": "music", "refSections": [{"refs": [{"id": "ref-for-dom-opussignal-music"}], "title": "5.3. OpusSignal"}], "external": false};
+window.dfnpanelData['dom-opussignal-voice'] = {"dfnID": "dom-opussignal-voice", "url": "#dom-opussignal-voice", "dfnText": "voice", "refSections": [{"refs": [{"id": "ref-for-dom-opussignal-voice"}], "title": "5.3. OpusSignal"}], "external": false};
+window.dfnpanelData['enumdef-opusapplication'] = {"dfnID": "enumdef-opusapplication", "url": "#enumdef-opusapplication", "dfnText": "OpusApplication", "refSections": [{"refs": [{"id": "ref-for-enumdef-opusapplication"}, {"id": "ref-for-enumdef-opusapplication\u2460"}, {"id": "ref-for-enumdef-opusapplication\u2461"}], "title": "5.1. OpusEncoderConfig"}, {"refs": [{"id": "ref-for-enumdef-opusapplication\u2462"}], "title": "5.4. OpusApplication"}], "external": false};
+window.dfnpanelData['dom-opusapplication-voip'] = {"dfnID": "dom-opusapplication-voip", "url": "#dom-opusapplication-voip", "dfnText": "voip", "refSections": [{"refs": [{"id": "ref-for-dom-opusapplication-voip"}], "title": "5.4. OpusApplication"}], "external": false};
+window.dfnpanelData['dom-opusapplication-audio'] = {"dfnID": "dom-opusapplication-audio", "url": "#dom-opusapplication-audio", "dfnText": "audio", "refSections": [{"refs": [{"id": "ref-for-dom-opusapplication-audio"}], "title": "5.4. OpusApplication"}], "external": false};
+window.dfnpanelData['dom-opusapplication-lowdelay'] = {"dfnID": "dom-opusapplication-lowdelay", "url": "#dom-opusapplication-lowdelay", "dfnText": "lowdelay", "refSections": [{"refs": [{"id": "ref-for-dom-opusapplication-lowdelay"}], "title": "5.4. OpusApplication"}], "external": false};
 </script>
 <script>/* Boilerplate: script-dom-helper */
 function query(sel) { return document.querySelector(sel); }
