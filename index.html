@@ -7,7 +7,7 @@
   <link href="https://www.w3.org/StyleSheets/TR/2021/W3C-ED" rel="stylesheet">
   <meta content="Bikeshed version 82ce88815, updated Thu Sep 7 16:33:55 2023 -0700" name="generator">
   <link href="https://www.w3.org/TR/webcodecs/" rel="canonical">
-  <meta content="b680b0051f54ebf3aeca2ff9f07cc4ab971ef14c" name="document-revision">
+  <meta content="871ccb3e6ae334542f89e7ecbb0765899277a27f" name="document-revision">
 <style>
 main > dl > dd {
   margin-bottom: 1em;
@@ -672,7 +672,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
   <div class="head">
    <p data-fill-with="logo"><a class="logo" href="https://www.w3.org/"> <img alt="W3C" height="48" src="https://www.w3.org/StyleSheets/TR/2021/logos/W3C" width="72"> </a> </p>
    <h1 class="p-name no-ref" id="title">WebCodecs</h1>
-   <p id="w3c-state"><a href="https://www.w3.org/standards/types#ED">Editor’s Draft</a>, <time class="dt-updated" datetime="2024-03-19">19 March 2024</time></p>
+   <p id="w3c-state"><a href="https://www.w3.org/standards/types#ED">Editor’s Draft</a>, <time class="dt-updated" datetime="2024-04-08">8 April 2024</time></p>
    <details open>
     <summary>More details about this document</summary>
     <div data-fill-with="spec-metadata">
@@ -4382,6 +4382,8 @@ channel attributed to a particular channel index.</p>
   <a data-link-type="idl-name" href="#dictdef-videocolorspaceinit" id="ref-for-dictdef-videocolorspaceinit④"><c- n>VideoColorSpaceInit</c-></a> <dfn class="dfn-paneled idl-code" data-dfn-for="VideoFrameBufferInit" data-dfn-type="dict-member" data-export data-type="VideoColorSpaceInit " id="dom-videoframebufferinit-colorspace"><code><c- g>colorSpace</c-></code></dfn>;
 
   <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#idl-sequence" id="ref-for-idl-sequence⑤"><c- b>sequence</c-></a>&lt;<a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-ArrayBuffer" id="ref-for-idl-ArrayBuffer⑨"><c- b>ArrayBuffer</c-></a>> <dfn class="dfn-paneled idl-code" data-default="[]" data-dfn-for="VideoFrameBufferInit" data-dfn-type="dict-member" data-export data-type="sequence<ArrayBuffer> " id="dom-videoframebufferinit-transfer"><code><c- g>transfer</c-></code></dfn> = [];
+
+  <a data-link-type="idl-name" href="#dictdef-videoframemetadata" id="ref-for-dictdef-videoframemetadata②"><c- n>VideoFrameMetadata</c-></a> <dfn class="dfn-paneled idl-code" data-dfn-for="VideoFrameBufferInit" data-dfn-type="dict-member" data-export data-type="VideoFrameMetadata " id="dom-videoframebufferinit-metadata"><code><c- g>metadata</c-></code></dfn>;
 };
 
 <c- b>dictionary</c-> <dfn class="dfn-paneled idl-code" data-dfn-type="dictionary" data-export id="dictdef-videoframemetadata"><code><c- g>VideoFrameMetadata</c-></code></dfn> {
@@ -4439,9 +4441,9 @@ from the <code class="idl"><a data-link-type="idl" href="#encodedvideochunk" id=
      <p>The <code class="idl"><a data-link-type="idl" href="#videocolorspace" id="ref-for-videocolorspace⑤">VideoColorSpace</a></code> associated with this frame.</p>
     <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="VideoFrame" data-dfn-type="attribute" data-export id="dom-videoframe-metadata-slot"><code>[[metadata]]</code></dfn>
     <dd data-md>
-     <p>The <code class="idl"><a data-link-type="idl" href="#dictdef-videoframemetadata" id="ref-for-dictdef-videoframemetadata②">VideoFrameMetadata</a></code> associated with this frame.
+     <p>The <code class="idl"><a data-link-type="idl" href="#dictdef-videoframemetadata" id="ref-for-dictdef-videoframemetadata③">VideoFrameMetadata</a></code> associated with this frame.
 Possible members are recorded in <a data-link-type="biblio" href="#biblio-webcodecs-video-frame-metadata-registry" title="WebCodecs VideoFrame Metadata Registry">[webcodecs-video-frame-metadata-registry]</a>.
-By design, all <code class="idl"><a data-link-type="idl" href="#dictdef-videoframemetadata" id="ref-for-dictdef-videoframemetadata③">VideoFrameMetadata</a></code> properties are serializable.</p>
+By design, all <code class="idl"><a data-link-type="idl" href="#dictdef-videoframemetadata" id="ref-for-dictdef-videoframemetadata④">VideoFrameMetadata</a></code> properties are serializable.</p>
    </dl>
    <h4 class="heading settled" data-level="9.4.2" id="videoframe-constructors"><span class="secno">9.4.2. </span><span class="content">Constructors</span><a class="self-link" href="#videoframe-constructors"></a></h4>
    <p><dfn class="dfn-paneled idl-code" data-dfn-for="VideoFrame" data-dfn-type="constructor" data-export data-lt="VideoFrame(image, init)|constructor(image, init)|VideoFrame(image)|constructor(image)" id="dom-videoframe-videoframe" title="VideoFrame(image, init)"><code> VideoFrame(image, init) </code></dfn></p>
@@ -4643,7 +4645,7 @@ value to <var>colorSpace</var>.</p>
       <li data-md>
        <p>Assign the result of running the <a data-link-type="dfn" href="#videoframe-pick-color-space" id="ref-for-videoframe-pick-color-space">Pick Color Space</a> algorithm, with <var>colorSpace</var> and <code class="idl"><a data-link-type="idl" href="#dom-videoframe-format-slot" id="ref-for-dom-videoframe-format-slot②">[[format]]</a></code>, to <code class="idl"><a data-link-type="idl" href="#dom-videoframe-color-space-slot" id="ref-for-dom-videoframe-color-space-slot">[[color space]]</a></code>.</p>
       <li data-md>
-       <p>Assign the result of calling <a data-link-type="dfn" href="#videoframe-copy-videoframe-metadata" id="ref-for-videoframe-copy-videoframe-metadata">Copy VideoFrame metadata</a> with <var>init</var>’s <code class="idl"><a data-link-type="idl" href="#dom-videoframeinit-metadata" id="ref-for-dom-videoframeinit-metadata①">metadata</a></code> to <var>frame</var>.<code class="idl"><a data-link-type="idl" href="#dom-videoframe-metadata-slot" id="ref-for-dom-videoframe-metadata-slot①">[[metadata]]</a></code>.</p>
+       <p>Assign the result of calling <a data-link-type="dfn" href="#videoframe-copy-videoframe-metadata" id="ref-for-videoframe-copy-videoframe-metadata">Copy VideoFrame metadata</a> with <var>init</var>’s <code class="idl"><a data-link-type="idl" href="#dom-videoframebufferinit-metadata" id="ref-for-dom-videoframebufferinit-metadata">metadata</a></code> to <var>frame</var>.<code class="idl"><a data-link-type="idl" href="#dom-videoframe-metadata-slot" id="ref-for-dom-videoframe-metadata-slot①">[[metadata]]</a></code>.</p>
      </ol>
     <li data-md>
      <p>Return <var>frame</var>.</p>
@@ -4865,7 +4867,7 @@ Close is final.</p>
      <p>When invoked, run the <a data-link-type="dfn" href="#close-videoframe" id="ref-for-close-videoframe">Close VideoFrame</a> algorithm with <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#this" id="ref-for-this⑧">this</a>.</p>
     <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="VideoFrame" data-dfn-type="method" data-export id="dom-videoframe-metadata"><code>metadata()</code></dfn>
     <dd data-md>
-     <p>Gets the <code class="idl"><a data-link-type="idl" href="#dictdef-videoframemetadata" id="ref-for-dictdef-videoframemetadata④">VideoFrameMetadata</a></code> associated with this frame.</p>
+     <p>Gets the <code class="idl"><a data-link-type="idl" href="#dictdef-videoframemetadata" id="ref-for-dictdef-videoframemetadata⑤">VideoFrameMetadata</a></code> associated with this frame.</p>
      <p>When invoked, run these steps:</p>
      <ol>
       <li data-md>
@@ -5008,7 +5010,7 @@ for <code class="idl"><a data-link-type="idl" href="#dom-videoframe-visiblerect"
       <li data-md>
        <p>Assign <var>format</var> to <var>frame</var>.<code class="idl"><a data-link-type="idl" href="#dom-videoframe-format-slot" id="ref-for-dom-videoframe-format-slot①①">[[format]]</a></code>.</p>
       <li data-md>
-       <p>Assign the result of calling <a data-link-type="dfn" href="#videoframe-copy-videoframe-metadata" id="ref-for-videoframe-copy-videoframe-metadata②">Copy VideoFrame metadata</a> with <var>init</var>’s <code class="idl"><a data-link-type="idl" href="#dom-videoframeinit-metadata" id="ref-for-dom-videoframeinit-metadata②">metadata</a></code> to <var>frame</var>.<code class="idl"><a data-link-type="idl" href="#dom-videoframe-metadata-slot" id="ref-for-dom-videoframe-metadata-slot③">[[metadata]]</a></code>.</p>
+       <p>Assign the result of calling <a data-link-type="dfn" href="#videoframe-copy-videoframe-metadata" id="ref-for-videoframe-copy-videoframe-metadata②">Copy VideoFrame metadata</a> with <var>init</var>’s <code class="idl"><a data-link-type="idl" href="#dom-videoframeinit-metadata" id="ref-for-dom-videoframeinit-metadata①">metadata</a></code> to <var>frame</var>.<code class="idl"><a data-link-type="idl" href="#dom-videoframe-metadata-slot" id="ref-for-dom-videoframe-metadata-slot③">[[metadata]]</a></code>.</p>
      </ol>
     <dt data-md><dfn class="dfn-paneled" data-dfn-for="VideoFrame" data-dfn-type="dfn" data-noexport id="videoframe-initialize-frame-with-resource-and-size">Initialize Frame With Resource and Size</dfn> (with <var>init</var>, <var>frame</var>, <var>resource</var>, <var>width</var> and <var>height</var>)
     <dd data-md>
@@ -5101,7 +5103,7 @@ in <var>clone</var>.</p>
        <p>Assign <code>0</code> to <var>frame</var>’s <code class="idl"><a data-link-type="idl" href="#dom-videoframe-coded-width-slot" id="ref-for-dom-videoframe-coded-width-slot⑦">[[coded width]]</a></code>, <code class="idl"><a data-link-type="idl" href="#dom-videoframe-coded-height-slot" id="ref-for-dom-videoframe-coded-height-slot⑦">[[coded height]]</a></code>, <code class="idl"><a data-link-type="idl" href="#dom-videoframe-visible-left-slot" id="ref-for-dom-videoframe-visible-left-slot⑤">[[visible left]]</a></code>, <code class="idl"><a data-link-type="idl" href="#dom-videoframe-visible-top-slot" id="ref-for-dom-videoframe-visible-top-slot⑤">[[visible top]]</a></code>, <code class="idl"><a data-link-type="idl" href="#dom-videoframe-visible-width-slot" id="ref-for-dom-videoframe-visible-width-slot⑧">[[visible width]]</a></code>, <code class="idl"><a data-link-type="idl" href="#dom-videoframe-visible-height-slot" id="ref-for-dom-videoframe-visible-height-slot⑧">[[visible height]]</a></code>, <code class="idl"><a data-link-type="idl" href="#dom-videoframe-display-width-slot" id="ref-for-dom-videoframe-display-width-slot⑥">[[display width]]</a></code>,
 and <code class="idl"><a data-link-type="idl" href="#dom-videoframe-display-height-slot" id="ref-for-dom-videoframe-display-height-slot⑥">[[display height]]</a></code>.</p>
       <li data-md>
-       <p>Assign a new <code class="idl"><a data-link-type="idl" href="#dictdef-videoframemetadata" id="ref-for-dictdef-videoframemetadata⑤">VideoFrameMetadata</a></code> to <var>frame</var>.<code class="idl"><a data-link-type="idl" href="#dom-videoframe-metadata-slot" id="ref-for-dom-videoframe-metadata-slot④">[[metadata]]</a></code>.</p>
+       <p>Assign a new <code class="idl"><a data-link-type="idl" href="#dictdef-videoframemetadata" id="ref-for-dictdef-videoframemetadata⑥">VideoFrameMetadata</a></code> to <var>frame</var>.<code class="idl"><a data-link-type="idl" href="#dom-videoframe-metadata-slot" id="ref-for-dom-videoframe-metadata-slot④">[[metadata]]</a></code>.</p>
      </ol>
     <dt data-md><dfn class="dfn-paneled" data-dfn-for="VideoFrame" data-dfn-type="dfn" data-noexport id="videoframe-parse-videoframecopytooptions">Parse VideoFrameCopyToOptions</dfn> (with <var>options</var>)
     <dd data-md>
@@ -7770,7 +7772,12 @@ participation on the mailing list and in the issues.</p>
      <li><a href="#message-queue-blocked">definition of</a><span>, in § 2.2</span>
     </ul>
    <li><a href="#dom-videoframe-metadata-slot">[[metadata]]</a><span>, in § 9.4.1</span>
-   <li><a href="#dom-videoframeinit-metadata">metadata</a><span>, in § 9.4</span>
+   <li>
+    metadata
+    <ul>
+     <li><a href="#dom-videoframebufferinit-metadata">dict-member for VideoFrameBufferInit</a><span>, in § 9.4</span>
+     <li><a href="#dom-videoframeinit-metadata">dict-member for VideoFrameInit</a><span>, in § 9.4</span>
+    </ul>
    <li><a href="#dom-videoframe-metadata">metadata()</a><span>, in § 9.4.5</span>
    <li><a href="#minimum-value">minimum value</a><span>, in § 9.3.2</span>
    <li><a href="#dom-hardwareacceleration-no-preference">"no-preference"</a><span>, in § 7.9</span>
@@ -8346,9 +8353,9 @@ participation on the mailing list and in the issues.</p>
    <dt id="biblio-h273">[H.273]
    <dd><a href="https://www.itu.int/rec/T-REC-H.273/en"><cite>Coding-independent code points for video signal type identification</cite></a>. December 2016. URL: <a href="https://www.itu.int/rec/T-REC-H.273/en">https://www.itu.int/rec/T-REC-H.273/en</a>
    <dt id="biblio-media-capabilities">[MEDIA-CAPABILITIES]
-   <dd>Jean-Yves Avenard; Will Cassella. <a href="https://w3c.github.io/media-capabilities/"><cite>Media Capabilities</cite></a>. URL: <a href="https://w3c.github.io/media-capabilities/">https://w3c.github.io/media-capabilities/</a>
+   <dd>Jean-Yves Avenard. <a href="https://w3c.github.io/media-capabilities/"><cite>Media Capabilities</cite></a>. URL: <a href="https://w3c.github.io/media-capabilities/">https://w3c.github.io/media-capabilities/</a>
    <dt id="biblio-media-source-2">[MEDIA-SOURCE-2]
-   <dd>Jean-Yves Avenard; Mark Watson; Matthew Wolenetz. <a href="https://w3c.github.io/media-source/"><cite>Media Source Extensions™</cite></a>. URL: <a href="https://w3c.github.io/media-source/">https://w3c.github.io/media-source/</a>
+   <dd>Jean-Yves Avenard; Mark Watson. <a href="https://w3c.github.io/media-source/"><cite>Media Source Extensions™</cite></a>. URL: <a href="https://w3c.github.io/media-source/">https://w3c.github.io/media-source/</a>
    <dt id="biblio-rfc6381">[RFC6381]
    <dd>R. Gellens; D. Singer; P. Frojdh. <a href="https://www.rfc-editor.org/rfc/rfc6381"><cite>The 'Codecs' and 'Profiles' Parameters for "Bucket" Media Types</cite></a>. August 2011. Proposed Standard. URL: <a href="https://www.rfc-editor.org/rfc/rfc6381">https://www.rfc-editor.org/rfc/rfc6381</a>
    <dt id="biblio-rfc9110">[RFC9110]
@@ -8731,6 +8738,8 @@ participation on the mailing list and in the issues.</p>
   <a data-link-type="idl-name" href="#dictdef-videocolorspaceinit"><c- n>VideoColorSpaceInit</c-></a> <a data-type="VideoColorSpaceInit " href="#dom-videoframebufferinit-colorspace"><code><c- g>colorSpace</c-></code></a>;
 
   <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#idl-sequence"><c- b>sequence</c-></a>&lt;<a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-ArrayBuffer"><c- b>ArrayBuffer</c-></a>> <a data-default="[]" data-type="sequence<ArrayBuffer> " href="#dom-videoframebufferinit-transfer"><code><c- g>transfer</c-></code></a> = [];
+
+  <a data-link-type="idl-name" href="#dictdef-videoframemetadata"><c- n>VideoFrameMetadata</c-></a> <a data-type="VideoFrameMetadata " href="#dom-videoframebufferinit-metadata"><code><c- g>metadata</c-></code></a>;
 };
 
 <c- b>dictionary</c-> <a href="#dictdef-videoframemetadata"><code><c- g>VideoFrameMetadata</c-></code></a> {
@@ -9666,7 +9675,7 @@ window.dfnpanelData['dom-videoframeinit-alpha'] = {"dfnID": "dom-videoframeinit-
 window.dfnpanelData['dom-videoframeinit-visiblerect'] = {"dfnID": "dom-videoframeinit-visiblerect", "url": "#dom-videoframeinit-visiblerect", "dfnText": "visibleRect", "refSections": [{"refs": [{"id": "ref-for-dom-videoframeinit-visiblerect"}, {"id": "ref-for-dom-videoframeinit-visiblerect\u2460"}, {"id": "ref-for-dom-videoframeinit-visiblerect\u2461"}, {"id": "ref-for-dom-videoframeinit-visiblerect\u2462"}, {"id": "ref-for-dom-videoframeinit-visiblerect\u2463"}, {"id": "ref-for-dom-videoframeinit-visiblerect\u2464"}, {"id": "ref-for-dom-videoframeinit-visiblerect\u2465"}, {"id": "ref-for-dom-videoframeinit-visiblerect\u2466"}, {"id": "ref-for-dom-videoframeinit-visiblerect\u2467"}], "title": "9.4.6. Algorithms"}], "external": false};
 window.dfnpanelData['dom-videoframeinit-displaywidth'] = {"dfnID": "dom-videoframeinit-displaywidth", "url": "#dom-videoframeinit-displaywidth", "dfnText": "displayWidth", "refSections": [{"refs": [{"id": "ref-for-dom-videoframeinit-displaywidth"}, {"id": "ref-for-dom-videoframeinit-displaywidth\u2460"}, {"id": "ref-for-dom-videoframeinit-displaywidth\u2461"}], "title": "9.4.6. Algorithms"}], "external": false};
 window.dfnpanelData['dom-videoframeinit-displayheight'] = {"dfnID": "dom-videoframeinit-displayheight", "url": "#dom-videoframeinit-displayheight", "dfnText": "displayHeight", "refSections": [{"refs": [{"id": "ref-for-dom-videoframeinit-displayheight"}, {"id": "ref-for-dom-videoframeinit-displayheight\u2460"}, {"id": "ref-for-dom-videoframeinit-displayheight\u2461"}], "title": "9.4.6. Algorithms"}], "external": false};
-window.dfnpanelData['dom-videoframeinit-metadata'] = {"dfnID": "dom-videoframeinit-metadata", "url": "#dom-videoframeinit-metadata", "dfnText": "metadata", "refSections": [{"refs": [{"id": "ref-for-dom-videoframeinit-metadata"}, {"id": "ref-for-dom-videoframeinit-metadata\u2460"}], "title": "9.4.2. Constructors"}, {"refs": [{"id": "ref-for-dom-videoframeinit-metadata\u2461"}], "title": "9.4.6. Algorithms"}], "external": false};
+window.dfnpanelData['dom-videoframeinit-metadata'] = {"dfnID": "dom-videoframeinit-metadata", "url": "#dom-videoframeinit-metadata", "dfnText": "metadata", "refSections": [{"refs": [{"id": "ref-for-dom-videoframeinit-metadata"}], "title": "9.4.2. Constructors"}, {"refs": [{"id": "ref-for-dom-videoframeinit-metadata\u2460"}], "title": "9.4.6. Algorithms"}], "external": false};
 window.dfnpanelData['dictdef-videoframebufferinit'] = {"dfnID": "dictdef-videoframebufferinit", "url": "#dictdef-videoframebufferinit", "dfnText": "VideoFrameBufferInit", "refSections": [{"refs": [{"id": "ref-for-dictdef-videoframebufferinit"}], "title": "9.4. VideoFrame Interface"}, {"refs": [{"id": "ref-for-dictdef-videoframebufferinit\u2460"}], "title": "9.4.6. Algorithms"}], "external": false};
 window.dfnpanelData['dom-videoframebufferinit-format'] = {"dfnID": "dom-videoframebufferinit-format", "url": "#dom-videoframebufferinit-format", "dfnText": "format", "refSections": [{"refs": [{"id": "ref-for-dom-videoframebufferinit-format"}, {"id": "ref-for-dom-videoframebufferinit-format\u2460"}, {"id": "ref-for-dom-videoframebufferinit-format\u2461"}], "title": "9.4.2. Constructors"}], "external": false};
 window.dfnpanelData['dom-videoframebufferinit-codedwidth'] = {"dfnID": "dom-videoframebufferinit-codedwidth", "url": "#dom-videoframebufferinit-codedwidth", "dfnText": "codedWidth", "refSections": [{"refs": [{"id": "ref-for-dom-videoframebufferinit-codedwidth"}, {"id": "ref-for-dom-videoframebufferinit-codedwidth\u2460"}, {"id": "ref-for-dom-videoframebufferinit-codedwidth\u2461"}], "title": "9.4.2. Constructors"}, {"refs": [{"id": "ref-for-dom-videoframebufferinit-codedwidth\u2462"}, {"id": "ref-for-dom-videoframebufferinit-codedwidth\u2463"}], "title": "9.4.6. Algorithms"}], "external": false};
@@ -9679,7 +9688,8 @@ window.dfnpanelData['dom-videoframebufferinit-displaywidth'] = {"dfnID": "dom-vi
 window.dfnpanelData['dom-videoframebufferinit-displayheight'] = {"dfnID": "dom-videoframebufferinit-displayheight", "url": "#dom-videoframebufferinit-displayheight", "dfnText": "displayHeight", "refSections": [{"refs": [{"id": "ref-for-dom-videoframebufferinit-displayheight"}], "title": "9.4.2. Constructors"}, {"refs": [{"id": "ref-for-dom-videoframebufferinit-displayheight\u2460"}, {"id": "ref-for-dom-videoframebufferinit-displayheight\u2461"}], "title": "9.4.6. Algorithms"}], "external": false};
 window.dfnpanelData['dom-videoframebufferinit-colorspace'] = {"dfnID": "dom-videoframebufferinit-colorspace", "url": "#dom-videoframebufferinit-colorspace", "dfnText": "colorSpace", "refSections": [{"refs": [{"id": "ref-for-dom-videoframebufferinit-colorspace"}], "title": "9.4.2. Constructors"}], "external": false};
 window.dfnpanelData['dom-videoframebufferinit-transfer'] = {"dfnID": "dom-videoframebufferinit-transfer", "url": "#dom-videoframebufferinit-transfer", "dfnText": "transfer", "refSections": [{"refs": [{"id": "ref-for-dom-videoframebufferinit-transfer"}, {"id": "ref-for-dom-videoframebufferinit-transfer\u2460"}, {"id": "ref-for-dom-videoframebufferinit-transfer\u2461"}, {"id": "ref-for-dom-videoframebufferinit-transfer\u2462"}], "title": "9.4.2. Constructors"}], "external": false};
-window.dfnpanelData['dictdef-videoframemetadata'] = {"dfnID": "dictdef-videoframemetadata", "url": "#dictdef-videoframemetadata", "dfnText": "VideoFrameMetadata", "refSections": [{"refs": [{"id": "ref-for-dictdef-videoframemetadata"}, {"id": "ref-for-dictdef-videoframemetadata\u2460"}], "title": "9.4. VideoFrame Interface"}, {"refs": [{"id": "ref-for-dictdef-videoframemetadata\u2461"}, {"id": "ref-for-dictdef-videoframemetadata\u2462"}], "title": "9.4.1. Internal Slots"}, {"refs": [{"id": "ref-for-dictdef-videoframemetadata\u2463"}], "title": "9.4.5. Methods"}, {"refs": [{"id": "ref-for-dictdef-videoframemetadata\u2464"}], "title": "9.4.6. Algorithms"}], "external": false};
+window.dfnpanelData['dom-videoframebufferinit-metadata'] = {"dfnID": "dom-videoframebufferinit-metadata", "url": "#dom-videoframebufferinit-metadata", "dfnText": "metadata", "refSections": [{"refs": [{"id": "ref-for-dom-videoframebufferinit-metadata"}], "title": "9.4.2. Constructors"}], "external": false};
+window.dfnpanelData['dictdef-videoframemetadata'] = {"dfnID": "dictdef-videoframemetadata", "url": "#dictdef-videoframemetadata", "dfnText": "VideoFrameMetadata", "refSections": [{"refs": [{"id": "ref-for-dictdef-videoframemetadata"}, {"id": "ref-for-dictdef-videoframemetadata\u2460"}, {"id": "ref-for-dictdef-videoframemetadata\u2461"}], "title": "9.4. VideoFrame Interface"}, {"refs": [{"id": "ref-for-dictdef-videoframemetadata\u2462"}, {"id": "ref-for-dictdef-videoframemetadata\u2463"}], "title": "9.4.1. Internal Slots"}, {"refs": [{"id": "ref-for-dictdef-videoframemetadata\u2464"}], "title": "9.4.5. Methods"}, {"refs": [{"id": "ref-for-dictdef-videoframemetadata\u2465"}], "title": "9.4.6. Algorithms"}], "external": false};
 window.dfnpanelData['dom-videoframe-resource-reference-slot'] = {"dfnID": "dom-videoframe-resource-reference-slot", "url": "#dom-videoframe-resource-reference-slot", "dfnText": "[[resource reference]]", "refSections": [{"refs": [{"id": "ref-for-dom-videoframe-resource-reference-slot"}], "title": "9.1.2. Reference Counting"}, {"refs": [{"id": "ref-for-dom-videoframe-resource-reference-slot\u2460"}, {"id": "ref-for-dom-videoframe-resource-reference-slot\u2461"}, {"id": "ref-for-dom-videoframe-resource-reference-slot\u2462"}, {"id": "ref-for-dom-videoframe-resource-reference-slot\u2463"}, {"id": "ref-for-dom-videoframe-resource-reference-slot\u2464"}, {"id": "ref-for-dom-videoframe-resource-reference-slot\u2465"}, {"id": "ref-for-dom-videoframe-resource-reference-slot\u2466"}], "title": "9.4.6. Algorithms"}, {"refs": [{"id": "ref-for-dom-videoframe-resource-reference-slot\u2467"}, {"id": "ref-for-dom-videoframe-resource-reference-slot\u2468"}], "title": "9.4.7. Transfer and Serialization"}], "external": false};
 window.dfnpanelData['dom-videoframe-format-slot'] = {"dfnID": "dom-videoframe-format-slot", "url": "#dom-videoframe-format-slot", "dfnText": "[[format]]", "refSections": [{"refs": [{"id": "ref-for-dom-videoframe-format-slot"}], "title": "7.8. VideoEncoderConfig"}, {"refs": [{"id": "ref-for-dom-videoframe-format-slot\u2460"}, {"id": "ref-for-dom-videoframe-format-slot\u2461"}], "title": "9.4.2. Constructors"}, {"refs": [{"id": "ref-for-dom-videoframe-format-slot\u2462"}], "title": "9.4.3. Attributes"}, {"refs": [{"id": "ref-for-dom-videoframe-format-slot\u2463"}, {"id": "ref-for-dom-videoframe-format-slot\u2464"}, {"id": "ref-for-dom-videoframe-format-slot\u2465"}], "title": "9.4.5. Methods"}, {"refs": [{"id": "ref-for-dom-videoframe-format-slot\u2466"}, {"id": "ref-for-dom-videoframe-format-slot\u2467"}, {"id": "ref-for-dom-videoframe-format-slot\u2468"}, {"id": "ref-for-dom-videoframe-format-slot\u2460\u24ea"}, {"id": "ref-for-dom-videoframe-format-slot\u2460\u2460"}, {"id": "ref-for-dom-videoframe-format-slot\u2460\u2461"}, {"id": "ref-for-dom-videoframe-format-slot\u2460\u2462"}, {"id": "ref-for-dom-videoframe-format-slot\u2460\u2463"}], "title": "9.4.6. Algorithms"}, {"refs": [{"id": "ref-for-dom-videoframe-format-slot\u2460\u2464"}], "title": "9.5. VideoFrame CopyTo() Options"}], "external": false};
 window.dfnpanelData['dom-videoframe-coded-width-slot'] = {"dfnID": "dom-videoframe-coded-width-slot", "url": "#dom-videoframe-coded-width-slot", "dfnText": "[[coded width]]", "refSections": [{"refs": [{"id": "ref-for-dom-videoframe-coded-width-slot"}, {"id": "ref-for-dom-videoframe-coded-width-slot\u2460"}], "title": "9.4.2. Constructors"}, {"refs": [{"id": "ref-for-dom-videoframe-coded-width-slot\u2461"}, {"id": "ref-for-dom-videoframe-coded-width-slot\u2462"}], "title": "9.4.3. Attributes"}, {"refs": [{"id": "ref-for-dom-videoframe-coded-width-slot\u2463"}, {"id": "ref-for-dom-videoframe-coded-width-slot\u2464"}, {"id": "ref-for-dom-videoframe-coded-width-slot\u2465"}, {"id": "ref-for-dom-videoframe-coded-width-slot\u2466"}, {"id": "ref-for-dom-videoframe-coded-width-slot\u2467"}], "title": "9.4.6. Algorithms"}], "external": false};
