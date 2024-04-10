@@ -3756,10 +3756,10 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
         were returned.
 
     When invoked, run these steps:
-    1. If {{platform object/[[Detached]]}} is `true`, throw an
-        {{InvalidStateError}} {{DOMException}}.
-    2. If {{VideoFrame/[[format]]}} is `null`, throw a {{NotSupportedError}}
-        {{DOMException}}.
+    1. If {{platform object/[[Detached]]}} is `true`, return a promise rejected
+        with a {{InvalidStateError}} {{DOMException}}.
+    2. If {{VideoFrame/[[format]]}} is `null`, return a promise rejected with a
+        {{NotSupportedError}} {{DOMException}}.
     3. Let |combinedLayout| be the result of running the [=Parse
         VideoFrameCopyToOptions=] algorithm with |options|.
     4. If |combinedLayout| is an exception, return a promise rejected with
@@ -3778,7 +3778,7 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
           4. Return the result of calling {{VideoFrame/copyTo()}} on |rgbFrame| with
                |destination| and |newOptions|.
     7. Otherwise, if |options|.{{VideoFrameCopyToOptions/format}} is not `undefined` or `null`
-        throw a {{NotSupportedError}} {{DOMException}}.
+        return a promise rejected with a {{NotSupportedError}} {{DOMException}}.
     8. Let |p| be a new {{Promise}}.
     9. Let |copyStepsQueue| be the result of starting a new [=parallel queue=].
     10. Let |planeLayouts| be a new [=list=].
@@ -4206,9 +4206,9 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
     9. Return |combinedLayout|.
 
 : <dfn for=VideoFrame>Convert to RGB frame</dfn> (with |frame|, |format| and |colorSpace|)
- :: 1. If |format| is not equal to one {{RGBA}}, {{RGBX}}, {{BGRA}}, {{BGRX}},
-        throw a {{NotSupportedError}}
-    1. Let |convertedFrame| be a new {{VideoFrame}}, constructed as follows:
+ :: 1. This algorithm <em class="rfc2119">MUST</em> be called only if |format|
+        is equal to one of {{RGBA}}, {{RGBX}}, {{BGRA}}, {{BGRX}}.
+    2. Let |convertedFrame| be a new {{VideoFrame}}, constructed as follows:
         1. Assign `false` to {{platform object/[[Detached]]}}.
         2. Assign |format| to {{VideoFrame/[[format]]}}.
         3. Let |width| be |frame|'s {{VideoFrame/[[visible width]]}}.
@@ -4227,7 +4227,7 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
             {{VideoFrame/[[resource reference]]}} into a color space and pixel
             format specified by |colorSpace| and |format| respectively.
         9. Assign the reference to |resource| to {{VideoFrame/[[resource reference]]}}
-    2. Return |convertedFrame|.
+    3. Return |convertedFrame|.
 
 : <dfn for=VideoFrame>Copy VideoFrame metadata</dfn> (with |metadata|)
 :: 1. Let |metadataCopySerialized| be [$StructuredSerialize$](|metadata|).
