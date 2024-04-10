@@ -3771,15 +3771,11 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
         {{RGBA}}, {{RGBX}}, {{BGRA}}, {{BGRX}} then:
           1. Let |newOptions| be the result of running the <a>Clone Configuration</a>
                algorithm with |options|.
-          2. Assign `undefined` to |newOptions|.{{VideoFrameCopyToOptions/format}}
-               and |newOptions|.{{VideoFrameCopyToOptions/rect}}.
-          3. Let |rect| be `undefined`.
-          4. If |options|.{{VideoFrameCopyToOptions/rect}} [=map/exists=], assign the
-               value of |options|.{{VideoFrameCopyToOptions/rect}} to |rect|.
-          5. Otherwise, assign the value of {{VideoFrame/visibleRect}} to |rect|.
-          6. Let |rgbFrame| be the result of running the [=VideoFrame/Convert to RGB frame=]
-               algorithm with |options|.{{VideoFrameCopyToOptions/format}}, |rect|, and  `options.colorSpace`.
-          7. Return the result of calling {{VideoFrame/copyTo()}} on |rgbFrame| with
+          2. Assign `undefined` to |newOptions|.{{VideoFrameCopyToOptions/format}}.
+          3. Let |rgbFrame| be the result of running the [=VideoFrame/Convert to RGB frame=]
+               algorithm with [=this=], |options|.{{VideoFrameCopyToOptions/format}},
+               and |options|.{{VideoFrameCopyToOptions/colorSpace}}.
+          4. Return the result of calling {{VideoFrame/copyTo()}} on |rgbFrame| with
                |destination| and |newOptions|.
     7. Otherwise, if |options|.{{VideoFrameCopyToOptions/format}} is not `undefined` or `null`
         throw a {{NotSupportedError}} {{DOMException}}.
@@ -4209,35 +4205,29 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
             [=combined buffer layout/allocationSize=].
     9. Return |combinedLayout|.
 
-: <dfn for=VideoFrame>Convert to RGB frame</dfn> (with |format|, |rect| and |colorSpace|)
- :: 1. Let |canvas| be a new {{OffscreenCanvas}} constructed with
-        |rect|.|width| and |rect|.|height|.
-    2. Let |canvasSettings| be a new {{CanvasRenderingContext2DSettings}} with
-        {{CanvasRenderingContext2DSettings/colorSpace}} set to |colorSpace|.
-    3. Let |context| be the result of calling {{OffscreenCanvas/getContext()}}
-        on |canvas| with `"2d"` and |canvasSettings|.
-    3. Call {{CanvasDrawImage/drawImage()}} on |context| with
-        `rect.x`, `rect.y`, `rect.width`, `rect.height`, `0`, `0`, `rect.width`,
-        `rect.height`.
-    4. Let |imageData| be the result of calling {{CanvasImageData/getImageData()}} with
-        `0`, `0`, |rect.width|, |rect.height|.
-    5. If |format| is equal to {{BGRA}} or {{BGRX}}:
-        1. Let |pixelIndex| be `0`.
-        2. While |pixelIndex| is less than `rect.width` multiplied by `rect.height`:
-            1. Swap elements in |imageData|.{{ImageData/data}} at indexes `4 * pixelIndex`
-                 and `4 * pixelIndex + 2`.
-            2. Increment |pixelIndex| by `1`.
-    6. Let |init| be a new {{VideoFrameBufferInit}} constructed with
-        {{VideoFrameBufferInit/format}} = |format|,
-        {{VideoFrameBufferInit/codedWidth}} = `rect.width`,
-        {{VideoFrameBufferInit/codedHeight}} = `rect.height`.
-    7. Let |convertedFrame| be a new {{VideoFrame}} constructed with
-        |imageData|.{{ImageData/data}} and |init|.
-    8. Return |convertedFrame|.
-
-NOTE: User Agents don't have to execute the exact steps of this algorithm
-(e.g. create an {{OffscreenCanvas}}) as long as the {{VideoFrame}} returned by
-the algorithm is equal to the {{VideoFrame}} created via these steps.
+: <dfn for=VideoFrame>Convert to RGB frame</dfn> (with |frame|, |format| and |colorSpace|)
+ :: 1. If |format| is not equal to one {{RGBA}}, {{RGBX}}, {{BGRA}}, {{BGRX}},
+        throw a {{NotSupportedError}}
+    1. Let |convertedFrame| be a new {{VideoFrame}}, constructed as follows:
+        1. Assign `false` to {{platform object/[[Detached]]}}.
+        2. Assign |format| to {{VideoFrame/[[format]]}}.
+        3. Let |width| be |frame|'s {{VideoFrame/[[visible width]]}}.
+        4. Let |height| be |frame|'s {{VideoFrame/[[visible height]]}}.
+        5. Assign |width|, |height|, 0, 0, |width|, |height|, |width|, and
+            |height| to {{VideoFrame/[[coded width]]}},
+            {{VideoFrame/[[coded height]]}}, {{VideoFrame/[[visible left]]}},
+            {{VideoFrame/[[visible top]]}}, {{VideoFrame/[[visible width]]}},
+            and {{VideoFrame/[[visible height]]}} respectively.
+	      6. Assign |frame|'s {{VideoFrame/[[duration]]}} and |frame|'s
+            {{VideoFrame/[[timestamp]]}} to {{VideoFrame/[[duration]]}} and
+            {{VideoFrame/[[timestamp]]}} respectively.
+        7. Assign |colorSpace| to {{VideoFrame/[[color space]]}}.
+        8. Let |resource| be a new [=media resource=] containing the result of
+            conversion of [=media resource=] referenced by |frame|'s
+            {{VideoFrame/[[resource reference]]}} into a color space and pixel
+            format specified by |colorSpace| and |format| respectively.
+        9. Assign the reference to |resource| to {{VideoFrame/[[resource reference]]}}
+    2. Return |convertedFrame|.
 
 : <dfn for=VideoFrame>Copy VideoFrame metadata</dfn> (with |metadata|)
 :: 1. Let |metadataCopySerialized| be [$StructuredSerialize$](|metadata|).
