@@ -3748,8 +3748,8 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
 
 : <dfn method for=VideoFrame>copyTo(|destination|, |options|)</dfn>
 :: Asynchronously copies the planes of this frame into |destination| according
-    to |options|. The format of the data is specified by {{VideoFrameCopyToOptions/format}},
-    if present, otherwise {{VideoFrame/format}}.
+    to |options|. The format of the data is |options|.{{VideoFrameCopyToOptions/format}},
+    if it [=map/exists=] or [=this=] {{VideoFrame}}'s {{VideoFrame/format}} otherwise.
 
     NOTE: Promises that are returned by several calls to
         {{VideoFrame/copyTo()}} are not guaranteed to resolve in the order they
@@ -3777,12 +3777,10 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
                and |options|.{{VideoFrameCopyToOptions/colorSpace}}.
           4. Return the result of calling {{VideoFrame/copyTo()}} on |rgbFrame| with
                |destination| and |newOptions|.
-    7. Otherwise, if |options|.{{VideoFrameCopyToOptions/format}} is not `undefined` or `null`
-        return a promise rejected with a {{NotSupportedError}} {{DOMException}}.
-    8. Let |p| be a new {{Promise}}.
-    9. Let |copyStepsQueue| be the result of starting a new [=parallel queue=].
-    10. Let |planeLayouts| be a new [=list=].
-    11. Enqueue the following steps to |copyStepsQueue|:
+    7. Let |p| be a new {{Promise}}.
+    8. Let |copyStepsQueue| be the result of starting a new [=parallel queue=].
+    9. Let |planeLayouts| be a new [=list=].
+    10. Enqueue the following steps to |copyStepsQueue|:
         1. Let resource be the [=media resource=] referenced by
             [[resource reference]].
         2. Let |numPlanes| be the number of planes as defined by
@@ -3819,7 +3817,7 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
             10. Increment |planeIndex| by `1`.
             11. Append |layout| to |planeLayouts|.
         5. [=Queue a task=] to resolve |p| with |planeLayouts|.
-    12. Return |p|.
+    11. Return |p|.
 
 : <dfn method for=VideoFrame>clone()</dfn>
 :: Creates a new {{VideoFrame}} with a reference to the same
@@ -4064,7 +4062,7 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
     7. If |options|.{{VideoFrameCopyToOptions/layout}} [=map/exists=], assign
         its value to |optLayout|.
     8. Let |format| be `undefined`.
-    9. If |options|.{{VideoFrameCopyToOptions/format}} is `undefined`,
+    9. If |options|.{{VideoFrameCopyToOptions/format}} does not [=map/exist=],
         assign {{VideoFrame/[[format]]}} to |format|.
     10. Otherwise, if |options|.{{VideoFrameCopyToOptions/format}} is equal to
         one of {{RGBA}}, {{RGBX}}, {{BGRA}}, {{BGRX}}, then assign
@@ -4324,14 +4322,14 @@ will enforce the following requirements:
 : <dfn dict-member for=VideoFrameCopyToOptions>format</dfn>
 :: A {{VideoPixelFormat}} for the pixel data in the destination
     {{BufferSource}}. Potential values are: {{RGBA}}, {{RGBX}}, {{BGRA}},
-    {{BGRX}}. If unspecified or `null`, the the destination
-    {{BufferSource}} will match {{VideoFrame/format}} .
+    {{BGRX}}. If it does not [=map/exist=], the the destination
+    {{BufferSource}} will be in the same format as {{VideoFrame/format}} .
 : <dfn dict-member for=VideoFrameCopyToOptions>colorSpace</dfn>
 :: A {{PredefinedColorSpace}} that <em class="rfc2119">MUST</em> be used as
     a target color space for the pixel data in the destination
     {{BufferSource}}, but only if {{VideoFrameCopyToOptions/format}} is one of
     {{RGBA}}, {{RGBX}}, {{BGRA}}, {{BGRX}}, otherwise it is ignored.
-    If unspecified or `null`, {{srgb}} is used.
+    If it does not [=map/exist=], {{srgb}} is used.
 
 
 DOMRects in VideoFrame {#videoframe-domrect}
