@@ -30,6 +30,7 @@ Markup Shorthands:css no, markdown yes, dfn yes
 
 <pre class=link-defaults>
 spec:html; type:attribute; text:hidden
+spec:html; type:enum-value; text:srgb
 spec:infra; type:dfn; text:list
 spec:infra; type:dfn; text:enqueue
 </pre>
@@ -38,6 +39,8 @@ spec:infra; type:dfn; text:enqueue
 spec: html; urlPrefix: https://html.spec.whatwg.org/multipage/;
     for: ImageBitmap;
         type: dfn; text: bitmap data; url: imagebitmap-and-animations.html#concept-imagebitmap-bitmap-data
+    for: ImageData
+        type: dfn; text: canvas pixel data; url: canvas.html#imagedata
     for: Canvas;
         type: dfn; text: Check the usability of the image argument; url: canvas.html#check-the-usability-of-the-image-argument
         type: dfn; text: is not origin-clean; url: canvas.html#the-image-argument-is-not-origin-clean
@@ -3745,18 +3748,18 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
 
 : <dfn method for=VideoFrame>copyTo(|destination|, |options|)</dfn>
 :: Asynchronously copies the planes of this frame into |destination| according
-    to |options|. The format of the data is the same as this {{VideoFrame}}'s
-    {{VideoFrame/format}}.
+    to |options|. The format of the data is |options|.{{VideoFrameCopyToOptions/format}},
+    if it [=map/exists=] or [=this=] {{VideoFrame}}'s {{VideoFrame/format}} otherwise.
 
     NOTE: Promises that are returned by several calls to
         {{VideoFrame/copyTo()}} are not guaranteed to resolve in the order they
         were returned.
 
     When invoked, run these steps:
-    1. If {{platform object/[[Detached]]}} is `true`, throw an
-        {{InvalidStateError}} {{DOMException}}.
-    2. If {{VideoFrame/[[format]]}} is `null`, throw a {{NotSupportedError}}
-        {{DOMException}}.
+    1. If {{platform object/[[Detached]]}} is `true`, return a promise rejected
+        with a {{InvalidStateError}} {{DOMException}}.
+    2. If {{VideoFrame/[[format]]}} is `null`, return a promise rejected with a
+        {{NotSupportedError}} {{DOMException}}.
     3. Let |combinedLayout| be the result of running the [=Parse
         VideoFrameCopyToOptions=] algorithm with |options|.
     4. If |combinedLayout| is an exception, return a promise rejected with
@@ -3764,10 +3767,20 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
     5. If `destination.byteLength` is less than |combinedLayout|'s [=combined
         buffer layout/allocationSize=], return a promise rejected with a
         {{TypeError}}.
-    6. Let |p| be a new {{Promise}}.
-    7. Let |copyStepsQueue| be the result of starting a new [=parallel queue=].
-    8. Let |planeLayouts| be a new [=list=].
-    9. Enqueue the following steps to |copyStepsQueue|:
+    6. If |options|.{{VideoFrameCopyToOptions/format}} is equal to one of
+        {{RGBA}}, {{RGBX}}, {{BGRA}}, {{BGRX}} then:
+          1. Let |newOptions| be the result of running the <a>Clone Configuration</a>
+               algorithm with |options|.
+          2. Assign `undefined` to |newOptions|.{{VideoFrameCopyToOptions/format}}.
+          3. Let |rgbFrame| be the result of running the [=VideoFrame/Convert to RGB frame=]
+               algorithm with [=this=], |options|.{{VideoFrameCopyToOptions/format}},
+               and |options|.{{VideoFrameCopyToOptions/colorSpace}}.
+          4. Return the result of calling {{VideoFrame/copyTo()}} on |rgbFrame| with
+               |destination| and |newOptions|.
+    7. Let |p| be a new {{Promise}}.
+    8. Let |copyStepsQueue| be the result of starting a new [=parallel queue=].
+    9. Let |planeLayouts| be a new [=list=].
+    10. Enqueue the following steps to |copyStepsQueue|:
         1. Let resource be the [=media resource=] referenced by
             [[resource reference]].
         2. Let |numPlanes| be the number of planes as defined by
@@ -3804,7 +3817,7 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
             10. Increment |planeIndex| by `1`.
             11. Append |layout| to |planeLayouts|.
         5. [=Queue a task=] to resolve |p| with |planeLayouts|.
-    10. Return |p|.
+    11. Return |p|.
 
 : <dfn method for=VideoFrame>clone()</dfn>
 :: Creates a new {{VideoFrame}} with a reference to the same
@@ -4048,10 +4061,17 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
     6. Let |optLayout| be `undefined`.
     7. If |options|.{{VideoFrameCopyToOptions/layout}} [=map/exists=], assign
         its value to |optLayout|.
-    8. Let |combinedLayout| be the result of running the [=VideoFrame/Compute
-        Layout and Allocation Size=] algorithm with |parsedRect|,
-        {{VideoFrame/[[format]]}}, and |optLayout|.
-    9. Return |combinedLayout|.
+    8. Let |format| be `undefined`.
+    9. If |options|.{{VideoFrameCopyToOptions/format}} does not [=map/exist=],
+        assign {{VideoFrame/[[format]]}} to |format|.
+    10. Otherwise, if |options|.{{VideoFrameCopyToOptions/format}} is equal to
+        one of {{RGBA}}, {{RGBX}}, {{BGRA}}, {{BGRX}}, then assign
+        |options|.{{VideoFrameCopyToOptions/format}} to |format|,
+        otherwise return {{NotSupportedError}}.
+    11. Let |combinedLayout| be the result of running the [=VideoFrame/Compute
+        Layout and Allocation Size=] algorithm with |parsedRect|, |format|,
+        and |optLayout|.
+    12. Return |combinedLayout|.
 
 : <dfn for=VideoFrame>Verify Rect Offset Alignment</dfn> (with |format| and
     |rect|)
@@ -4183,10 +4203,34 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
             [=combined buffer layout/allocationSize=].
     9. Return |combinedLayout|.
 
+: <dfn for=VideoFrame>Convert to RGB frame</dfn> (with |frame|, |format| and |colorSpace|)
+ :: 1. This algorithm <em class="rfc2119">MUST</em> be called only if |format|
+        is equal to one of {{RGBA}}, {{RGBX}}, {{BGRA}}, {{BGRX}}.
+    2. Let |convertedFrame| be a new {{VideoFrame}}, constructed as follows:
+        1. Assign `false` to {{platform object/[[Detached]]}}.
+        2. Assign |format| to {{VideoFrame/[[format]]}}.
+        3. Let |width| be |frame|'s {{VideoFrame/[[visible width]]}}.
+        4. Let |height| be |frame|'s {{VideoFrame/[[visible height]]}}.
+        5. Assign |width|, |height|, 0, 0, |width|, |height|, |width|, and
+            |height| to {{VideoFrame/[[coded width]]}},
+            {{VideoFrame/[[coded height]]}}, {{VideoFrame/[[visible left]]}},
+            {{VideoFrame/[[visible top]]}}, {{VideoFrame/[[visible width]]}},
+            and {{VideoFrame/[[visible height]]}} respectively.
+	      6. Assign |frame|'s {{VideoFrame/[[duration]]}} and |frame|'s
+            {{VideoFrame/[[timestamp]]}} to {{VideoFrame/[[duration]]}} and
+            {{VideoFrame/[[timestamp]]}} respectively.
+        7. Assign |colorSpace| to {{VideoFrame/[[color space]]}}.
+        8. Let |resource| be a new [=media resource=] containing the result of
+            conversion of [=media resource=] referenced by |frame|'s
+            {{VideoFrame/[[resource reference]]}} into a color space and pixel
+            format specified by |colorSpace| and |format| respectively.
+        9. Assign the reference to |resource| to {{VideoFrame/[[resource reference]]}}
+    3. Return |convertedFrame|.
+
 : <dfn for=VideoFrame>Copy VideoFrame metadata</dfn> (with |metadata|)
 :: 1. Let |metadataCopySerialized| be [$StructuredSerialize$](|metadata|).
     2. Let |metadataCopy| be [$StructuredDeserialize$](|metadataCopySerialized|, [=the current Realm=]).
-    3. return |metadataCopy|.
+    3. Return |metadataCopy|.
 
 The goal of this algorithm is to ensure that metadata owned by a {{VideoFrame}} is immutable.
 
@@ -4239,13 +4283,15 @@ value to {{ColorSpaceConversion/"none"}} disables color space conversion.
 
 VideoFrame CopyTo() Options {#videoframe-copyto-options}
 ------------------------------------------------------------
-Options to specify a rectangle of pixels to copy and the offset and stride of
-planes in the destination buffer.
+Options to specify a rectangle of pixels to copy, their format, and the offset
+and stride of planes in the destination buffer.
 
 <xmp class='idl'>
 dictionary VideoFrameCopyToOptions {
   DOMRectInit rect;
   sequence<PlaneLayout> layout;
+  VideoPixelFormat format;
+  PredefinedColorSpace colorSpace;
 };
 </xmp>
 
@@ -4273,6 +4319,18 @@ will enforce the following requirements:
     to specify an offset and stride for each plane in the destination
     {{BufferSource}}. If unspecified, the planes will be tightly packed. It is
     invalid to specify planes that overlap.
+: <dfn dict-member for=VideoFrameCopyToOptions>format</dfn>
+:: A {{VideoPixelFormat}} for the pixel data in the destination
+    {{BufferSource}}. Potential values are: {{RGBA}}, {{RGBX}}, {{BGRA}},
+    {{BGRX}}. If it does not [=map/exist=], the destination
+    {{BufferSource}} will be in the same format as {{VideoFrame/format}} .
+: <dfn dict-member for=VideoFrameCopyToOptions>colorSpace</dfn>
+:: A {{PredefinedColorSpace}} that <em class="rfc2119">MUST</em> be used as
+    a target color space for the pixel data in the destination
+    {{BufferSource}}, but only if {{VideoFrameCopyToOptions/format}} is one of
+    {{RGBA}}, {{RGBX}}, {{BGRA}}, {{BGRX}}, otherwise it is ignored.
+    If it does not [=map/exist=], {{srgb}} is used.
+
 
 DOMRects in VideoFrame {#videoframe-domrect}
 --------------------------------------------
