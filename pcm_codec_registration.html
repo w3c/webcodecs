@@ -7,7 +7,7 @@
   <link href="https://www.w3.org/StyleSheets/TR/2021/W3C-ED" rel="stylesheet">
   <meta content="Bikeshed version 82ce88815, updated Thu Sep 7 16:33:55 2023 -0700" name="generator">
   <link href="https://www.w3.org/TR/webcodecs-pcm-codec-registration/" rel="canonical">
-  <meta content="871ccb3e6ae334542f89e7ecbb0765899277a27f" name="document-revision">
+  <meta content="48523cdf22cd8dd871213d0bb0276d3346158c54" name="document-revision">
 <style>/* Boilerplate: style-autolinks */
 .css.css, .property.property, .descriptor.descriptor {
     color: var(--a-normal-text);
@@ -465,7 +465,7 @@ dfn > a.self-link::before      { content: "#"; }
   <div class="head">
    <p data-fill-with="logo"><a class="logo" href="https://www.w3.org/"> <img alt="W3C" height="48" src="https://www.w3.org/StyleSheets/TR/2021/logos/W3C" width="72"> </a> </p>
    <h1 class="p-name no-ref" id="title">Linear PCM WebCodecs Registration</h1>
-   <p id="w3c-state"><a href="https://www.w3.org/standards/types#ED">Editor’s Draft</a>, <time class="dt-updated" datetime="2024-04-08">8 April 2024</time></p>
+   <p id="w3c-state"><a href="https://www.w3.org/standards/types#ED">Editor’s Draft</a>, <time class="dt-updated" datetime="2024-04-19">19 April 2024</time></p>
    <details open>
     <summary>More details about this document</summary>
     <div data-fill-with="spec-metadata">
@@ -564,7 +564,7 @@ formats is as follows.</p>
     <li data-md>
      <p>pcm-s16, using format <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webcodecs/#dom-audiosampleformat-s16" id="ref-for-dom-audiosampleformat-s16">s16</a></code></p>
     <li data-md>
-     <p>pcm-s24, using three <a href="https://webidl.spec.whatwg.org/#idl-octet">byte</a> (24-bit) <a data-link-type="dfn" href="https://w3c.github.io/webappsec-csp/#violation-sample" id="ref-for-violation-sample">samples</a> with <a data-link-type="dfn" href="https://w3c.github.io/webcodecs/#interleaved" id="ref-for-interleaved">interleaved</a> <a href="https://w3c.github.io/webcodecs/#audio-buffer-arrangement">channel arrangement</a>.</p>
+     <p>pcm-s24, using three <a href="https://webidl.spec.whatwg.org/#idl-octet">byte</a> (24-bit) <a data-link-type="dfn" href="https://gpuweb.github.io/gpuweb/wgsl/#interpolation-sampling-sample" id="ref-for-interpolation-sampling-sample">samples</a> with <a data-link-type="dfn" href="https://w3c.github.io/webcodecs/#interleaved" id="ref-for-interleaved">interleaved</a> <a href="https://w3c.github.io/webcodecs/#audio-buffer-arrangement">channel arrangement</a>.</p>
     <li data-md>
      <p>pcm-s32, using format <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webcodecs/#dom-audiosampleformat-s32" id="ref-for-dom-audiosampleformat-s32">s32</a></code></p>
     <li data-md>
@@ -579,8 +579,8 @@ formats is as follows.</p>
 values are sampled at a regular interval, and where the quantization levels
 between two successive values are linearly uniform.</p>
    <p><code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webcodecs/#encodedaudiochunk" id="ref-for-encodedaudiochunk③">EncodedAudioChunk</a></code> <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webcodecs/#dom-encodedaudiochunk-internal-data-slot" id="ref-for-dom-encodedaudiochunk-internal-data-slot①">[[internal data]]</a></code> is expected to be
-a sequence of bytes of arbitrary length, with a <a data-link-type="dfn" href="https://w3c.github.io/webappsec-csp/#violation-sample" id="ref-for-violation-sample①">sample</a> occuring every N
-bits, where N is defined by the codec string. For multichannel PCM, <a data-link-type="dfn" href="https://w3c.github.io/webappsec-csp/#violation-sample" id="ref-for-violation-sample②">samples</a> from different channels are <a data-link-type="dfn" href="https://w3c.github.io/webcodecs/#interleaved" id="ref-for-interleaved①">interleaved</a>.</p>
+a sequence of bytes of arbitrary length, with a <a data-link-type="dfn" href="https://gpuweb.github.io/gpuweb/wgsl/#interpolation-sampling-sample" id="ref-for-interpolation-sampling-sample①">sample</a> occuring every N
+bits, where N is defined by the codec string. For multichannel PCM, <a data-link-type="dfn" href="https://gpuweb.github.io/gpuweb/wgsl/#interpolation-sampling-sample" id="ref-for-interpolation-sampling-sample②">samples</a> from different channels are <a data-link-type="dfn" href="https://w3c.github.io/webcodecs/#interleaved" id="ref-for-interleaved①">interleaved</a>.</p>
    <h2 class="heading settled" data-level="3" id="audiodecoderconfig-description"><span class="secno">3. </span><span class="content">AudioDecoderConfig description</span><a class="self-link" href="#audiodecoderconfig-description"></a></h2>
    <p>The <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webcodecs/#dom-audiodecoderconfig-description" id="ref-for-dom-audiodecoderconfig-description①">description</a></code> is expected to be omitted from the <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webcodecs/#dictdef-audiodecoderconfig" id="ref-for-dictdef-audiodecoderconfig">AudioDecoderConfig</a></code>.</p>
    <h2 class="heading settled" data-level="4" id="encodedaudiochunk-type"><span class="secno">4. </span><span class="content">EncodedAudioChunk type</span><a class="self-link" href="#encodedaudiochunk-type"></a></h2>
@@ -625,11 +625,6 @@ Considerations</a> in <a data-link-type="biblio" href="#biblio-webcodecs" title=
   <h3 class="no-num no-ref heading settled" id="index-defined-elsewhere"><span class="content">Terms defined by reference</span><a class="self-link" href="#index-defined-elsewhere"></a></h3>
   <ul class="index">
    <li>
-    <a data-link-type="biblio">[CSP3]</a> defines the following terms:
-    <ul>
-     <li><span class="dfn-paneled" id="dec095e6">sample</span>
-    </ul>
-   <li>
     <a data-link-type="biblio">[WEBCODECS]</a> defines the following terms:
     <ul>
      <li><span class="dfn-paneled" id="b2b50670">"key"</span>
@@ -646,18 +641,23 @@ Considerations</a> in <a data-link-type="biblio" href="#biblio-webcodecs" title=
      <li><span class="dfn-paneled" id="ddb7e353">s32</span>
      <li><span class="dfn-paneled" id="f26e6cf2">u8</span>
     </ul>
+   <li>
+    <a data-link-type="biblio">[WGSL]</a> defines the following terms:
+    <ul>
+     <li><span class="dfn-paneled" id="915c0f98">sample</span>
+    </ul>
   </ul>
   <h2 class="no-num no-ref heading settled" id="references"><span class="content">References</span><a class="self-link" href="#references"></a></h2>
   <h3 class="no-num no-ref heading settled" id="normative"><span class="content">Normative References</span><a class="self-link" href="#normative"></a></h3>
   <dl>
-   <dt id="biblio-csp3">[CSP3]
-   <dd>Mike West; Antonio Sartori. <a href="https://w3c.github.io/webappsec-csp/"><cite>Content Security Policy Level 3</cite></a>. URL: <a href="https://w3c.github.io/webappsec-csp/">https://w3c.github.io/webappsec-csp/</a>
    <dt id="biblio-rfc2119">[RFC2119]
    <dd>S. Bradner. <a href="https://datatracker.ietf.org/doc/html/rfc2119"><cite>Key words for use in RFCs to Indicate Requirement Levels</cite></a>. March 1997. Best Current Practice. URL: <a href="https://datatracker.ietf.org/doc/html/rfc2119">https://datatracker.ietf.org/doc/html/rfc2119</a>
    <dt id="biblio-webcodecs">[WEBCODECS]
    <dd>Paul Adenot; Bernard Aboba; Eugene Zemtsov. <a href="https://w3c.github.io/webcodecs/"><cite>WebCodecs</cite></a>. URL: <a href="https://w3c.github.io/webcodecs/">https://w3c.github.io/webcodecs/</a>
    <dt id="biblio-webidl">[WEBIDL]
    <dd>Edgar Chen; Timothy Gu. <a href="https://webidl.spec.whatwg.org/"><cite>Web IDL Standard</cite></a>. Living Standard. URL: <a href="https://webidl.spec.whatwg.org/">https://webidl.spec.whatwg.org/</a>
+   <dt id="biblio-wgsl">[WGSL]
+   <dd>Alan Baker; Mehmet Oguz Derin; David Neto. <a href="https://gpuweb.github.io/gpuweb/wgsl/"><cite>WebGPU Shading Language</cite></a>. URL: <a href="https://gpuweb.github.io/gpuweb/wgsl/">https://gpuweb.github.io/gpuweb/wgsl/</a>
   </dl>
   <h3 class="no-num no-ref heading settled" id="informative"><span class="content">Informative References</span><a class="self-link" href="#informative"></a></h3>
   <dl>
@@ -819,7 +819,6 @@ Considerations</a> in <a data-link-type="biblio" href="#biblio-webcodecs" title=
 </script>
 <script>/* Boilerplate: script-dfn-panel-json */
 window.dfnpanelData = {};
-window.dfnpanelData['dec095e6'] = {"dfnID": "dec095e6", "url": "https://w3c.github.io/webappsec-csp/#violation-sample", "dfnText": "sample", "refSections": [{"refs": [{"id": "ref-for-violation-sample"}], "title": "1. Fully qualified codec strings"}, {"refs": [{"id": "ref-for-violation-sample\u2460"}, {"id": "ref-for-violation-sample\u2461"}], "title": "2. EncodedAudioChunk data"}], "external": true};
 window.dfnpanelData['b2b50670'] = {"dfnID": "b2b50670", "url": "https://w3c.github.io/webcodecs/#dom-encodedaudiochunktype-key", "dfnText": "\"key\"", "refSections": [{"refs": [{"id": "ref-for-dom-encodedaudiochunktype-key"}], "title": "4. EncodedAudioChunk type"}], "external": true};
 window.dfnpanelData['ef90ef6c'] = {"dfnID": "ef90ef6c", "url": "https://w3c.github.io/webcodecs/#audiodata", "dfnText": "AudioData", "refSections": [{"refs": [{"id": "ref-for-audiodata"}], "title": "1. Fully qualified codec strings"}], "external": true};
 window.dfnpanelData['08e6b53d'] = {"dfnID": "08e6b53d", "url": "https://w3c.github.io/webcodecs/#dictdef-audiodecoderconfig", "dfnText": "AudioDecoderConfig", "refSections": [{"refs": [{"id": "ref-for-dictdef-audiodecoderconfig"}], "title": "3. AudioDecoderConfig description"}], "external": true};
@@ -833,6 +832,7 @@ window.dfnpanelData['11c3cc9f'] = {"dfnID": "11c3cc9f", "url": "https://w3c.gith
 window.dfnpanelData['71cccca5'] = {"dfnID": "71cccca5", "url": "https://w3c.github.io/webcodecs/#dom-audiosampleformat-s16", "dfnText": "s16", "refSections": [{"refs": [{"id": "ref-for-dom-audiosampleformat-s16"}], "title": "1. Fully qualified codec strings"}], "external": true};
 window.dfnpanelData['ddb7e353'] = {"dfnID": "ddb7e353", "url": "https://w3c.github.io/webcodecs/#dom-audiosampleformat-s32", "dfnText": "s32", "refSections": [{"refs": [{"id": "ref-for-dom-audiosampleformat-s32"}, {"id": "ref-for-dom-audiosampleformat-s32\u2460"}], "title": "1. Fully qualified codec strings"}], "external": true};
 window.dfnpanelData['f26e6cf2'] = {"dfnID": "f26e6cf2", "url": "https://w3c.github.io/webcodecs/#dom-audiosampleformat-u8", "dfnText": "u8", "refSections": [{"refs": [{"id": "ref-for-dom-audiosampleformat-u8"}], "title": "1. Fully qualified codec strings"}], "external": true};
+window.dfnpanelData['915c0f98'] = {"dfnID": "915c0f98", "url": "https://gpuweb.github.io/gpuweb/wgsl/#interpolation-sampling-sample", "dfnText": "sample", "refSections": [{"refs": [{"id": "ref-for-interpolation-sampling-sample"}], "title": "1. Fully qualified codec strings"}, {"refs": [{"id": "ref-for-interpolation-sampling-sample\u2460"}, {"id": "ref-for-interpolation-sampling-sample\u2461"}], "title": "2. EncodedAudioChunk data"}], "external": true};
 </script>
 <script>/* Boilerplate: script-dom-helper */
 function query(sel) { return document.querySelector(sel); }
