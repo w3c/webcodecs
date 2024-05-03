@@ -7,7 +7,7 @@
   <link href="https://www.w3.org/StyleSheets/TR/2021/W3C-ED" rel="stylesheet">
   <meta content="Bikeshed version 82ce88815, updated Thu Sep 7 16:33:55 2023 -0700" name="generator">
   <link href="https://www.w3.org/TR/webcodecs-av1-codec-registration/" rel="canonical">
-  <meta content="48523cdf22cd8dd871213d0bb0276d3346158c54" name="document-revision">
+  <meta content="dcbf0ce371b75868a6ff9b562335341bb9ea484d" name="document-revision">
 <style>/* Boilerplate: style-autolinks */
 .css.css, .property.property, .descriptor.descriptor {
     color: var(--a-normal-text);
@@ -648,7 +648,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
   <div class="head">
    <p data-fill-with="logo"><a class="logo" href="https://www.w3.org/"> <img alt="W3C" height="48" src="https://www.w3.org/StyleSheets/TR/2021/logos/W3C" width="72"> </a> </p>
    <h1 class="p-name no-ref" id="title">AV1 WebCodecs Registration</h1>
-   <p id="w3c-state"><a href="https://www.w3.org/standards/types#ED">Editor’s Draft</a>, <time class="dt-updated" datetime="2024-04-19">19 April 2024</time></p>
+   <p id="w3c-state"><a href="https://www.w3.org/standards/types#ED">Editor’s Draft</a>, <time class="dt-updated" datetime="2024-05-03">3 May 2024</time></p>
    <details open>
     <summary>More details about this document</summary>
     <div data-fill-with="spec-metadata">
@@ -715,17 +715,12 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
     <li><a href="#videodecoderconfig-description"><span class="secno">3</span> <span class="content">VideoDecoderConfig description</span></a>
     <li><a href="#encodedvideochunk-type"><span class="secno">4</span> <span class="content">EncodedVideoChunk type</span></a>
     <li>
-     <a href="#videoencoderconfig-extensions"><span class="secno">5</span> <span class="content">VideoEncoderConfig extensions</span></a>
+     <a href="#videoencoderencodeoptions-extensions"><span class="secno">5</span> <span class="content">VideoEncoderEncodeOptions extensions</span></a>
      <ol class="toc">
-      <li><a href="#av1-encoder-config"><span class="secno">5.1</span> <span class="content">AV1EncoderConfig</span></a>
+      <li><a href="#av1-encode-options"><span class="secno">5.1</span> <span class="content">VideoEncoderEncodeOptionsForAv1</span></a>
      </ol>
-    <li>
-     <a href="#videoencoderencodeoptions-extensions"><span class="secno">6</span> <span class="content">VideoEncoderEncodeOptions extensions</span></a>
-     <ol class="toc">
-      <li><a href="#av1-encode-options"><span class="secno">6.1</span> <span class="content">VideoEncoderEncodeOptionsForAv1</span></a>
-     </ol>
-    <li><a href="#privacy-considerations"><span class="secno">7</span> <span class="content">Privacy Considerations</span></a>
-    <li><a href="#security-considerations"><span class="secno">8</span> <span class="content">Security Considerations</span></a>
+    <li><a href="#privacy-considerations"><span class="secno">6</span> <span class="content">Privacy Considerations</span></a>
+    <li><a href="#security-considerations"><span class="secno">7</span> <span class="content">Security Considerations</span></a>
     <li>
      <a href="#w3c-conformance"><span class="secno"></span> <span class="content">Conformance</span></a>
      <ol class="toc">
@@ -760,33 +755,7 @@ of <a data-link-type="biblio" href="#biblio-av1" title="AV1 Bitstream &amp; Deco
    <p>If an <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webcodecs/#encodedvideochunk" id="ref-for-encodedvideochunk③">EncodedVideoChunk</a></code>'s <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webcodecs/#dom-encodedvideochunk-type-slot" id="ref-for-dom-encodedvideochunk-type-slot①">[[type]]</a></code> is <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webcodecs/#dom-encodedvideochunktype-key" id="ref-for-dom-encodedvideochunktype-key">key</a></code>, then the <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webcodecs/#encodedvideochunk" id="ref-for-encodedvideochunk④">EncodedVideoChunk</a></code> is expected to
 contain a frame with a <code>frame_type</code> of <code>KEY_FRAME</code> as defined in Section
 6.8.2 of <a data-link-type="biblio" href="#biblio-av1" title="AV1 Bitstream &amp; Decoding Process Specification">[AV1]</a>.</p>
-   <h2 class="heading settled" data-level="5" id="videoencoderconfig-extensions"><span class="secno">5. </span><span class="content">VideoEncoderConfig extensions</span><a class="self-link" href="#videoencoderconfig-extensions"></a></h2>
-<pre class="idl highlight def"><c- b>partial</c-> <c- b>dictionary</c-> <a class="idl-code" data-link-type="dictionary" href="https://w3c.github.io/webcodecs/#dictdef-videoencoderconfig" id="ref-for-dictdef-videoencoderconfig①"><c- g>VideoEncoderConfig</c-></a> {
-  <a data-link-type="idl-name" href="#dictdef-av1encoderconfig" id="ref-for-dictdef-av1encoderconfig"><c- n>AV1EncoderConfig</c-></a> <a class="idl-code" data-link-type="dict-member" data-type="AV1EncoderConfig " href="#dom-videoencoderconfig-av1" id="ref-for-dom-videoencoderconfig-av1"><c- g>av1</c-></a>;
-};
-
-</pre>
-   <dl>
-    <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoEncoderConfig" data-dfn-type="dict-member" data-export id="dom-videoencoderconfig-av1"><code>av1</code></dfn>, <span> of type <a data-link-type="idl-name" href="#dictdef-av1encoderconfig" id="ref-for-dictdef-av1encoderconfig①">AV1EncoderConfig</a></span>
-    <dd> Contains codec specific configuration options for the AV1 codec. 
-   </dl>
-   <h3 class="heading settled" data-level="5.1" id="av1-encoder-config"><span class="secno">5.1. </span><span class="content">AV1EncoderConfig</span><a class="self-link" href="#av1-encoder-config"></a></h3>
-<pre class="idl highlight def"><c- b>dictionary</c-> <dfn class="dfn-paneled idl-code" data-dfn-type="dictionary" data-export id="dictdef-av1encoderconfig"><code><c- g>AV1EncoderConfig</c-></code></dfn> {
-  <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-boolean" id="ref-for-idl-boolean"><c- b>boolean</c-></a> <a class="idl-code" data-default="false" data-link-type="dict-member" data-type="boolean " href="#dom-av1encoderconfig-forcescreencontenttools" id="ref-for-dom-av1encoderconfig-forcescreencontenttools"><c- g>forceScreenContentTools</c-></a> = <c- b>false</c->;
-};
-
-</pre>
-   <dl>
-    <dt><dfn class="dfn-paneled idl-code" data-dfn-for="AV1EncoderConfig" data-dfn-type="dict-member" data-export id="dom-av1encoderconfig-forcescreencontenttools"><code>forceScreenContentTools</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://webidl.spec.whatwg.org/#idl-boolean" id="ref-for-idl-boolean①">boolean</a>, defaulting to <code>false</code></span>
-    <dd> Indicates whether the encoder should force use of screen content
-     coding tools. The default value (false) indicates that use of
-     screen content coding tools is not forced. A value of true
-     (corresponding to setting seq_force_screen_content_tools
-     to SELECT_SCREEN_CONTENT_TOOLS in Section 5.5.1
-     of <a data-link-type="biblio" href="#biblio-av1" title="AV1 Bitstream &amp; Decoding Process Specification">[AV1]</a>) indicates that use of screen content coding tools
-     is forced. 
-   </dl>
-   <h2 class="heading settled" data-level="6" id="videoencoderencodeoptions-extensions"><span class="secno">6. </span><span class="content">VideoEncoderEncodeOptions extensions</span><a class="self-link" href="#videoencoderencodeoptions-extensions"></a></h2>
+   <h2 class="heading settled" data-level="5" id="videoencoderencodeoptions-extensions"><span class="secno">5. </span><span class="content">VideoEncoderEncodeOptions extensions</span><a class="self-link" href="#videoencoderencodeoptions-extensions"></a></h2>
 <pre class="idl highlight def"><c- b>partial</c-> <c- b>dictionary</c-> <a class="idl-code" data-link-type="dictionary" href="https://w3c.github.io/webcodecs/#dictdef-videoencoderencodeoptions" id="ref-for-dictdef-videoencoderencodeoptions①"><c- g>VideoEncoderEncodeOptions</c-></a> {
   <a data-link-type="idl-name" href="#dictdef-videoencoderencodeoptionsforav1" id="ref-for-dictdef-videoencoderencodeoptionsforav1"><c- n>VideoEncoderEncodeOptionsForAv1</c-></a> <a class="idl-code" data-link-type="dict-member" data-type="VideoEncoderEncodeOptionsForAv1 " href="#dom-videoencoderencodeoptions-av1" id="ref-for-dom-videoencoderencodeoptions-av1"><c- g>av1</c-></a>;
 };
@@ -796,7 +765,7 @@ contain a frame with a <code>frame_type</code> of <code>KEY_FRAME</code> as defi
     <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoEncoderEncodeOptions" data-dfn-type="dict-member" data-export id="dom-videoencoderencodeoptions-av1"><code>av1</code></dfn>, <span> of type <a data-link-type="idl-name" href="#dictdef-videoencoderencodeoptionsforav1" id="ref-for-dictdef-videoencoderencodeoptionsforav1①">VideoEncoderEncodeOptionsForAv1</a></span>
     <dd> Contains codec specific encode options for the <a data-link-type="biblio" href="#biblio-av1" title="AV1 Bitstream &amp; Decoding Process Specification">[AV1]</a> codec. 
    </dl>
-   <h3 class="heading settled" data-level="6.1" id="av1-encode-options"><span class="secno">6.1. </span><span class="content">VideoEncoderEncodeOptionsForAv1</span><a class="self-link" href="#av1-encode-options"></a></h3>
+   <h3 class="heading settled" data-level="5.1" id="av1-encode-options"><span class="secno">5.1. </span><span class="content">VideoEncoderEncodeOptionsForAv1</span><a class="self-link" href="#av1-encode-options"></a></h3>
 <pre class="idl highlight def"><c- b>dictionary</c-> <dfn class="dfn-paneled idl-code" data-dfn-type="dictionary" data-export id="dictdef-videoencoderencodeoptionsforav1"><code><c- g>VideoEncoderEncodeOptionsForAv1</c-></code></dfn> {
   <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-unsigned-short" id="ref-for-idl-unsigned-short"><c- b>unsigned</c-> <c- b>short</c-></a>? <a class="idl-code" data-link-type="dict-member" data-type="unsigned short? " href="#dom-videoencoderencodeoptionsforav1-quantizer" id="ref-for-dom-videoencoderencodeoptionsforav1-quantizer"><c- g>quantizer</c-></a>;
 };
@@ -807,10 +776,10 @@ contain a frame with a <code>frame_type</code> of <code>KEY_FRAME</code> as defi
     <dd> Sets per-frame quantizer value.
     In <a data-link-type="biblio" href="#biblio-av1" title="AV1 Bitstream &amp; Decoding Process Specification">[AV1]</a> the quantizer threshold can be varied from 0 to 63 
    </dl>
-   <h2 class="heading settled" data-level="7" id="privacy-considerations"><span class="secno">7. </span><span class="content">Privacy Considerations</span><a class="self-link" href="#privacy-considerations"></a></h2>
+   <h2 class="heading settled" data-level="6" id="privacy-considerations"><span class="secno">6. </span><span class="content">Privacy Considerations</span><a class="self-link" href="#privacy-considerations"></a></h2>
    <p>Please refer to the section <a href="https://w3c.github.io/webcodecs/#privacy-considerations">Privacy
 Considerations</a> in <a data-link-type="biblio" href="#biblio-webcodecs" title="WebCodecs">[WEBCODECS]</a>.</p>
-   <h2 class="heading settled" data-level="8" id="security-considerations"><span class="secno">8. </span><span class="content">Security Considerations</span><a class="self-link" href="#security-considerations"></a></h2>
+   <h2 class="heading settled" data-level="7" id="security-considerations"><span class="secno">7. </span><span class="content">Security Considerations</span><a class="self-link" href="#security-considerations"></a></h2>
    <p>Please refer to the section <a href="https://w3c.github.io/webcodecs/#security-considerations">Security
 Considerations</a> in <a data-link-type="biblio" href="#biblio-webcodecs" title="WebCodecs">[WEBCODECS]</a>.</p>
   </main>
@@ -845,16 +814,9 @@ Considerations</a> in <a data-link-type="biblio" href="#biblio-webcodecs" title=
   <h2 class="no-num no-ref heading settled" id="index"><span class="content">Index</span><a class="self-link" href="#index"></a></h2>
   <h3 class="no-num no-ref heading settled" id="index-defined-here"><span class="content">Terms defined by this specification</span><a class="self-link" href="#index-defined-here"></a></h3>
   <ul class="index">
-   <li>
-    av1
-    <ul>
-     <li><a href="#dom-videoencoderconfig-av1">dict-member for VideoEncoderConfig</a><span>, in § 5</span>
-     <li><a href="#dom-videoencoderencodeoptions-av1">dict-member for VideoEncoderEncodeOptions</a><span>, in § 6</span>
-    </ul>
-   <li><a href="#dictdef-av1encoderconfig">AV1EncoderConfig</a><span>, in § 5.1</span>
-   <li><a href="#dom-av1encoderconfig-forcescreencontenttools">forceScreenContentTools</a><span>, in § 5.1</span>
-   <li><a href="#dom-videoencoderencodeoptionsforav1-quantizer">quantizer</a><span>, in § 6.1</span>
-   <li><a href="#dictdef-videoencoderencodeoptionsforav1">VideoEncoderEncodeOptionsForAv1</a><span>, in § 6.1</span>
+   <li><a href="#dom-videoencoderencodeoptions-av1">av1</a><span>, in § 5</span>
+   <li><a href="#dom-videoencoderencodeoptionsforav1-quantizer">quantizer</a><span>, in § 5.1</span>
+   <li><a href="#dictdef-videoencoderencodeoptionsforav1">VideoEncoderEncodeOptionsForAv1</a><span>, in § 5.1</span>
   </ul>
   <h3 class="no-num no-ref heading settled" id="index-defined-elsewhere"><span class="content">Terms defined by reference</span><a class="self-link" href="#index-defined-elsewhere"></a></h3>
   <ul class="index">
@@ -872,7 +834,6 @@ Considerations</a> in <a data-link-type="biblio" href="#biblio-webcodecs" title=
    <li>
     <a data-link-type="biblio">[WEBIDL]</a> defines the following terms:
     <ul>
-     <li><span class="dfn-paneled" id="5372cca8">boolean</span>
      <li><span class="dfn-paneled" id="450958f7">unsigned short</span>
     </ul>
   </ul>
@@ -896,17 +857,7 @@ Considerations</a> in <a data-link-type="biblio" href="#biblio-webcodecs" title=
    <dd>Chris Cunningham; Paul Adenot; Bernard Aboba. <a href="https://w3c.github.io/webcodecs/codec_registry.html"><cite>WebCodecs Codec Registry</cite></a>. URL: <a href="https://w3c.github.io/webcodecs/codec_registry.html">https://w3c.github.io/webcodecs/codec_registry.html</a>
   </dl>
   <h2 class="no-num no-ref heading settled" id="idl-index"><span class="content">IDL Index</span><a class="self-link" href="#idl-index"></a></h2>
-<pre class="idl highlight def"><c- b>partial</c-> <c- b>dictionary</c-> <a class="idl-code" data-link-type="dictionary" href="https://w3c.github.io/webcodecs/#dictdef-videoencoderconfig"><c- g>VideoEncoderConfig</c-></a> {
-  <a data-link-type="idl-name" href="#dictdef-av1encoderconfig"><c- n>AV1EncoderConfig</c-></a> <a class="idl-code" data-link-type="dict-member" data-type="AV1EncoderConfig " href="#dom-videoencoderconfig-av1"><c- g>av1</c-></a>;
-};
-
-
-<c- b>dictionary</c-> <a href="#dictdef-av1encoderconfig"><code><c- g>AV1EncoderConfig</c-></code></a> {
-  <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-boolean"><c- b>boolean</c-></a> <a class="idl-code" data-default="false" data-link-type="dict-member" data-type="boolean " href="#dom-av1encoderconfig-forcescreencontenttools"><c- g>forceScreenContentTools</c-></a> = <c- b>false</c->;
-};
-
-
-<c- b>partial</c-> <c- b>dictionary</c-> <a class="idl-code" data-link-type="dictionary" href="https://w3c.github.io/webcodecs/#dictdef-videoencoderencodeoptions"><c- g>VideoEncoderEncodeOptions</c-></a> {
+<pre class="idl highlight def"><c- b>partial</c-> <c- b>dictionary</c-> <a class="idl-code" data-link-type="dictionary" href="https://w3c.github.io/webcodecs/#dictdef-videoencoderencodeoptions"><c- g>VideoEncoderEncodeOptions</c-></a> {
   <a data-link-type="idl-name" href="#dictdef-videoencoderencodeoptionsforav1"><c- n>VideoEncoderEncodeOptionsForAv1</c-></a> <a class="idl-code" data-link-type="dict-member" data-type="VideoEncoderEncodeOptionsForAv1 " href="#dom-videoencoderencodeoptions-av1"><c- g>av1</c-></a>;
 };
 
@@ -1227,19 +1178,15 @@ Considerations</a> in <a data-link-type="biblio" href="#biblio-webcodecs" title=
 window.dfnpanelData = {};
 window.dfnpanelData['5ab730d7'] = {"dfnID": "5ab730d7", "url": "https://w3c.github.io/webcodecs/#dom-encodedvideochunktype-key", "dfnText": "\"key\"", "refSections": [{"refs": [{"id": "ref-for-dom-encodedvideochunktype-key"}], "title": "4. EncodedVideoChunk type"}], "external": true};
 window.dfnpanelData['25947f98'] = {"dfnID": "25947f98", "url": "https://w3c.github.io/webcodecs/#encodedvideochunk", "dfnText": "EncodedVideoChunk", "refSections": [{"refs": [{"id": "ref-for-encodedvideochunk"}, {"id": "ref-for-encodedvideochunk\u2460"}], "title": "Unnumbered Section"}, {"refs": [{"id": "ref-for-encodedvideochunk\u2461"}], "title": "2. EncodedVideoChunk data"}, {"refs": [{"id": "ref-for-encodedvideochunk\u2462"}, {"id": "ref-for-encodedvideochunk\u2463"}], "title": "4. EncodedVideoChunk type"}], "external": true};
-window.dfnpanelData['4c67f0b7'] = {"dfnID": "4c67f0b7", "url": "https://w3c.github.io/webcodecs/#dictdef-videoencoderconfig", "dfnText": "VideoEncoderConfig", "refSections": [{"refs": [{"id": "ref-for-dictdef-videoencoderconfig"}], "title": "Unnumbered Section"}, {"refs": [{"id": "ref-for-dictdef-videoencoderconfig\u2460"}], "title": "5. VideoEncoderConfig extensions"}], "external": true};
-window.dfnpanelData['6cce5d95'] = {"dfnID": "6cce5d95", "url": "https://w3c.github.io/webcodecs/#dictdef-videoencoderencodeoptions", "dfnText": "VideoEncoderEncodeOptions", "refSections": [{"refs": [{"id": "ref-for-dictdef-videoencoderencodeoptions"}], "title": "Unnumbered Section"}, {"refs": [{"id": "ref-for-dictdef-videoencoderencodeoptions\u2460"}], "title": "6. VideoEncoderEncodeOptions extensions"}], "external": true};
+window.dfnpanelData['4c67f0b7'] = {"dfnID": "4c67f0b7", "url": "https://w3c.github.io/webcodecs/#dictdef-videoencoderconfig", "dfnText": "VideoEncoderConfig", "refSections": [{"refs": [{"id": "ref-for-dictdef-videoencoderconfig"}], "title": "Unnumbered Section"}], "external": true};
+window.dfnpanelData['6cce5d95'] = {"dfnID": "6cce5d95", "url": "https://w3c.github.io/webcodecs/#dictdef-videoencoderencodeoptions", "dfnText": "VideoEncoderEncodeOptions", "refSections": [{"refs": [{"id": "ref-for-dictdef-videoencoderencodeoptions"}], "title": "Unnumbered Section"}, {"refs": [{"id": "ref-for-dictdef-videoencoderencodeoptions\u2460"}], "title": "5. VideoEncoderEncodeOptions extensions"}], "external": true};
 window.dfnpanelData['a4200c1b'] = {"dfnID": "a4200c1b", "url": "https://w3c.github.io/webcodecs/#dom-encodedvideochunk-internal-data-slot", "dfnText": "[[internal data]]", "refSections": [{"refs": [{"id": "ref-for-dom-encodedvideochunk-internal-data-slot"}], "title": "Unnumbered Section"}, {"refs": [{"id": "ref-for-dom-encodedvideochunk-internal-data-slot\u2460"}], "title": "2. EncodedVideoChunk data"}], "external": true};
 window.dfnpanelData['89df1b66'] = {"dfnID": "89df1b66", "url": "https://w3c.github.io/webcodecs/#dom-encodedvideochunk-type-slot", "dfnText": "[[type]]", "refSections": [{"refs": [{"id": "ref-for-dom-encodedvideochunk-type-slot"}], "title": "Unnumbered Section"}, {"refs": [{"id": "ref-for-dom-encodedvideochunk-type-slot\u2460"}], "title": "4. EncodedVideoChunk type"}], "external": true};
 window.dfnpanelData['c59901b3'] = {"dfnID": "c59901b3", "url": "https://w3c.github.io/webcodecs/#dom-videodecoderconfig-description", "dfnText": "description", "refSections": [{"refs": [{"id": "ref-for-dom-videodecoderconfig-description"}], "title": "Unnumbered Section"}, {"refs": [{"id": "ref-for-dom-videodecoderconfig-description\u2460"}], "title": "3. VideoDecoderConfig description"}], "external": true};
-window.dfnpanelData['5372cca8'] = {"dfnID": "5372cca8", "url": "https://webidl.spec.whatwg.org/#idl-boolean", "dfnText": "boolean", "refSections": [{"refs": [{"id": "ref-for-idl-boolean"}, {"id": "ref-for-idl-boolean\u2460"}], "title": "5.1. AV1EncoderConfig"}], "external": true};
-window.dfnpanelData['450958f7'] = {"dfnID": "450958f7", "url": "https://webidl.spec.whatwg.org/#idl-unsigned-short", "dfnText": "unsigned short", "refSections": [{"refs": [{"id": "ref-for-idl-unsigned-short"}, {"id": "ref-for-idl-unsigned-short\u2460"}], "title": "6.1. VideoEncoderEncodeOptionsForAv1"}], "external": true};
-window.dfnpanelData['dom-videoencoderconfig-av1'] = {"dfnID": "dom-videoencoderconfig-av1", "url": "#dom-videoencoderconfig-av1", "dfnText": "av1", "refSections": [{"refs": [{"id": "ref-for-dom-videoencoderconfig-av1"}], "title": "5. VideoEncoderConfig extensions"}], "external": false};
-window.dfnpanelData['dictdef-av1encoderconfig'] = {"dfnID": "dictdef-av1encoderconfig", "url": "#dictdef-av1encoderconfig", "dfnText": "AV1EncoderConfig", "refSections": [{"refs": [{"id": "ref-for-dictdef-av1encoderconfig"}, {"id": "ref-for-dictdef-av1encoderconfig\u2460"}], "title": "5. VideoEncoderConfig extensions"}], "external": false};
-window.dfnpanelData['dom-av1encoderconfig-forcescreencontenttools'] = {"dfnID": "dom-av1encoderconfig-forcescreencontenttools", "url": "#dom-av1encoderconfig-forcescreencontenttools", "dfnText": "forceScreenContentTools", "refSections": [{"refs": [{"id": "ref-for-dom-av1encoderconfig-forcescreencontenttools"}], "title": "5.1. AV1EncoderConfig"}], "external": false};
-window.dfnpanelData['dom-videoencoderencodeoptions-av1'] = {"dfnID": "dom-videoencoderencodeoptions-av1", "url": "#dom-videoencoderencodeoptions-av1", "dfnText": "av1", "refSections": [{"refs": [{"id": "ref-for-dom-videoencoderencodeoptions-av1"}], "title": "6. VideoEncoderEncodeOptions extensions"}], "external": false};
-window.dfnpanelData['dictdef-videoencoderencodeoptionsforav1'] = {"dfnID": "dictdef-videoencoderencodeoptionsforav1", "url": "#dictdef-videoencoderencodeoptionsforav1", "dfnText": "VideoEncoderEncodeOptionsForAv1", "refSections": [{"refs": [{"id": "ref-for-dictdef-videoencoderencodeoptionsforav1"}, {"id": "ref-for-dictdef-videoencoderencodeoptionsforav1\u2460"}], "title": "6. VideoEncoderEncodeOptions extensions"}], "external": false};
-window.dfnpanelData['dom-videoencoderencodeoptionsforav1-quantizer'] = {"dfnID": "dom-videoencoderencodeoptionsforav1-quantizer", "url": "#dom-videoencoderencodeoptionsforav1-quantizer", "dfnText": "quantizer", "refSections": [{"refs": [{"id": "ref-for-dom-videoencoderencodeoptionsforav1-quantizer"}], "title": "6.1. VideoEncoderEncodeOptionsForAv1"}], "external": false};
+window.dfnpanelData['450958f7'] = {"dfnID": "450958f7", "url": "https://webidl.spec.whatwg.org/#idl-unsigned-short", "dfnText": "unsigned short", "refSections": [{"refs": [{"id": "ref-for-idl-unsigned-short"}, {"id": "ref-for-idl-unsigned-short\u2460"}], "title": "5.1. VideoEncoderEncodeOptionsForAv1"}], "external": true};
+window.dfnpanelData['dom-videoencoderencodeoptions-av1'] = {"dfnID": "dom-videoencoderencodeoptions-av1", "url": "#dom-videoencoderencodeoptions-av1", "dfnText": "av1", "refSections": [{"refs": [{"id": "ref-for-dom-videoencoderencodeoptions-av1"}], "title": "5. VideoEncoderEncodeOptions extensions"}], "external": false};
+window.dfnpanelData['dictdef-videoencoderencodeoptionsforav1'] = {"dfnID": "dictdef-videoencoderencodeoptionsforav1", "url": "#dictdef-videoencoderencodeoptionsforav1", "dfnText": "VideoEncoderEncodeOptionsForAv1", "refSections": [{"refs": [{"id": "ref-for-dictdef-videoencoderencodeoptionsforav1"}, {"id": "ref-for-dictdef-videoencoderencodeoptionsforav1\u2460"}], "title": "5. VideoEncoderEncodeOptions extensions"}], "external": false};
+window.dfnpanelData['dom-videoencoderencodeoptionsforav1-quantizer'] = {"dfnID": "dom-videoencoderencodeoptionsforav1-quantizer", "url": "#dom-videoencoderencodeoptionsforav1-quantizer", "dfnText": "quantizer", "refSections": [{"refs": [{"id": "ref-for-dom-videoencoderencodeoptionsforav1-quantizer"}], "title": "5.1. VideoEncoderEncodeOptionsForAv1"}], "external": false};
 </script>
 <script>/* Boilerplate: script-dom-helper */
 function query(sel) { return document.querySelector(sel); }
