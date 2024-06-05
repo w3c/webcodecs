@@ -5469,7 +5469,8 @@ interface ImageDecoder {
     2. If {{ImageDecoder/[[encoded data]]}} does not contain enough data to
         determine the number of tracks:
         1. If {{ImageDecoder/complete}} is `true`, [=queue a task=] to run the
-            [=ImageDecoder/Close ImageDecoder=] algorithm.
+            [=ImageDecoder/Close ImageDecoder=] algorithm with a
+	    {{InvalidStateError}} {{DOMException}}.
         2. Abort these steps.
     3. If the number of tracks is found to be `0`, [=queue a task=] to run the
         [=ImageDecoder/Close ImageDecoder=] algorithm and abort these steps.
@@ -5733,10 +5734,14 @@ interface ImageDecoder {
     1. Assign `true` to {{ImageDecoder/[[closed]]}}.
     2. Clear {{ImageDecoder/[[codec implementation]]}} and release associated
         [=system resources=].
-    3. Remove all entries from {{ImageDecoder/[[ImageTrackList]]}}.
-    4. Assign `-1` to {{ImageDecoder/[[ImageTrackList]]}}'s
-        {{ImageTrackList/[[selected index]]}}.
-
+    3. If {{ImageDecoder/[[ImageTrackList]]}} is empty, reject
+	{{ImageTrackList/[[ready promise]]}} with |exception|. Otherwise
+	perform these steps,
+    	1. Remove all entries from {{ImageDecoder/[[ImageTrackList]]}}.
+    	2. Assign `-1` to {{ImageDecoder/[[ImageTrackList]]}}'s
+           {{ImageTrackList/[[selected index]]}}.
+    4. If {{ImageDecoder/[[complete]]}} is false resolve
+	{{ImageDecoder/[[completed promise]]}} with |exception|.
 
 ImageDecoderInit Interface {#imagedecoderinit-interface}
 --------------------------------------------------------
@@ -5890,9 +5895,10 @@ interface ImageTrackList {
 : <dfn attribute for=ImageTrackList>[[track list]]</dfn>
 :: The list of {{ImageTrack}}s describe by this {{ImageTrackList}}.
 
-: <dfn attribute for=ImageTrackList>\[[selected index]]</dfn>
+: <dfn attribute for=ImageTrackList>[[selected index]]</dfn>
 :: The index of the selected track in {{ImageTrackList/[[track list]]}}. A
-    value of `-1` indicates that no track is selected.
+    value of `-1` indicates that no track is selected. The initial value
+    is `-1`.
 
 ### Attributes ### {#imagetracklist-attributes}
 : <dfn attribute for=ImageTrackList>ready</dfn>
