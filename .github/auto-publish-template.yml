@@ -1,0 +1,48 @@
+######################################################################
+# This is the template used to generate auto-publication workflows for
+# the different documents in the repository. Check generate script for
+# details. Edit this file and run the script again to update the
+# workflows.
+######################################################################
+
+name: Auto publish {{shortname}}
+
+on:
+  # Worflow runs on pull requests where it makes sure that the spec can still be
+  # generated, that markup is valid and that there are no broken links, as
+  # well as on pushes to the default branch where it also deploys the generated
+  # spec to the gh-pages branch and publishes the result to /TR.
+  # The "workflow_dispatch" hook allows admins to also trigger the workflow
+  # manually from GitHub's UI.
+  pull_request:
+    paths:
+      - '{{source}}'{{additionalPaths}}
+  push:
+    branches: [main]
+    paths:
+      - '{{source}}'{{additionalPaths}}
+  workflow_dispatch:
+
+jobs:
+  main:
+    runs-on: ubuntu-latest
+    steps:
+      # See doc at https://github.com/actions/checkout#checkout-v2
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # See doc at https://w3c.github.io/spec-prod/
+      # The action only deploys the generated spec to the gh-pages branch when
+      # the workflow was triggered by a push to the default branch.
+      - name: Build and validate spec, push to gh-pages branch and deploy to /TR if needed
+        uses: w3c/spec-prod@v2
+        with:
+          TOOLCHAIN: bikeshed
+          BUILD_FAIL_ON: warning
+          SOURCE: {{source}}
+          DESTINATION: {{destination}}
+          GH_PAGES_BRANCH: gh-pages
+          W3C_ECHIDNA_TOKEN: ${{ secrets.{{tokenName}} }}
+          W3C_WG_DECISION_URL: https://github.com/w3c/media-wg/issues/27
+          W3C_BUILD_OVERRIDE: |
+            status: {{publicationStatus}}
