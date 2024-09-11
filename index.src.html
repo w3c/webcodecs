@@ -155,18 +155,25 @@ Definitions {#definitions}
     alpha channel is present.
 
 : <dfn>sRGB Color Space</dfn>
-:: A {{VideoColorSpaceInit}} containing «[
-    "primaries" → {{VideoColorPrimaries/bt709}},
-    "transfer" → {{VideoTransferCharacteristics/iec61966-2-1}},
-    "matrix" → {{VideoMatrixCoefficients/rgb}},
-    "fullRange" → `true`]».
+:: A {{VideoColorSpace}} object, initialized as follows:
+    1. {{VideoColorSpace/[[primaries]]}} is set to {{VideoColorPrimaries/bt709}},
+    2. {{VideoColorSpace/[[transfer]]}} is set to {{VideoTransferCharacteristics/iec61966-2-1}},
+    3. {{VideoColorSpace/[[matrix]]}} is set to {{VideoMatrixCoefficients/rgb}},
+    4. {{VideoColorSpace/[[full range]]}} is set to `true`
+
+: <dfn>Display P3 Color Space</dfn>
+:: A {{VideoColorSpace}} object, initialized as follows:
+    1. {{VideoColorSpace/[[primaries]]}} is set to {{VideoColorPrimaries/smpte432}},
+    2. {{VideoColorSpace/[[transfer]]}} is set to {{VideoTransferCharacteristics/iec61966-2-1}},
+    3. {{VideoColorSpace/[[matrix]]}} is set to {{VideoMatrixCoefficients/rgb}},
+    4. {{VideoColorSpace/[[full range]]}} is set to `true`
 
 : <dfn>REC709 Color Space</dfn>
-:: A {{VideoColorSpaceInit}} containing «[
-    "primaries" → {{VideoColorPrimaries/bt709}},
-    "transfer" → {{VideoTransferCharacteristics/bt709}},
-    "matrix" → {{VideoMatrixCoefficients/bt709}},
-    "fullRange" → `false`]».
+:: A {{VideoColorSpace}} object, initialized as follows:
+    1. {{VideoColorSpace/[[primaries]]}} is set to {{VideoColorPrimaries/bt709}},
+    2. {{VideoColorSpace/[[transfer]]}} is set to {{VideoTransferCharacteristics/bt709}},
+    3. {{VideoColorSpace/[[matrix]]}} is set to {{VideoMatrixCoefficients/bt709}},
+    4. {{VideoColorSpace/[[full range]]}} is set to `false`
 
 : <dfn lt="saturated">Codec Saturation</dfn>
 :: The state of an underlying codec implementation where the number of active
@@ -3696,7 +3703,7 @@ dictionary VideoFrameMetadata {
 :: The presentation timestamp, given in microseconds. For decode,
     timestamp is copied from the {{EncodedVideoChunk}} corresponding
     to this {{VideoFrame}}. For encode, timestamp is copied to the
-    {{EncodedVideoChunk}}s corresponding to this {{VideoFrame}}. 
+    {{EncodedVideoChunk}}s corresponding to this {{VideoFrame}}.
 
     The {{VideoFrame/timestamp}} getter steps are to return
     {{VideoFrame/[[timestamp]]}}.
@@ -4205,6 +4212,14 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
             [=combined buffer layout/allocationSize=].
     9. Return |combinedLayout|.
 
+: <dfn>Convert PredefinedColorSpace to VideoColorSpace</dfn> (with |colorSpace|)
+ :: 1. This algorithm <em class="rfc2119">MUST</em> be called only if |colorSpace|
+        is equal to one of {{srgb}}, {{display-p3}}.
+    2. If |colorSpace| is equal to {{srgb}} return a new instance of the
+        [=sRGB Color Space=]
+    3. If |colorSpace| is equal to {{display-p3}} return a new instance of the
+        [=Display P3 Color Space=]
+
 : <dfn for=VideoFrame>Convert to RGB frame</dfn> (with |frame|, |format| and |colorSpace|)
  :: 1. This algorithm <em class="rfc2119">MUST</em> be called only if |format|
         is equal to one of {{RGBA}}, {{RGBX}}, {{BGRA}}, {{BGRX}}.
@@ -4221,11 +4236,14 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
 	      6. Assign |frame|'s {{VideoFrame/[[duration]]}} and |frame|'s
             {{VideoFrame/[[timestamp]]}} to {{VideoFrame/[[duration]]}} and
             {{VideoFrame/[[timestamp]]}} respectively.
-        7. Assign |colorSpace| to {{VideoFrame/[[color space]]}}.
+        7. Assign the result of running the <a>Convert
+            PredefinedColorSpace to VideoColorSpace</a> algorithm with
+            |colorSpace| to {{VideoFrame/[[color space]]}}.
         8. Let |resource| be a new [=media resource=] containing the result of
             conversion of [=media resource=] referenced by |frame|'s
             {{VideoFrame/[[resource reference]]}} into a color space and pixel
-            format specified by |colorSpace| and |format| respectively.
+            format specified by {{VideoFrame/[[color space]]}} and
+            {{VideoFrame/[[format]]}} respectively.
         9. Assign the reference to |resource| to {{VideoFrame/[[resource reference]]}}
     3. Return |convertedFrame|.
 
