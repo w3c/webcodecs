@@ -6049,14 +6049,10 @@ The rules governing when a codec may be reclaimed depend on whether the codec is
 an [=active=] or [=inactive=] codec and/or a [=background=] codec.
 
 An <dfn lt="active codec|active">active codec</dfn> is a codec that has
-received a call to `encode()`, `decode()`, `configure()`, `flush()` or `reset()`
-in the past `10 seconds`, or has called its `output()` callback in the past `10
-seconds`. Addionally, {{VideoEncoder}}s are considered [=active=] if they are
-making progress in encoding queued {{VideoFrame}}s.
+made progress on the [=[[codec work queue]]=] in the past `10 seconds`.
 
-NOTE: Encoding large {{VideoFrame}}s can take more than `10s` per frame. The
-special case for {{VideoEncoder}}s ensures that they are not reclaimed if more
-than `10 seconds` elapses between each `output()` callback.
+NOTE: A reliable sign of the working queue's progress is a call to `output()`
+    callback.
 
 An <dfn lt="inactive codec|inactive">inactive codec</dfn> is any codec that does
 not meet the definition of an [=active codec=].
