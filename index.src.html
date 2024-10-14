@@ -3337,6 +3337,8 @@ interface VideoFrame {
   readonly attribute unsigned long codedHeight;
   readonly attribute DOMRectReadOnly? codedRect;
   readonly attribute DOMRectReadOnly? visibleRect;
+  readonly attribute double rotation;
+  readonly attribute boolean flip;
   readonly attribute unsigned long displayWidth;
   readonly attribute unsigned long displayHeight;
   readonly attribute unsigned long long? duration;  // microseconds
@@ -3364,6 +3366,9 @@ dictionary VideoFrameInit {
   // aspect ratio unless an explicit displayWidth and displayHeight are given.
   DOMRectInit visibleRect;
 
+  double rotation = 0;
+  boolean flip = false;
+
   // Default matches image unless visibleRect is provided.
   [EnforceRange] unsigned long displayWidth;
   [EnforceRange] unsigned long displayHeight;
@@ -3383,6 +3388,9 @@ dictionary VideoFrameBufferInit {
 
   // Default visible rect is coded size positioned at (0,0)
   DOMRectInit visibleRect;
+
+  double rotation = 0;
+  boolean flip = false;
 
   // Default display dimensions match visibleRect.
   [EnforceRange] unsigned long displayWidth;
@@ -3432,6 +3440,14 @@ dictionary VideoFrameMetadata {
 : <dfn attribute for=VideoFrame>[[visible height]]</dfn>
 :: The height of pixels to include in visible rectangle, starting from
     {{VideoFrame/[[visible top]]}}.
+
+: <dfn attribute for=VideoFrame>\[[rotation]]</dfn>
+:: The rotation to applied to the {{VideoFrame}} when rendered, in degrees
+    clockwise. Rotation applies before flip.
+
+: <dfn attribute for=VideoFrame>\[[flip]]</dfn>
+:: Whether a horizontal flip is applied to the {{VideoFrame}} when rendered.
+    Flip is applied after rotation.
 
 : <dfn attribute for=VideoFrame>[[display width]]</dfn>
 :: Width of the {{VideoFrame}} when displayed after applying aspect ratio
@@ -3489,10 +3505,16 @@ dictionary VideoFrameMetadata {
             default image of the animation (the one that the format defines is
             to be used when animation is not supported or is disabled), or, if
             there is no such image, the first frame of the animation.
-        4. Let |width| and |height| be the [=natural width=] and
-            [=natural height=] of |image|.
-        5. Run the [=VideoFrame/Initialize Frame With Resource and Size=]
-            algorithm with |init|, |frame|, |resource|, |width|, and |height|
+        4. Let |codedWidth| and |codedHeight| be the width and height of
+            |resource|.
+        5. Let |baseRotation| and |baseFlip| describe the rotation and flip of
+            |image| relative to |resource|.
+        6. Let |defaultDisplayWidth| and |defaultDisplayHeight| be the
+            [=natural width=] and [=natural height=] of |image|.
+        7. Run the [=VideoFrame/Initialize Frame With Resource=]
+            algorithm with |init|, |frame|, |resource|, |codedWidth|,
+            |codedHeight|, |baseRotation|, |baseFlip|, |defaultDisplayWidth|,
+            and |defaultDisplayHeight|.
 
     - {{HTMLVideoElement}}
         1. If |image|'s {{HTMLMediaElement/networkState}} attribute is
@@ -3517,8 +3539,9 @@ dictionary VideoFrameMetadata {
                 reference counting where feasible.
 
         3. Let |width| be `image.width` and |height| be `image.height`.
-        4. Run the [=VideoFrame/Initialize Frame With Resource and Size=]
-            algorithm with |init|, |frame|, |resource|, |width|, and |height|.
+        4. Run the [=VideoFrame/Initialize Frame With Resource=]
+            algorithm with |init|, |frame|, |resource|, |width|, |height|,
+            `0`, `false`, |width|, and |height|.
 
     - {{VideoFrame}}
         1. Run the [=VideoFrame/Initialize Frame From Other Frame=] algorithm
@@ -3609,24 +3632,38 @@ dictionary VideoFrameMetadata {
             {{VideoFrame/[[visible width]]}}.
         2. Assign {{VideoFrame/[[coded height]]}} to
             {{VideoFrame/[[visible height]]}}.
-    4. If |init|.{{VideoFrameBufferInit/displayWidth}} [=map/exists=], assign
-        it to {{VideoFrame/[[display width]]}}. Otherwise, assign
-        {{VideoFrame/[[visible width]]}} to {{VideoFrame/[[display width]]}}.
-    5. If |init|.{{VideoFrameBufferInit/displayHeight}} [=map/exists=], assign
-        it to {{VideoFrame/[[display height]]}}. Otherwise, assign
-        {{VideoFrame/[[visible height]]}} to {{VideoFrame/[[display height]]}}.
-    6. Assign |init|'s {{VideoFrameBufferInit/timestamp}} and
+    4. Assign the result of running the [=VideoFrame/Parse Rotation=] algorithm,
+        with |init|.{{VideoFrameBufferInit/rotation}}, to
+        {{VideoFrame/[[rotation]]}}.
+    5. Assign |init|.{{VideoFrameBufferInit/flip}} to
+        {{VideoFrame/[[flip]]}}.
+    6. If {{VideoFrameBufferInit/displayWidth}} and
+        {{VideoFrameBufferInit/displayHeight}} [=map/exist=] in |init|, assign
+        them to {{VideoFrame/[[display width]]}} and
+        {{VideoFrame/[[display height]]}} respectively.
+    7. Otherwise:
+        1. If {{VideoFrame/[[rotation]]}} is equal to `0` or `180`:
+            1. Assign {{VideoFrame/[[visible width]]}} to
+                {{VideoFrame/[[display width]]}}.
+            2. Assign {{VideoFrame/[[visible height]]}} to
+                {{VideoFrame/[[display height]]}}.
+        2. Otherwise:
+            1. Assign {{VideoFrame/[[visible height]]}} to
+                {{VideoFrame/[[display width]]}}.
+            2. Assign {{VideoFrame/[[visible width]]}} to
+                {{VideoFrame/[[display height]]}}.
+    8. Assign |init|'s {{VideoFrameBufferInit/timestamp}} and
         {{VideoFrameBufferInit/duration}} to {{VideoFrame/[[timestamp]]}} and
         {{VideoFrame/[[duration]]}} respectively.
-    7. Let |colorSpace| be `undefined`.
-    8. If |init|.{{VideoFrameBufferInit/colorSpace}} [=map/exists=], assign its
+    9. Let |colorSpace| be `undefined`.
+    10. If |init|.{{VideoFrameBufferInit/colorSpace}} [=map/exists=], assign its
         value to |colorSpace|.
-    9. Assign |init|'s {{VideoFrameBufferInit/format}} to
+    11. Assign |init|'s {{VideoFrameBufferInit/format}} to
         {{VideoFrame/[[format]]}}.
-    10. Assign the result of running the [=VideoFrame/Pick Color Space=]
+    12. Assign the result of running the [=VideoFrame/Pick Color Space=]
         algorithm, with |colorSpace| and {{VideoFrame/[[format]]}}, to
         {{VideoFrame/[[color space]]}}.
-    11. Assign the result of calling [=Copy VideoFrame metadata=]
+    13. Assign the result of calling [=Copy VideoFrame metadata=]
         with |init|'s {{VideoFrameBufferInit/metadata}} to
         |frame|.{{VideoFrame/[[metadata]]}}.
 22. Return |frame|.
@@ -3685,16 +3722,29 @@ dictionary VideoFrameMetadata {
             {{DOMRectReadOnly/height}} respectively.
     3. Return |rect|.
 
+: <dfn attribute for=VideoFrame>rotation</dfn>
+:: The rotation to applied to the VideoFrame when rendered, in degrees
+    clockwise. Rotation applies before flip.
+
+    The {{VideoFrame/rotation}} getter steps are to return
+    {{VideoFrame/[[rotation]]}}.
+
+: <dfn attribute for=VideoFrame>flip</dfn>
+:: Whether a horizontal flip is applied to the {{VideoFrame}} when rendered.
+    Flip applies after rotation.
+
+    The {{VideoFrame/flip}} getter steps are to return {{VideoFrame/[[flip]]}}.
+
 : <dfn attribute for=VideoFrame>displayWidth</dfn>
-:: Width of the VideoFrame when displayed after applying aspect ratio
-    adjustments.
+:: Width of the VideoFrame when displayed after applying rotation and aspect
+    ratio adjustments.
 
     The {{VideoFrame/displayWidth}} getter steps are to return
     {{VideoFrame/[[display width]]}}.
 
 : <dfn attribute for=VideoFrame>displayHeight</dfn>
-:: Height of the VideoFrame when displayed after applying aspect ratio
-    adjustments.
+:: Height of the VideoFrame when displayed after applying rotation and aspect
+    ratio adjustments.
 
     The {{VideoFrame/displayHeight}} getter steps are to return
     {{VideoFrame/[[display height]]}}.
@@ -3961,26 +4011,29 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
         {{VideoFrame/colorSpace}}.
     6. Let |defaultVisibleRect| be the result of performing the getter steps
         for {{VideoFrame/visibleRect}} on |otherFrame|.
-    7. Let |defaultDisplayWidth|, and |defaultDisplayHeight| be |otherFrame|'s
-        {{VideoFrame/[[display width]]}}, and {{VideoFrame/[[display height]]}}
+    7. Let |baseRotation| and |baseFlip| be |otherFrame|'s
+        {{VideoFrame/[[rotation]]}} and {{VideoFrame/[[flip]]}}, respectively.
+    8. Let |defaultDisplayWidth| and |defaultDisplayHeight| be |otherFrame|'s
+        {{VideoFrame/[[display width]]}} and {{VideoFrame/[[display height]]}},
         respectively.
-    8. Run the [=VideoFrame/Initialize Visible Rect and Display Size=]
-        algorithm with |init|, |frame|, |defaultVisibleRect|,
-        |defaultDisplayWidth|, and |defaultDisplayHeight|.
-    9. If {{VideoFrameInit/duration}} [=map/exists=] in |init|, assign it to
+    9. Run the [=VideoFrame/Initialize Visible Rect, Orientation, and Display Size=]
+        algorithm with |init|, |frame|, |defaultVisibleRect|, |baseRotation|,
+        |baseFlip|, |defaultDisplayWidth|, and |defaultDisplayHeight|.
+    10. If {{VideoFrameInit/duration}} [=map/exists=] in |init|, assign it to
         |frame|'s {{VideoFrame/[[duration]]}}. Otherwise, assign
         |otherFrame|.{{VideoFrame/duration}} to
         |frame|'s {{VideoFrame/[[duration]]}}.
-    10. If {{VideoFrameInit/timestamp}} [=map/exists=] in |init|, assign it to
+    11. If {{VideoFrameInit/timestamp}} [=map/exists=] in |init|, assign it to
         |frame|'s {{VideoFrame/[[timestamp]]}}. Otherwise, assign
         |otherFrame|'s {{VideoFrame/timestamp}} to
         |frame|'s {{VideoFrame/[[timestamp]]}}.
-    11. Assign |format| to |frame|.{{VideoFrame/[[format]]}}.
-    12. Assign the result of calling [=Copy VideoFrame metadata=]
+    12. Assign |format| to |frame|.{{VideoFrame/[[format]]}}.
+    13. Assign the result of calling [=Copy VideoFrame metadata=]
         with |init|'s {{VideoFrameInit/metadata}} to |frame|.{{VideoFrame/[[metadata]]}}.
 
-: <dfn for=VideoFrame>Initialize Frame With Resource and Size</dfn> (with
-    |init|,  |frame|, |resource|, |width| and |height|)
+: <dfn for=VideoFrame>Initialize Frame With Resource</dfn> (with
+    |init|,  |frame|, |resource|, |codedWidth|, |codedHeight|, |baseRotation|,
+    |baseFlip|, |defaultDisplayWidth|, and |defaultDisplayHeight|)
 :: 1. Let |format| be `null`.
     2. If |resource| uses a recognized {{VideoPixelFormat}}, assign the
         {{VideoPixelFormat}} of |resource| to |format|.
@@ -3992,13 +4045,14 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
     6. If |init|.{{VideoFrameInit/alpha}} is {{AlphaOption/discard}}, assign
         |format|'s [=equivalent opaque format=] to |format|.
     7. Assign |format| to {{VideoFrame/[[format]]}}
-    8. Assign |width| and |height| to |frame|'s {{VideoFrame/[[coded width]]}}
-        and {{VideoFrame/[[coded height]]}} respectively.
+    8. Assign |codedWidth| and |codedHeight| to |frame|'s
+        {{VideoFrame/[[coded width]]}} and {{VideoFrame/[[coded height]]}}
+        respectively.
     9. Let |defaultVisibleRect| be a new {{DOMRect}} constructed with
-        «[ "x:" → `0`, "y" → `0`, "width" → |width|, "height" → |height| ]»
-    10. Run the [=VideoFrame/Initialize Visible Rect and Display Size=]
-        algorithm with |init|, |frame|, |defaultVisibleRect|, |width|, and
-        |height|.
+        «[ "x:" → `0`, "y" → `0`, "width" → |codedWidth|, "height" → |codedHeight| ]»
+    10. Run the [=VideoFrame/Initialize Visible Rect, Orientation, and Display Size=]
+        algorithm with |init|, |frame|, |defaultVisibleRect|,
+        |defaultDisplayWidth|, and |defaultDisplayHeight|.
     11. Assign `init`.{{VideoFrameInit/duration}} to
         |frame|'s {{VideoFrame/[[duration]]}}.
     12. Assign `init`.{{VideoFrameInit/timestamp}} to
@@ -4008,9 +4062,9 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
     14. Otherwise, assign a new {{VideoColorSpace}}, constructed with an empty
         {{VideoColorSpaceInit}}, to {{VideoFrame/[[color space]]}}.
 
-: <dfn for=VideoFrame>Initialize Visible Rect and Display Size</dfn> (with
-    |init|, |frame|, |defaultVisibleRect|, |defaultDisplayWidth| and
-    |defaultDisplayHeight|)
+: <dfn for=VideoFrame>Initialize Visible Rect, Orientation, and Display Size</dfn>
+    (with |init|, |frame|, |defaultVisibleRect|, |baseRotation|, |baseFlip|,
+    |defaultDisplayWidth| and |defaultDisplayHeight|)
 :: 1. Let |visibleRect| be |defaultVisibleRect|.
     2. If |init|.{{VideoFrameInit/visibleRect}} [=map/exists=], assign it to
         |visibleRect|.
@@ -4018,20 +4072,45 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
         and {{DOMRect/height}}, to |frame|'s {{VideoFrame/[[visible left]]}},
         {{VideoFrame/[[visible top]]}}, {{VideoFrame/[[visible width]]}}, and
         {{VideoFrame/[[visible height]]}} respectively.
-    4. If {{VideoFrameInit/displayWidth}} and {{VideoFrameInit/displayHeight}}
+    4. Let |rotation| be the result of running the [=VideoFrame/Parse Rotation=]
+        algorithm, with |init|.{{VideoFrameInit/rotation}}.
+    5. Assign the result of running the [=VideoFrame/Add Rotations=] algorithm,
+        with |baseRotation|, |baseFlip|, and |rotation|, to |frame|'s
+        {{VideoFrame/[[rotation]]}}.
+    6. If |baseFlip| is equal to |init|.{{VideoFrameInit/flip}}, assign `false`
+        to |frame|'s {{VideoFrame/[[flip]]}}. Otherwise, assign `true` to
+        |frame|'s {{VideoFrame/[[flip]]}}.
+    7. If {{VideoFrameInit/displayWidth}} and {{VideoFrameInit/displayHeight}}
         [=map/exist=] in |init|, assign them to {{VideoFrame/[[display width]]}}
         and {{VideoFrame/[[display height]]}} respectively.
-    5. Otherwise:
-        1. Let |widthScale| be the result of dividing |defaultDisplayWidth| by
-            |defaultVisibleRect|.{{DOMRect/width}}.
-        2. Let |heightScale| be the result of dividing |defaultDisplayHeight| by
-            |defaultVisibleRect|.{{DOMRect/height}}.
-        3. Multiply |frame|'s {{VideoFrame/[[visible width]]}} by |widthScale|
-            and round the result. Assign the rounded result to
-            {{VideoFrame/[[display width]]}}.
-        4. Multiply |frame|'s {{VideoFrame/[[visible height]]}} by
-            |heightScale| and round the result. Assign the rounded result to
-            |frame|'s {{VideoFrame/[[display height]]}}.
+    8. Otherwise:
+        1. If |baseRotation| is equal to `0` or `180`:
+            1. Let |widthScale| be the result of dividing |defaultDisplayWidth|
+                by |defaultVisibleRect|.{{DOMRect/width}}.
+            2. Let |heightScale| be the result of dividing
+                |defaultDisplayHeight| by
+                |defaultVisibleRect|.{{DOMRect/height}}.
+        2. Otherwise:
+            1. Let |widthScale| be the result of dividing |defaultDisplayHeight|
+                by |defaultVisibleRect|.{{DOMRect/width}}.
+            2. Let |heightScale| be the result of dividing |defaultDisplayWidth|
+                by |defaultVisibleRect|.{{DOMRect/height}}.
+        3. Let |displayWidth| be
+            `|frame|'s {{VideoFrame/[[visible width]]}} * |widthScale|`, rounded
+            to the nearest integer.
+        4. Let |displayHeight| be
+            `|frame|'s {{VideoFrame/[[visible height]]}} * |heightScale|`,
+            rounded to the nearest integer.
+        5. If |rotation| is equal to `0` or `180`:
+            1. Assign |displayWidth| to |frame|'s
+                {{VideoFrame/[[display width]]}}.
+            2. Assign |displayHeight| to |frame|'s
+                {{VideoFrame/[[display height]]}}.
+        6. Otherwise:
+            1. Assign |displayHeight| to |frame|'s
+                {{VideoFrame/[[display width]]}}.
+            2. Assign |displayWidth| to |frame|'s
+                {{VideoFrame/[[display height]]}}.
 
 : <dfn export>Clone VideoFrame</dfn> (with |frame|)
 :: 1. Let |clone| be a new {{VideoFrame}} initialized as follows:
@@ -4052,9 +4131,25 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
     4. Assign `0` to |frame|'s {{VideoFrame/[[coded width]]}},
         {{VideoFrame/[[coded height]]}}, {{VideoFrame/[[visible left]]}},
         {{VideoFrame/[[visible top]]}}, {{VideoFrame/[[visible width]]}},
-        {{VideoFrame/[[visible height]]}}, {{VideoFrame/[[display width]]}},
-        and {{VideoFrame/[[display height]]}}.
-    5. Assign a new {{VideoFrameMetadata}} to |frame|.{{VideoFrame/[[metadata]]}}.
+        {{VideoFrame/[[visible height]]}}, {{VideoFrame/[[rotation]]}},
+        {{VideoFrame/[[display width]]}}, and {{VideoFrame/[[display height]]}}.
+    5. Assign `false` to |frame|'s {{VideoFrame/[[flip]]}}.
+    6. Assign a new {{VideoFrameMetadata}} to |frame|.{{VideoFrame/[[metadata]]}}.
+
+: <dfn for=VideoFrame>Parse Rotation</dfn> (with |rotation|)
+::  1. Let |alignedRotation| be the nearest multiple of `90` to |rotation|.
+    2. Let |fullTurns| be the greatest multiple of `360` less than or equal to
+        |alignedRotation|.
+    3. Return `|alignedRotation| - |fullTurns|`.
+
+: <dfn for=VideoFrame>Add Rotations</dfn> (with |baseRotation|, |baseFlip|,
+    and |rotation|)
+::  1. If |baseFlip| is `false`, let |combinedRotation| be
+        `|baseRotation| + |rotation|`. Otherwise, let |combinedRotation| be
+        `|baseRotation| - |rotation|`.
+    2. Let |fullTurns| be the greatest multiple of `360` less than or equal to
+        |combinedRotation|.
+    3. Return `|combinedRotation| - |fullTurns|`.
 
 : <dfn for=VideoFrame>Parse VideoFrameCopyToOptions</dfn> (with |options|)
 ::  1. Let |defaultRect| be the result of performing the getter steps for
@@ -4232,7 +4327,7 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
             {{VideoFrame/[[coded height]]}}, {{VideoFrame/[[visible left]]}},
             {{VideoFrame/[[visible top]]}}, {{VideoFrame/[[visible width]]}},
             and {{VideoFrame/[[visible height]]}} respectively.
-	      6. Assign |frame|'s {{VideoFrame/[[duration]]}} and |frame|'s
+        6. Assign |frame|'s {{VideoFrame/[[duration]]}} and |frame|'s
             {{VideoFrame/[[timestamp]]}} to {{VideoFrame/[[duration]]}} and
             {{VideoFrame/[[timestamp]]}} respectively.
         7. Assign the result of running the <a>Convert
