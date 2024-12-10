@@ -176,7 +176,7 @@ export class AudioRenderer {
     debugLog(`bufferAudioData() ts:${data.timestamp} durationSec:${data.duration / 1000000}`);
     // Write to temporary planar arrays, and interleave into the ring buffer.
     for (var i = 0; i < this.channelCount; i++) {
-      data.copyTo(this.interleavingBuffers[i], { planeIndex: i });
+      data.copyTo(this.interleavingBuffers[i], { planeIndex: i, format: "f32-planar" });
     }
     // Write the data to the ring buffer. Because it wraps around, there is
     // potentially two copyTo to do.
