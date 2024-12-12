@@ -395,7 +395,7 @@ Methods {#audiodecoder-methods}
     [=Running a control message=] to configure the decoder means running
     these steps:
     1. Assign `true` to {{AudioDecoder/[[message queue blocked]]}}.
-    1. Enqueue the following steps to {{AudioDecoder/[[codec work queue]]}}:
+    2. Enqueue the following steps to {{AudioDecoder/[[codec work queue]]}}:
         1. Let |supported| be the result of running the <a>Check Configuration
             Support</a> algorithm with |config|.
         2. If |supported| is `false`, [=queue a task=] to run the <a>Close
@@ -730,7 +730,7 @@ Methods {#videodecoder-methods}
     [=Running a control message=] to configure the decoder means running
     these steps:
     1. Assign `true` to {{VideoDecoder/[[message queue blocked]]}}.
-    1. Enqueue the following steps to {{VideoDecoder/[[codec work queue]]}}:
+    2. Enqueue the following steps to {{VideoDecoder/[[codec work queue]]}}:
         1. Let |supported| be the result of running the <a>Check Configuration
             Support</a> algorithm with |config|.
         2. If |supported| is `false`, [=queue a task=] to run the <a>Close
@@ -1462,7 +1462,7 @@ Methods {#videoencoder-methods}
     [=Running a control message=] to configure the encoder means performing
     these steps:
     1. Assign `true` to {{VideoEncoder/[[message queue blocked]]}}.
-    1. Enqueue the following steps to {{VideoEncoder/[[codec work queue]]}}:
+    2. Enqueue the following steps to {{VideoEncoder/[[codec work queue]]}}:
         1. Let |supported| be the result of running the <a>Check Configuration
             Support</a> algorithm with |config|.
         2. If |supported| is `false`, [=queue a task=] to run the <a>Close
@@ -2948,7 +2948,7 @@ dictionary AudioDataInit {
         |options|.{{AudioDataCopyToOptions/format}} to |destFormat|.
     5. Let |bytesPerSample| be the number of bytes per sample, as defined by
         the |destFormat|.
-    4. Return the product of multiplying |bytesPerSample| by
+    6. Return the product of multiplying |bytesPerSample| by
         |copyElementCount|.
 
 : <dfn method for=AudioData>copyTo(|destination|, |options|)</dfn>
@@ -4002,37 +4002,37 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
     2. If |init|.{{VideoFrameInit/alpha}} is {{AlphaOption/discard}},
         assign |otherFrame|.{{VideoFrame/format}}'s [=equivalent opaque format=]
         |format|.
-    1. Let |validInit| be the result of running the [=Validate VideoFrameInit=]
+    3. Let |validInit| be the result of running the [=Validate VideoFrameInit=]
         algorithm with |format| and |otherFrame|'s
         {{VideoFrame/[[coded width]]}} and {{VideoFrame/[[coded height]]}}.
-    2. If |validInit| is `false`, throw a  {{TypeError}}.
-    3. Let |resource| be the [=media resource=] referenced by |otherFrame|'s
+    4. If |validInit| is `false`, throw a  {{TypeError}}.
+    5. Let |resource| be the [=media resource=] referenced by |otherFrame|'s
         {{VideoFrame/[[resource reference]]}}.
-    4. Assign a new reference for |resource| to |frame|'s
+    6. Assign a new reference for |resource| to |frame|'s
         {{VideoFrame/[[resource reference]]}}.
-    5. Assign the following attributes from |otherFrame| to |frame|:
+    7. Assign the following attributes from |otherFrame| to |frame|:
         {{VideoFrame/codedWidth}}, {{VideoFrame/codedHeight}},
         {{VideoFrame/colorSpace}}.
-    6. Let |defaultVisibleRect| be the result of performing the getter steps
+    8. Let |defaultVisibleRect| be the result of performing the getter steps
         for {{VideoFrame/visibleRect}} on |otherFrame|.
-    7. Let |baseRotation| and |baseFlip| be |otherFrame|'s
+    9. Let |baseRotation| and |baseFlip| be |otherFrame|'s
         {{VideoFrame/[[rotation]]}} and {{VideoFrame/[[flip]]}}, respectively.
-    8. Let |defaultDisplayWidth| and |defaultDisplayHeight| be |otherFrame|'s
+    10. Let |defaultDisplayWidth| and |defaultDisplayHeight| be |otherFrame|'s
         {{VideoFrame/[[display width]]}} and {{VideoFrame/[[display height]]}},
         respectively.
-    9. Run the [=VideoFrame/Initialize Visible Rect, Orientation, and Display Size=]
+    11. Run the [=VideoFrame/Initialize Visible Rect, Orientation, and Display Size=]
         algorithm with |init|, |frame|, |defaultVisibleRect|, |baseRotation|,
         |baseFlip|, |defaultDisplayWidth|, and |defaultDisplayHeight|.
-    10. If {{VideoFrameInit/duration}} [=map/exists=] in |init|, assign it to
+    12. If {{VideoFrameInit/duration}} [=map/exists=] in |init|, assign it to
         |frame|'s {{VideoFrame/[[duration]]}}. Otherwise, assign
         |otherFrame|.{{VideoFrame/duration}} to
         |frame|'s {{VideoFrame/[[duration]]}}.
-    11. If {{VideoFrameInit/timestamp}} [=map/exists=] in |init|, assign it to
+    13. If {{VideoFrameInit/timestamp}} [=map/exists=] in |init|, assign it to
         |frame|'s {{VideoFrame/[[timestamp]]}}. Otherwise, assign
         |otherFrame|'s {{VideoFrame/timestamp}} to
         |frame|'s {{VideoFrame/[[timestamp]]}}.
-    12. Assign |format| to |frame|.{{VideoFrame/[[format]]}}.
-    13. Assign the result of calling [=Copy VideoFrame metadata=]
+    14. Assign |format| to |frame|.{{VideoFrame/[[format]]}}.
+    15. Assign the result of calling [=Copy VideoFrame metadata=]
         with |init|'s {{VideoFrameInit/metadata}} to |frame|.{{VideoFrame/[[metadata]]}}.
 
 : <dfn for=VideoFrame>Initialize Frame With Resource</dfn> (with
@@ -5459,15 +5459,15 @@ interface ImageDecoder {
         `"processed"`.
     3. Otherwise, assign the {{ImageDecoder/[[codec implementation]]}} internal
         slot with an implementation supporting `init.type`
-    3. Assign `true` to {{ImageDecoder/[[message queue blocked]]}}.
-    3. Enqueue the following steps to the {{ImageDecoder/[[codec work queue]]}}:
+    4. Assign `true` to {{ImageDecoder/[[message queue blocked]]}}.
+    5. Enqueue the following steps to the {{ImageDecoder/[[codec work queue]]}}:
         1. Configure {{ImageDecoder/[[codec implementation]]}} in accordance
             with the values given for {{ImageDecoderInit/colorSpaceConversion}},
             {{ImageDecoderInit/desiredWidth}}, and
             {{ImageDecoderInit/desiredHeight}}.
         2. Assign `false` to {{ImageDecoder/[[message queue blocked]]}}.
         3. [=Queue a task=] to [=Process the control message queue=].
-    4. Return `"processed"`.
+    6. Return `"processed"`.
 
     [=Running a control message=] to <dfn>decode track metadata</dfn> means
     running these steps:
