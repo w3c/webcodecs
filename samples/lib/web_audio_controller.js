@@ -77,8 +77,8 @@ export class WebAudioController {
     // hardware buffering, etc. This starts out negative, because it takes some
     // time to buffer, and crosses zero as the first audio sample is produced
     // by the audio output device.
-    let totalOutputLatency =
-        this.audioContext.outputLatency + this.audioContext.baseLatency;
+    let outputLatency = this.audioContext.outputLatency ? this.audioContext.outputLatency : 0;
+    let totalOutputLatency = outputLatency + this.audioContext.baseLatency;
 
     return Math.max(this.audioContext.currentTime - totalOutputLatency, 0.0);
   }
