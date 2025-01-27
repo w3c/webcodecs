@@ -922,10 +922,13 @@ Algorithms {#videodecoder-algorithms}
         5. If {{VideoDecoderConfig/colorSpace}} [=map/exists=] in the
             {{VideoDecoder/[[active decoder config]]}}, assign its value to
             |colorSpace|.
-        6. Let |frame| be the result of running the [=Create a VideoFrame=]
+        6. Assign the values of {{VideoDecoderConfig/rotation}} and
+            {{VideoDecoderConfig/flip}} to |rotation| and |flip| respectively.
+        7. Let |frame| be the result of running the [=Create a VideoFrame=]
             algorithm with |output|, |timestamp|, |duration|,
-            |displayAspectWidth|, |displayAspectHeight|, and |colorSpace|.
-        7. Invoke {{VideoDecoder/[[output callback]]}} with |frame|.
+            |displayAspectWidth|, |displayAspectHeight|, |colorSpace|,
+            |rotation|, and |flip|.
+        8. Invoke {{VideoDecoder/[[output callback]]}} with |frame|.
   </dd>
   <dt><dfn>Reset VideoDecoder</dfn> (with |exception|)</dt>
   <dd>
@@ -1970,6 +1973,8 @@ dictionary VideoDecoderConfig {
   VideoColorSpaceInit colorSpace;
   HardwareAcceleration hardwareAcceleration = "no-preference";
   boolean optimizeForLatency;
+  double rotation = 0;
+  boolean flip = false;
 };
 </xmp>
 
@@ -2058,6 +2063,14 @@ run these steps:
     NOTE: In addition to User Agent and hardware limitations, some codec
         bitstreams require a minimum number of inputs before any output can be
         produced.
+  </dd>
+  <dt><dfn dict-member for=VideoDecoderConfig>rotation</dfn></dt>
+  <dd>
+    Sets the {{VideoFrame/rotation}} attribute on decoded frames.
+  </dd>
+  <dt><dfn dict-member for=VideoDecoderConfig>flip</dfn></dt>
+  <dd>
+    Sets the {{VideoFrame/flip}} attribute on decoded frames.
   </dd>
 </dl>
 
@@ -3910,7 +3923,7 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
         with {{VideoFrame/[[metadata]]}}.
 
 ### Algorithms ###{#videoframe-algorithms}
-: <dfn>Create a VideoFrame</dfn> (with |output|, |timestamp|, |duration|, |displayAspectWidth|, |displayAspectHeight|, and |colorSpace|)
+: <dfn>Create a VideoFrame</dfn> (with |output|, |timestamp|, |duration|, |displayAspectWidth|, |displayAspectHeight|, |colorSpace|, |rotation|, and |flip|)
 :: 1. Let |frame| be a new {{VideoFrame}}, constructed as follows:
         1. Assign `false` to {{platform object/[[Detached]]}}.
         2. Let |resource| be the [=media resource=] described by |output|.
@@ -3940,6 +3953,8 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
         11. Assign {{VideoFrame/[[color space]]}} with the result of running the
             [=VideoFrame/Pick Color Space=] algorithm, with |colorSpace| and
             {{VideoFrame/[[format]]}}.
+        12. Assign {{VideoFrame/rotation}} and {{VideoFrame/flip}} to |rotation|
+            and |flip| respectively.
     2. Return |frame|.
 
 
@@ -5742,9 +5757,11 @@ interface ImageDecoder {
                 3. If a |timestamp| can otherwise be trivially generated from
                     metadata without further decoding, assign that to |timestamp|.
                 4. Otherwise, assign `0` to |timestamp|.
-        4. Assign {{ImageDecodeResult/image}} with the result of running the
-            [=Create a VideoFrame=] algorithm with |output|, |timestamp|, and
-            |duration|.
+        4. If {{ImageDecoder/[[encoded data]]}} contains orientation metadata
+            describe it as |rotation| and |flip|.
+        5. Assign {{ImageDecodeResult/image}} with the result of running the
+            [=Create a VideoFrame=] algorithm with |output|, |timestamp|,
+            |duration|, |rotation|, and |flip|.
     12. Run the [=ImageDecoder/Resolve Decode=] algorithm with |promise| and
         |decodeResult|.
 
@@ -5808,11 +5825,13 @@ interface ImageDecoder {
             3. If a |timestamp| can otherwise be trivially generated from
                 metadata without further decoding, assign that to |timestamp|.
             4. Otherwise, assign `0` to |timestamp|.
-    17. Assign {{ImageDecodeResult/image}} with the result of running the
-        [=Create a VideoFrame=] algorithm with |output|, |timestamp|, and
-        |duration|.
-    18. Remove |promise| from {{ImageDecoder/[[pending decode promises]]}}.
-    19. Resolve |promise| with |decodeResult|.
+    17. If {{ImageDecoder/[[encoded data]]}} contains orientation metadata
+        describe it as |rotation| and |flip|.
+    18. Assign {{ImageDecodeResult/image}} with the result of running the
+        [=Create a VideoFrame=] algorithm with |output|, |timestamp|,
+        |duration|, |rotation|, and |flip|.
+    19. Remove |promise| from {{ImageDecoder/[[pending decode promises]]}}.
+    20. Resolve |promise| with |decodeResult|.
 
 : <dfn for=ImageDecoder>Resolve Decode</dfn> (with |promise| and |result|)
 :: 1. [=Queue a task=] to perform these steps:
