@@ -1402,6 +1402,10 @@ Internal Slots {#videoencoder-internal-slots}
 : <dfn attribute for=VideoEncoder>[[dequeue event scheduled]]</dfn>
 :: A boolean indicating whether a {{VideoEncoder/dequeue}} event is already
     scheduled to fire. Used to avoid event spam.
+: <dfn attribute for=VideoEncoder>[[active orientation]]</dfn>
+:: An integer and boolean pair indicating the {{VideoFrame/[[flip]]}} and
+    {{VideoFrame/[[rotation]]}} of the first {{VideoFrame}} given to
+    {{VideoEncoder/encode()}} after {{VideoEncoder/configure()}}.
 
 Constructors {#videoencoder-constructors}
 -----------------------------------------
@@ -1461,8 +1465,9 @@ Methods {#videoencoder-methods}
     2. If {{VideoEncoder/[[state]]}} is `"closed"`, throw an
         {{InvalidStateError}}.
     3. Set {{VideoEncoder/[[state]]}} to `"configured"`.
-    4. [=Queue a control message=] to configure the encoder using |config|.
-    5. [=Process the control message queue=].
+    4. Set {{VideoEncoder/[[active orientation]]}} to `null`.
+    5. [=Queue a control message=] to configure the encoder using |config|.
+    6. [=Process the control message queue=].
 
     [=Running a control message=] to configure the encoder means performing
     these steps:
@@ -1491,11 +1496,16 @@ Methods {#videoencoder-methods}
         is `true`, throw a {{TypeError}}.
     2. If {{VideoEncoder/[[state]]}} is not `"configured"`, throw an
         {{InvalidStateError}}.
-    3. Let |frameClone| hold the result of running the [=Clone VideoFrame=]
+    3. If {{VideoEncoder/[[active orientation]]}} is not `null` and does not match
+        |frame|'s {{VideoFrame/[[rotation]]}} and {{VideoFrame/[[flip]]}} throw a
+        {{DataError}}.
+    4. If {{VideoEncoder/[[active orientation]]}} is `null`, assign |frame|'s
+        {{VideoFrame/[[rotation]]}} and {{VideoFrame/[[flip]]}} to it.
+    5. Let |frameClone| hold the result of running the [=Clone VideoFrame=]
         algorithm with |frame|.
-    4. Increment {{VideoEncoder/[[encodeQueueSize]]}}.
-    5. [=Queue a control message=] to encode |frameClone|.
-    6. [=Process the control message queue=].
+    6. Increment {{VideoEncoder/[[encodeQueueSize]]}}.
+    7. [=Queue a control message=] to encode |frameClone|.
+    8. [=Process the control message queue=].
 
     [=Running a control message=] to encode the frame means performing these
     steps:
@@ -1646,7 +1656,11 @@ Algorithms {#videoencoder-algorithms}
                 `outputConfig.displayAspectWidth`.
             5. Assign `encoderConfig.displayHeight` to
                 `outputConfig.displayAspectHeight`.
-            6. Assign the remaining keys of `outputConfig` as determined by
+            6. Assign {{VideoFrame/[[rotation]]}} from the {{VideoFrame}}
+                associated with |output| to `outputConfig.rotation`.
+            7. Assign {{VideoFrame/[[flip]]}} from the {{VideoFrame}}
+                associated with |output| to `outputConfig.flip`.
+            8. Assign the remaining keys of `outputConfig` as determined by
                 {{VideoEncoder/[[codec implementation]]}}. The User Agent
                 <em class="rfc2119">MUST</em> ensure that the configuration is
                 completely described such that |outputConfig| could be used to
