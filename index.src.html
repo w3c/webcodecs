@@ -1938,8 +1938,8 @@ AudioDecoderConfig{#audio-decoder-config}
 <xmp class='idl'>
 dictionary AudioDecoderConfig {
   required DOMString codec;
-  [EnforceRange] required unsigned long sampleRate;
-  [EnforceRange] required unsigned long numberOfChannels;
+  required [EnforceRange] unsigned long sampleRate;
+  required [EnforceRange] unsigned long numberOfChannels;
   BufferSource description;
 };
 </xmp>
@@ -2147,8 +2147,8 @@ VideoEncoderConfig{#video-encoder-config}
 <xmp class='idl'>
 dictionary VideoEncoderConfig {
   required DOMString codec;
-  [EnforceRange] required unsigned long width;
-  [EnforceRange] required unsigned long height;
+  required [EnforceRange] unsigned long width;
+  required [EnforceRange] unsigned long height;
   [EnforceRange] unsigned long displayWidth;
   [EnforceRange] unsigned long displayHeight;
   [EnforceRange] unsigned long long bitrate;
@@ -2562,7 +2562,7 @@ interface EncodedAudioChunk {
 
 dictionary EncodedAudioChunkInit {
   required EncodedAudioChunkType type;
-  [EnforceRange] required long long timestamp;    // microseconds
+  required [EnforceRange] long long timestamp;    // microseconds
   [EnforceRange] unsigned long long duration;     // microseconds
   required AllowSharedBufferSource data;
   sequence<ArrayBuffer> transfer = [];
@@ -2668,7 +2668,7 @@ interface EncodedVideoChunk {
 
 dictionary EncodedVideoChunkInit {
   required EncodedVideoChunkType type;
-  [EnforceRange] required long long timestamp;        // microseconds
+  required [EnforceRange] long long timestamp;        // microseconds
   [EnforceRange] unsigned long long duration;         // microseconds
   required AllowSharedBufferSource data;
   sequence<ArrayBuffer> transfer = [];
@@ -2851,9 +2851,9 @@ interface AudioData {
 dictionary AudioDataInit {
   required AudioSampleFormat format;
   required float sampleRate;
-  [EnforceRange] required unsigned long numberOfFrames;
-  [EnforceRange] required unsigned long numberOfChannels;
-  [EnforceRange] required long long timestamp;  // microseconds
+  required [EnforceRange] unsigned long numberOfFrames;
+  required [EnforceRange] unsigned long numberOfChannels;
+  required [EnforceRange] long long timestamp;  // microseconds
   required BufferSource data;
   sequence<ArrayBuffer> transfer = [];
 };
@@ -3147,7 +3147,7 @@ Note: It's expected that {{AudioDataInit}}'s {{AudioDataInit/data}}'s memory
 
 <xmp class='idl'>
 dictionary AudioDataCopyToOptions {
-  [EnforceRange] required unsigned long planeIndex;
+  required [EnforceRange] unsigned long planeIndex;
   [EnforceRange] unsigned long frameOffset = 0;
   [EnforceRange] unsigned long frameCount;
   AudioSampleFormat format;
@@ -4511,8 +4511,8 @@ planes as decided by the User Agent.
 
 <xmp class='idl'>
 dictionary PlaneLayout {
-  [EnforceRange] required unsigned long offset;
-  [EnforceRange] required unsigned long stride;
+  required [EnforceRange] unsigned long offset;
+  required [EnforceRange] unsigned long stride;
 };
 </xmp>
 
