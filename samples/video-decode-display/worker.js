@@ -59,7 +59,8 @@ function start({dataUri, rendererName, canvas}) {
   }
 
   let lastTimestamp = -Infinity;
-  // Set up a VideoDecoer.
+  
+  // Set up a VideoDecoder.
   const decoder = new VideoDecoder({
     output(frame) {
       // Update statistics.
@@ -71,12 +72,12 @@ function start({dataUri, rendererName, canvas}) {
         setStatus("render", `${fps.toFixed(0)} fps`);
       }
 
-
       if (frame.timestamp < lastTimestamp) {
         console.error(`Decoded frame ${frame.timestamp} µs out of order, last frame was ${lastTimestamp} µs`);
       } else {
         console.log(`Decoded frame ${frame.timestamp} µs`);
       }
+
       lastTimestamp = frame.timestamp;
 
       // Schedule the frame to be rendered.

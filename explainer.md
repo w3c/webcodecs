@@ -84,7 +84,7 @@ Please note that the examples outlined below are merely sketches with several
 methods left unimplemented for brevity. For complete working samples, please
 see:
 * https://w3c.github.io/webcodecs/samples/
-* https://web.dev/webcodecs/
+* https://developer.chrome.com/docs/web-platform/best-practices/webcodecs
 
 ### Example of video rendering to Canvas for extremely low-latency streaming (e.g. cloud gaming)
 

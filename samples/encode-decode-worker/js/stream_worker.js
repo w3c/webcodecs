@@ -42,6 +42,7 @@ let decqueue_aggregate = {
 
 function enc_update(data) {
   enc_aggregate.all.push(data);
+  //self.postMessage({text: 'enc_update called: ' + JSON.stringify(data)});
 }
 
 function encqueue_update(duration) {
@@ -214,7 +215,7 @@ class pipeline {
              let config = JSON.parse(chunk.config);
              try {
                const decoderSupport = await VideoDecoder.isConfigSupported(config);
-               if (decoderSupport.supported) { 
+               if (decoderSupport.supported) {
                  this.decoder.configure(decoderSupport.config);
                  self.postMessage({text: 'Decoder successfully configured:\n' + JSON.stringify(decoderSupport.config)});
                } else {
@@ -252,8 +253,7 @@ class pipeline {
            output: (chunk, cfg) => {
              if (cfg.decoderConfig) {
                cfg.decoderConfig.hardwareAcceleration = config.decHwAcceleration;
-               cfg.decoderConfig.optimizeForLatency = true;
-               if (config.latencyPref == 'quality') cfg.decoderConfig.optimizeForLatency = false;
+               cfg.decoderConfig.optimizeForLatency = (config.latencyMode == "realtime");
                const decoderConfig = JSON.stringify(cfg.decoderConfig);
                self.postMessage({text: 'Configuration: ' + decoderConfig});
                const configChunk =
@@ -264,14 +264,14 @@ class pipeline {
                   deltaframeIndex: this.deltaframeIndex,
                   timestamp: 0,
                   pt: 0,
-                  config: decoderConfig 
+                  config: decoderConfig
                };
-               controller.enqueue(configChunk); 
+               controller.enqueue(configChunk);
              }
              if (chunk.type != 'config'){
               const after = performance.now();
               enc_update({output: 1, timestamp: chunk.timestamp, time: after});
-             } 
+             }
              chunk.temporalLayerId = 0;
              if (cfg.svc) {
                chunk.temporalLayerId = cfg.svc.temporalLayerId;
@@ -282,7 +282,7 @@ class pipeline {
                this.deltaframeIndex = 0;
              } else {
                this.deltaframeIndex++;
-             } 
+             }
              this.pending_outputs--;
              chunk.seqNo = this.seqNo;
              chunk.keyframeIndex = this.keyframeIndex;
@@ -296,11 +296,11 @@ class pipeline {
          try {
              const encoderSupport = await VideoEncoder.isConfigSupported(config);
              if (encoderSupport.supported) {
-             this.encoder.configure(encoderSupport.config);
-             self.postMessage({text: 'Encoder successfully configured:\n' + JSON.stringify(encoderSupport.config)});
-           } else {
-             self.postMessage({severity: 'fatal', text: 'Config not supported:\n' + JSON.stringify(encoderSupport.config)});
-           }
+               this.encoder.configure(encoderSupport.config);
+               self.postMessage({text: 'Encoder successfully configured:\n' + JSON.stringify(encoderSupport.config)});
+             } else {
+               self.postMessage({severity: 'fatal', text: 'Config not supported:\n' + JSON.stringify(encoderSupport.config)});
+             }
          } catch (e) {
             self.postMessage({severity: 'fatal', text: `Configuration error: ${e.message}`});
          }
@@ -311,13 +311,13 @@ class pipeline {
            const insert_keyframe = (this.frameCounter % config.keyInterval) == 0;
            this.frameCounter++;
            try {
-             if (this.encoder.state != "closed") {
+             if (this.encoder.state == "configured") {
                const queue = this.encoder.encodeQueueSize;
                encqueue_update(queue);
                const before = performance.now();
                enc_update({output: 0, timestamp: frame.timestamp, time: before});
                this.encoder.encode(frame, { keyFrame: insert_keyframe });
-             } 
+             }
            } catch(e) {
              self.postMessage({severity: 'fatal', text: 'Encoder Error: ' + e.message});
            }
@@ -331,7 +331,7 @@ class pipeline {
      if (encoder.state != "closed") encoder.close();
      if (decoder.state != "closed") decoder.close();
      stopped = true;
-     this.stopped = true; 
+     this.stopped = true;
      const len = encqueue_aggregate.all.length;
      if (len > 1) {
        const enc_stats = enc_report();
@@ -355,7 +355,7 @@ class pipeline {
      started = true;
      let duplexStream, readStream, writeStream;
      self.postMessage({text: 'Start method called.'});
-     try { 
+     try {
        await this.inputStream
            .pipeThrough(this.EncodeVideoStream(self,this.config))
            .pipeThrough(this.DecodeVideoStream(self))

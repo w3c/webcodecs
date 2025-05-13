@@ -8,7 +8,8 @@ Group: mediawg
 ED: https://w3c.github.io/webcodecs/opus_codec_registration.html
 TR: https://www.w3.org/TR/webcodecs-opus-codec-registration/
 Editor: Paul Adenot, w3cid 62410, Mozilla https://www.mozilla.org/
-Editor: Bernard Aboba, w3cid 65611, Microsoft Corporation https://www.microsoft.com/
+Editor: Eugene Zemtsov, w3cid 139375, Google LLC https://www.google.com/
+Former Editor: Bernard Aboba, w3cid 65611, Microsoft Corporation https://www.microsoft.com/
 Former Editor: Chris Cunningham, w3cid 114832, Google Inc. https://www.google.com/
 
 Abstract: This registration is entered into the [[webcodecs-codec-registry]].
@@ -71,10 +72,10 @@ If the bitstream is in {{OpusBitstreamFormat/ogg}} format,
 AudioDecoderConfig description {#audiodecoderconfig-description}
 ================================================================
 
-{{AudioDecoderConfig/description}} can optionally set to an Identification
+{{AudioDecoderConfig/description}} can be optionally set to an Identification
 Header, described in section 5.1 of [[OPUS-IN-OGG]].
 
-If a {{AudioDecoderConfig/description}} has been set, the bistream is assumed
+If a {{AudioDecoderConfig/description}} has been set, the bitstream is assumed
 to be in {{OpusBitstreamFormat/ogg}} format.
 
 If a {{AudioDecoderConfig/description}} has not been set, the bitstream is
@@ -115,6 +116,8 @@ OpusEncoderConfig {#opus-encoder-config}
 <xmp>
 dictionary OpusEncoderConfig {
   OpusBitstreamFormat format = "opus";
+  OpusSignal signal = "auto";
+  OpusApplication application = "audio";
   [EnforceRange] unsigned long long frameDuration = 20000;
   [EnforceRange] unsigned long complexity;
   [EnforceRange] unsigned long packetlossperc = 0;
@@ -138,6 +141,14 @@ To check if an {{OpusEncoderConfig}} is valid, run these steps:
   <dd>
     Configures the format of output {{EncodedAudioChunk}}s. See
     {{OpusBitstreamFormat}}.
+  </dd>
+  <dt><dfn dict-member for=OpusEncoderConfig>signal</dfn></dt>
+  <dd>
+    Specificies the type of audio signal being encoded. See {{OpusSignal}}.
+  </dd>
+  <dt><dfn dict-member for=OpusEncoderConfig>application</dfn></dt>
+  <dd>
+    Specificies the encoder's intended application. See {{OpusApplication}}.
   </dd>
   <dt><dfn dict-member for=OpusEncoderConfig>frameDuration</dfn></dt>
   <dd>
@@ -194,6 +205,66 @@ encoded audio stream.
   <dd>
     The metadata of the encoded audio stream are provided at configuration via
     {{AudioDecoderConfig/description|AudioDecoderConfig.description}}.
+  </dd>
+</dl>
+
+OpusSignal {#opus-signal}
+------------------------------------------
+<pre class='idl'>
+<xmp>
+enum OpusSignal {
+  "auto",
+  "music",
+  "voice",
+};
+</xmp>
+</pre>
+
+The {{OpusSignal}} indicates the default value for the type of signal being encoded.
+
+<dl>
+  <dt><dfn enum-value for=OpusSignal>auto</dfn></dt>
+  <dd>
+    The audio signal is not specified to be of a particular type.
+  </dd>
+  <dt><dfn enum-value for=OpusSignal>music</dfn></dt>
+  <dd>
+    The audio signal is music.
+  </dd>
+  <dt><dfn enum-value for=OpusSignal>voice</dfn></dt>
+  <dd>
+    The audio signal is voice or speech.
+  </dd>
+</dl>
+
+OpusApplication {#opus-application}
+------------------------------------------
+<pre class='idl'>
+<xmp>
+enum OpusApplication {
+  "voip",
+  "audio",
+  "lowdelay",
+};
+</xmp>
+</pre>
+
+The {{OpusApplication}} indicates the default value for the encoder's intended
+application.
+
+<dl>
+  <dt><dfn enum-value for=OpusApplication>voip</dfn></dt>
+  <dd>
+    Process signal for improved speech intelligibility.
+  </dd>
+  <dt><dfn enum-value for=OpusApplication>audio</dfn></dt>
+  <dd>
+    Favor faithfulness to the original input.
+  </dd>
+  <dt><dfn enum-value for=OpusApplication>lowdelay</dfn></dt>
+  <dd>
+    Configure the minimum possible coding delay by disabling certain modes of
+    operation.
   </dd>
 </dl>
 
