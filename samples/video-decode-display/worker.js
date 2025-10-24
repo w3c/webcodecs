@@ -87,6 +87,9 @@ function start({dataUri, rendererName, canvas}) {
     onChunk(chunk) {
       decoder.decode(chunk);
     },
+    onEndOfStream() {
+      decoder.flush();
+    },
     setStatus
   });
 }

@@ -2,13 +2,15 @@ importScripts("../third_party/mp4boxjs/mp4box.all.min.js");
 
 // Wraps an MP4Box File as a WritableStream underlying sink.
 class MP4FileSink {
+  #onEndOfStream = null;
   #setStatus = null;
   #file = null;
   #offset = 0;
 
-  constructor(file, setStatus) {
+  constructor(file, onEndOfStream, setStatus) {
     this.#file = file;
     this.#setStatus = setStatus;
+    this.#onEndOfStream = onEndOfStream;
   }
 
   write(chunk) {
@@ -28,6 +30,7 @@ class MP4FileSink {
   close() {
     this.#setStatus("fetch", "Done");
     this.#file.flush();
+    this.#onEndOfStream();
   }
 }
 
@@ -39,7 +42,7 @@ class MP4Demuxer {
   #setStatus = null;
   #file = null;
 
-  constructor(uri, {onConfig, onChunk, setStatus}) {
+  constructor(uri, {onConfig, onChunk, onEndOfStream, setStatus}) {
     this.#onConfig = onConfig;
     this.#onChunk = onChunk;
     this.#setStatus = setStatus;
@@ -51,7 +54,7 @@ class MP4Demuxer {
     this.#file.onSamples = this.#onSamples.bind(this);
 
     // Fetch the file and pipe the data through.
-    const fileSink = new MP4FileSink(this.#file, setStatus);
+    const fileSink = new MP4FileSink(this.#file, onEndOfStream, setStatus);
     fetch(uri).then(response => {
       // highWaterMark should be large enough for smooth streaming, but lower is
       // better for memory usage.
