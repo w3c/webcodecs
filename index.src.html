@@ -5583,8 +5583,10 @@ interface ImageDecoder {
     1. If |type| is not a [=valid image MIME type=], return a {{Promise}}
         rejected with {{TypeError}}.
     2. Let |p| be a new {{Promise}}.
-    3. In parallel, resolve |p| with the result of running the
-        [=Check Type Support=] algorithm with |type|.
+    3. Run the following steps [=in parallel=]:
+        1. Let |isSupported| be the result of running the
+            [=Check Type Support=] algorithm with |type|.
+        2. [=Queue a task=] to resolve |p| with |isSupported|.
     4. Return |p|.
 
 ### Algorithms ### {#imagedecoder-algorithms}
