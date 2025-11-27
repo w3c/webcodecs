@@ -4100,8 +4100,10 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
     (with |init|, |frame|, |defaultVisibleRect|, |baseRotation|, |baseFlip|,
     |defaultDisplayWidth| and |defaultDisplayHeight|)
 :: 1. Let |visibleRect| be |defaultVisibleRect|.
-    2. If |init|.{{VideoFrameInit/visibleRect}} [=map/exists=], assign it to
-        |visibleRect|.
+    2. If |init|.{{VideoFrameInit/visibleRect}} [=map/exists=]:
+        1. If any attribute of |init|.{{VideoFrameInit/visibleRect}} is negative or
+            not finite, throw a {{TypeError}}.
+        2. Assign |init|.{{VideoFrameInit/visibleRect}} to |visibleRect|.
     3. Assign |visibleRect|'s {{DOMRect/x}}, {{DOMRect/y}}, {{DOMRect/width}},
         and {{DOMRect/height}}, to |frame|'s {{VideoFrame/[[visible left]]}},
         {{VideoFrame/[[visible top]]}}, {{VideoFrame/[[visible width]]}}, and
@@ -4235,15 +4237,16 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
     |overrideRect|, |codedWidth|, |codedHeight|, and |format|)
 :: 1. Let |sourceRect| be |defaultRect|
     2. If |overrideRect| is not `undefined`:
-        1. If either of |overrideRect|.{{DOMRectInit/width}} or
+        1. If any attribute of |overrideRect| is negative or not finite, return a {{TypeError}}.
+        2. If either of |overrideRect|.{{DOMRectInit/width}} or
             {{DOMRectInit/height}} is `0`, return a {{TypeError}}.
-        2. If the sum of |overrideRect|.{{DOMRectInit/x}} and
+        3. If the sum of |overrideRect|.{{DOMRectInit/x}} and
             |overrideRect|.{{DOMRectInit/width}} is greater than
             |codedWidth|, return a {{TypeError}}.
-        3. If the sum of |overrideRect|.{{DOMRectInit/y}} and
+        4. If the sum of |overrideRect|.{{DOMRectInit/y}} and
             |overrideRect|.{{DOMRectInit/height}} is greater than
             |codedHeight|, return a {{TypeError}}.
-        4. Assign |overrideRect| to |sourceRect|.
+        5. Assign |overrideRect| to |sourceRect|.
     3. Let |validAlignment| be the result of running the
         [=VideoFrame/Verify Rect Offset Alignment=] algorithm with |format| and
         |sourceRect|.
