@@ -3830,7 +3830,7 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
     When invoked, run these steps:
     1. If {{platform object/[[Detached]]}} is `true`, throw an
         {{InvalidStateError}} {{DOMException}}.
-    2. If {{VideoFrame/[[format]]}} is `null`, throw a {{NotSupportedError}}
+    2. If {{VideoFrame/[[format]]}} is `null` and |options|.{{VideoFrameCopyToOptions/format}} does not [=map/exist=], throw a {{NotSupportedError}}
         {{DOMException}}.
     3. Let |combinedLayout| be the result of running the [=Parse
         VideoFrameCopyToOptions=] algorithm with |options|.
@@ -3849,7 +3849,7 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
     When invoked, run these steps:
     1. If {{platform object/[[Detached]]}} is `true`, return a promise rejected
         with a {{InvalidStateError}} {{DOMException}}.
-    2. If {{VideoFrame/[[format]]}} is `null`, return a promise rejected with a
+    2. If {{VideoFrame/[[format]]}} is `null` and |options|.{{VideoFrameCopyToOptions/format}} does not [=map/exist=], return a promise rejected with a
         {{NotSupportedError}} {{DOMException}}.
     3. Let |combinedLayout| be the result of running the [=Parse
         VideoFrameCopyToOptions=] algorithm with |options|.
@@ -6258,6 +6258,7 @@ An additional concern is exposing the underlying codecs to input mutation race
 conditions, such as allowing a site to mutate a codec input or output while
 the underlying codec is still operating on that data. This concern is mitigated
 by ensuring that input and output interfaces are immutable.
+</div>
 
 Privacy Considerations{#privacy-considerations}
 ===============================================
@@ -6305,6 +6306,7 @@ Additionally, User Agents <em class="rfc2119">MAY</em> implement a "privacy
 budget", which depletes as authors use WebCodecs and other identifying APIs.
 Upon exhaustion of the privacy budget, codec capabilities could be reduced to a
 common baseline or prompt for user approval.
+</div>
 
 Best Practices for Authors Using WebCodecs{#best-practices-developers}
 ======================================================================
