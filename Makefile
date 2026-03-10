@@ -16,10 +16,11 @@ else
 endif
 else
 	@ echo "Building $@ remotely"
-	@ (HTTP_STATUS=$$(curl https://api.csswg.org/bikeshed/ \
+	@ (HTTP_STATUS=$$(curl https://www.w3.org/publications/spec-generator/ \
 	                       --output $@ \
 	                       --write-out "%{http_code}" \
 	                       --header "Accept: text/plain, text/html" \
+	                       -F type=bikeshed-spec \
 	                       -F die-on=warning \
 	                       -F file=@$<) && \
 	[[ "$$HTTP_STATUS" -eq "200" ]]) || ( \
