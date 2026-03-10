@@ -5,9 +5,9 @@
   <title>WebCodecs</title>
   <meta content="ED" name="w3c-status">
   <link href="https://www.w3.org/StyleSheets/TR/2021/W3C-ED" rel="stylesheet">
-  <meta content="Bikeshed version 3c53a5b02, updated Thu Nov 27 17:03:30 2025 +0000" name="generator">
+  <meta content="Bikeshed version 0ef803fdf, updated Tue Jan 6 11:59:39 2026 -0800" name="generator">
   <link href="https://www.w3.org/TR/webcodecs/" rel="canonical">
-  <meta content="6afffe085df06ca9fecec7fcde9cc0e532fc0ccb" name="revision">
+  <meta content="b35e5ee43fededefeb89bc5ac4c4b1841baf9789" name="revision">
   <meta content="dark light" name="color-scheme">
   <link href="https://www.w3.org/StyleSheets/TR/2021/dark.css" media="(prefers-color-scheme: dark)" rel="stylesheet" type="text/css">
 <style>
@@ -723,7 +723,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
 </p>
    <h1 class="no-ref p-name" id="title">WebCodecs</h1>
    <p id="w3c-state"><a href="https://www.w3.org/standards/types/#ED">Editor’s Draft</a>,
-    <time class="dt-updated" datetime="2026-01-29">29 January 2026</time></p>
+    <time class="dt-updated" datetime="2026-03-10">10 March 2026</time></p>
    <details open>
     <summary>More details about this document</summary>
     <div data-fill-with="spec-metadata">
@@ -4930,7 +4930,7 @@ Invoking <code class="idl"><a data-link-type="idl" href="#dom-audiodata-copyto" 
 conversion to the requested format is not supported. Conversion from any
 <code class="idl"><a data-link-type="idl" href="#enumdef-audiosampleformat" id="ref-for-enumdef-audiosampleformat①⑦">AudioSampleFormat</a></code> to <code class="idl"><a data-link-type="idl" href="#dom-audiosampleformat-f32-planar" id="ref-for-dom-audiosampleformat-f32-planar①">f32-planar</a></code> <em class="rfc2119">MUST</em> always
 be supported.</p>
-     <p class="note" role="note"><span class="marker">NOTE:</span> Authors seeking to integrate with <a data-link-type="biblio" href="#biblio-webaudio" title="Web Audio API">[WEBAUDIO]</a> can request
+     <p class="note" role="note"><span class="marker">NOTE:</span> Authors seeking to integrate with <a data-link-type="biblio" href="#biblio-webaudio" title="Web Audio API 1.1">[WEBAUDIO]</a> can request
     <code class="idl"><a data-link-type="idl" href="#dom-audiosampleformat-f32-planar" id="ref-for-dom-audiosampleformat-f32-planar②">f32-planar</a></code> and use the resulting copy to create and <code class="idl"><a data-link-type="idl" href="https://webaudio.github.io/web-audio-api/#AudioBuffer" id="ref-for-AudioBuffer">AudioBuffer</a></code>
     or render via <code class="idl"><a data-link-type="idl" href="https://webaudio.github.io/web-audio-api/#AudioWorklet" id="ref-for-AudioWorklet">AudioWorklet</a></code>.</p>
    </dl>
@@ -5004,7 +5004,7 @@ in different buffers, themselves arranged in an order described in the section
 <a href="#audio-channel-ordering">§ 9.3.3 Audio channel ordering</a>. The <code class="idl"><a data-link-type="idl" href="#audiodata" id="ref-for-audiodata④⓪">AudioData</a></code> has a number of planes equal to the
 <code class="idl"><a data-link-type="idl" href="#audiodata" id="ref-for-audiodata④①">AudioData</a></code>’s <code class="idl"><a data-link-type="idl" href="#dom-audiodata-number-of-channels-slot" id="ref-for-dom-audiodata-number-of-channels-slot⑧">[[number of channels]]</a></code>. Each plane contains
 <code class="idl"><a data-link-type="idl" href="#dom-audiodata-number-of-frames-slot" id="ref-for-dom-audiodata-number-of-frames-slot⑦">[[number of frames]]</a></code> elements.</p>
-   <p class="note" role="note"><span class="marker">NOTE:</span> The <a data-link-type="biblio" href="#biblio-webaudio" title="Web Audio API">Web Audio API</a> currently uses <code class="idl"><a data-link-type="idl" href="#dom-audiosampleformat-f32-planar" id="ref-for-dom-audiosampleformat-f32-planar④">f32-planar</a></code> exclusively.</p>
+   <p class="note" role="note"><span class="marker">NOTE:</span> The <a data-link-type="biblio" href="#biblio-webaudio" title="Web Audio API 1.1">Web Audio API</a> currently uses <code class="idl"><a data-link-type="idl" href="#dom-audiosampleformat-f32-planar" id="ref-for-dom-audiosampleformat-f32-planar④">f32-planar</a></code> exclusively.</p>
    <div class="note" role="note">
     
 NOTE: The following diagram exemplifies the memory layout of <a data-link-type="dfn" href="#planar" id="ref-for-planar⑧">planar</a> versus
@@ -6071,8 +6071,14 @@ algorithm with <var>init</var>, <var>frame</var>, <var>defaultVisibleRect</var>,
       <li data-md>
        <p>Let <var>visibleRect</var> be <var>defaultVisibleRect</var>.</p>
       <li data-md>
-       <p>If <var>init</var>.<code class="idl"><a data-link-type="idl" href="#dom-videoframeinit-visiblerect" id="ref-for-dom-videoframeinit-visiblerect⑧">visibleRect</a></code> <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#map-exists" id="ref-for-map-exists②②">exists</a>, assign it to
-<var>visibleRect</var>.</p>
+       <p>If <var>init</var>.<code class="idl"><a data-link-type="idl" href="#dom-videoframeinit-visiblerect" id="ref-for-dom-videoframeinit-visiblerect⑧">visibleRect</a></code> <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#map-exists" id="ref-for-map-exists②②">exists</a>:</p>
+       <ol>
+        <li data-md>
+         <p>If any attribute of <var>init</var>.<code class="idl"><a data-link-type="idl" href="#dom-videoframeinit-visiblerect" id="ref-for-dom-videoframeinit-visiblerect⑨">visibleRect</a></code> is negative or
+not finite, throw a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#exceptiondef-typeerror" id="ref-for-exceptiondef-typeerror②⓪">TypeError</a></code>.</p>
+        <li data-md>
+         <p>Assign <var>init</var>.<code class="idl"><a data-link-type="idl" href="#dom-videoframeinit-visiblerect" id="ref-for-dom-videoframeinit-visiblerect①⓪">visibleRect</a></code> to <var>visibleRect</var>.</p>
+       </ol>
       <li data-md>
        <p>Assign <var>visibleRect</var>’s <code class="idl"><a data-link-type="idl" href="https://drafts.csswg.org/geometry-1/#dom-domrect-x" id="ref-for-dom-domrect-x">x</a></code>, <code class="idl"><a data-link-type="idl" href="https://drafts.csswg.org/geometry-1/#dom-domrect-y" id="ref-for-dom-domrect-y">y</a></code>, <code class="idl"><a data-link-type="idl" href="https://drafts.csswg.org/geometry-1/#dom-domrect-width" id="ref-for-dom-domrect-width">width</a></code>,
 and <code class="idl"><a data-link-type="idl" href="https://drafts.csswg.org/geometry-1/#dom-domrect-height" id="ref-for-dom-domrect-height">height</a></code>, to <var>frame</var>’s <code class="idl"><a data-link-type="idl" href="#dom-videoframe-visible-left-slot" id="ref-for-dom-videoframe-visible-left-slot④">[[visible left]]</a></code>,
@@ -6297,16 +6303,18 @@ return <code>false</code>.</p>
        <p>If <var>overrideRect</var> is not <code>undefined</code>:</p>
        <ol>
         <li data-md>
+         <p>If any attribute of <var>overrideRect</var> is negative or not finite, return a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#exceptiondef-typeerror" id="ref-for-exceptiondef-typeerror②①">TypeError</a></code>.</p>
+        <li data-md>
          <p>If either of <var>overrideRect</var>.<code class="idl"><a data-link-type="idl" href="https://drafts.csswg.org/geometry-1/#dom-domrectinit-width" id="ref-for-dom-domrectinit-width④">width</a></code> or
-<code class="idl"><a data-link-type="idl" href="https://drafts.csswg.org/geometry-1/#dom-domrectinit-height" id="ref-for-dom-domrectinit-height④">height</a></code> is <code>0</code>, return a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#exceptiondef-typeerror" id="ref-for-exceptiondef-typeerror②⓪">TypeError</a></code>.</p>
+<code class="idl"><a data-link-type="idl" href="https://drafts.csswg.org/geometry-1/#dom-domrectinit-height" id="ref-for-dom-domrectinit-height④">height</a></code> is <code>0</code>, return a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#exceptiondef-typeerror" id="ref-for-exceptiondef-typeerror②②">TypeError</a></code>.</p>
         <li data-md>
          <p>If the sum of <var>overrideRect</var>.<code class="idl"><a data-link-type="idl" href="https://drafts.csswg.org/geometry-1/#dom-domrectinit-x" id="ref-for-dom-domrectinit-x②">x</a></code> and
 <var>overrideRect</var>.<code class="idl"><a data-link-type="idl" href="https://drafts.csswg.org/geometry-1/#dom-domrectinit-width" id="ref-for-dom-domrectinit-width⑤">width</a></code> is greater than
-<var>codedWidth</var>, return a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#exceptiondef-typeerror" id="ref-for-exceptiondef-typeerror②①">TypeError</a></code>.</p>
+<var>codedWidth</var>, return a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#exceptiondef-typeerror" id="ref-for-exceptiondef-typeerror②③">TypeError</a></code>.</p>
         <li data-md>
          <p>If the sum of <var>overrideRect</var>.<code class="idl"><a data-link-type="idl" href="https://drafts.csswg.org/geometry-1/#dom-domrectinit-y" id="ref-for-dom-domrectinit-y②">y</a></code> and
 <var>overrideRect</var>.<code class="idl"><a data-link-type="idl" href="https://drafts.csswg.org/geometry-1/#dom-domrectinit-height" id="ref-for-dom-domrectinit-height⑤">height</a></code> is greater than
-<var>codedHeight</var>, return a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#exceptiondef-typeerror" id="ref-for-exceptiondef-typeerror②②">TypeError</a></code>.</p>
+<var>codedHeight</var>, return a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#exceptiondef-typeerror" id="ref-for-exceptiondef-typeerror②④">TypeError</a></code>.</p>
         <li data-md>
          <p>Assign <var>overrideRect</var> to <var>sourceRect</var>.</p>
        </ol>
@@ -6315,7 +6323,7 @@ return <code>false</code>.</p>
 <a data-link-type="dfn" href="#videoframe-verify-rect-offset-alignment" id="ref-for-videoframe-verify-rect-offset-alignment①">Verify Rect Offset Alignment</a> algorithm with <var>format</var> and
 <var>sourceRect</var>.</p>
       <li data-md>
-       <p>If <var>validAlignment</var> is <code>false</code>, throw a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#exceptiondef-typeerror" id="ref-for-exceptiondef-typeerror②③">TypeError</a></code>.</p>
+       <p>If <var>validAlignment</var> is <code>false</code>, throw a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#exceptiondef-typeerror" id="ref-for-exceptiondef-typeerror②⑤">TypeError</a></code>.</p>
       <li data-md>
        <p>Return <var>sourceRect</var>.</p>
      </ol>
@@ -6327,7 +6335,7 @@ return <code>false</code>.</p>
        <p>Let <var>numPlanes</var> be the number of planes as defined by <var>format</var>.</p>
       <li data-md>
        <p>If <var>layout</var> is not <code>undefined</code> and its length does not equal <var>numPlanes</var>,
- throw a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#exceptiondef-typeerror" id="ref-for-exceptiondef-typeerror②④">TypeError</a></code>.</p>
+ throw a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#exceptiondef-typeerror" id="ref-for-exceptiondef-typeerror②⑥">TypeError</a></code>.</p>
       <li data-md>
        <p>Let <var>minAllocationSize</var> be <code>0</code>.</p>
       <li data-md>
@@ -6380,7 +6388,7 @@ multiplied by <var>sampleBytes</var>.</p>
           <li data-md>
            <p>If <var>planeLayout</var>.<code class="idl"><a data-link-type="idl" href="#dom-planelayout-stride" id="ref-for-dom-planelayout-stride①">stride</a></code> is less than
 <var>computedLayout</var>’s <a data-link-type="dfn" href="#computed-plane-layout-sourcewidthbytes" id="ref-for-computed-plane-layout-sourcewidthbytes②">sourceWidthBytes</a>,
-return a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#exceptiondef-typeerror" id="ref-for-exceptiondef-typeerror②⑤">TypeError</a></code>.</p>
+return a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#exceptiondef-typeerror" id="ref-for-exceptiondef-typeerror②⑦">TypeError</a></code>.</p>
           <li data-md>
            <p>Assign <var>planeLayout</var>.<code class="idl"><a data-link-type="idl" href="#dom-planelayout-offset" id="ref-for-dom-planelayout-offset①">offset</a></code> to <var>computedLayout</var>’s
 <a data-link-type="dfn" href="#computed-plane-layout-destinationoffset" id="ref-for-computed-plane-layout-destinationoffset①">destinationOffset</a>.</p>
@@ -6410,7 +6418,7 @@ return a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.wha
     <a data-link-type="dfn" href="#computed-plane-layout-destinationoffset" id="ref-for-computed-plane-layout-destinationoffset③">destinationOffset</a>.</p>
         <li data-md>
          <p>If <var>planeSize</var> or <var>planeEnd</var> is greater than maximum range of
-    <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-unsigned-long" id="ref-for-idl-unsigned-long⑦③">unsigned long</a></code>, return a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#exceptiondef-typeerror" id="ref-for-exceptiondef-typeerror②⑥">TypeError</a></code>.</p>
+    <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-unsigned-long" id="ref-for-idl-unsigned-long⑦③">unsigned long</a></code>, return a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#exceptiondef-typeerror" id="ref-for-exceptiondef-typeerror②⑧">TypeError</a></code>.</p>
         <li data-md>
          <p>Append <var>planeEnd</var> to <var>endOffsets</var>.</p>
         <li data-md>
@@ -6435,7 +6443,7 @@ continue.</p>
            <p class="note" role="note"><span class="marker">NOTE:</span> If plane A ends before plane B starts, they do not
     overlap.</p>
           <li data-md>
-           <p>Otherwise, return a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#exceptiondef-typeerror" id="ref-for-exceptiondef-typeerror②⑦">TypeError</a></code>.</p>
+           <p>Otherwise, return a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#exceptiondef-typeerror" id="ref-for-exceptiondef-typeerror②⑨">TypeError</a></code>.</p>
           <li data-md>
            <p>Increment <var>earlierPlaneIndex</var> by <code>1</code>.</p>
          </ol>
@@ -7525,7 +7533,7 @@ support any particular type.</p>
      <p>When invoked, run these steps:</p>
      <ol>
       <li data-md>
-       <p>If <var>init</var> is not <a data-link-type="dfn" href="#valid-imagedecoderinit" id="ref-for-valid-imagedecoderinit">valid ImageDecoderInit</a>, throw a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#exceptiondef-typeerror" id="ref-for-exceptiondef-typeerror②⑧">TypeError</a></code>.</p>
+       <p>If <var>init</var> is not <a data-link-type="dfn" href="#valid-imagedecoderinit" id="ref-for-valid-imagedecoderinit">valid ImageDecoderInit</a>, throw a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#exceptiondef-typeerror" id="ref-for-exceptiondef-typeerror③⓪">TypeError</a></code>.</p>
       <li data-md>
        <p>If <var>init</var>.<code class="idl"><a data-link-type="idl" href="#dom-imagedecoderinit-transfer" id="ref-for-dom-imagedecoderinit-transfer">transfer</a></code> contains more than one reference
 to the same <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-ArrayBuffer" id="ref-for-idl-ArrayBuffer①②">ArrayBuffer</a></code>, then throw a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#datacloneerror" id="ref-for-datacloneerror①⑥">DataCloneError</a></code> <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-DOMException" id="ref-for-idl-DOMException④③">DOMException</a></code>.</p>
@@ -7769,7 +7777,7 @@ User Agent.</p>
      <ol>
       <li data-md>
        <p>If <var>type</var> is not a <a data-link-type="dfn" href="#valid-image-mime-type" id="ref-for-valid-image-mime-type">valid image MIME type</a>, return a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-promise" id="ref-for-idl-promise①⑥">Promise</a></code>
-rejected with <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#exceptiondef-typeerror" id="ref-for-exceptiondef-typeerror②⑨">TypeError</a></code>.</p>
+rejected with <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#exceptiondef-typeerror" id="ref-for-exceptiondef-typeerror③①">TypeError</a></code>.</p>
       <li data-md>
        <p>Let <var>p</var> be a new <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-promise" id="ref-for-idl-promise①⑦">Promise</a></code>.</p>
       <li data-md>
@@ -8647,7 +8655,7 @@ Additionally, new abilities to configure and control the codecs can allow for
 new exploits that rely on a specific configuration and/or sequence of control
 operations.</p>
     <p>Platform codecs are historically an internal detail of APIs like
-<code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/media.html#htmlmediaelement" id="ref-for-htmlmediaelement">HTMLMediaElement</a></code>, <a data-link-type="biblio" href="#biblio-webaudio" title="Web Audio API">[WEBAUDIO]</a>, and <a data-link-type="biblio" href="#biblio-webrtc" title="WebRTC: Real-Time Communication in Browsers">[WebRTC]</a>. In this way, it has always
+<code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/media.html#htmlmediaelement" id="ref-for-htmlmediaelement">HTMLMediaElement</a></code>, <a data-link-type="biblio" href="#biblio-webaudio" title="Web Audio API 1.1">[WEBAUDIO]</a>, and <a data-link-type="biblio" href="#biblio-webrtc" title="WebRTC: Real-Time Communication in Browsers">[WebRTC]</a>. In this way, it has always
 been possible to attack the underlying codecs by using malformed media
 files/streams and invoking the various API control methods.</p>
     <p>For example, you can send any stream to a decoder by first wrapping that stream
@@ -8667,23 +8675,24 @@ exploits being able to read user data.</p>
 conditions, such as allowing a site to mutate a codec input or output while
 the underlying codec is still operating on that data. This concern is mitigated
 by ensuring that input and output interfaces are immutable.</p>
-    <h2 class="heading settled" data-level="13" id="privacy-considerations"><span class="secno">13. </span><span class="content">Privacy Considerations</span><a class="self-link" href="#privacy-considerations"></a></h2>
-    <div class="non-normative">
-     
+   </div>
+   <h2 class="heading settled" data-level="13" id="privacy-considerations"><span class="secno">13. </span><span class="content">Privacy Considerations</span><a class="self-link" href="#privacy-considerations"></a></h2>
+   <div class="non-normative">
+    
 This section is non-normative.
 
 
-     <p>The primary privacy impact is an increased ability to fingerprint users by
+    <p>The primary privacy impact is an increased ability to fingerprint users by
 querying for different codec capabilities to establish a codec feature profile.
 Much of this profile is already exposed by existing APIs. Such profiles are very
 unlikely to be uniquely identifying, but can be used with other metrics to
 create a fingerprint.</p>
-     <p>An attacker can accumulate a codec feature profile by calling
+    <p>An attacker can accumulate a codec feature profile by calling
 <code>IsConfigSupported()</code> methods with a number of different configuration
 dictionaries. Similarly, an attacker can attempt to <code>configure()</code> a codec with
 different configuration dictionaries and observe which configurations are
 accepted.</p>
-     <p>Attackers can also use existing APIs to establish much of the codec feature
+    <p>Attackers can also use existing APIs to establish much of the codec feature
 profile. For example, the <a data-link-type="biblio" href="#biblio-media-capabilities" title="Media Capabilities">[media-capabilities]</a> <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/media-capabilities/#dom-mediacapabilities-decodinginfo" id="ref-for-dom-mediacapabilities-decodinginfo">decodingInfo()</a></code> API
 describes what types of decoders are supported and its <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/media-capabilities/#dom-mediacapabilitiesinfo-powerefficient" id="ref-for-dom-mediacapabilitiesinfo-powerefficient">powerEfficient</a></code>
 attribute can signal when a decoder uses hardware acceleration. Similarly, the
@@ -8691,7 +8700,7 @@ attribute can signal when a decoder uses hardware acceleration. Similarly, the
 types of encoders are supported and the <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webrtc-pc/#widl-RTCPeerConnection-getStats-Promise-RTCStatsReport--MediaStreamTrack-selector" id="ref-for-widl-RTCPeerConnection-getStats-Promise-RTCStatsReport--MediaStreamTrack-selector">getStats()</a></code> API can
 be used to determine when an encoder uses hardware acceleration. WebCodecs will
 expose some additional information in the form of low level codec features.</p>
-     <p>A codec feature profile alone is unlikely to be uniquely identifying. Underlying
+    <p>A codec feature profile alone is unlikely to be uniquely identifying. Underlying
 codecs are often implemented entirely in software (be it part of the User Agent
 binary or part of the operating system), such that all users who run that
 software will have a common set of capabilities. Additionally, underlying codecs
@@ -8701,7 +8710,7 @@ phones manufactured in 2020) will often have common capabilities. There will be
 outliers (some users can be running outdated versions of software codecs or use
 a rare mix of custom assembled hardware), but most of the time a given codec
 feature profile is shared by a large group of users.</p>
-     <p>Segmenting groups of users by codec feature profile still amounts to a bit of
+    <p>Segmenting groups of users by codec feature profile still amounts to a bit of
 entropy that can be combined with other metrics to uniquely identify a user.
 User Agents <em class="rfc2119">MAY</em> partially mitigate this by returning an
 error whenever a site attempts to exhaustively probe for codec capabilities.
@@ -8709,37 +8718,36 @@ Additionally, User Agents <em class="rfc2119">MAY</em> implement a "privacy
 budget", which depletes as authors use WebCodecs and other identifying APIs.
 Upon exhaustion of the privacy budget, codec capabilities could be reduced to a
 common baseline or prompt for user approval.</p>
-     <h2 class="heading settled" data-level="14" id="best-practices-developers"><span class="secno">14. </span><span class="content">Best Practices for Authors Using WebCodecs</span><a class="self-link" href="#best-practices-developers"></a></h2>
-     <div class="non-normative">
-      
+   </div>
+   <h2 class="heading settled" data-level="14" id="best-practices-developers"><span class="secno">14. </span><span class="content">Best Practices for Authors Using WebCodecs</span><a class="self-link" href="#best-practices-developers"></a></h2>
+   <div class="non-normative">
+    
   This section is non-normative.
 
 
-      <p>While WebCodecs internally operates on background threads, authors working with
+    <p>While WebCodecs internally operates on background threads, authors working with
   realtime media or in contended main thread environments are encouraged to ensure their
   media pipelines operate in worker contexts entirely independent of the main
   thread where possible. For example, realtime media processing of <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe⑧⓪">VideoFrame</a></code>s
   are generally to be done in a worker context.</p>
-      <p>The main thread has significant potential for high contention and jank that can
+    <p>The main thread has significant potential for high contention and jank that can
   go unnoticed in development, yet degrade inconsistently across devices and User
   Agents in the field -- potentially dramatically impacting the end user
   experience. Ensuring the media pipeline is decoupled from the main thread helps
   provide a smooth experience for end users.</p>
-      <p>Authors using the main thread for their media pipeline ought to be sure of
+    <p>Authors using the main thread for their media pipeline ought to be sure of
   their target frame rates, main thread workload, how their application will be
   embedded, and the class of devices their users will be using.</p>
-     </div>
-     <h2 class="heading settled" data-level="15" id="acknowledgements"><span class="secno">15. </span><span class="content">Acknowledgements</span><a class="self-link" href="#acknowledgements"></a></h2>
-     <p>The editors would like to thank Alex Russell, Chris Needham, Dale Curtis, Dan
+   </div>
+   <h2 class="heading settled" data-level="15" id="acknowledgements"><span class="secno">15. </span><span class="content">Acknowledgements</span><a class="self-link" href="#acknowledgements"></a></h2>
+   <p>The editors would like to thank Alex Russell, Chris Needham, Dale Curtis, Dan
 Sanders, Eugene Zemtsov, Francois Daoust, Guido Urdaneta, Harald Alvestrand,
 Jan-Ivar Bruaroey, Jer Noble, Mark Foltz, Peter Thatcher, Steve Anton, Matt
 Wolenetz, Rijubrata Bhaumik, Thomas Guilbert, Tuukka Toivonen, and Youenn Fablet
 for their contributions to this specification. Thank you also to the many
 others who contributed to the specification, including through their
 participation on the mailing list and in the issues.</p>
-     <p>The Working Group dedicates this specification to our colleague Bernard Aboba.</p>
-    </div>
-   </div>
+   <p>The Working Group dedicates this specification to our colleague Bernard Aboba.</p>
   </main>
   <div data-fill-with="conformance">
    <h2 class="heading no-num no-ref settled" id="w3c-conformance"><span class="content">Conformance</span><a class="self-link" href="#w3c-conformance"></a></h2>
@@ -9953,7 +9961,7 @@ participation on the mailing list and in the issues.</p>
      <li><span class="dfn-paneled" id="51c2724d">SVGImageElement</span>
     </ul>
    <li>
-    <a data-link-type="biblio">[WEBAUDIO-1.1]</a> defines the following terms:
+    <a data-link-type="biblio">[WEBAUDIO]</a> defines the following terms:
     <ul>
      <li><span class="dfn-paneled" id="e9b6376e">AudioBuffer</span>
      <li><span class="dfn-paneled" id="1bb59bab">AudioWorklet</span>
@@ -10054,11 +10062,9 @@ participation on the mailing list and in the issues.</p>
    <dt id="biblio-rfc9110">[RFC9110]
    <dd>R. Fielding, Ed.; M. Nottingham, Ed.; J. Reschke, Ed.. <a href="https://httpwg.org/specs/rfc9110.html"><cite>HTTP Semantics</cite></a>. June 2022. Internet Standard. URL: <a href="https://httpwg.org/specs/rfc9110.html">https://httpwg.org/specs/rfc9110.html</a>
    <dt id="biblio-webaudio">[WEBAUDIO]
-   <dd>Paul Adenot; Hongchan Choi. <a href="https://webaudio.github.io/web-audio-api/"><cite>Web Audio API</cite></a>. URL: <a href="https://webaudio.github.io/web-audio-api/">https://webaudio.github.io/web-audio-api/</a>
-   <dt id="biblio-webaudio-11">[WEBAUDIO-1.1]
    <dd>Paul Adenot; Hongchan Choi. <a href="https://webaudio.github.io/web-audio-api/"><cite>Web Audio API 1.1</cite></a>. URL: <a href="https://webaudio.github.io/web-audio-api/">https://webaudio.github.io/web-audio-api/</a>
    <dt id="biblio-webcodecs-codec-registry">[WEBCODECS-CODEC-REGISTRY]
-   <dd>Paul Adenot; Bernard Aboba. <a href="https://w3c.github.io/webcodecs/codec_registry.html"><cite>WebCodecs Codec Registry</cite></a>. URL: <a href="https://w3c.github.io/webcodecs/codec_registry.html">https://w3c.github.io/webcodecs/codec_registry.html</a>
+   <dd>Paul Adenot; Eugene Zemtsov. <a href="https://w3c.github.io/webcodecs/codec_registry.html"><cite>WebCodecs Codec Registry</cite></a>. URL: <a href="https://w3c.github.io/webcodecs/codec_registry.html">https://w3c.github.io/webcodecs/codec_registry.html</a>
    <dt id="biblio-webcodecs-video-frame-metadata-registry">[WEBCODECS-VIDEO-FRAME-METADATA-REGISTRY]
    <dd>Youenn Fablet. <a href="https://w3c.github.io/webcodecs/video_frame_metadata_registry.html"><cite>WebCodecs VideoFrame Metadata Registry</cite></a>. ED. URL: <a href="https://w3c.github.io/webcodecs/video_frame_metadata_registry.html">https://w3c.github.io/webcodecs/video_frame_metadata_registry.html</a>
    <dt id="biblio-webrtc">[WebRTC]
@@ -10880,7 +10886,7 @@ let dfnPanelData = {
 "797018a7": {"dfnID":"797018a7","dfnText":"InvalidStateError","external":true,"refSections":[{"refs":[{"id":"ref-for-invalidstateerror"},{"id":"ref-for-invalidstateerror\u2460"},{"id":"ref-for-invalidstateerror\u2461"}],"title":"3.5. Methods"},{"refs":[{"id":"ref-for-invalidstateerror\u2462"}],"title":"3.6. Algorithms"},{"refs":[{"id":"ref-for-invalidstateerror\u2463"},{"id":"ref-for-invalidstateerror\u2464"},{"id":"ref-for-invalidstateerror\u2465"}],"title":"4.5. Methods"},{"refs":[{"id":"ref-for-invalidstateerror\u2466"}],"title":"4.6. Algorithms"},{"refs":[{"id":"ref-for-invalidstateerror\u2467"},{"id":"ref-for-invalidstateerror\u2468"},{"id":"ref-for-invalidstateerror\u2460\u24ea"}],"title":"5.5. Methods"},{"refs":[{"id":"ref-for-invalidstateerror\u2460\u2460"}],"title":"5.6. Algorithms"},{"refs":[{"id":"ref-for-invalidstateerror\u2460\u2461"},{"id":"ref-for-invalidstateerror\u2460\u2462"},{"id":"ref-for-invalidstateerror\u2460\u2463"}],"title":"6.5. Methods"},{"refs":[{"id":"ref-for-invalidstateerror\u2460\u2464"}],"title":"6.6. Algorithms"},{"refs":[{"id":"ref-for-invalidstateerror\u2460\u2465"},{"id":"ref-for-invalidstateerror\u2460\u2466"},{"id":"ref-for-invalidstateerror\u2460\u2467"}],"title":"9.2.4. Methods"},{"refs":[{"id":"ref-for-invalidstateerror\u2460\u2468"},{"id":"ref-for-invalidstateerror\u2461\u24ea"},{"id":"ref-for-invalidstateerror\u2461\u2460"}],"title":"9.4.2. Constructors"},{"refs":[{"id":"ref-for-invalidstateerror\u2461\u2461"},{"id":"ref-for-invalidstateerror\u2461\u2462"},{"id":"ref-for-invalidstateerror\u2461\u2463"},{"id":"ref-for-invalidstateerror\u2461\u2464"}],"title":"9.4.5. Methods"},{"refs":[{"id":"ref-for-invalidstateerror\u2461\u2465"},{"id":"ref-for-invalidstateerror\u2461\u2466"}],"title":"10.2.4. Methods"},{"refs":[{"id":"ref-for-invalidstateerror\u2461\u2467"},{"id":"ref-for-invalidstateerror\u2461\u2468"}],"title":"10.2.5. Algorithms"}],"url":"https://webidl.spec.whatwg.org/#invalidstateerror"},
 "7de33c29": {"dfnID":"7de33c29","dfnText":"parallel queue","external":true,"refSections":[{"refs":[{"id":"ref-for-parallel-queue"}],"title":"2.1. Background"},{"refs":[{"id":"ref-for-parallel-queue\u2460"}],"title":"2.3. Codec Work Parallel Queue"},{"refs":[{"id":"ref-for-parallel-queue\u2461"}],"title":"3.1. Internal Slots"},{"refs":[{"id":"ref-for-parallel-queue\u2462"}],"title":"3.2. Constructors"},{"refs":[{"id":"ref-for-parallel-queue\u2463"}],"title":"3.5. Methods"},{"refs":[{"id":"ref-for-parallel-queue\u2464"}],"title":"4.1. Internal Slots"},{"refs":[{"id":"ref-for-parallel-queue\u2465"}],"title":"4.2. Constructors"},{"refs":[{"id":"ref-for-parallel-queue\u2466"}],"title":"4.5. Methods"},{"refs":[{"id":"ref-for-parallel-queue\u2467"}],"title":"5.1. Internal Slots"},{"refs":[{"id":"ref-for-parallel-queue\u2468"}],"title":"5.2. Constructors"},{"refs":[{"id":"ref-for-parallel-queue\u2460\u24ea"}],"title":"5.5. Methods"},{"refs":[{"id":"ref-for-parallel-queue\u2460\u2460"}],"title":"6.1. Internal Slots"},{"refs":[{"id":"ref-for-parallel-queue\u2460\u2461"}],"title":"6.2. Constructors"},{"refs":[{"id":"ref-for-parallel-queue\u2460\u2462"}],"title":"6.5. Methods"},{"refs":[{"id":"ref-for-parallel-queue\u2460\u2463"}],"title":"9.4.5. Methods"},{"refs":[{"id":"ref-for-parallel-queue\u2460\u2464"}],"title":"10.2.1. Internal Slots"},{"refs":[{"id":"ref-for-parallel-queue\u2460\u2465"}],"title":"10.2.2. Constructor"}],"url":"https://html.spec.whatwg.org/multipage/infrastructure.html#parallel-queue"},
 "804aab85": {"dfnID":"804aab85","dfnText":"OffscreenCanvas","external":true,"refSections":[{"refs":[{"id":"ref-for-offscreencanvas"}],"title":"9.4.2. Constructors"}],"url":"https://html.spec.whatwg.org/multipage/canvas.html#offscreencanvas"},
-"82ca3efc": {"dfnID":"82ca3efc","dfnText":"TypeError","external":true,"refSections":[{"refs":[{"id":"ref-for-exceptiondef-typeerror"},{"id":"ref-for-exceptiondef-typeerror\u2460"}],"title":"3.5. Methods"},{"refs":[{"id":"ref-for-exceptiondef-typeerror\u2461"},{"id":"ref-for-exceptiondef-typeerror\u2462"}],"title":"4.5. Methods"},{"refs":[{"id":"ref-for-exceptiondef-typeerror\u2463"},{"id":"ref-for-exceptiondef-typeerror\u2464"},{"id":"ref-for-exceptiondef-typeerror\u2465"}],"title":"5.5. Methods"},{"refs":[{"id":"ref-for-exceptiondef-typeerror\u2466"},{"id":"ref-for-exceptiondef-typeerror\u2467"},{"id":"ref-for-exceptiondef-typeerror\u2468"}],"title":"6.5. Methods"},{"refs":[{"id":"ref-for-exceptiondef-typeerror\u2460\u24ea"}],"title":"8.1.4. Methods"},{"refs":[{"id":"ref-for-exceptiondef-typeerror\u2460\u2460"}],"title":"8.2.4. Methods"},{"refs":[{"id":"ref-for-exceptiondef-typeerror\u2460\u2461"}],"title":"9.2.2. Constructors"},{"refs":[{"id":"ref-for-exceptiondef-typeerror\u2460\u2462"},{"id":"ref-for-exceptiondef-typeerror\u2460\u2463"},{"id":"ref-for-exceptiondef-typeerror\u2460\u2464"},{"id":"ref-for-exceptiondef-typeerror\u2460\u2465"}],"title":"9.4.2. Constructors"},{"refs":[{"id":"ref-for-exceptiondef-typeerror\u2460\u2466"}],"title":"9.4.5. Methods"},{"refs":[{"id":"ref-for-exceptiondef-typeerror\u2460\u2467"},{"id":"ref-for-exceptiondef-typeerror\u2460\u2468"},{"id":"ref-for-exceptiondef-typeerror\u2461\u24ea"},{"id":"ref-for-exceptiondef-typeerror\u2461\u2460"},{"id":"ref-for-exceptiondef-typeerror\u2461\u2461"},{"id":"ref-for-exceptiondef-typeerror\u2461\u2462"},{"id":"ref-for-exceptiondef-typeerror\u2461\u2463"},{"id":"ref-for-exceptiondef-typeerror\u2461\u2464"},{"id":"ref-for-exceptiondef-typeerror\u2461\u2465"},{"id":"ref-for-exceptiondef-typeerror\u2461\u2466"}],"title":"9.4.6. Algorithms"},{"refs":[{"id":"ref-for-exceptiondef-typeerror\u2461\u2467"}],"title":"10.2.2. Constructor"},{"refs":[{"id":"ref-for-exceptiondef-typeerror\u2461\u2468"}],"title":"10.2.4. Methods"}],"url":"https://webidl.spec.whatwg.org/#exceptiondef-typeerror"},
+"82ca3efc": {"dfnID":"82ca3efc","dfnText":"TypeError","external":true,"refSections":[{"refs":[{"id":"ref-for-exceptiondef-typeerror"},{"id":"ref-for-exceptiondef-typeerror\u2460"}],"title":"3.5. Methods"},{"refs":[{"id":"ref-for-exceptiondef-typeerror\u2461"},{"id":"ref-for-exceptiondef-typeerror\u2462"}],"title":"4.5. Methods"},{"refs":[{"id":"ref-for-exceptiondef-typeerror\u2463"},{"id":"ref-for-exceptiondef-typeerror\u2464"},{"id":"ref-for-exceptiondef-typeerror\u2465"}],"title":"5.5. Methods"},{"refs":[{"id":"ref-for-exceptiondef-typeerror\u2466"},{"id":"ref-for-exceptiondef-typeerror\u2467"},{"id":"ref-for-exceptiondef-typeerror\u2468"}],"title":"6.5. Methods"},{"refs":[{"id":"ref-for-exceptiondef-typeerror\u2460\u24ea"}],"title":"8.1.4. Methods"},{"refs":[{"id":"ref-for-exceptiondef-typeerror\u2460\u2460"}],"title":"8.2.4. Methods"},{"refs":[{"id":"ref-for-exceptiondef-typeerror\u2460\u2461"}],"title":"9.2.2. Constructors"},{"refs":[{"id":"ref-for-exceptiondef-typeerror\u2460\u2462"},{"id":"ref-for-exceptiondef-typeerror\u2460\u2463"},{"id":"ref-for-exceptiondef-typeerror\u2460\u2464"},{"id":"ref-for-exceptiondef-typeerror\u2460\u2465"}],"title":"9.4.2. Constructors"},{"refs":[{"id":"ref-for-exceptiondef-typeerror\u2460\u2466"}],"title":"9.4.5. Methods"},{"refs":[{"id":"ref-for-exceptiondef-typeerror\u2460\u2467"},{"id":"ref-for-exceptiondef-typeerror\u2460\u2468"},{"id":"ref-for-exceptiondef-typeerror\u2461\u24ea"},{"id":"ref-for-exceptiondef-typeerror\u2461\u2460"},{"id":"ref-for-exceptiondef-typeerror\u2461\u2461"},{"id":"ref-for-exceptiondef-typeerror\u2461\u2462"},{"id":"ref-for-exceptiondef-typeerror\u2461\u2463"},{"id":"ref-for-exceptiondef-typeerror\u2461\u2464"},{"id":"ref-for-exceptiondef-typeerror\u2461\u2465"},{"id":"ref-for-exceptiondef-typeerror\u2461\u2466"},{"id":"ref-for-exceptiondef-typeerror\u2461\u2467"},{"id":"ref-for-exceptiondef-typeerror\u2461\u2468"}],"title":"9.4.6. Algorithms"},{"refs":[{"id":"ref-for-exceptiondef-typeerror\u2462\u24ea"}],"title":"10.2.2. Constructor"},{"refs":[{"id":"ref-for-exceptiondef-typeerror\u2462\u2460"}],"title":"10.2.4. Methods"}],"url":"https://webidl.spec.whatwg.org/#exceptiondef-typeerror"},
 "85394472": {"dfnID":"85394472","dfnText":"Document","external":true,"refSections":[{"refs":[{"id":"ref-for-document"}],"title":"11. Resource Reclamation"}],"url":"https://dom.spec.whatwg.org/#document"},
 "865f408e": {"dfnID":"865f408e","dfnText":"ColorSpaceConversion","external":true,"refSections":[{"refs":[{"id":"ref-for-colorspaceconversion"},{"id":"ref-for-colorspaceconversion\u2460"}],"title":"10.3. ImageDecoderInit Interface"}],"url":"https://html.spec.whatwg.org/multipage/imagebitmap-and-animations.html#colorspaceconversion"},
 "8855a9aa": {"dfnID":"8855a9aa","dfnText":"DOMString","external":true,"refSections":[{"refs":[{"id":"ref-for-idl-DOMString"},{"id":"ref-for-idl-DOMString\u2460"}],"title":"7.5. AudioDecoderConfig"},{"refs":[{"id":"ref-for-idl-DOMString\u2461"},{"id":"ref-for-idl-DOMString\u2462"}],"title":"7.6. VideoDecoderConfig"},{"refs":[{"id":"ref-for-idl-DOMString\u2463"},{"id":"ref-for-idl-DOMString\u2464"}],"title":"7.7. AudioEncoderConfig"},{"refs":[{"id":"ref-for-idl-DOMString\u2465"},{"id":"ref-for-idl-DOMString\u2466"},{"id":"ref-for-idl-DOMString\u2467"},{"id":"ref-for-idl-DOMString\u2468"},{"id":"ref-for-idl-DOMString\u2460\u24ea"},{"id":"ref-for-idl-DOMString\u2460\u2460"}],"title":"7.8. VideoEncoderConfig"},{"refs":[{"id":"ref-for-idl-DOMString\u2460\u2461"},{"id":"ref-for-idl-DOMString\u2460\u2462"}],"title":"10.2. ImageDecoder Interface"},{"refs":[{"id":"ref-for-idl-DOMString\u2460\u2463"}],"title":"10.2.3. Attributes"},{"refs":[{"id":"ref-for-idl-DOMString\u2460\u2464"},{"id":"ref-for-idl-DOMString\u2460\u2465"}],"title":"10.3. ImageDecoderInit Interface"}],"url":"https://webidl.spec.whatwg.org/#idl-DOMString"},
@@ -11409,7 +11415,7 @@ let dfnPanelData = {
 "dom-videoframeinit-metadata": {"dfnID":"dom-videoframeinit-metadata","dfnText":"metadata","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-videoframeinit-metadata"}],"title":"9.4.2. Constructors"},{"refs":[{"id":"ref-for-dom-videoframeinit-metadata\u2460"}],"title":"9.4.6. Algorithms"}],"url":"#dom-videoframeinit-metadata"},
 "dom-videoframeinit-rotation": {"dfnID":"dom-videoframeinit-rotation","dfnText":"rotation","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-videoframeinit-rotation"}],"title":"9.4.6. Algorithms"}],"url":"#dom-videoframeinit-rotation"},
 "dom-videoframeinit-timestamp": {"dfnID":"dom-videoframeinit-timestamp","dfnText":"timestamp","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-videoframeinit-timestamp"},{"id":"ref-for-dom-videoframeinit-timestamp\u2460"}],"title":"9.4.2. Constructors"},{"refs":[{"id":"ref-for-dom-videoframeinit-timestamp\u2461"},{"id":"ref-for-dom-videoframeinit-timestamp\u2462"}],"title":"9.4.6. Algorithms"}],"url":"#dom-videoframeinit-timestamp"},
-"dom-videoframeinit-visiblerect": {"dfnID":"dom-videoframeinit-visiblerect","dfnText":"visibleRect","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-videoframeinit-visiblerect"},{"id":"ref-for-dom-videoframeinit-visiblerect\u2460"},{"id":"ref-for-dom-videoframeinit-visiblerect\u2461"},{"id":"ref-for-dom-videoframeinit-visiblerect\u2462"},{"id":"ref-for-dom-videoframeinit-visiblerect\u2463"},{"id":"ref-for-dom-videoframeinit-visiblerect\u2464"},{"id":"ref-for-dom-videoframeinit-visiblerect\u2465"},{"id":"ref-for-dom-videoframeinit-visiblerect\u2466"},{"id":"ref-for-dom-videoframeinit-visiblerect\u2467"}],"title":"9.4.6. Algorithms"}],"url":"#dom-videoframeinit-visiblerect"},
+"dom-videoframeinit-visiblerect": {"dfnID":"dom-videoframeinit-visiblerect","dfnText":"visibleRect","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-videoframeinit-visiblerect"},{"id":"ref-for-dom-videoframeinit-visiblerect\u2460"},{"id":"ref-for-dom-videoframeinit-visiblerect\u2461"},{"id":"ref-for-dom-videoframeinit-visiblerect\u2462"},{"id":"ref-for-dom-videoframeinit-visiblerect\u2463"},{"id":"ref-for-dom-videoframeinit-visiblerect\u2464"},{"id":"ref-for-dom-videoframeinit-visiblerect\u2465"},{"id":"ref-for-dom-videoframeinit-visiblerect\u2466"},{"id":"ref-for-dom-videoframeinit-visiblerect\u2467"},{"id":"ref-for-dom-videoframeinit-visiblerect\u2468"},{"id":"ref-for-dom-videoframeinit-visiblerect\u2460\u24ea"}],"title":"9.4.6. Algorithms"}],"url":"#dom-videoframeinit-visiblerect"},
 "dom-videoframeoutputcallback-output": {"dfnID":"dom-videoframeoutputcallback-output","dfnText":"output","external":false,"refSections":[],"url":"#dom-videoframeoutputcallback-output"},
 "dom-videomatrixcoefficients-bt2020-ncl": {"dfnID":"dom-videomatrixcoefficients-bt2020-ncl","dfnText":"bt2020-ncl","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-videomatrixcoefficients-bt2020-ncl"}],"title":"9.12. Video Matrix Coefficients"}],"url":"#dom-videomatrixcoefficients-bt2020-ncl"},
 "dom-videomatrixcoefficients-bt470bg": {"dfnID":"dom-videomatrixcoefficients-bt470bg","dfnText":"bt470bg","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-videomatrixcoefficients-bt470bg"}],"title":"9.12. Video Matrix Coefficients"}],"url":"#dom-videomatrixcoefficients-bt470bg"},
