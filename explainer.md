@@ -237,7 +237,7 @@ async function buildAndConfigureEncoders() {
 }
 
 // Returns an object { audioDecoder, videoDecoder }.
-// Decoded outputs sent immediately to the coresponding encoder for re-encoding.
+// Decoded outputs sent immediately to the corresponding encoder for re-encoding.
 async function buildAndConfigureDecoders(audioEncoder, videoEncoder) {
   // Bind encode callbacks.
   const reEncodeAudio = audioEncoder.encode.bind(audioEncoder);
@@ -308,7 +308,7 @@ function paintFrameToCanvas(videoFrame) { ... }
 // Returns an object { audioEncoder, videoEncoder }.
 // Encoded outputs sent immediately to app provided muxer.
 async function buildAndConfigureEncoders() {
-    // Encoded outputs immmediately sent on the wire.
+    // Encoded outputs immediately sent on the wire.
   let audioEncoder = new AudioEncoder({ output: sendAudio, error: onCodecError });
   let videoEncoder = new VideoEncoder({ output: sendVideo, error: onCodecError });
 
@@ -367,7 +367,7 @@ The user agent should take great care to efficiently handle expensive resources 
 
 Many codecs and encoder/decoder implementations are highly configurable. WebCodecs intends to support most of the configuration options available in codecs today to efficiently allow for advanced use cases.
 
-A codec may be reconfigured at any time while the codec state is not "closed". Chunks/Frames passed to decode() or encode() will be decoded/encoded according to most recent preceeding call to configure().
+A codec may be reconfigured at any time while the codec state is not "closed". Chunks/Frames passed to decode() or encode() will be decoded/encoded according to most recent preceding call to configure().
 
 WebCodecs defines a set of configuration parameters that may be used with any codec. Codec-specific parameters are defined by the codec's registration in https://www.w3.org/TR/webcodecs-codec-registry/. Support for specific settings may be implementation-specific. Supported configurations may be feature-detected using the static IsConfigSupported() methods.
 
@@ -385,7 +385,7 @@ All of these things could be fixed by adding expanding the MSE API to explicitly
 
 ### Integrating with WhatWG Streams
 
-An earlier design defined Encoders and Decoders as TrasformStreams from the WhatWG Streams specification. This is an appealing model; codecs are conceptually transformers with a stream of inputs and outputs. But implementing basic codec controls (configure, flush, reset) on top of Streams led to complicated designs and we were not able to hide that complexity from users (more details [here](https://docs.google.com/document/d/10S-p3Ob5snRMjBqpBf5oWn6eYij1vos7cujHoOCCCAw/edit?usp=sharing)). We've opted to instead define the codec interfaces as described above. Users can wrap these interfaces in Streams when desired.
+An earlier design defined Encoders and Decoders as TransformStreams from the WhatWG Streams specification. This is an appealing model; codecs are conceptually transformers with a stream of inputs and outputs. But implementing basic codec controls (configure, flush, reset) on top of Streams led to complicated designs and we were not able to hide that complexity from users (more details [here](https://docs.google.com/document/d/10S-p3Ob5snRMjBqpBf5oWn6eYij1vos7cujHoOCCCAw/edit?usp=sharing)). We've opted to instead define the codec interfaces as described above. Users can wrap these interfaces in Streams when desired.
 
 ## Future considerations
 
