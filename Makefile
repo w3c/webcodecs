@@ -5,7 +5,7 @@ REMOTE := $(filter remote,$(MAKECMDGOALS))
 
 %.html : %.src.html
 ifndef REMOTE
-# When addding a new registry entry, bikeshed will error out, this allows
+# When adding a new registry entry, bikeshed will error out, this allows
 # bypassing the error.
 ifdef WEBCODECS_IGNORE_WARNINGS
 	@ echo "Building $@, ignoring warnings"
