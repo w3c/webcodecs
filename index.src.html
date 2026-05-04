@@ -485,7 +485,7 @@ Methods {#audiodecoder-methods}
                 algorithm with |decoded outputs|.
             2. Remove |promise| from
                 {{AudioDecoder/[[pending flush promises]]}}.
-            3. Resolve |promise|.
+            3. [=Resolve=] |promise|.
     2. Return `"processed"`.
   </dd>
 
@@ -534,7 +534,7 @@ Methods {#audiodecoder-methods}
                 1. Set {{AudioDecoderSupport/config}} to the result of running the
                     <a>Clone Configuration</a> algorithm with |config|.
                 2. Set {{AudioDecoderSupport/supported}} to |supported|.
-            2. Resolve |p| with |decoderSupport|.
+            2. [=Resolve=] |p| with |decoderSupport|.
     5. Return |p|.
   </dd>
 </dl>
@@ -584,7 +584,7 @@ Algorithms {#audiodecoder-algorithms}
         1. Set {{AudioDecoder/[[decodeQueueSize]]}} to zero.
         2. Run the [=AudioDecoder/Schedule Dequeue Event=] algorithm.
     6. For each |promise| in {{AudioDecoder/[[pending flush promises]]}}:
-        1. Reject |promise| with |exception|.
+        1. [=Reject=] |promise| with |exception|.
         2. Remove |promise| from {{AudioDecoder/[[pending flush promises]]}}.
   </dd>
   <dt><dfn>Close AudioDecoder</dfn> (with |exception|)</dt>
@@ -831,7 +831,7 @@ Methods {#videodecoder-methods}
                 algorithm with |decoded outputs|.
             2. Remove |promise| from
                 {{VideoDecoder/[[pending flush promises]]}}.
-            3. Resolve |promise|.
+            3. [=Resolve=] |promise|.
     2. Return `"processed"`.
   </dd>
 
@@ -880,7 +880,7 @@ Methods {#videodecoder-methods}
                 1. Set {{VideoDecoderSupport/config}} to the result of running the
                     <a>Clone Configuration</a> algorithm with |config|.
                 2. Set {{VideoDecoderSupport/supported}} to |supported|.
-            2. Resolve |p| with |decoderSupport|.
+            2. [=Resolve=] |p| with |decoderSupport|.
     5. Return |p|.
   </dd>
 </dl>
@@ -943,7 +943,7 @@ Algorithms {#videodecoder-algorithms}
         1. Set {{VideoDecoder/[[decodeQueueSize]]}} to zero.
         2. Run the [=VideoDecoder/Schedule Dequeue Event=] algorithm.
     6. For each |promise| in {{VideoDecoder/[[pending flush promises]]}}:
-        1. Reject |promise| with |exception|.
+        1. [=Reject=] |promise| with |exception|.
         2. Remove |promise| from {{VideoDecoder/[[pending flush promises]]}}.
   </dd>
   <dt><dfn>Close VideoDecoder</dfn> (with |exception|)</dt>
@@ -1173,7 +1173,7 @@ Methods {#audioencoder-methods}
                 [=Output EncodedAudioChunks=] algorithm with |encoded outputs|.
             2. Remove |promise| from
                 {{AudioEncoder/[[pending flush promises]]}}.
-            3. Resolve |promise|.
+            3. [=Resolve=] |promise|.
     2. Return `"processed"`.
   </dd>
 
@@ -1222,7 +1222,7 @@ Methods {#audioencoder-methods}
                 1. Set {{AudioEncoderSupport/config}} to the result of running the
                     <a>Clone Configuration</a> algorithm with |config|.
                 2. Set {{AudioEncoderSupport/supported}} to |supported|.
-            2. Resolve |p| with |encoderSupport|.
+            2. [=Resolve=] |p| with |encoderSupport|.
     5. Return |p|.
   </dd>
 </dl>
@@ -1302,7 +1302,7 @@ Algorithms {#audioencoder-algorithms}
         1. Set {{AudioEncoder/[[encodeQueueSize]]}} to zero.
         2. Run the [=AudioEncoder/Schedule Dequeue Event=] algorithm.
     8. For each |promise| in {{AudioEncoder/[[pending flush promises]]}}:
-        1. Reject |promise| with |exception|.
+        1. [=Reject=] |promise| with |exception|.
         2. Remove |promise| from {{AudioEncoder/[[pending flush promises]]}}.
   </dd>
   <dt><dfn>Close AudioEncoder</dfn> (with |exception|)</dt>
@@ -1559,7 +1559,7 @@ Methods {#videoencoder-methods}
                 [=Output EncodedVideoChunks=] algorithm with |encoded outputs|.
             2. Remove |promise| from
                 {{VideoEncoder/[[pending flush promises]]}}.
-            3. Resolve |promise|.
+            3. [=Resolve=] |promise|.
     2. Return `"processed"`.
   </dd>
 
@@ -1608,7 +1608,7 @@ Methods {#videoencoder-methods}
                 1. Set {{VideoEncoderSupport/config}} to the result of running the
                     <a>Clone Configuration</a> algorithm with |config|.
                 2. Set {{VideoEncoderSupport/supported}} to |supported|.
-           2. Resolve |p| with |encoderSupport|.
+           2. [=Resolve=] |p| with |encoderSupport|.
     5. Return |p|.
   </dd>
 </dl>
@@ -1707,7 +1707,7 @@ Algorithms {#videoencoder-algorithms}
         1. Set {{VideoEncoder/[[encodeQueueSize]]}} to zero.
         2. Run the [=VideoEncoder/Schedule Dequeue Event=] algorithm.
     8. For each |promise| in {{VideoEncoder/[[pending flush promises]]}}:
-        1. Reject |promise| with |exception|.
+        1. [=Reject=] |promise| with |exception|.
         2. Remove |promise| from {{VideoEncoder/[[pending flush promises]]}}.
   </dd>
   <dt><dfn>Close VideoEncoder</dfn> (with |exception|)</dt>
@@ -3907,7 +3907,7 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
                 4. Increment |row| by `1`.
             10. Increment |planeIndex| by `1`.
             11. Append |layout| to |planeLayouts|.
-        5. [=Queue a task=] to resolve |p| with |planeLayouts|.
+        5. [=Queue a task=] to [=resolve=] |p| with |planeLayouts|.
     11. Return |p|.
 
 : <dfn method for=VideoFrame>clone()</dfn>
@@ -5473,7 +5473,7 @@ interface ImageDecoder {
         3. Otherwise:
             1. Assign a copy of `init.data` to  {{ImageDecoder/[[encoded data]]}}.
         4. Assign `true` to {{ImageDecoder/[[complete]]}}.
-        5. Resolve {{ImageDecoder/[[completed promise]]}}.
+        5. [=Resolve=] {{ImageDecoder/[[completed promise]]}}.
         6. Queue a control message to [=configure the image decoder=] with
             |init|.
         7. Queue a control message to [=decode track metadata=].
@@ -5589,7 +5589,7 @@ interface ImageDecoder {
     3. Run the following steps [=in parallel=]:
         1. Let |isSupported| be the result of running the
             [=Check Type Support=] algorithm with |type|.
-        2. [=Queue a task=] to resolve |p| with |isSupported|.
+        2. [=Queue a task=] to [=resolve=] |p| with |isSupported|.
     4. Return |p|.
 
 ### Algorithms ### {#imagedecoder-algorithms}
@@ -5614,7 +5614,7 @@ interface ImageDecoder {
 
         : [=read request/close steps=]
         :: 1. Assign `true` to {{ImageDecoder/[[complete]]}}
-            2. Resolve {{ImageDecoder/[[completed promise]]}}.
+            2. [=Resolve=] {{ImageDecoder/[[completed promise]]}}.
 
         : [=read request/error steps=]
         :: 1. [=Queue a task=] to run the [=ImageDecoder/Close ImageDecoder=]
@@ -5676,7 +5676,7 @@ interface ImageDecoder {
             {{ImageTrackList/[[track list]]}} internal slot.
         2. Assign |selectedTrackIndex| to {{ImageDecoder/tracks}}
             {{ImageTrackList/[[selected index]]}}.
-        3. Resolve {{ImageTrackList/[[ready promise]]}}.
+        3. [=Resolve=] {{ImageTrackList/[[ready promise]]}}.
 
 : <dfn for=ImageDecoder>Get Default Selected Track Index</dfn> (with
     |trackList|)
@@ -5851,7 +5851,7 @@ interface ImageDecoder {
         [=Create a VideoFrame=] algorithm with |output|, |timestamp|,
         |duration|, |rotation|, and |flip|.
     19. Remove |promise| from {{ImageDecoder/[[pending decode promises]]}}.
-    20. Resolve |promise| with |decodeResult|.
+    20. [=Resolve=] |promise| with |decodeResult|.
 
 : <dfn for=ImageDecoder>Resolve Decode</dfn> (with |promise| and |result|)
 :: 1. [=Queue a task=] to perform these steps:
@@ -5859,7 +5859,7 @@ interface ImageDecoder {
         2. Assert that |promise| is an element of
             {{ImageDecoder/[[pending decode promises]]}}.
         3. Remove |promise| from {{ImageDecoder/[[pending decode promises]]}}.
-        4. Resolve |promise| with |result|.
+        4. [=Resolve=] |promise| with |result|.
 
 : <dfn for=ImageDecoder>Reject Infeasible Decode</dfn> (with |promise|)
 :: 1. Assert that {{ImageDecoder/complete}} is `true` or
@@ -5872,7 +5872,7 @@ interface ImageDecoder {
         2. Assert that |promise| is an element of
             {{ImageDecoder/[[pending decode promises]]}}.
         3. Remove |promise| from {{ImageDecoder/[[pending decode promises]]}}.
-        4. Reject |promise| with |exception|.
+        4. [=Reject=] |promise| with |exception|.
 
 : <dfn for=ImageDecoder>Fatally Reject Bad Data</dfn>
 :: 1. [=Queue a task=] to perform these steps:
@@ -5890,7 +5890,7 @@ interface ImageDecoder {
         decoding operation.
     2. For each |decodePromise| in
         {{ImageDecoder/[[pending decode promises]]}}:
-        1. Reject |decodePromise| with |exception|.
+        1. [=Reject=] |decodePromise| with |exception|.
         2. Remove |decodePromise| from
             {{ImageDecoder/[[pending decode promises]]}}.
 
@@ -5899,13 +5899,13 @@ interface ImageDecoder {
     1. Assign `true` to {{ImageDecoder/[[closed]]}}.
     2. Clear {{ImageDecoder/[[codec implementation]]}} and release associated
         [=system resources=].
-    3. If {{ImageDecoder/[[ImageTrackList]]}} is empty, reject
+    3. If {{ImageDecoder/[[ImageTrackList]]}} is empty, [=reject=]
         {{ImageTrackList/[[ready promise]]}} with |exception|. Otherwise
         perform these steps,
         1. Remove all entries from {{ImageDecoder/[[ImageTrackList]]}}.
         2. Assign `-1` to {{ImageDecoder/[[ImageTrackList]]}}'s
             {{ImageTrackList/[[selected index]]}}.
-    4. If {{ImageDecoder/[[complete]]}} is false resolve
+    4. If {{ImageDecoder/[[complete]]}} is false, [=reject=]
         {{ImageDecoder/[[completed promise]]}} with |exception|.
 
 ImageDecoderInit Interface {#imagedecoderinit-interface}
