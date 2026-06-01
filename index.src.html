@@ -78,6 +78,12 @@ spec: ECMASCRIPT; urlPrefix: https://tc39.es/ecma262/
       "Youenn Fablet"
     ],
     "status": "ED"
+  },
+  "ISO-29170-1": {
+    "href": "https://www.iso.org/standard/66532.html",
+    "title": "ISO/IEC 29170-1:2017 - Information technology — Advanced image coding and evaluation — Part 1: Guidelines for image quality assessment",
+    "publisher": "ISO",
+    "date": "November 2017"
   }
 }
 </pre>
@@ -1689,9 +1695,15 @@ Algorithms {#videoencoder-algorithms}
             1. Let |alphaSideData| be the encoded alpha data in |output|.
             2. Assign |alphaSideData| to
                 |chunkMetadata|.{{EncodedVideoChunkMetadata/alphaSideData}}.
-        9. Invoke {{VideoEncoder/[[output callback]]}} with |chunk| and
+        9. If |output| contains Peak Signal-to-Noise Ratio (PSNR) metrics:
+            1. Let |psnr| be a new {{YuvVideoPsnr}} dictionary.
+            2. Assign the PSNR value for the Y plane in |output| to |psnr|.{{YuvVideoPsnr/y}}.
+            3. Assign the PSNR value for the U plane in |output| to |psnr|.{{YuvVideoPsnr/u}}.
+            4. Assign the PSNR value for the V plane in |output| to |psnr|.{{YuvVideoPsnr/v}}.
+            5. Assign |psnr| to |chunkMetadata|.{{EncodedVideoChunkMetadata/psnr}}.
+        10. Invoke {{VideoEncoder/[[output callback]]}} with |chunk| and
             |chunkMetadata|.
-  </dd>
+   </dd>
   <dt><dfn>Reset VideoEncoder</dfn> (with |exception|)</dt>
   <dd>
     Run these steps:
@@ -1739,6 +1751,7 @@ dictionary EncodedVideoChunkMetadata {
 dictionary SvcOutputMetadata {
   unsigned long temporalLayerId;
 };
+
 dictionary YuvVideoPsnr {
   double y;
   double u;
@@ -1761,6 +1774,32 @@ dictionary YuvVideoPsnr {
 : <dfn dict-member for=SvcOutputMetadata>temporalLayerId</dfn>
 :: A number that identifies the [=temporal layer=] for the associated
     {{EncodedVideoChunk}}.
+
+: <dfn dict-member for=EncodedVideoChunkMetadata>psnr</dfn>
+:: The Peak Signal-to-Noise Ratio (PSNR) metrics for the encoded frame, if
+    requested and supported. See {{YuvVideoPsnr}}.
+
+
+YuvVideoPsnr dictionary{#yuv-video-psnr}
+----------------------------------------
+The {{YuvVideoPsnr}} dictionary contains Peak Signal-to-Noise Ratio (PSNR)
+values for the Y, U, and V planes, computed in decibels (dB) according to
+[[ISO-29170-1]].
+
+: <dfn dict-member for=YuvVideoPsnr>y</dfn>
+:: The Peak Signal-to-Noise Ratio (PSNR) value for the Y (Luma) plane in dB.
+: <dfn dict-member for=YuvVideoPsnr>u</dfn>
+:: The Peak Signal-to-Noise Ratio (PSNR) value for the U (Chroma) plane in dB.
+: <dfn dict-member for=YuvVideoPsnr>v</dfn>
+:: The Peak Signal-to-Noise Ratio (PSNR) value for the V (Chroma) plane in dB.
+
+    NOTE: PSNR measurements are calculated by comparing the input frame with the
+        reconstructed frame at the configured coded resolution of the encoder.
+        If the input frame's resolution differs from the configured encoder resolution
+        and is scaled during encoding, the scaled version serves as the reference frame
+        for the PSNR calculation.
+
+
 
 
 Configurations{#configurations}
