@@ -1733,10 +1733,16 @@ dictionary EncodedVideoChunkMetadata {
   VideoDecoderConfig decoderConfig;
   SvcOutputMetadata svc;
   BufferSource alphaSideData;
+  YuvVideoPsnr psnr;
 };
 
 dictionary SvcOutputMetadata {
   unsigned long temporalLayerId;
+};
+dictionary YuvVideoPsnr {
+  double y;
+  double u;
+  double v;
 };
 </xmp>
 
@@ -2464,6 +2470,7 @@ VideoEncoderEncodeOptions{#video-encoder-options}
 <xmp class='idl'>
 dictionary VideoEncoderEncodeOptions {
   boolean keyFrame = false;
+  boolean generatePsnr = false;
 };
 </xmp>
 
@@ -2477,7 +2484,14 @@ NOTE: Codec-specific extensions to {{VideoEncoderEncodeOptions}} are described i
     <em class="rfc2119">MUST</em> be encoded as a key frame. A value of `false`
     indicates that the User Agent has flexibility to decide whether the frame
     will be encoded as a [=key frame=].
-  </dd>
+</dd>
+<dt><dfn dict-member for=VideoEncoderEncodeOptions>generatePsnr</dfn></dt>
+<dd>
+    A value of `true` indicates that the Encoder will attempt to compute PSNR
+    metrics for the encoded frame and provide them as part of the
+    {{EncodedVideoChunkMetadata}}. Note that not all encoders supports this, so
+    the metrics is provided on a best-effort basis.
+</dd>
 </dl>
 
 
