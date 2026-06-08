@@ -5,9 +5,9 @@
   <title>A-law PCM WebCodecs Registration</title>
   <meta content="NOTE-ED" name="w3c-status">
   <link href="https://www.w3.org/StyleSheets/TR/2021/W3C-ED" rel="stylesheet">
-  <meta content="Bikeshed version b25686b9f, updated Fri Mar 14 14:15:20 2025 -0700" name="generator">
+  <meta content="Bikeshed version e74aa0952, updated Fri Jun 5 23:16:28 2026 +0000" name="generator">
   <link href="https://www.w3.org/TR/webcodecs-alaw-codec-registration/" rel="canonical">
-  <meta content="70892e0e707636452b701469533d14e5fc5eab12" name="revision">
+  <meta content="86d0dec6f1f17b4d686a76c64d69dd628a29a132" name="revision">
   <meta content="dark light" name="color-scheme">
   <link href="https://www.w3.org/StyleSheets/TR/2021/dark.css" media="(prefers-color-scheme: dark)" rel="stylesheet" type="text/css">
 <style>/* Boilerplate: style-autolinks */
@@ -303,7 +303,7 @@ pre .property::before, pre .property::after {
 </style>
 <style>/* Boilerplate: style-counters */
 body {
-    counter-reset: example figure issue;
+    counter-reset: example figure issue table;
 }
 .issue {
     counter-increment: issue;
@@ -320,7 +320,7 @@ body {
 }
 .invalid.example:not(.no-marker)::before,
 .illegal.example:not(.no-marker)::before {
-    content: "Invalid Example" counter(example);
+    content: "Invalid Example " counter(example);
 }
 
 figcaption {
@@ -328,6 +328,13 @@ figcaption {
 }
 figcaption:not(.no-marker)::before {
     content: "Figure " counter(figure) " ";
+}
+
+figure.table figcaption {
+    counter-increment: table;
+}
+figure.table figcaption:not(.no-marker)::before {
+    content: "Table " counter(table) " ";
 }
 </style>
 <style>/* Boilerplate: style-dfn-panel */
@@ -567,9 +574,13 @@ dfn > a.self-link::before      { content: "#"; }
 </style>
  <body class="h-entry">
   <div class="head">
-   <p data-fill-with="logo"><a class="logo" href="https://www.w3.org/"> <img alt="W3C" height="48" src="https://www.w3.org/StyleSheets/TR/2021/logos/W3C" width="72"> </a> </p>
-   <h1 class="p-name no-ref" id="title">A-law PCM WebCodecs Registration</h1>
-   <p id="w3c-state"><a href="https://www.w3.org/standards/types/#ED">Editor’s Draft</a>, <time class="dt-updated" datetime="2025-05-14">14 May 2025</time></p>
+   <p data-fill-with="logo"><a class="logo" href="https://www.w3.org/">
+    <img alt="W3C" height="48" src="https://www.w3.org/StyleSheets/TR/2021/logos/W3C" width="72">
+</a>
+</p>
+   <h1 class="no-ref p-name" id="title">A-law PCM WebCodecs Registration</h1>
+   <p id="w3c-state"><a href="https://www.w3.org/standards/types/#ED">Editor’s Draft</a>,
+    <time class="dt-updated" datetime="2026-06-08">8 June 2026</time></p>
    <details open>
     <summary>More details about this document</summary>
     <div data-fill-with="spec-metadata">
@@ -581,11 +592,11 @@ dfn > a.self-link::before      { content: "#"; }
       <dt>Feedback:
       <dd><a href="https://github.com/w3c/webcodecs/issues/">GitHub</a>
       <dt class="editor">Editors:
-      <dd class="editor p-author h-card vcard" data-editor-id="62410"><span class="p-name fn">Paul Adenot</span> (<a class="p-org org" href="https://www.mozilla.org/">Mozilla</a>)
-      <dd class="editor p-author h-card vcard" data-editor-id="139375"><span class="p-name fn">Eugene Zemtsov</span> (<a class="p-org org" href="https://www.google.com/">Google LLC</a>)
+      <dd class="editor h-card p-author vcard" data-editor-id="62410"><span class="fn p-name">Paul Adenot</span> (<a class="org p-org" href="https://www.mozilla.org/">Mozilla</a>)
+      <dd class="editor h-card p-author vcard" data-editor-id="139375"><span class="fn p-name">Eugene Zemtsov</span> (<a class="org p-org" href="https://www.google.com/">Google LLC</a>)
       <dt class="editor">Former Editors:
-      <dd class="editor p-author h-card vcard" data-editor-id="65611"><span class="p-name fn">Bernard Aboba</span> (<a class="p-org org" href="https://www.microsoft.com/">Microsoft Corporation</a>)
-      <dd class="editor p-author h-card vcard" data-editor-id="114832"><span class="p-name fn">Chris Cunningham</span> (<a class="p-org org" href="https://www.google.com/">Google Inc.</a>)
+      <dd class="editor h-card p-author vcard" data-editor-id="65611"><span class="fn p-name">Bernard Aboba</span> (<a class="org p-org" href="https://www.microsoft.com/">Microsoft Corporation</a>)
+      <dd class="editor h-card p-author vcard" data-editor-id="114832"><span class="fn p-name">Chris Cunningham</span> (<a class="org p-org" href="https://www.google.com/">Google LLC</a>)
       <dt>Participate:
       <dd><a href="https://github.com/w3c/webcodecs">Git Repository.</a>
       <dd><a href="https://github.com/w3c/webcodecs/issues/new">File an issue.</a>
@@ -595,14 +606,17 @@ dfn > a.self-link::before      { content: "#"; }
     </div>
    </details>
    <div data-fill-with="warning"></div>
-   <p class="copyright" data-fill-with="copyright"><a href="https://www.w3.org/policies/#copyright">Copyright</a> © 2025 <a href="https://www.w3.org/">World Wide Web Consortium</a>. <abbr title="World Wide Web Consortium">W3C</abbr><sup>®</sup> <a href="https://www.w3.org/policies/#Legal_Disclaimer">liability</a>, <a href="https://www.w3.org/policies/#W3C_Trademarks">trademark</a> and <a href="https://www.w3.org/copyright/software-license/" rel="license" title="W3C Software and Document License">permissive document license</a> rules apply. </p>
+   <p class="copyright" data-fill-with="copyright"><a href="https://www.w3.org/policies/#copyright">Copyright</a> © 2026 <a href="https://www.w3.org/">World Wide Web Consortium</a>. <abbr title="World Wide Web Consortium">W3C</abbr><sup>®</sup> <a href="https://www.w3.org/policies/#Legal_Disclaimer">liability</a>, <a href="https://www.w3.org/policies/#W3C_Trademarks">trademark</a> and <a href="https://www.w3.org/copyright/software-license/" rel="license" title="W3C Software and Document License">permissive document license</a> rules apply.
+</p>
    <hr title="Separator for header">
   </div>
   <div class="p-summary" data-fill-with="abstract">
-   <h2 class="no-num no-toc no-ref heading settled" id="abstract"><span class="content">Abstract</span></h2>
+   <h2 class="heading no-num no-ref no-toc settled" id="abstract"><span class="content">Abstract</span></h2>
    <p>This registration is entered into the <a data-link-type="biblio" href="#biblio-webcodecs-codec-registry" title="WebCodecs Codec Registry">[webcodecs-codec-registry]</a>.
 It describes, for A-law encoded PCM, the (1) fully qualified <a href="https://w3c.github.io/webcodecs/#config-codec-string">codec strings</a>,
-(2) the codec-specific <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webcodecs/#encodedaudiochunk" id="ref-for-encodedaudiochunk">EncodedAudioChunk</a></code> <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webcodecs/#dom-encodedaudiochunk-internal-data-slot" id="ref-for-dom-encodedaudiochunk-internal-data-slot">[[internal data]]</a></code> bytes, (3) the <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webcodecs/#dom-audiodecoderconfig-description" id="ref-for-dom-audiodecoderconfig-description">AudioDecoderConfig.description</a></code>,
+(2) the codec-specific <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webcodecs/#encodedaudiochunk" id="ref-for-encodedaudiochunk">EncodedAudioChunk</a></code>
+<code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webcodecs/#dom-encodedaudiochunk-internal-data-slot" id="ref-for-dom-encodedaudiochunk-internal-data-slot">[[internal data]]</a></code> bytes, (3) the
+<code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webcodecs/#dom-audiodecoderconfig-description" id="ref-for-dom-audiodecoderconfig-description">AudioDecoderConfig.description</a></code>,
 and (4) the values of <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webcodecs/#encodedaudiochunk" id="ref-for-encodedaudiochunk①">EncodedAudioChunk</a></code> <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webcodecs/#dom-encodedaudiochunk-type-slot" id="ref-for-dom-encodedaudiochunk-type-slot">[[type]]</a></code>.</p>
    <p>The registration is not intended to include any information on whether a
 codec format is encumbered by intellectual property claims. Implementers and
@@ -611,23 +625,37 @@ intend to implement or use a specific codec format. Implementers of
 WebCodecs are not required to support the A-law PCM codec.</p>
    <p>This registration is non-normative.</p>
   </div>
-  <h2 class="no-num no-toc no-ref heading settled" id="sotd"><span class="content">Status of this document</span></h2>
+  <h2 class="heading no-num no-ref no-toc settled" id="sotd"><span class="content">Status of this document</span></h2>
   <div data-fill-with="status">
-   <p> <em>This section describes the status of this document at the time of its publication. A list of current <abbr title="World Wide Web Consortium">W3C</abbr> publications and the latest revision of this technical report can be found in the <a href="https://www.w3.org/TR/"><abbr title="World Wide Web Consortium">W3C</abbr> standards and drafts index</a> at https://www.w3.org/TR/.</em> </p>
-   <p> Feedback and comments on this specification are welcome. <a href="https://github.com/w3c/webcodecs/issues">GitHub Issues</a> are preferred for discussion on this specification. Alternatively, you can send comments to the Media Working Group’s mailing-list, <a href="mailto:public-media-wg@w3.org">public-media-wg@w3.org</a> (<a href="https://lists.w3.org/Archives/Public/public-media-wg/">archives</a>).
+   <p>
+  <em>This section describes the status of this document at the time of its publication. A list of current <abbr title="World Wide Web Consortium">W3C</abbr> publications and the latest revision of this technical report can be found in the <a href="https://www.w3.org/TR/"><abbr title="World Wide Web Consortium">W3C</abbr> standards and drafts index</a>.</em>
+</p>
+   <p>
+  Feedback and comments on this specification are welcome.
+  <a href="https://github.com/w3c/webcodecs/issues">GitHub Issues</a> are preferred for discussion on this specification. Alternatively, you can send comments to the Media Working Group’s mailing-list, <a href="mailto:public-media-wg@w3.org">public-media-wg@w3.org</a> (<a href="https://lists.w3.org/Archives/Public/public-media-wg/">archives</a>).
   This draft highlights some of the pending issues that are still to be discussed in the working group.
-  No decision has been taken on the outcome of these issues including whether they are valid. </p>
-   <p> This document was published by the <a href="https://www.w3.org/groups/wg/media/">Media Working Group</a> as an Editor’s Draft.
-  The group does not expect this document to become a <abbr title="World Wide Web Consortium">W3C</abbr> Recommendation. </p>
-   <p> Publication as an Editor’s Draft does not imply endorsement by <abbr title="World Wide Web Consortium">W3C</abbr> and its Members. </p>
-   <p data-deliverer="115198"> The <a href="https://www.w3.org/policies/patent-policy/">W3C Patent Policy</a> does not carry any licensing requirements or commitments on this document. </p>
-   <p> This document is governed by the <a href="https://www.w3.org/policies/process/20231103/" id="w3c_process_revision">03 November 2023 W3C Process Document</a>. </p>
+  No decision has been taken on the outcome of these issues including whether they are valid.
+</p>
+   <p>
+  This document was published by the <a href="https://www.w3.org/groups/wg/media/">Media Working Group</a> as an Editor’s Draft.
+  The group does not expect this document to become a <abbr title="World Wide Web Consortium">W3C</abbr> Recommendation.
+</p>
+   <p>
+  Publication as an Editor’s Draft does not imply endorsement by
+    <abbr title="World Wide Web Consortium">W3C</abbr> and its Members.
+</p>
+   <p data-deliverer="115198">
+   The <a href="https://www.w3.org/policies/patent-policy/">W3C Patent Policy</a> does not carry any licensing requirements or commitments on this document.
+</p>
+   <p>
+  This document is governed by the <a href="https://www.w3.org/policies/process/20250818/" id="w3c_process_revision">18 August 2025 W3C Process Document</a>.
+</p>
    <p></p>
   </div>
   <div data-fill-with="at-risk"></div>
   <nav data-fill-with="table-of-contents" id="toc">
-   <h2 class="no-num no-toc no-ref" id="contents">Table of Contents</h2>
-   <ol class="toc" role="directory">
+   <h2 class="no-num no-ref no-toc" id="contents">Table of Contents</h2>
+   <ol class="toc">
     <li><a href="#fully-qualified-codec-strings"><span class="secno">1</span> <span class="content">Fully qualified codec strings</span></a>
     <li><a href="#encodedaudiochunk-data"><span class="secno">2</span> <span class="content">EncodedAudioChunk data</span></a>
     <li><a href="#audiodecoderconfig-description"><span class="secno">3</span> <span class="content">AudioDecoderConfig description</span></a>
@@ -648,7 +676,7 @@ WebCodecs are not required to support the A-law PCM codec.</p>
      <a href="#references"><span class="secno"></span> <span class="content">References</span></a>
      <ol class="toc">
       <li><a href="#normative"><span class="secno"></span> <span class="content">Normative References</span></a>
-      <li><a href="#informative"><span class="secno"></span> <span class="content">Informative References</span></a>
+      <li><a href="#informative"><span class="secno"></span> <span class="content">Non-Normative References</span></a>
      </ol>
    </ol>
   </nav>
@@ -660,7 +688,8 @@ WebCodecs are not required to support the A-law PCM codec.</p>
 a sequence of bytes of arbitrary length, where each byte is an A-law
 encoded PCM sample as defined by Tables 1a and 1b in <a data-link-type="biblio" href="#biblio-itu-g711" title="G.711 : Pulse code modulation (PCM) of voice frequencies">[ITU-G.711]</a>.</p>
    <h2 class="heading settled" data-level="3" id="audiodecoderconfig-description"><span class="secno">3. </span><span class="content">AudioDecoderConfig description</span><a class="self-link" href="#audiodecoderconfig-description"></a></h2>
-   <p>The <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webcodecs/#dom-audiodecoderconfig-description" id="ref-for-dom-audiodecoderconfig-description①">description</a></code> is expected to be omitted from the <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webcodecs/#dictdef-audiodecoderconfig" id="ref-for-dictdef-audiodecoderconfig">AudioDecoderConfig</a></code>.</p>
+   <p>The <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webcodecs/#dom-audiodecoderconfig-description" id="ref-for-dom-audiodecoderconfig-description①">description</a></code> is expected to be omitted from the
+<code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webcodecs/#dictdef-audiodecoderconfig" id="ref-for-dictdef-audiodecoderconfig">AudioDecoderConfig</a></code>.</p>
    <h2 class="heading settled" data-level="4" id="encodedaudiochunk-type"><span class="secno">4. </span><span class="content">EncodedAudioChunk type</span><a class="self-link" href="#encodedaudiochunk-type"></a></h2>
    <p>The <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webcodecs/#dom-encodedaudiochunk-type-slot" id="ref-for-dom-encodedaudiochunk-type-slot①">[[type]]</a></code> for an <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webcodecs/#encodedaudiochunk" id="ref-for-encodedaudiochunk③">EncodedAudioChunk</a></code> containing
 A-law PCM is always "<code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webcodecs/#dom-encodedaudiochunktype-key" id="ref-for-dom-encodedaudiochunktype-key">key</a></code>".</p>
@@ -672,8 +701,8 @@ Considerations</a> in <a data-link-type="biblio" href="#biblio-webcodecs" title=
 Considerations</a> in <a data-link-type="biblio" href="#biblio-webcodecs" title="WebCodecs">[WEBCODECS]</a>.</p>
   </main>
   <div data-fill-with="conformance">
-   <h2 class="no-ref no-num heading settled" id="w3c-conformance"><span class="content">Conformance</span><a class="self-link" href="#w3c-conformance"></a></h2>
-   <h3 class="no-ref no-num heading settled" id="w3c-conventions"><span class="content">Document conventions</span><a class="self-link" href="#w3c-conventions"></a></h3>
+   <h2 class="heading no-num no-ref settled" id="w3c-conformance"><span class="content">Conformance</span><a class="self-link" href="#w3c-conformance"></a></h2>
+   <h3 class="heading no-num no-ref settled" id="w3c-conventions"><span class="content">Document conventions</span><a class="self-link" href="#w3c-conventions"></a></h3>
    <p>Conformance requirements are expressed
     with a combination of descriptive assertions
     and RFC 2119 terminology.
@@ -681,26 +710,36 @@ Considerations</a> in <a data-link-type="biblio" href="#biblio-webcodecs" title=
     in the normative parts of this document
     are to be interpreted as described in RFC 2119.
     However, for readability,
-    these words do not appear in all uppercase letters in this specification. </p>
+    these words do not appear in all uppercase letters in this specification.
+
+    </p>
    <p>All of the text of this specification is normative
-    except sections explicitly marked as non-normative, examples, and notes. <a data-link-type="biblio" href="#biblio-rfc2119" title="Key words for use in RFCs to Indicate Requirement Levels">[RFC2119]</a> </p>
+    except sections explicitly marked as non-normative, examples, and notes. <a data-link-type="biblio" href="#biblio-rfc2119" title="Key words for use in RFCs to Indicate Requirement Levels">[RFC2119]</a>
+
+    </p>
    <p>Examples in this specification are introduced with the words “for example”
     or are set apart from the normative text
     with <code>class="example"</code>,
-    like this: </p>
+    like this:
+
+    </p>
    <div class="example" id="w3c-example">
-    <a class="self-link" href="#w3c-example"></a> 
-    <p>This is an example of an informative example. </p>
+    <a class="self-link" href="#w3c-example"></a>
+        
+    <p>This is an example of an informative example.
+    </p>
    </div>
    <p>Informative notes begin with the word “Note”
     and are set apart from the normative text
     with <code>class="note"</code>,
-    like this: </p>
+    like this:
+
+    </p>
    <p class="note" role="note">Note, this is an informative note.</p>
   </div>
   <script src="https://www.w3.org/scripts/TR/2021/fixup.js"></script>
-  <h2 class="no-num no-ref heading settled" id="index"><span class="content">Index</span><a class="self-link" href="#index"></a></h2>
-  <h3 class="no-num no-ref heading settled" id="index-defined-elsewhere"><span class="content">Terms defined by reference</span><a class="self-link" href="#index-defined-elsewhere"></a></h3>
+  <h2 class="heading no-num no-ref settled" id="index"><span class="content">Index</span><a class="self-link" href="#index"></a></h2>
+  <h3 class="heading no-num no-ref settled" id="index-defined-elsewhere"><span class="content">Terms defined by reference</span><a class="self-link" href="#index-defined-elsewhere"></a></h3>
   <ul class="index">
    <li>
     <a data-link-type="biblio">[WEBCODECS]</a> defines the following terms:
@@ -713,20 +752,20 @@ Considerations</a> in <a data-link-type="biblio" href="#biblio-webcodecs" title=
      <li><span class="dfn-paneled" id="8ca40a84">description</span>
     </ul>
   </ul>
-  <h2 class="no-num no-ref heading settled" id="references"><span class="content">References</span><a class="self-link" href="#references"></a></h2>
-  <h3 class="no-num no-ref heading settled" id="normative"><span class="content">Normative References</span><a class="self-link" href="#normative"></a></h3>
+  <h2 class="heading no-num no-ref settled" id="references"><span class="content">References</span><a class="self-link" href="#references"></a></h2>
+  <h3 class="heading no-num no-ref settled" id="normative"><span class="content">Normative References</span><a class="self-link" href="#normative"></a></h3>
   <dl>
    <dt id="biblio-rfc2119">[RFC2119]
    <dd>S. Bradner. <a href="https://datatracker.ietf.org/doc/html/rfc2119"><cite>Key words for use in RFCs to Indicate Requirement Levels</cite></a>. March 1997. Best Current Practice. URL: <a href="https://datatracker.ietf.org/doc/html/rfc2119">https://datatracker.ietf.org/doc/html/rfc2119</a>
    <dt id="biblio-webcodecs">[WEBCODECS]
    <dd>Paul Adenot; Eugene Zemtsov. <a href="https://w3c.github.io/webcodecs/"><cite>WebCodecs</cite></a>. URL: <a href="https://w3c.github.io/webcodecs/">https://w3c.github.io/webcodecs/</a>
   </dl>
-  <h3 class="no-num no-ref heading settled" id="informative"><span class="content">Informative References</span><a class="self-link" href="#informative"></a></h3>
+  <h3 class="heading no-num no-ref settled" id="informative"><span class="content">Non-Normative References</span><a class="self-link" href="#informative"></a></h3>
   <dl>
    <dt id="biblio-itu-g711">[ITU-G.711]
    <dd><a href="https://www.itu.int/rec/T-REC-G.711/"><cite>G.711 : Pulse code modulation (PCM) of voice frequencies</cite></a>. November 1988. URL: <a href="https://www.itu.int/rec/T-REC-G.711/">https://www.itu.int/rec/T-REC-G.711/</a>
    <dt id="biblio-webcodecs-codec-registry">[WEBCODECS-CODEC-REGISTRY]
-   <dd>Paul Adenot; Bernard Aboba. <a href="https://w3c.github.io/webcodecs/codec_registry.html"><cite>WebCodecs Codec Registry</cite></a>. URL: <a href="https://w3c.github.io/webcodecs/codec_registry.html">https://w3c.github.io/webcodecs/codec_registry.html</a>
+   <dd>Paul Adenot; Eugene Zemtsov. <a href="https://w3c.github.io/webcodecs/codec_registry.html"><cite>WebCodecs Codec Registry</cite></a>. URL: <a href="https://w3c.github.io/webcodecs/codec_registry.html">https://w3c.github.io/webcodecs/codec_registry.html</a>
   </dl>
 <script>/* Boilerplate: script-dom-helper */
 "use strict";
