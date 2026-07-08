@@ -922,11 +922,10 @@ Algorithms {#videodecoder-algorithms}
 
         5. If {{VideoDecoderConfig/colorSpace}} [=map/exists=] in the
             {{VideoDecoder/[[active decoder config]]}}, assign its value to
-            |colorSpace|. In that case, if some members of
-            {{VideoDecoder/[[active decoder config]]}}'s
-            {{VideoDecoderConfig/colorSpace}} are null, the User Agent MAY use
-            codec implementation detected values for those members.
-            FIXME: Properly specify the case of missing fields.
+            |colorSpace|. In that case, User Agents MAY replace `null` members
+            of |colorSpace| with the corresponding values detected by the codec
+            implementation.
+            FIXME: Properly specify the case of `null` members.
         6. Assign the values of {{VideoDecoderConfig/rotation}} and
             {{VideoDecoderConfig/flip}} to |rotation| and |flip| respectively.
         7. Let |frame| be the result of running the [=Create a VideoFrame=]
