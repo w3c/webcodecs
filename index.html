@@ -7,7 +7,7 @@
   <link href="https://www.w3.org/StyleSheets/TR/2021/W3C-ED" rel="stylesheet">
   <meta content="Bikeshed version d113b2e81, updated Tue Jun 9 14:57:55 2026 -0700" name="generator">
   <link href="https://www.w3.org/TR/webcodecs/" rel="canonical">
-  <meta content="0426d1d44a4dfdb8c25eafab8905cf502592ea60" name="revision">
+  <meta content="ce2788dc57681b4d56f3728848f3d99a1d1bf456" name="revision">
   <meta content="dark light" name="color-scheme">
   <link href="https://www.w3.org/StyleSheets/TR/2021/dark.css" media="(prefers-color-scheme: dark)" rel="stylesheet" type="text/css">
 <style>
@@ -754,7 +754,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
 </p>
    <h1 class="no-ref p-name" id="title">WebCodecs</h1>
    <p id="w3c-state"><a href="https://www.w3.org/standards/types/#ED">Editor’s Draft</a>,
-    <time class="dt-updated" datetime="2026-06-23">23 June 2026</time></p>
+    <time class="dt-updated" datetime="2026-07-08">8 July 2026</time></p>
    <details open>
     <summary>More details about this document</summary>
     <div data-fill-with="spec-metadata">
@@ -1887,6 +1887,8 @@ implementation supporting <var>config</var>.</p>
         <li data-md>
          <p>Configure <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-codec-implementation-slot" id="ref-for-dom-videodecoder-codec-implementation-slot④">[[codec implementation]]</a></code> with <var>config</var>.</p>
         <li data-md>
+         <p>Assign <var>config</var> to <code class="idl"><a data-link-type="idl" href="#dom-videodecoder-active-decoder-config-slot" id="ref-for-dom-videodecoder-active-decoder-config-slot①">[[active decoder config]]</a></code>.</p>
+        <li data-md>
          <p><a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task" id="ref-for-queue-a-task①①">queue a task</a> to run the following steps:</p>
          <ol>
           <li data-md>
@@ -2139,7 +2141,7 @@ from the <code class="idl"><a data-link-type="idl" href="#encodedvideochunk" id=
         <li data-md>
          <p>If <code class="idl"><a data-link-type="idl" href="#dom-videodecoderconfig-displayaspectwidth" id="ref-for-dom-videodecoderconfig-displayaspectwidth">displayAspectWidth</a></code> and
 <code class="idl"><a data-link-type="idl" href="#dom-videodecoderconfig-displayaspectheight" id="ref-for-dom-videodecoderconfig-displayaspectheight">displayAspectHeight</a></code> <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#map-exists" id="ref-for-map-exists">exist</a> in the
-<code class="idl"><a data-link-type="idl" href="#dom-videodecoder-active-decoder-config-slot" id="ref-for-dom-videodecoder-active-decoder-config-slot①">[[active decoder config]]</a></code>, assign their values to
+<code class="idl"><a data-link-type="idl" href="#dom-videodecoder-active-decoder-config-slot" id="ref-for-dom-videodecoder-active-decoder-config-slot②">[[active decoder config]]</a></code>, assign their values to
 <var>displayAspectWidth</var> and <var>displayAspectHeight</var> respectively.</p>
         <li data-md>
          <p>Let <var>colorSpace</var> be the <code class="idl"><a data-link-type="idl" href="#videocolorspace" id="ref-for-videocolorspace③">VideoColorSpace</a></code> for <var>output</var> as detected
@@ -2153,8 +2155,11 @@ let <var>colorSpace</var> be <code>undefined</code>.</p>
     <code class="idl"><a data-link-type="idl" href="#dom-videodecoderconfig-colorspace" id="ref-for-dom-videodecoderconfig-colorspace">colorSpace</a></code> in the <code class="idl"><a data-link-type="idl" href="#dictdef-videodecoderconfig" id="ref-for-dictdef-videodecoderconfig③">VideoDecoderConfig</a></code>.</p>
         <li data-md>
          <p>If <code class="idl"><a data-link-type="idl" href="#dom-videodecoderconfig-colorspace" id="ref-for-dom-videodecoderconfig-colorspace①">colorSpace</a></code> <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#map-exists" id="ref-for-map-exists①">exists</a> in the
-<code class="idl"><a data-link-type="idl" href="#dom-videodecoder-active-decoder-config-slot" id="ref-for-dom-videodecoder-active-decoder-config-slot②">[[active decoder config]]</a></code>, assign its value to
-<var>colorSpace</var>.</p>
+<code class="idl"><a data-link-type="idl" href="#dom-videodecoder-active-decoder-config-slot" id="ref-for-dom-videodecoder-active-decoder-config-slot③">[[active decoder config]]</a></code>, assign its value to
+<var>colorSpace</var>. In that case, User Agents MAY replace <code>null</code> members
+of <var>colorSpace</var> with the corresponding values detected by the codec
+implementation.
+FIXME: Properly specify the case of <code>null</code> members.</p>
         <li data-md>
          <p>Assign the values of <code class="idl"><a data-link-type="idl" href="#dom-videodecoderconfig-rotation" id="ref-for-dom-videodecoderconfig-rotation">rotation</a></code> and
 <code class="idl"><a data-link-type="idl" href="#dom-videodecoderconfig-flip" id="ref-for-dom-videodecoderconfig-flip">flip</a></code> to <var>rotation</var> and <var>flip</var> respectively.</p>
@@ -2403,6 +2408,8 @@ these steps.</p>
 implementation supporting <var>config</var>.</p>
         <li data-md>
          <p>Configure <code class="idl"><a data-link-type="idl" href="#dom-audioencoder-codec-implementation-slot" id="ref-for-dom-audioencoder-codec-implementation-slot④">[[codec implementation]]</a></code> with <var>config</var>.</p>
+        <li data-md>
+         <p>Assign <var>config</var> to <code class="idl"><a data-link-type="idl" href="#dom-audioencoder-active-encoder-config-slot" id="ref-for-dom-audioencoder-active-encoder-config-slot①">[[active encoder config]]</a></code>.</p>
         <li data-md>
          <p><a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task" id="ref-for-queue-a-task②⓪">queue a task</a> to run the following steps:</p>
          <ol>
@@ -2653,7 +2660,7 @@ from <var>output</var>.</p>
          <p>Let <var>chunkMetadata</var> be a new <code class="idl"><a data-link-type="idl" href="#dictdef-encodedaudiochunkmetadata" id="ref-for-dictdef-encodedaudiochunkmetadata①">EncodedAudioChunkMetadata</a></code>.</p>
         <li data-md>
          <p>Let <var>encoderConfig</var> be the
-<code class="idl"><a data-link-type="idl" href="#dom-audioencoder-active-encoder-config-slot" id="ref-for-dom-audioencoder-active-encoder-config-slot①">[[active encoder config]]</a></code>.</p>
+<code class="idl"><a data-link-type="idl" href="#dom-audioencoder-active-encoder-config-slot" id="ref-for-dom-audioencoder-active-encoder-config-slot②">[[active encoder config]]</a></code>.</p>
         <li data-md>
          <p>Let <var>outputConfig</var> be a new <code class="idl"><a data-link-type="idl" href="#dictdef-audiodecoderconfig" id="ref-for-dictdef-audiodecoderconfig③">AudioDecoderConfig</a></code> that describes
 <var>output</var>. Initialize <var>outputConfig</var> as follows:</p>
@@ -2704,7 +2711,7 @@ not <a data-link-type="dfn" href="#equal-dictionaries" id="ref-for-equal-diction
       <li data-md>
        <p>Set <code class="idl"><a data-link-type="idl" href="#dom-audioencoder-state-slot" id="ref-for-dom-audioencoder-state-slot⑦">[[state]]</a></code> to <code>"unconfigured"</code>.</p>
       <li data-md>
-       <p>Set <code class="idl"><a data-link-type="idl" href="#dom-audioencoder-active-encoder-config-slot" id="ref-for-dom-audioencoder-active-encoder-config-slot②">[[active encoder config]]</a></code> to <code>null</code>.</p>
+       <p>Set <code class="idl"><a data-link-type="idl" href="#dom-audioencoder-active-encoder-config-slot" id="ref-for-dom-audioencoder-active-encoder-config-slot③">[[active encoder config]]</a></code> to <code>null</code>.</p>
       <li data-md>
        <p>Set <code class="idl"><a data-link-type="idl" href="#dom-audioencoder-active-output-config-slot" id="ref-for-dom-audioencoder-active-output-config-slot③">[[active output config]]</a></code> to <code>null</code>.</p>
       <li data-md>
@@ -2958,6 +2965,8 @@ these steps.</p>
 implementation supporting <var>config</var>.</p>
         <li data-md>
          <p>Configure <code class="idl"><a data-link-type="idl" href="#dom-videoencoder-codec-implementation-slot" id="ref-for-dom-videoencoder-codec-implementation-slot④">[[codec implementation]]</a></code> with <var>config</var>.</p>
+        <li data-md>
+         <p>Assign <var>config</var> to <code class="idl"><a data-link-type="idl" href="#dom-videoencoder-active-encoder-config-slot" id="ref-for-dom-videoencoder-active-encoder-config-slot①">[[active encoder config]]</a></code>.</p>
         <li data-md>
          <p><a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task" id="ref-for-queue-a-task②⑨">queue a task</a> to run the following steps:</p>
          <ol>
@@ -3215,7 +3224,7 @@ with <var>output</var>.</p>
          <p>Let <var>chunkMetadata</var> be a new <code class="idl"><a data-link-type="idl" href="#dictdef-encodedvideochunkmetadata" id="ref-for-dictdef-encodedvideochunkmetadata①">EncodedVideoChunkMetadata</a></code>.</p>
         <li data-md>
          <p>Let <var>encoderConfig</var> be the
-<code class="idl"><a data-link-type="idl" href="#dom-videoencoder-active-encoder-config-slot" id="ref-for-dom-videoencoder-active-encoder-config-slot①">[[active encoder config]]</a></code>.</p>
+<code class="idl"><a data-link-type="idl" href="#dom-videoencoder-active-encoder-config-slot" id="ref-for-dom-videoencoder-active-encoder-config-slot②">[[active encoder config]]</a></code>.</p>
         <li data-md>
          <p>Let <var>outputConfig</var> be a <code class="idl"><a data-link-type="idl" href="#dictdef-videodecoderconfig" id="ref-for-dictdef-videodecoderconfig⑤">VideoDecoderConfig</a></code> that describes
 <var>output</var>. Initialize <var>outputConfig</var> as follows:</p>
@@ -3302,7 +3311,7 @@ temporal layer for <var>output</var>.</p>
       <li data-md>
        <p>Set <code class="idl"><a data-link-type="idl" href="#dom-videoencoder-state-slot" id="ref-for-dom-videoencoder-state-slot⑦">[[state]]</a></code> to <code>"unconfigured"</code>.</p>
       <li data-md>
-       <p>Set <code class="idl"><a data-link-type="idl" href="#dom-videoencoder-active-encoder-config-slot" id="ref-for-dom-videoencoder-active-encoder-config-slot②">[[active encoder config]]</a></code> to <code>null</code>.</p>
+       <p>Set <code class="idl"><a data-link-type="idl" href="#dom-videoencoder-active-encoder-config-slot" id="ref-for-dom-videoencoder-active-encoder-config-slot③">[[active encoder config]]</a></code> to <code>null</code>.</p>
       <li data-md>
        <p>Set <code class="idl"><a data-link-type="idl" href="#dom-videoencoder-active-output-config-slot" id="ref-for-dom-videoencoder-active-output-config-slot③">[[active output config]]</a></code> to <code>null</code>.</p>
       <li data-md>
@@ -10100,7 +10109,7 @@ participation on the mailing list and in the issues.</p>
    <dt id="biblio-media-source-2">[MEDIA-SOURCE-2]
    <dd>Jean-Yves Avenard; Mark Watson. <a href="https://w3c.github.io/media-source/"><cite>Media Source Extensions™</cite></a>. URL: <a href="https://w3c.github.io/media-source/">https://w3c.github.io/media-source/</a>
    <dt id="biblio-rfc6381">[RFC6381]
-   <dd>R. Gellens; D. Singer; P. Frojdh. <a href="https://www.rfc-editor.org/rfc/rfc6381"><cite>The 'Codecs' and 'Profiles' Parameters for "Bucket" Media Types</cite></a>. August 2011. Proposed Standard. URL: <a href="https://www.rfc-editor.org/rfc/rfc6381">https://www.rfc-editor.org/rfc/rfc6381</a>
+   <dd>R. Gellens; D. Singer; P. Frojdh. <a href="https://www.rfc-editor.org/info/rfc6381/"><cite>The 'Codecs' and 'Profiles' Parameters for "Bucket" Media Types</cite></a>. August 2011. Proposed Standard. URL: <a href="https://www.rfc-editor.org/info/rfc6381/">https://www.rfc-editor.org/info/rfc6381/</a>
    <dt id="biblio-rfc9110">[RFC9110]
    <dd>R. Fielding, Ed.; M. Nottingham, Ed.; J. Reschke, Ed.. <a href="https://httpwg.org/specs/rfc9110.html"><cite>HTTP Semantics</cite></a>. June 2022. Internet Standard. URL: <a href="https://httpwg.org/specs/rfc9110.html">https://httpwg.org/specs/rfc9110.html</a>
    <dt id="biblio-webaudio">[WEBAUDIO]
@@ -11120,7 +11129,7 @@ let dfnPanelData = {
 "dom-audiodecoderinit-output": {"dfnID":"dom-audiodecoderinit-output","dfnText":"output","external":false,"refSections":[],"url":"#dom-audiodecoderinit-output"},
 "dom-audiodecodersupport-config": {"dfnID":"dom-audiodecodersupport-config","dfnText":"config","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-audiodecodersupport-config"},{"id":"ref-for-dom-audiodecodersupport-config\u2460"},{"id":"ref-for-dom-audiodecodersupport-config\u2461"}],"title":"3.5. Methods"},{"refs":[{"id":"ref-for-dom-audiodecodersupport-config\u2462"},{"id":"ref-for-dom-audiodecodersupport-config\u2463"}],"title":"7.3.1. AudioDecoderSupport"}],"url":"#dom-audiodecodersupport-config"},
 "dom-audiodecodersupport-supported": {"dfnID":"dom-audiodecodersupport-supported","dfnText":"supported","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-audiodecodersupport-supported"}],"title":"3.5. Methods"},{"refs":[{"id":"ref-for-dom-audiodecodersupport-supported\u2460"},{"id":"ref-for-dom-audiodecodersupport-supported\u2461"}],"title":"7.3.1. AudioDecoderSupport"}],"url":"#dom-audiodecodersupport-supported"},
-"dom-audioencoder-active-encoder-config-slot": {"dfnID":"dom-audioencoder-active-encoder-config-slot","dfnText":"[[active encoder config]]","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-audioencoder-active-encoder-config-slot"}],"title":"5.2. Constructors"},{"refs":[{"id":"ref-for-dom-audioencoder-active-encoder-config-slot\u2460"},{"id":"ref-for-dom-audioencoder-active-encoder-config-slot\u2461"}],"title":"5.6. Algorithms"}],"url":"#dom-audioencoder-active-encoder-config-slot"},
+"dom-audioencoder-active-encoder-config-slot": {"dfnID":"dom-audioencoder-active-encoder-config-slot","dfnText":"[[active encoder config]]","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-audioencoder-active-encoder-config-slot"}],"title":"5.2. Constructors"},{"refs":[{"id":"ref-for-dom-audioencoder-active-encoder-config-slot\u2460"}],"title":"5.5. Methods"},{"refs":[{"id":"ref-for-dom-audioencoder-active-encoder-config-slot\u2461"},{"id":"ref-for-dom-audioencoder-active-encoder-config-slot\u2462"}],"title":"5.6. Algorithms"}],"url":"#dom-audioencoder-active-encoder-config-slot"},
 "dom-audioencoder-active-output-config-slot": {"dfnID":"dom-audioencoder-active-output-config-slot","dfnText":"[[active output config]]","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-audioencoder-active-output-config-slot"}],"title":"5.2. Constructors"},{"refs":[{"id":"ref-for-dom-audioencoder-active-output-config-slot\u2460"},{"id":"ref-for-dom-audioencoder-active-output-config-slot\u2461"},{"id":"ref-for-dom-audioencoder-active-output-config-slot\u2462"}],"title":"5.6. Algorithms"}],"url":"#dom-audioencoder-active-output-config-slot"},
 "dom-audioencoder-audioencoder": {"dfnID":"dom-audioencoder-audioencoder","dfnText":"\n  AudioEncoder(init)\n","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-audioencoder-audioencoder"}],"title":"5. AudioEncoder Interface"}],"url":"#dom-audioencoder-audioencoder"},
 "dom-audioencoder-audioencoder-init-init": {"dfnID":"dom-audioencoder-audioencoder-init-init","dfnText":"init","external":false,"refSections":[],"url":"#dom-audioencoder-audioencoder-init-init"},
@@ -11299,7 +11308,7 @@ let dfnPanelData = {
 "dom-videocolorspaceinit-matrix": {"dfnID":"dom-videocolorspaceinit-matrix","dfnText":"matrix","external":false,"refSections":[],"url":"#dom-videocolorspaceinit-matrix"},
 "dom-videocolorspaceinit-primaries": {"dfnID":"dom-videocolorspaceinit-primaries","dfnText":"primaries","external":false,"refSections":[],"url":"#dom-videocolorspaceinit-primaries"},
 "dom-videocolorspaceinit-transfer": {"dfnID":"dom-videocolorspaceinit-transfer","dfnText":"transfer","external":false,"refSections":[],"url":"#dom-videocolorspaceinit-transfer"},
-"dom-videodecoder-active-decoder-config-slot": {"dfnID":"dom-videodecoder-active-decoder-config-slot","dfnText":"[[active decoder config]]","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-videodecoder-active-decoder-config-slot"}],"title":"4.2. Constructors"},{"refs":[{"id":"ref-for-dom-videodecoder-active-decoder-config-slot\u2460"},{"id":"ref-for-dom-videodecoder-active-decoder-config-slot\u2461"}],"title":"4.6. Algorithms"}],"url":"#dom-videodecoder-active-decoder-config-slot"},
+"dom-videodecoder-active-decoder-config-slot": {"dfnID":"dom-videodecoder-active-decoder-config-slot","dfnText":"[[active decoder config]]","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-videodecoder-active-decoder-config-slot"}],"title":"4.2. Constructors"},{"refs":[{"id":"ref-for-dom-videodecoder-active-decoder-config-slot\u2460"}],"title":"4.5. Methods"},{"refs":[{"id":"ref-for-dom-videodecoder-active-decoder-config-slot\u2461"},{"id":"ref-for-dom-videodecoder-active-decoder-config-slot\u2462"}],"title":"4.6. Algorithms"}],"url":"#dom-videodecoder-active-decoder-config-slot"},
 "dom-videodecoder-close": {"dfnID":"dom-videodecoder-close","dfnText":"close()","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-videodecoder-close"}],"title":"4. VideoDecoder Interface"}],"url":"#dom-videodecoder-close"},
 "dom-videodecoder-codec-implementation-slot": {"dfnID":"dom-videodecoder-codec-implementation-slot","dfnText":"[[codec implementation]]","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-videodecoder-codec-implementation-slot"},{"id":"ref-for-dom-videodecoder-codec-implementation-slot\u2460"}],"title":"4.1. Internal Slots"},{"refs":[{"id":"ref-for-dom-videodecoder-codec-implementation-slot\u2461"}],"title":"4.2. Constructors"},{"refs":[{"id":"ref-for-dom-videodecoder-codec-implementation-slot\u2462"},{"id":"ref-for-dom-videodecoder-codec-implementation-slot\u2463"},{"id":"ref-for-dom-videodecoder-codec-implementation-slot\u2464"},{"id":"ref-for-dom-videodecoder-codec-implementation-slot\u2465"},{"id":"ref-for-dom-videodecoder-codec-implementation-slot\u2466"},{"id":"ref-for-dom-videodecoder-codec-implementation-slot\u2467"},{"id":"ref-for-dom-videodecoder-codec-implementation-slot\u2468"},{"id":"ref-for-dom-videodecoder-codec-implementation-slot\u2460\u24ea"},{"id":"ref-for-dom-videodecoder-codec-implementation-slot\u2460\u2460"}],"title":"4.5. Methods"},{"refs":[{"id":"ref-for-dom-videodecoder-codec-implementation-slot\u2460\u2461"},{"id":"ref-for-dom-videodecoder-codec-implementation-slot\u2460\u2462"}],"title":"4.6. Algorithms"},{"refs":[{"id":"ref-for-dom-videodecoder-codec-implementation-slot\u2460\u2463"}],"title":"7.6. VideoDecoderConfig"}],"url":"#dom-videodecoder-codec-implementation-slot"},
 "dom-videodecoder-codec-saturated-slot": {"dfnID":"dom-videodecoder-codec-saturated-slot","dfnText":"[[codec saturated]]","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-videodecoder-codec-saturated-slot"}],"title":"4.2. Constructors"},{"refs":[{"id":"ref-for-dom-videodecoder-codec-saturated-slot\u2460"},{"id":"ref-for-dom-videodecoder-codec-saturated-slot\u2461"},{"id":"ref-for-dom-videodecoder-codec-saturated-slot\u2462"},{"id":"ref-for-dom-videodecoder-codec-saturated-slot\u2463"}],"title":"4.5. Methods"}],"url":"#dom-videodecoder-codec-saturated-slot"},
@@ -11341,7 +11350,7 @@ let dfnPanelData = {
 "dom-videodecoderinit-output": {"dfnID":"dom-videodecoderinit-output","dfnText":"output","external":false,"refSections":[],"url":"#dom-videodecoderinit-output"},
 "dom-videodecodersupport-config": {"dfnID":"dom-videodecodersupport-config","dfnText":"config","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-videodecodersupport-config"},{"id":"ref-for-dom-videodecodersupport-config\u2460"},{"id":"ref-for-dom-videodecodersupport-config\u2461"}],"title":"4.5. Methods"},{"refs":[{"id":"ref-for-dom-videodecodersupport-config\u2462"},{"id":"ref-for-dom-videodecodersupport-config\u2463"}],"title":"7.3.2. VideoDecoderSupport"}],"url":"#dom-videodecodersupport-config"},
 "dom-videodecodersupport-supported": {"dfnID":"dom-videodecodersupport-supported","dfnText":"supported","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-videodecodersupport-supported"}],"title":"4.5. Methods"},{"refs":[{"id":"ref-for-dom-videodecodersupport-supported\u2460"},{"id":"ref-for-dom-videodecodersupport-supported\u2461"}],"title":"7.3.2. VideoDecoderSupport"}],"url":"#dom-videodecodersupport-supported"},
-"dom-videoencoder-active-encoder-config-slot": {"dfnID":"dom-videoencoder-active-encoder-config-slot","dfnText":"[[active encoder config]]","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-videoencoder-active-encoder-config-slot"}],"title":"6.2. Constructors"},{"refs":[{"id":"ref-for-dom-videoencoder-active-encoder-config-slot\u2460"},{"id":"ref-for-dom-videoencoder-active-encoder-config-slot\u2461"}],"title":"6.6. Algorithms"}],"url":"#dom-videoencoder-active-encoder-config-slot"},
+"dom-videoencoder-active-encoder-config-slot": {"dfnID":"dom-videoencoder-active-encoder-config-slot","dfnText":"[[active encoder config]]","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-videoencoder-active-encoder-config-slot"}],"title":"6.2. Constructors"},{"refs":[{"id":"ref-for-dom-videoencoder-active-encoder-config-slot\u2460"}],"title":"6.5. Methods"},{"refs":[{"id":"ref-for-dom-videoencoder-active-encoder-config-slot\u2461"},{"id":"ref-for-dom-videoencoder-active-encoder-config-slot\u2462"}],"title":"6.6. Algorithms"}],"url":"#dom-videoencoder-active-encoder-config-slot"},
 "dom-videoencoder-active-orientation-slot": {"dfnID":"dom-videoencoder-active-orientation-slot","dfnText":"[[active orientation]]","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-videoencoder-active-orientation-slot"},{"id":"ref-for-dom-videoencoder-active-orientation-slot\u2460"},{"id":"ref-for-dom-videoencoder-active-orientation-slot\u2461"}],"title":"6.5. Methods"}],"url":"#dom-videoencoder-active-orientation-slot"},
 "dom-videoencoder-active-output-config-slot": {"dfnID":"dom-videoencoder-active-output-config-slot","dfnText":"[[active output config]]","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-videoencoder-active-output-config-slot"}],"title":"6.2. Constructors"},{"refs":[{"id":"ref-for-dom-videoencoder-active-output-config-slot\u2460"},{"id":"ref-for-dom-videoencoder-active-output-config-slot\u2461"},{"id":"ref-for-dom-videoencoder-active-output-config-slot\u2462"}],"title":"6.6. Algorithms"}],"url":"#dom-videoencoder-active-output-config-slot"},
 "dom-videoencoder-close": {"dfnID":"dom-videoencoder-close","dfnText":"close()","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-videoencoder-close"}],"title":"6. VideoEncoder Interface"}],"url":"#dom-videoencoder-close"},
