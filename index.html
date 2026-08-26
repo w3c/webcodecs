@@ -7,7 +7,7 @@
   <link href="https://www.w3.org/StyleSheets/TR/2021/W3C-ED" rel="stylesheet">
   <meta content="Bikeshed version ac92c2f0d, updated Fri Aug 21 16:01:29 2026 -0700" name="generator">
   <link href="https://www.w3.org/TR/webcodecs/" rel="canonical">
-  <meta content="3474eda40f3d2cb2f529e8f6e5423562ee384aa8" name="revision">
+  <meta content="1aaeafbb9ec8d5476c9fb29618ff0820f502850b" name="revision">
   <meta content="dark light" name="color-scheme">
   <link href="https://www.w3.org/StyleSheets/TR/2021/dark.css" media="(prefers-color-scheme: dark)" rel="stylesheet" type="text/css">
 <style>
@@ -7605,6 +7605,8 @@ initialized as follows:</p>
          <p>Assign a new <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list" id="ref-for-list①⑥">list</a> to <code class="idl"><a data-link-type="idl" href="#dom-imagetracklist-track-list-slot" id="ref-for-dom-imagetracklist-track-list-slot">[[track list]]</a></code>.</p>
         <li data-md>
          <p>Assign <code>-1</code> to <code class="idl"><a data-link-type="idl" href="#dom-imagetracklist-selected-index-slot" id="ref-for-dom-imagetracklist-selected-index-slot">[[selected index]]</a></code>.</p>
+        <li data-md>
+         <p>Assign a new promise to <code class="idl"><a data-link-type="idl" href="#dom-imagetracklist-ready-promise-slot" id="ref-for-dom-imagetracklist-ready-promise-slot">[[ready promise]]</a></code> and <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#mark-a-promise-as-handled" id="ref-for-mark-a-promise-as-handled">mark it as handled</a>.</p>
        </ol>
       <li data-md>
        <p>Assign <code class="idl"><a data-link-type="idl" href="#dom-imagedecoderinit-type" id="ref-for-dom-imagedecoderinit-type①">type</a></code> to <code class="idl"><a data-link-type="idl" href="#dom-imagedecoder-type-slot" id="ref-for-dom-imagedecoder-type-slot">[[type]]</a></code>.</p>
@@ -7614,6 +7616,8 @@ initialized as follows:</p>
        <p>If <code>init.preferAnimation</code> <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#map-exists" id="ref-for-map-exists③⓪">exists</a>, assign <code>init.preferAnimation</code>
 to the <code class="idl"><a data-link-type="idl" href="#dom-imagedecoder-prefer-animation-slot" id="ref-for-dom-imagedecoder-prefer-animation-slot">[[prefer animation]]</a></code> internal slot. Otherwise,
 assign 'null' to <code class="idl"><a data-link-type="idl" href="#dom-imagedecoder-prefer-animation-slot" id="ref-for-dom-imagedecoder-prefer-animation-slot①">[[prefer animation]]</a></code> internal slot.</p>
+      <li data-md>
+       <p>Assign a new promise to <code class="idl"><a data-link-type="idl" href="#dom-imagedecoder-completed-promise-slot" id="ref-for-dom-imagedecoder-completed-promise-slot">[[completed promise]]</a></code> and <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#mark-a-promise-as-handled" id="ref-for-mark-a-promise-as-handled①">mark it as handled</a>.</p>
       <li data-md>
        <p>Assign a new <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list" id="ref-for-list①⑦">list</a> to <code class="idl"><a data-link-type="idl" href="#dom-imagedecoder-pending-decode-promises-slot" id="ref-for-dom-imagedecoder-pending-decode-promises-slot">[[pending decode promises]]</a></code>.</p>
       <li data-md>
@@ -7667,7 +7671,7 @@ representing an encoded image.</p>
         <li data-md>
          <p>Assign <code>true</code> to <code class="idl"><a data-link-type="idl" href="#dom-imagedecoder-complete-slot" id="ref-for-dom-imagedecoder-complete-slot②">[[complete]]</a></code>.</p>
         <li data-md>
-         <p><a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#resolve" id="ref-for-resolve⑨">Resolve</a> <code class="idl"><a data-link-type="idl" href="#dom-imagedecoder-completed-promise-slot" id="ref-for-dom-imagedecoder-completed-promise-slot">[[completed promise]]</a></code>.</p>
+         <p><a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#resolve" id="ref-for-resolve⑨">Resolve</a> <code class="idl"><a data-link-type="idl" href="#dom-imagedecoder-completed-promise-slot" id="ref-for-dom-imagedecoder-completed-promise-slot①">[[completed promise]]</a></code>.</p>
         <li data-md>
          <p>Queue a control message to <a data-link-type="dfn" href="#configure-the-image-decoder" id="ref-for-configure-the-image-decoder①">configure the image decoder</a> with
 <var>init</var>.</p>
@@ -7744,7 +7748,7 @@ construction.</p>
     <dd data-md>
      <p>The promise used to signal when <code class="idl"><a data-link-type="idl" href="#dom-imagedecoder-complete" id="ref-for-dom-imagedecoder-complete②">complete</a></code> becomes <code>true</code>.</p>
      <p>The <code class="idl"><a data-link-type="idl" href="#dom-imagedecoder-completed" id="ref-for-dom-imagedecoder-completed①">completed</a></code> getter steps are to return
-<code class="idl"><a data-link-type="idl" href="#dom-imagedecoder-completed-promise-slot" id="ref-for-dom-imagedecoder-completed-promise-slot①">[[completed promise]]</a></code>.</p>
+<code class="idl"><a data-link-type="idl" href="#dom-imagedecoder-completed-promise-slot" id="ref-for-dom-imagedecoder-completed-promise-slot②">[[completed promise]]</a></code>.</p>
     <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="ImageDecoder" data-dfn-type="attribute" data-export id="dom-imagedecoder-tracks"><code>tracks</code></dfn>, <span> of type <a data-link-type="idl-name" href="#imagetracklist" id="ref-for-imagetracklist③">ImageTrackList</a>, readonly</span>
     <dd data-md>
      <p>Returns a <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/infrastructure.html#live" id="ref-for-live">live</a> <code class="idl"><a data-link-type="idl" href="#imagetracklist" id="ref-for-imagetracklist④">ImageTrackList</a></code>, which provides metadata
@@ -7873,7 +7877,7 @@ internal slot.</p>
           <li data-md>
            <p>Assign <code>true</code> to <code class="idl"><a data-link-type="idl" href="#dom-imagedecoder-complete-slot" id="ref-for-dom-imagedecoder-complete-slot④">[[complete]]</a></code></p>
           <li data-md>
-           <p><a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#resolve" id="ref-for-resolve①①">Resolve</a> <code class="idl"><a data-link-type="idl" href="#dom-imagedecoder-completed-promise-slot" id="ref-for-dom-imagedecoder-completed-promise-slot②">[[completed promise]]</a></code>.</p>
+           <p><a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#resolve" id="ref-for-resolve①①">Resolve</a> <code class="idl"><a data-link-type="idl" href="#dom-imagedecoder-completed-promise-slot" id="ref-for-dom-imagedecoder-completed-promise-slot③">[[completed promise]]</a></code>.</p>
          </ol>
         <dt data-md><a data-link-type="dfn" href="https://streams.spec.whatwg.org/#read-request-error-steps" id="ref-for-read-request-error-steps">error steps</a>
         <dd data-md>
@@ -7968,7 +7972,7 @@ slot.</p>
          <p>Assign <var>selectedTrackIndex</var> to <code class="idl"><a data-link-type="idl" href="#dom-imagedecoder-tracks" id="ref-for-dom-imagedecoder-tracks④">tracks</a></code>
 <code class="idl"><a data-link-type="idl" href="#dom-imagetracklist-selected-index-slot" id="ref-for-dom-imagetracklist-selected-index-slot②">[[selected index]]</a></code>.</p>
         <li data-md>
-         <p><a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#resolve" id="ref-for-resolve①②">Resolve</a> <code class="idl"><a data-link-type="idl" href="#dom-imagetracklist-ready-promise-slot" id="ref-for-dom-imagetracklist-ready-promise-slot">[[ready promise]]</a></code>.</p>
+         <p><a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#resolve" id="ref-for-resolve①②">Resolve</a> <code class="idl"><a data-link-type="idl" href="#dom-imagetracklist-ready-promise-slot" id="ref-for-dom-imagetracklist-ready-promise-slot①">[[ready promise]]</a></code>.</p>
        </ol>
      </ol>
     <dt data-md><dfn class="dfn-paneled" data-dfn-for="ImageDecoder" data-dfn-type="dfn" data-noexport id="imagedecoder-get-default-selected-track-index">Get Default Selected Track Index</dfn> (with
@@ -8346,7 +8350,7 @@ decoding operation.</p>
 <a data-link-type="dfn" href="#system-resources" id="ref-for-system-resources⑨">system resources</a>.</p>
       <li data-md>
        <p>If <code class="idl"><a data-link-type="idl" href="#dom-imagedecoder-imagetracklist-slot" id="ref-for-dom-imagedecoder-imagetracklist-slot④">[[ImageTrackList]]</a></code> is empty, <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#reject" id="ref-for-reject⑥">reject</a>
-<code class="idl"><a data-link-type="idl" href="#dom-imagetracklist-ready-promise-slot" id="ref-for-dom-imagetracklist-ready-promise-slot①">[[ready promise]]</a></code> with <var>exception</var>. Otherwise
+<code class="idl"><a data-link-type="idl" href="#dom-imagetracklist-ready-promise-slot" id="ref-for-dom-imagetracklist-ready-promise-slot②">[[ready promise]]</a></code> with <var>exception</var>. Otherwise
 perform these steps,</p>
        <ol>
         <li data-md>
@@ -8357,7 +8361,7 @@ perform these steps,</p>
        </ol>
       <li data-md>
        <p>If <code class="idl"><a data-link-type="idl" href="#dom-imagedecoder-complete-slot" id="ref-for-dom-imagedecoder-complete-slot⑤">[[complete]]</a></code> is false, <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#reject" id="ref-for-reject⑦">reject</a>
-<code class="idl"><a data-link-type="idl" href="#dom-imagedecoder-completed-promise-slot" id="ref-for-dom-imagedecoder-completed-promise-slot③">[[completed promise]]</a></code> with <var>exception</var>.</p>
+<code class="idl"><a data-link-type="idl" href="#dom-imagedecoder-completed-promise-slot" id="ref-for-dom-imagedecoder-completed-promise-slot④">[[completed promise]]</a></code> with <var>exception</var>.</p>
      </ol>
    </dl>
    <h3 class="heading settled" data-level="10.3" id="imagedecoderinit-interface"><span class="secno">10.3. </span><span class="content">ImageDecoderInit Interface</span><a class="self-link" href="#imagedecoderinit-interface"></a></h3>
@@ -8519,7 +8523,7 @@ is <code>-1</code>.</p>
     <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="ImageTrackList" data-dfn-type="attribute" data-export id="dom-imagetracklist-ready"><code>ready</code></dfn>, <span> of type Promise&lt;<a data-link-type="idl-name" href="https://webidl.spec.whatwg.org/#idl-undefined" id="ref-for-idl-undefined③⑤">undefined</a>>, readonly</span>
     <dd data-md>
      <p>The <code class="idl"><a data-link-type="idl" href="#dom-imagetracklist-ready" id="ref-for-dom-imagetracklist-ready①">ready</a></code> getter steps are to return the
-<code class="idl"><a data-link-type="idl" href="#dom-imagetracklist-ready-promise-slot" id="ref-for-dom-imagetracklist-ready-promise-slot②">[[ready promise]]</a></code>.</p>
+<code class="idl"><a data-link-type="idl" href="#dom-imagetracklist-ready-promise-slot" id="ref-for-dom-imagetracklist-ready-promise-slot③">[[ready promise]]</a></code>.</p>
     <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="ImageTrackList" data-dfn-type="attribute" data-export id="dom-imagetracklist-length"><code>length</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://webidl.spec.whatwg.org/#idl-unsigned-long" id="ref-for-idl-unsigned-long⑧⑧">unsigned long</a>, readonly</span>
     <dd data-md>
      <p>The <code class="idl"><a data-link-type="idl" href="#dom-imagetracklist-length" id="ref-for-dom-imagetracklist-length①">length</a></code> getter steps are to return the length of
@@ -10046,6 +10050,7 @@ participation on the mailing list and in the issues.</p>
      <li><span class="dfn-paneled" id="eec1be2d">float</span>
      <li><span class="dfn-paneled" id="f8de33a3">long</span>
      <li><span class="dfn-paneled" id="9aeb0a82">long long</span>
+     <li><span class="dfn-paneled" id="1171257a">mark as handled</span>
      <li><span class="dfn-paneled" id="b262501e">reject</span>
      <li><span class="dfn-paneled" id="3b90bdcd">resolve</span>
      <li><span class="dfn-paneled" id="9cce47fd">sequence</span>
@@ -10878,6 +10883,7 @@ let dfnPanelData = {
 "0ff8a452": {"dfnID":"0ff8a452","dfnText":"x (for DOMRect)","external":true,"refSections":[{"refs":[{"id":"ref-for-dom-domrect-x"}],"title":"9.4.6. Algorithms"}],"url":"https://drafts.csswg.org/geometry-1/#dom-domrect-x"},
 "1012cc5c": {"dfnID":"1012cc5c","dfnText":"width (for DOMRectInit)","external":true,"refSections":[{"refs":[{"id":"ref-for-dom-domrectinit-width"}],"title":"9.4.2. Constructors"},{"refs":[{"id":"ref-for-dom-domrectinit-width\u2460"},{"id":"ref-for-dom-domrectinit-width\u2461"},{"id":"ref-for-dom-domrectinit-width\u2462"},{"id":"ref-for-dom-domrectinit-width\u2463"},{"id":"ref-for-dom-domrectinit-width\u2464"},{"id":"ref-for-dom-domrectinit-width\u2465"}],"title":"9.4.6. Algorithms"}],"url":"https://drafts.csswg.org/geometry-1/#dom-domrectinit-width"},
 "1076ec40": {"dfnID":"1076ec40","dfnText":"HTMLMediaElement","external":true,"refSections":[{"refs":[{"id":"ref-for-htmlmediaelement"},{"id":"ref-for-htmlmediaelement\u2460"}],"title":"12. Security Considerations"}],"url":"https://html.spec.whatwg.org/multipage/media.html#htmlmediaelement"},
+"1171257a": {"dfnID":"1171257a","dfnText":"mark as handled","external":true,"refSections":[{"refs":[{"id":"ref-for-mark-a-promise-as-handled"},{"id":"ref-for-mark-a-promise-as-handled\u2460"}],"title":"10.2.2. Constructor"}],"url":"https://webidl.spec.whatwg.org/#mark-a-promise-as-handled"},
 "1243a891": {"dfnID":"1243a891","dfnText":"exist","external":true,"refSections":[{"refs":[{"id":"ref-for-map-exists"},{"id":"ref-for-map-exists\u2460"}],"title":"4.6. Algorithms"},{"refs":[{"id":"ref-for-map-exists\u2461"}],"title":"7.2. Clone Configuration (with config)"},{"refs":[{"id":"ref-for-map-exists\u2462"}],"title":"7.6. VideoDecoderConfig"},{"refs":[{"id":"ref-for-map-exists\u2463"},{"id":"ref-for-map-exists\u2464"}],"title":"9.2.4. Methods"},{"refs":[{"id":"ref-for-map-exists\u2465"},{"id":"ref-for-map-exists\u2466"}],"title":"9.2.5. Algorithms"},{"refs":[{"id":"ref-for-map-exists\u2467"},{"id":"ref-for-map-exists\u2468"},{"id":"ref-for-map-exists\u2460\u24ea"},{"id":"ref-for-map-exists\u2460\u2460"},{"id":"ref-for-map-exists\u2460\u2461"},{"id":"ref-for-map-exists\u2460\u2462"},{"id":"ref-for-map-exists\u2460\u2463"},{"id":"ref-for-map-exists\u2460\u2464"}],"title":"9.4.2. Constructors"},{"refs":[{"id":"ref-for-map-exists\u2460\u2465"}],"title":"9.4.5. Methods"},{"refs":[{"id":"ref-for-map-exists\u2460\u2466"},{"id":"ref-for-map-exists\u2460\u2467"},{"id":"ref-for-map-exists\u2460\u2468"},{"id":"ref-for-map-exists\u2461\u24ea"},{"id":"ref-for-map-exists\u2461\u2460"},{"id":"ref-for-map-exists\u2461\u2461"},{"id":"ref-for-map-exists\u2461\u2462"},{"id":"ref-for-map-exists\u2461\u2463"},{"id":"ref-for-map-exists\u2461\u2464"},{"id":"ref-for-map-exists\u2461\u2465"}],"title":"9.4.6. Algorithms"},{"refs":[{"id":"ref-for-map-exists\u2461\u2466"},{"id":"ref-for-map-exists\u2461\u2467"},{"id":"ref-for-map-exists\u2461\u2468"}],"title":"9.5. VideoFrame CopyTo() Options"},{"refs":[{"id":"ref-for-map-exists\u2462\u24ea"}],"title":"10.2.2. Constructor"},{"refs":[{"id":"ref-for-map-exists\u2462\u2460"},{"id":"ref-for-map-exists\u2462\u2461"}],"title":"10.3. ImageDecoderInit Interface"}],"url":"https://infra.spec.whatwg.org/#map-exists"},
 "1439b86e": {"dfnID":"1439b86e","dfnText":"CanvasImageSource","external":true,"refSections":[{"refs":[{"id":"ref-for-canvasimagesource"},{"id":"ref-for-canvasimagesource\u2460"},{"id":"ref-for-canvasimagesource\u2461"}],"title":"9.4. VideoFrame Interface"},{"refs":[{"id":"ref-for-canvasimagesource\u2462"}],"title":"9.4.2. Constructors"}],"url":"https://html.spec.whatwg.org/multipage/canvas.html#canvasimagesource"},
 "16785ec4": {"dfnID":"16785ec4","dfnText":"MIME type","external":true,"refSections":[{"refs":[{"id":"ref-for-mime-type"}],"title":"7.4. Codec String"}],"url":"https://mimesniff.spec.whatwg.org/#mime-type"},
@@ -11236,7 +11242,7 @@ let dfnPanelData = {
 "dom-imagedecoder-complete": {"dfnID":"dom-imagedecoder-complete","dfnText":"complete","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-imagedecoder-complete"}],"title":"10.2. ImageDecoder Interface"},{"refs":[{"id":"ref-for-dom-imagedecoder-complete\u2460"},{"id":"ref-for-dom-imagedecoder-complete\u2461"}],"title":"10.2.3. Attributes"},{"refs":[{"id":"ref-for-dom-imagedecoder-complete\u2462"},{"id":"ref-for-dom-imagedecoder-complete\u2463"},{"id":"ref-for-dom-imagedecoder-complete\u2464"},{"id":"ref-for-dom-imagedecoder-complete\u2465"},{"id":"ref-for-dom-imagedecoder-complete\u2466"}],"title":"10.2.5. Algorithms"},{"refs":[{"id":"ref-for-dom-imagedecoder-complete\u2467"}],"title":"10.6.1. Internal Slots"}],"url":"#dom-imagedecoder-complete"},
 "dom-imagedecoder-complete-slot": {"dfnID":"dom-imagedecoder-complete-slot","dfnText":"[[complete]]","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-imagedecoder-complete-slot"}],"title":"10.2.1. Internal Slots"},{"refs":[{"id":"ref-for-dom-imagedecoder-complete-slot\u2460"},{"id":"ref-for-dom-imagedecoder-complete-slot\u2461"}],"title":"10.2.2. Constructor"},{"refs":[{"id":"ref-for-dom-imagedecoder-complete-slot\u2462"}],"title":"10.2.3. Attributes"},{"refs":[{"id":"ref-for-dom-imagedecoder-complete-slot\u2463"},{"id":"ref-for-dom-imagedecoder-complete-slot\u2464"}],"title":"10.2.5. Algorithms"}],"url":"#dom-imagedecoder-complete-slot"},
 "dom-imagedecoder-completed": {"dfnID":"dom-imagedecoder-completed","dfnText":"completed","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-imagedecoder-completed"}],"title":"10.2. ImageDecoder Interface"},{"refs":[{"id":"ref-for-dom-imagedecoder-completed\u2460"}],"title":"10.2.3. Attributes"}],"url":"#dom-imagedecoder-completed"},
-"dom-imagedecoder-completed-promise-slot": {"dfnID":"dom-imagedecoder-completed-promise-slot","dfnText":"[[completed promise]]","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-imagedecoder-completed-promise-slot"}],"title":"10.2.2. Constructor"},{"refs":[{"id":"ref-for-dom-imagedecoder-completed-promise-slot\u2460"}],"title":"10.2.3. Attributes"},{"refs":[{"id":"ref-for-dom-imagedecoder-completed-promise-slot\u2461"},{"id":"ref-for-dom-imagedecoder-completed-promise-slot\u2462"}],"title":"10.2.5. Algorithms"}],"url":"#dom-imagedecoder-completed-promise-slot"},
+"dom-imagedecoder-completed-promise-slot": {"dfnID":"dom-imagedecoder-completed-promise-slot","dfnText":"[[completed promise]]","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-imagedecoder-completed-promise-slot"},{"id":"ref-for-dom-imagedecoder-completed-promise-slot\u2460"}],"title":"10.2.2. Constructor"},{"refs":[{"id":"ref-for-dom-imagedecoder-completed-promise-slot\u2461"}],"title":"10.2.3. Attributes"},{"refs":[{"id":"ref-for-dom-imagedecoder-completed-promise-slot\u2462"},{"id":"ref-for-dom-imagedecoder-completed-promise-slot\u2463"}],"title":"10.2.5. Algorithms"}],"url":"#dom-imagedecoder-completed-promise-slot"},
 "dom-imagedecoder-control-message-queue-slot": {"dfnID":"dom-imagedecoder-control-message-queue-slot","dfnText":"[[control message queue]]","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-imagedecoder-control-message-queue-slot"}],"title":"10.2.1. Internal Slots"},{"refs":[{"id":"ref-for-dom-imagedecoder-control-message-queue-slot\u2460"}],"title":"10.2.2. Constructor"}],"url":"#dom-imagedecoder-control-message-queue-slot"},
 "dom-imagedecoder-decode": {"dfnID":"dom-imagedecoder-decode","dfnText":"decode(options)","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-imagedecoder-decode"}],"title":"10.2. ImageDecoder Interface"},{"refs":[{"id":"ref-for-dom-imagedecoder-decode\u2460"}],"title":"10.2.1. Internal Slots"},{"refs":[{"id":"ref-for-dom-imagedecoder-decode\u2461"}],"title":"10.2.2. Constructor"},{"refs":[{"id":"ref-for-dom-imagedecoder-decode\u2462"},{"id":"ref-for-dom-imagedecoder-decode\u2463"}],"title":"10.4. ImageDecodeOptions Interface"},{"refs":[{"id":"ref-for-dom-imagedecoder-decode\u2464"}],"title":"10.5. ImageDecodeResult Interface"}],"url":"#dom-imagedecoder-decode"},
 "dom-imagedecoder-decode-options-options": {"dfnID":"dom-imagedecoder-decode-options-options","dfnText":"options","external":false,"refSections":[],"url":"#dom-imagedecoder-decode-options-options"},
@@ -11278,7 +11284,7 @@ let dfnPanelData = {
 "dom-imagetracklist-__getter__-index-index": {"dfnID":"dom-imagetracklist-__getter__-index-index","dfnText":"index","external":false,"refSections":[],"url":"#dom-imagetracklist-__getter__-index-index"},
 "dom-imagetracklist-length": {"dfnID":"dom-imagetracklist-length","dfnText":"length","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-imagetracklist-length"}],"title":"10.6. ImageTrackList Interface"},{"refs":[{"id":"ref-for-dom-imagetracklist-length\u2460"}],"title":"10.6.2. Attributes"}],"url":"#dom-imagetracklist-length"},
 "dom-imagetracklist-ready": {"dfnID":"dom-imagetracklist-ready","dfnText":"ready","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-imagetracklist-ready"}],"title":"10.6. ImageTrackList Interface"},{"refs":[{"id":"ref-for-dom-imagetracklist-ready\u2460"}],"title":"10.6.2. Attributes"}],"url":"#dom-imagetracklist-ready"},
-"dom-imagetracklist-ready-promise-slot": {"dfnID":"dom-imagetracklist-ready-promise-slot","dfnText":"[[ready promise]]","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-imagetracklist-ready-promise-slot"},{"id":"ref-for-dom-imagetracklist-ready-promise-slot\u2460"}],"title":"10.2.5. Algorithms"},{"refs":[{"id":"ref-for-dom-imagetracklist-ready-promise-slot\u2461"}],"title":"10.6.2. Attributes"}],"url":"#dom-imagetracklist-ready-promise-slot"},
+"dom-imagetracklist-ready-promise-slot": {"dfnID":"dom-imagetracklist-ready-promise-slot","dfnText":"[[ready promise]]","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-imagetracklist-ready-promise-slot"}],"title":"10.2.2. Constructor"},{"refs":[{"id":"ref-for-dom-imagetracklist-ready-promise-slot\u2460"},{"id":"ref-for-dom-imagetracklist-ready-promise-slot\u2461"}],"title":"10.2.5. Algorithms"},{"refs":[{"id":"ref-for-dom-imagetracklist-ready-promise-slot\u2462"}],"title":"10.6.2. Attributes"}],"url":"#dom-imagetracklist-ready-promise-slot"},
 "dom-imagetracklist-selected-index-slot": {"dfnID":"dom-imagetracklist-selected-index-slot","dfnText":"[[selected index]]","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-imagetracklist-selected-index-slot"}],"title":"10.2.2. Constructor"},{"refs":[{"id":"ref-for-dom-imagetracklist-selected-index-slot\u2460"}],"title":"10.2.4. Methods"},{"refs":[{"id":"ref-for-dom-imagetracklist-selected-index-slot\u2461"},{"id":"ref-for-dom-imagetracklist-selected-index-slot\u2462"}],"title":"10.2.5. Algorithms"},{"refs":[{"id":"ref-for-dom-imagetracklist-selected-index-slot\u2463"},{"id":"ref-for-dom-imagetracklist-selected-index-slot\u2464"},{"id":"ref-for-dom-imagetracklist-selected-index-slot\u2465"}],"title":"10.6.2. Attributes"},{"refs":[{"id":"ref-for-dom-imagetracklist-selected-index-slot\u2466"},{"id":"ref-for-dom-imagetracklist-selected-index-slot\u2467"}],"title":"10.7.2. Attributes"}],"url":"#dom-imagetracklist-selected-index-slot"},
 "dom-imagetracklist-selectedindex": {"dfnID":"dom-imagetracklist-selectedindex","dfnText":"selectedIndex","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-imagetracklist-selectedindex"}],"title":"10.6. ImageTrackList Interface"},{"refs":[{"id":"ref-for-dom-imagetracklist-selectedindex\u2460"}],"title":"10.6.2. Attributes"}],"url":"#dom-imagetracklist-selectedindex"},
 "dom-imagetracklist-selectedtrack": {"dfnID":"dom-imagetracklist-selectedtrack","dfnText":"selectedTrack","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-imagetracklist-selectedtrack"}],"title":"10.6. ImageTrackList Interface"},{"refs":[{"id":"ref-for-dom-imagetracklist-selectedtrack\u2460"}],"title":"10.6.2. Attributes"}],"url":"#dom-imagetracklist-selectedtrack"},
@@ -12708,6 +12714,7 @@ let refsData = {
 "https://webidl.spec.whatwg.org/#idl-unsigned-long": {"displayText":"unsigned long","export":true,"for_":[],"level":"1","normative":true,"shortname":"webidl","spec":"webidl","status":"current","text":"unsigned long","type":"interface","url":"https://webidl.spec.whatwg.org/#idl-unsigned-long"},
 "https://webidl.spec.whatwg.org/#idl-unsigned-long-long": {"displayText":"unsigned long long","export":true,"for_":[],"level":"1","normative":true,"shortname":"webidl","spec":"webidl","status":"current","text":"unsigned long long","type":"interface","url":"https://webidl.spec.whatwg.org/#idl-unsigned-long-long"},
 "https://webidl.spec.whatwg.org/#invalidstateerror": {"displayText":"InvalidStateError","export":true,"for_":[],"level":"1","normative":true,"shortname":"webidl","spec":"webidl","status":"current","text":"InvalidStateError","type":"exception","url":"https://webidl.spec.whatwg.org/#invalidstateerror"},
+"https://webidl.spec.whatwg.org/#mark-a-promise-as-handled": {"displayText":"mark as handled","export":true,"for_":[],"level":"1","normative":true,"shortname":"webidl","spec":"webidl","status":"current","text":"mark as handled","type":"dfn","url":"https://webidl.spec.whatwg.org/#mark-a-promise-as-handled"},
 "https://webidl.spec.whatwg.org/#notreadableerror": {"displayText":"NotReadableError","export":true,"for_":[],"level":"1","normative":true,"shortname":"webidl","spec":"webidl","status":"current","text":"NotReadableError","type":"exception","url":"https://webidl.spec.whatwg.org/#notreadableerror"},
 "https://webidl.spec.whatwg.org/#notsupportederror": {"displayText":"NotSupportedError","export":true,"for_":[],"level":"1","normative":true,"shortname":"webidl","spec":"webidl","status":"current","text":"NotSupportedError","type":"exception","url":"https://webidl.spec.whatwg.org/#notsupportederror"},
 "https://webidl.spec.whatwg.org/#quotaexceedederror": {"displayText":"QuotaExceededError","export":true,"for_":[],"level":"1","normative":true,"shortname":"webidl","spec":"webidl","status":"current","text":"QuotaExceededError","type":"interface","url":"https://webidl.spec.whatwg.org/#quotaexceedederror"},
