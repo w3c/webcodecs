@@ -1,0 +1,154 @@
+<pre class='metadata'>
+Title: H.263 WebCodecs Registration
+Repository: w3c/webcodecs
+Status: NOTE-ED
+Shortname: webcodecs-h263-codec-registration
+Level: none
+Group: mediawg
+ED: https://w3c.github.io/webcodecs/h263_codec_registration.html
+TR: https://www.w3.org/TR/webcodecs-h263-codec-registration/
+Editor: Yahweasel, Wereweasel https://wereweasel.com/
+
+Abstract: This registration is entered into the [[webcodecs-codec-registry]].
+    It describes, for H.263, (1) the fully qualified codec strings, (2) the
+    codec-specific {{EncodedVideoChunk}} [=EncodedVideoChunk/[[internal
+    data]]=] bytes, (3) the {{VideoDecoderConfig.description}} bytes, (4) the
+    values of {{EncodedVideoChunk}} [=EncodedVideoChunk/[[type]]=], and (5)
+    the naming convention used in this document.
+
+    The registration is not intended to include any information on whether a
+    codec format is encumbered by intellectual property claims. Implementers and
+    authors are advised to seek appropriate legal counsel in this matter if they
+    intend to implement or use a specific codec format. Implementers of
+    WebCodecs are not required to support the H.263 codec.
+
+    This registration is non-normative.
+
+Markup Shorthands:css no, markdown yes, dfn yes
+!Participate: <a href="https://github.com/w3c/webcodecs">Git Repository.</a>
+!Participate: <a href="https://github.com/w3c/webcodecs/issues/new">File an issue.</a>
+!Version History: <a href="https://github.com/w3c/webcodecs/commits">https://github.com/w3c/webcodecs/commits</a>
+</pre>
+
+<pre class='anchors'>
+spec: WEBCODECS; urlPrefix: https://w3c.github.io/webcodecs/#
+    type: attribute
+        text: EncodedVideoChunkMetadata.decoderConfig; url: dom-encodedvideochunkmetadata-decoderconfig
+        for: EncodedVideoChunkType; text: key; url: dom-encodedvideochunktype-key
+        text: VideoDecoderConfig.description; url: dom-videodecoderconfig-description
+    type: dfn
+        for: EncodedVideoChunk; text: [[internal data]]; url: dom-encodedvideochunk-internal-data-slot
+        for: EncodedVideoChunk; text: [[type]]; url: dom-encodedvideochunk-type-slot
+        for: VideoEncoder; text: [[output callback]]; url: dom-videoencoder-output-callback-slot
+    type: interface
+        text: EncodedVideoChunk; url: encodedvideochunk
+        text: VideoEncoder; url: videoencoder
+    type: dictionary
+        text: VideoEncoderConfig; url: dictdef-videoencoderconfig
+        text: VideoDecoderConfig; url: dictdef-videodecoderconfig
+</pre>
+
+<pre class='biblio'>
+{
+  "H.263v1": {
+    "href": "https://www.itu.int/rec/T-REC-H.263-199603-S/en",
+    "title": "H.263: Video coding for low bit rate communication (03/96)",
+    "publisher": "ITU-T"
+  },
+  "H.263v2": {
+    "href": "https://www.itu.int/rec/T-REC-H.263-199802-S/en",
+    "title": "H.263: Video coding for low bit rate communication (02/98)",
+    "publisher": "ITU-T"
+  },
+  "H.263v3": {
+    "href": "https://www.itu.int/rec/T-REC-H.263-200501-I/en",
+    "title": "H.263: Video coding for low bit rate communication (01/2005)",
+    "publisher": "ITU-T"
+  }
+}
+</pre>
+
+Fully qualified codec strings {#fully-qualified-codec-strings}
+==============================================================
+
+The codec string begins with the prefix `"h263."`, with a suffix of 1 character
+describing the version of the specification: `"h263.1"` for the first revision
+([[H.263v1]]), `"h263.2"` for the second revision ([[H.263v2]]), or `"h263.3"`
+for the third revision ([[H.263v3]]). As the specifications are backwards
+compatible, an encoder can encode using an earlier revision than specified, and
+a decoder can decode using a later revision than specified.
+
+`"h263.3"`, but no prior revision, can further be suffixed with a `"."` and a
+one-character profile number, as specified in Annex X.2 of [[H.263v3]]. If a
+profile is not specified, then an encoder can use any optional features and a
+decoder needs to support all optional features. This can further be suffixed by
+a `"."` and a two-character level, as described in Table X.2 of [[H.263v3]]. If
+a level is not specified, then an encoder can support any level or can support
+formats other than those in any specified level, and a decoder needs to support
+any level and can support formats other than those in any specified level.
+
+As revisions of H.263 prior to H.263v3 do not have profiles or levels, if
+`"h263.1"` or `"h263.2"` is specified, then an encoder can support any optional
+features in the specified revision, and a decoder needs to support all optional
+features in the specified revision. The non-normative profiles and levels
+specified in Appendix II are not used.
+
+EncodedVideoChunk data {#encodedvideochunk-data}
+================================================
+
+{{EncodedVideoChunk}} [=EncodedVideoChunk/[[internal data]]=] is expected to be
+a picture as described in Section 5.1 of [[H.263v1]], [[H.263v2]], or
+[[H.263v3]], as appropriate for the used specification revision.
+
+VideoDecoderConfig description {#videodecoderconfig-description}
+================================================================
+
+{{VideoDecoderConfig.description}} is not used for this codec.
+
+EncodedVideoChunk type {#encodedvideochunk-type}
+================================================
+
+If an {{EncodedVideoChunk}}'s [=EncodedVideoChunk/[[type]]=] is
+{{EncodedVideoChunkType/key}}, then the {{EncodedVideoChunk}} is expected to
+contain an `INTRA` picture. The precise definition depends on the specification
+revision:
+
+H.263v1: `PTYPE`'s bit 9 (Picture Coding Type) is 0 (`INTRA`), as defined in
+Section 5.1.3 of [[H.263v1]].
+
+H.263v2, H.263v3: If `PTYPE`'s bits 6-8 are not set to 111, then `PTYPE`'s bit
+9 (Picture Coding Type) is 0 (`INTRA`), as defined in Section 5.1.3. If
+`PTYPE`'s bits 6-8 are set to 111, as defined in Section 5.1.3, then
+`PLUSPTYPE`'s `MPPTYPE`'s bits 1-3 (Picture Type Code) are 000 (`INTRA`), as
+defined in Section 5.1.4.3. Section numbers refer to [[H.263v2]] if the second
+revision is used, or [[H.263v3]] if the third revision is used.
+
+Notes on codec naming {#notes-on-codec-naming}
+==============================================
+
+This registration codifies only the unamended H.263 specification revisions as
+published by ITU-T. Each specification is named "H.263", so they are
+differentiated by revision numbers. The specifications do not formally have
+revision numbers, but the revision numbers used in this registration are
+commonly used. Each revision is materially identical to the previous revision
+with several separately published annexes added. This registration provides no
+means of specifying the annexes independently of the specification revisions in
+which they were included, so it is not possible to, for instance, specify
+baseline H.263 with Annexes A through J but not L through T. H.263v1 includes
+Annexes A through H, H.263v2 includes Annexes A through T, and H.263v3 includes
+Annexes A through X.
+
+H.263v2 is also known as H.263+ or H.263 1998. H.263v3 is also known as H.263++
+or H.263 2005.
+
+MPEG-4 Part 2 specifies a video encoding format which is backwards compatible
+with H.263 (H.263 streams can be decoded as MPEG-4 Part 2), but it is not
+forwards compatible (MPEG-4 Part 2 streams do not decode as H.263), and it is
+not covered by this registration.
+
+Privacy and Security Considerations {#privacy-and-security-considerations}
+==========================================================================
+
+Please refer to the [[WEBCODECS#privacy-considerations|Privacy Considerations]]
+and [[WEBCODECS#security-considerations|Security Considerations]] sections in
+[[WEBCODECS]].
