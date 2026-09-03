@@ -127,6 +127,11 @@ Definitions {#definitions}
     inputs are provided. The underlying codec implementation <em
     class="rfc2119">MUST</em> emit all outputs in response to a flush.
 
+: <dfn id="priming-samples">Priming Samples</dfn>
+:: Audio samples produced at the start of decoding that represent encoder delay
+    or filter warm-up and are not part of the original audio content. Also
+    commonly referred to as "encoder delay" or "pre-skip".
+
 : <dfn lt="system resources">Codec System Resources</dfn>
 :: Resources including CPU memory, GPU memory, and exclusive handles to specific
     decoding/encoding hardware that <em class="rfc2119">MAY</em> be allocated by
@@ -334,6 +339,9 @@ Internal Slots {#audiodecoder-internal-slots}
 : <dfn attribute for=AudioDecoder>[[dequeue event scheduled]]</dfn>
 :: A boolean indicating whether a {{AudioDecoder/dequeue}} event is already
     scheduled to fire. Used to avoid event spam.
+: <dfn attribute for=AudioDecoder id="dom-audiodecoder-priming-samples-to-discard-slot">[[priming samples to discard]]</dfn>
+:: An integer representing the number of [=priming samples=] remaining to be
+    discarded from decoded audio outputs.
 
 Constructors {#audiodecoder-constructors}
 -----------------------------------------
@@ -354,7 +362,8 @@ Constructors {#audiodecoder-constructors}
 11. Assign `0` to {{AudioDecoder/[[decodeQueueSize]]}}.
 12. Assign a new [=list=] to {{AudioDecoder/[[pending flush promises]]}}.
 13. Assign `false` to {{AudioDecoder/[[dequeue event scheduled]]}}.
-13. Return d.
+14. Assign `0` to {{AudioDecoder/[[priming samples to discard]]}}.
+15. Return d.
 
 Attributes {#audiodecoder-attributes}
 -------------------------------------
@@ -407,7 +416,12 @@ Methods {#audiodecoder-methods}
         3. If needed, assign {{AudioDecoder/[[codec implementation]]}} with an
             implementation supporting |config|.
         4. Configure {{AudioDecoder/[[codec implementation]]}} with |config|.
-        5. [=queue a task=] to run the following steps:
+        5. Assign {{AudioDecoder/[[priming samples to discard]]}} with the
+            number of [=priming samples=] indicated by
+            |config|.{{AudioDecoderConfig/description}}, as defined by the
+            codec's registration in the [[WEBCODECS-CODEC-REGISTRY]], or `0`
+            if not specified.
+        6. [=queue a task=] to run the following steps:
             1. Assign `false` to {{AudioDecoder/[[message queue blocked]]}}.
             2. [=Queue a task=] to [=Process the control message queue=].
     3. Return `"processed"`.
@@ -443,18 +457,21 @@ Methods {#audiodecoder-methods}
     3. Decrement {{AudioDecoder/[[decodeQueueSize]]}} and run the
         [=AudioDecoder/Schedule Dequeue Event=] algorithm.
     4. Enqueue the following steps to the {{AudioDecoder/[[codec work queue]]}}:
-        1. Attempt to use {{AudioDecoder/[[codec implementation]]}} to decode
+        1. If |chunk| contains [=priming samples=] information, update
+            {{AudioDecoder/[[priming samples to discard]]}} as defined by the
+            codec's registration in the [[WEBCODECS-CODEC-REGISTRY]].
+        2. Attempt to use {{AudioDecoder/[[codec implementation]]}} to decode
             the chunk.
-        2. If decoding results in an error, [=queue a task=] to run the
+        3. If decoding results in an error, [=queue a task=] to run the
             [=Close AudioDecoder=] algorithm with {{EncodingError}} and return.
-        3. If {{AudioDecoder/[[codec saturated]]}} equals `true` and
+        4. If {{AudioDecoder/[[codec saturated]]}} equals `true` and
             {{AudioDecoder/[[codec implementation]]}} is no longer
             [=saturated=], [=queue a task=] to perform the following steps:
                 1. Assign `false` to {{AudioDecoder/[[codec saturated]]}}.
                 2. [=Process the control message queue=].
-        4. Let |decoded outputs| be a [=list=] of decoded audio data outputs
+        5. Let |decoded outputs| be a [=list=] of decoded audio data outputs
             emitted by {{AudioDecoder/[[codec implementation]]}}.
-        5. If |decoded outputs| is not empty, [=queue a task=] to run the
+        6. If |decoded outputs| is not empty, [=queue a task=] to run the
             [=Output AudioData=] algorithm with |decoded outputs|.
     5. Return `"processed"`.
   </dd>
@@ -555,22 +572,33 @@ Algorithms {#audiodecoder-algorithms}
   <dd>
     Run these steps:
     1. For each |output| in |outputs|:
-        1. Let |data| be an {{AudioData}}, initialized as follows:
-            1. Assign `false` to {{platform object/[[Detached]]}}.
-            2. Let |resource| be the [=media resource=] described by |output|.
-            3. Let |resourceReference| be a reference to |resource|.
-            4. Assign |resourceReference| to
-                {{AudioData/[[resource reference]]}}.
-            5. Let |timestamp| be the {{EncodedAudioChunk/[[timestamp]]}} of the
-                {{EncodedAudioChunk}} associated with |output|.
-            6. Assign |timestamp| to {{AudioData/[[timestamp]]}}.
-            7. If |output| uses a recognized {{AudioSampleFormat}}, assign that
-                format to {{AudioData/[[format]]}}. Otherwise, assign `null` to
-                {{AudioData/[[format]]}}.
-            8. Assign values to {{AudioData/[[sample rate]]}},
-                {{AudioData/[[number of frames]]}}, and
-                {{AudioData/[[number of channels]]}} as determined by |output|.
-        3. Invoke {{AudioDecoder/[[output callback]]}} with |data|.
+        1. Let |discardedFrames| be the lesser of the number of frames of
+            |output| and {{AudioDecoder/[[priming samples to discard]]}}.
+        2. Decrement {{AudioDecoder/[[priming samples to discard]]}} by
+            |discardedFrames|.
+        3. Remove the first |discardedFrames| frames from |output|.
+        4. If the number of frames of |output| is greater than 0:
+            1. Let |data| be an {{AudioData}}, initialized as follows:
+                1. Assign `false` to {{platform object/[[Detached]]}}.
+                2. Let |resource| be the [=media resource=] described by |output|.
+                3. Let |resourceReference| be a reference to |resource|.
+                4. Assign |resourceReference| to
+                    {{AudioData/[[resource reference]]}}.
+                5. Let |timestamp| be the {{EncodedAudioChunk/[[timestamp]]}} of the
+                    {{EncodedAudioChunk}} associated with |output|.
+                6. If |discardedFrames| is greater than 0:
+                    1. Increment |timestamp| by the result of dividing
+                        |discardedFrames| by the sample rate of |output|,
+                        multiplied by 1,000,000.
+                    2. Round |timestamp| to the nearest integer.
+                7. Assign |timestamp| to {{AudioData/[[timestamp]]}}.
+                8. If |output| uses a recognized {{AudioSampleFormat}}, assign that
+                    format to {{AudioData/[[format]]}}. Otherwise, assign `null` to
+                    {{AudioData/[[format]]}}.
+                9. Assign values to {{AudioData/[[sample rate]]}},
+                    {{AudioData/[[number of frames]]}}, and
+                    {{AudioData/[[number of channels]]}} as determined by |output|.
+            2. Invoke {{AudioDecoder/[[output callback]]}} with |data|.
   </dd>
   <dt><dfn>Reset AudioDecoder</dfn> (with |exception|)</dt>
   <dd>
@@ -587,6 +615,7 @@ Algorithms {#audiodecoder-algorithms}
     6. For each |promise| in {{AudioDecoder/[[pending flush promises]]}}:
         1. [=Reject=] |promise| with |exception|.
         2. Remove |promise| from {{AudioDecoder/[[pending flush promises]]}}.
+    7. Set {{AudioDecoder/[[priming samples to discard]]}} to `0`.
   </dd>
   <dt><dfn>Close AudioDecoder</dfn> (with |exception|)</dt>
   <dd>
