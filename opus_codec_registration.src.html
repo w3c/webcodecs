@@ -90,6 +90,11 @@ Opus is always "{{EncodedAudioChunkType/key}}".
 NOTE: Once the initialization has succeeded, any packet can be decoded at any
 time without error, but this might not result in the expected audio output.
 
+Priming Samples {#priming-samples}
+==================================
+
+The `Pre-skip` field in the Identification Header (see section 5.1 of [[OPUS-IN-OGG]]), if present in {{AudioDecoderConfig/description}}, specifies the initial value for {{AudioDecoder}}'s {{AudioDecoder/[[priming samples to discard]]}} internal slot. If {{AudioDecoderConfig/description}} is not present, {{AudioDecoder/[[priming samples to discard]]}} is initialized to `0`. Decoded {{EncodedAudioChunk}}s do not convey additional discard information.
+
 AudioEncoderConfig extensions {#audioencoderconfig-extensions}
 =============================================================
 
