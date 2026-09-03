@@ -104,6 +104,24 @@ NOTE: Once the initialization has succeeded, any AAC packet can be decoded at
     any time without error, but this might not result in the expected audio
     output.
 
+Priming Samples {#priming-samples}
+==================================
+
+Standard AAC bitstreams do not typically convey priming samples, and
+{{AudioDecoder}}'s {{AudioDecoder/[[priming samples to discard]]}} internal slot
+is initialized to `0` upon configuration.
+
+If the initial {{EncodedAudioChunk}} following configuration or reset conveys
+in-band encoder delay information (for example, through an encoder
+identification string in an extension payload fill element),
+{{AudioDecoder/[[priming samples to discard]]}} <em class="rfc2119">MAY</em> be
+set to that number of [=priming samples=].
+
+Subsequent {{EncodedAudioChunk}}s <em class="rfc2119">MUST NOT</em> update
+{{AudioDecoder/[[priming samples to discard]]}}. During an active decoding
+session, {{AudioDecoder/[[priming samples to discard]]}} is only re-initialized
+following a call to {{AudioDecoder/reset()}} or {{AudioDecoder/configure()}}.
+
     AudioEncoderConfig extensions {#audioencoderconfig-extensions}
     ==============================================================
 
