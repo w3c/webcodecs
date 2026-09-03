@@ -80,6 +80,24 @@ NOTE: Once the initialization has succeeded, any mp3 packet can be decoded at
     any time without error, but this might not result in the expected audio
     output.
 
+Priming Samples {#priming-samples}
+==================================
+
+{{AudioDecoder}}'s {{AudioDecoder/[[priming samples to discard]]}} internal slot
+is initialized to `0` upon configuration.
+
+If the initial {{EncodedAudioChunk}} following configuration or reset contains
+an Info or Xing header frame specifying encoder delay,
+{{AudioDecoder/[[priming samples to discard]]}} is set to that number of
+[=priming samples=].
+
+If a subsequent {{EncodedAudioChunk}} contains an Info or Xing header frame (such
+as in a concatenated MP3 stream or internet radio broadcast), it <em
+class="rfc2119">MUST NOT</em> update {{AudioDecoder/[[priming samples to
+discard]]}}. During an active decoding session, {{AudioDecoder/[[priming samples
+to discard]]}} is only re-initialized following a call to
+{{AudioDecoder/reset()}} or {{AudioDecoder/configure()}}.
+
 Privacy Considerations {#privacy-considerations}
 ==========================================================================
 
