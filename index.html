@@ -5,9 +5,9 @@
   <title>WebCodecs</title>
   <meta content="ED" name="w3c-status">
   <link href="https://www.w3.org/StyleSheets/TR/2021/W3C-ED" rel="stylesheet">
-  <meta content="Bikeshed version ac92c2f0d, updated Fri Aug 21 16:01:29 2026 -0700" name="generator">
+  <meta content="Bikeshed version ea4009a02, updated Thu Sep 17 15:24:44 2026 -0700" name="generator">
   <link href="https://www.w3.org/TR/webcodecs/" rel="canonical">
-  <meta content="725a39c559d69298d6cc16e2dfd49bf752d1c2a2" name="revision">
+  <meta content="91160a493a2f59060c8b1ba4831e398f820c6e6d" name="revision">
   <meta content="dark light" name="color-scheme">
   <link href="https://www.w3.org/StyleSheets/TR/2021/dark.css" media="(prefers-color-scheme: dark)" rel="stylesheet" type="text/css">
 <style>
@@ -754,7 +754,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
 </p>
    <h1 class="no-ref p-name" id="title">WebCodecs</h1>
    <p id="w3c-state"><a href="https://www.w3.org/standards/types/#ED">Editor’s Draft</a>,
-    <time class="dt-updated" datetime="2026-09-14">14 September 2026</time></p>
+    <time class="dt-updated" datetime="2026-09-21">21 September 2026</time></p>
    <details open>
     <summary>More details about this document</summary>
     <div data-fill-with="spec-metadata">
@@ -1054,6 +1054,11 @@ commonly referred to as a "key frame".</p>
 pipeline of the underlying codec implementation. The underlying codec
 implementation <em class="rfc2119">MAY</em> emit new outputs only when new
 inputs are provided. The underlying codec implementation <em class="rfc2119">MUST</em> emit all outputs in response to a flush.</p>
+    <dt data-md><dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="priming-samples">Priming Samples</dfn>
+    <dd data-md>
+     <p>Audio samples produced at the start of decoding that represent encoder delay
+or filter warm-up and are not part of the original audio content. Also
+commonly referred to as "encoder delay" or "pre-skip".</p>
     <dt data-md><dfn class="dfn-paneled" data-dfn-type="dfn" data-lt="system resources" data-noexport id="system-resources">Codec System Resources</dfn>
     <dd data-md>
      <p>Resources including CPU memory, GPU memory, and exclusive handles to specific
@@ -1277,6 +1282,10 @@ underlying codec is ready to accept new input.</p>
     <dd data-md>
      <p>A boolean indicating whether a <code class="idl"><a data-link-type="idl" href="#eventdef-audiodecoder-dequeue" id="ref-for-eventdef-audiodecoder-dequeue">dequeue</a></code> event is already
 scheduled to fire. Used to avoid event spam.</p>
+    <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="AudioDecoder" data-dfn-type="attribute" data-export id="dom-audiodecoder-priming-samples-to-discard-slot"><code>[[priming samples to discard]]</code></dfn>
+    <dd data-md>
+     <p>An integer representing the number of <a data-link-type="dfn" href="#priming-samples" id="ref-for-priming-samples">priming samples</a> remaining to be
+discarded from decoded audio outputs.</p>
    </dl>
    <h3 class="heading settled" data-level="3.2" id="audiodecoder-constructors"><span class="secno">3.2. </span><span class="content">Constructors</span><a class="self-link" href="#audiodecoder-constructors"></a></h3>
    
@@ -1312,6 +1321,8 @@ scheduled to fire. Used to avoid event spam.</p>
      <p>Assign a new <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list" id="ref-for-list">list</a> to <code class="idl"><a data-link-type="idl" href="#dom-audiodecoder-pending-flush-promises-slot" id="ref-for-dom-audiodecoder-pending-flush-promises-slot">[[pending flush promises]]</a></code>.</p>
     <li data-md>
      <p>Assign <code>false</code> to <code class="idl"><a data-link-type="idl" href="#dom-audiodecoder-dequeue-event-scheduled-slot" id="ref-for-dom-audiodecoder-dequeue-event-scheduled-slot">[[dequeue event scheduled]]</a></code>.</p>
+    <li data-md>
+     <p>Assign <code>0</code> to <code class="idl"><a data-link-type="idl" href="#dom-audiodecoder-priming-samples-to-discard-slot" id="ref-for-dom-audiodecoder-priming-samples-to-discard-slot">[[priming samples to discard]]</a></code>.</p>
     <li data-md>
      <p>Return d.</p>
    </ol>
@@ -1385,6 +1396,12 @@ implementation supporting <var>config</var>.</p>
         <li data-md>
          <p>Configure <code class="idl"><a data-link-type="idl" href="#dom-audiodecoder-codec-implementation-slot" id="ref-for-dom-audiodecoder-codec-implementation-slot④">[[codec implementation]]</a></code> with <var>config</var>.</p>
         <li data-md>
+         <p>Assign <code class="idl"><a data-link-type="idl" href="#dom-audiodecoder-priming-samples-to-discard-slot" id="ref-for-dom-audiodecoder-priming-samples-to-discard-slot①">[[priming samples to discard]]</a></code> with the
+number of <a data-link-type="dfn" href="#priming-samples" id="ref-for-priming-samples①">priming samples</a> indicated by
+<var>config</var>.<code class="idl"><a data-link-type="idl" href="#dom-audiodecoderconfig-description" id="ref-for-dom-audiodecoderconfig-description">description</a></code>, as defined by the
+codec’s registration in the <a data-link-type="biblio" href="#biblio-webcodecs-codec-registry" title="WebCodecs Codec Registry">[WEBCODECS-CODEC-REGISTRY]</a>, or <code>0</code>
+if not specified.</p>
+        <li data-md>
          <p><a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task" id="ref-for-queue-a-task②">queue a task</a> to run the following steps:</p>
          <ol>
           <li data-md>
@@ -1444,6 +1461,10 @@ assign <code>true</code> to <code class="idl"><a data-link-type="idl" href="#dom
       <li data-md>
        <p>Enqueue the following steps to the <code class="idl"><a data-link-type="idl" href="#dom-audiodecoder-codec-work-queue-slot" id="ref-for-dom-audiodecoder-codec-work-queue-slot②">[[codec work queue]]</a></code>:</p>
        <ol>
+        <li data-md>
+         <p>If <var>chunk</var> contains <a data-link-type="dfn" href="#priming-samples" id="ref-for-priming-samples②">priming samples</a> information, update
+<code class="idl"><a data-link-type="idl" href="#dom-audiodecoder-priming-samples-to-discard-slot" id="ref-for-dom-audiodecoder-priming-samples-to-discard-slot②">[[priming samples to discard]]</a></code> as defined by the
+codec’s registration in the <a data-link-type="biblio" href="#biblio-webcodecs-codec-registry" title="WebCodecs Codec Registry">[WEBCODECS-CODEC-REGISTRY]</a>.</p>
         <li data-md>
          <p>Attempt to use <code class="idl"><a data-link-type="idl" href="#dom-audiodecoder-codec-implementation-slot" id="ref-for-dom-audiodecoder-codec-implementation-slot⑥">[[codec implementation]]</a></code> to decode
 the chunk.</p>
@@ -1620,33 +1641,56 @@ the <a data-link-type="dfn" href="#check-configuration-support" id="ref-for-chec
        <p>For each <var>output</var> in <var>outputs</var>:</p>
        <ol>
         <li data-md>
-         <p>Let <var>data</var> be an <code class="idl"><a data-link-type="idl" href="#audiodata" id="ref-for-audiodata②">AudioData</a></code>, initialized as follows:</p>
+         <p>Let <var>discardedFrames</var> be the lesser of the number of frames of
+<var>output</var> and <code class="idl"><a data-link-type="idl" href="#dom-audiodecoder-priming-samples-to-discard-slot" id="ref-for-dom-audiodecoder-priming-samples-to-discard-slot③">[[priming samples to discard]]</a></code>.</p>
+        <li data-md>
+         <p>Decrement <code class="idl"><a data-link-type="idl" href="#dom-audiodecoder-priming-samples-to-discard-slot" id="ref-for-dom-audiodecoder-priming-samples-to-discard-slot④">[[priming samples to discard]]</a></code> by
+<var>discardedFrames</var>.</p>
+        <li data-md>
+         <p>Remove the first <var>discardedFrames</var> frames from <var>output</var>.</p>
+        <li data-md>
+         <p>If the number of frames of <var>output</var> is greater than 0:</p>
          <ol>
           <li data-md>
-           <p>Assign <code>false</code> to <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/structured-data.html#detached" id="ref-for-detached">[[Detached]]</a></code>.</p>
-          <li data-md>
-           <p>Let <var>resource</var> be the <a data-link-type="dfn" href="#media-resource" id="ref-for-media-resource">media resource</a> described by <var>output</var>.</p>
-          <li data-md>
-           <p>Let <var>resourceReference</var> be a reference to <var>resource</var>.</p>
-          <li data-md>
-           <p>Assign <var>resourceReference</var> to
+           <p>Let <var>data</var> be an <code class="idl"><a data-link-type="idl" href="#audiodata" id="ref-for-audiodata②">AudioData</a></code>, initialized as follows:</p>
+           <ol>
+            <li data-md>
+             <p>Assign <code>false</code> to <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/structured-data.html#detached" id="ref-for-detached">[[Detached]]</a></code>.</p>
+            <li data-md>
+             <p>Let <var>resource</var> be the <a data-link-type="dfn" href="#media-resource" id="ref-for-media-resource">media resource</a> described by <var>output</var>.</p>
+            <li data-md>
+             <p>Let <var>resourceReference</var> be a reference to <var>resource</var>.</p>
+            <li data-md>
+             <p>Assign <var>resourceReference</var> to
 <code class="idl"><a data-link-type="idl" href="#dom-audiodata-resource-reference-slot" id="ref-for-dom-audiodata-resource-reference-slot">[[resource reference]]</a></code>.</p>
-          <li data-md>
-           <p>Let <var>timestamp</var> be the <code class="idl"><a data-link-type="idl" href="#dom-encodedaudiochunk-timestamp-slot" id="ref-for-dom-encodedaudiochunk-timestamp-slot">[[timestamp]]</a></code> of the
+            <li data-md>
+             <p>Let <var>timestamp</var> be the <code class="idl"><a data-link-type="idl" href="#dom-encodedaudiochunk-timestamp-slot" id="ref-for-dom-encodedaudiochunk-timestamp-slot">[[timestamp]]</a></code> of the
 <code class="idl"><a data-link-type="idl" href="#encodedaudiochunk" id="ref-for-encodedaudiochunk①">EncodedAudioChunk</a></code> associated with <var>output</var>.</p>
-          <li data-md>
-           <p>Assign <var>timestamp</var> to <code class="idl"><a data-link-type="idl" href="#dom-audiodata-timestamp-slot" id="ref-for-dom-audiodata-timestamp-slot">[[timestamp]]</a></code>.</p>
-          <li data-md>
-           <p>If <var>output</var> uses a recognized <code class="idl"><a data-link-type="idl" href="#enumdef-audiosampleformat" id="ref-for-enumdef-audiosampleformat">AudioSampleFormat</a></code>, assign that
+            <li data-md>
+             <p>If <var>discardedFrames</var> is greater than 0:</p>
+             <ol>
+              <li data-md>
+               <p>Let <var>discardedDuration</var> be the result of dividing
+<var>discardedFrames</var> by the sample rate of <var>output</var>,
+multiplied by 1,000,000 and rounded to the nearest
+integer.</p>
+              <li data-md>
+               <p>Increment <var>timestamp</var> by <var>discardedDuration</var>.</p>
+             </ol>
+            <li data-md>
+             <p>Assign <var>timestamp</var> to <code class="idl"><a data-link-type="idl" href="#dom-audiodata-timestamp-slot" id="ref-for-dom-audiodata-timestamp-slot">[[timestamp]]</a></code>.</p>
+            <li data-md>
+             <p>If <var>output</var> uses a recognized <code class="idl"><a data-link-type="idl" href="#enumdef-audiosampleformat" id="ref-for-enumdef-audiosampleformat">AudioSampleFormat</a></code>, assign that
 format to <code class="idl"><a data-link-type="idl" href="#dom-audiodata-format-slot" id="ref-for-dom-audiodata-format-slot">[[format]]</a></code>. Otherwise, assign <code>null</code> to
 <code class="idl"><a data-link-type="idl" href="#dom-audiodata-format-slot" id="ref-for-dom-audiodata-format-slot①">[[format]]</a></code>.</p>
-          <li data-md>
-           <p>Assign values to <code class="idl"><a data-link-type="idl" href="#dom-audiodata-sample-rate-slot" id="ref-for-dom-audiodata-sample-rate-slot">[[sample rate]]</a></code>,
+            <li data-md>
+             <p>Assign values to <code class="idl"><a data-link-type="idl" href="#dom-audiodata-sample-rate-slot" id="ref-for-dom-audiodata-sample-rate-slot">[[sample rate]]</a></code>,
 <code class="idl"><a data-link-type="idl" href="#dom-audiodata-number-of-frames-slot" id="ref-for-dom-audiodata-number-of-frames-slot">[[number of frames]]</a></code>, and
 <code class="idl"><a data-link-type="idl" href="#dom-audiodata-number-of-channels-slot" id="ref-for-dom-audiodata-number-of-channels-slot">[[number of channels]]</a></code> as determined by <var>output</var>.</p>
+           </ol>
+          <li data-md>
+           <p>Invoke <code class="idl"><a data-link-type="idl" href="#dom-audiodecoder-output-callback-slot" id="ref-for-dom-audiodecoder-output-callback-slot①">[[output callback]]</a></code> with <var>data</var>.</p>
          </ol>
-        <li data-md>
-         <p>Invoke <code class="idl"><a data-link-type="idl" href="#dom-audiodecoder-output-callback-slot" id="ref-for-dom-audiodecoder-output-callback-slot①">[[output callback]]</a></code> with <var>data</var>.</p>
        </ol>
      </ol>
     <dt><dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="reset-audiodecoder">Reset AudioDecoder</dfn> (with <var>exception</var>)
@@ -1681,6 +1725,8 @@ output for the previous configuration.</p>
         <li data-md>
          <p>Remove <var>promise</var> from <code class="idl"><a data-link-type="idl" href="#dom-audiodecoder-pending-flush-promises-slot" id="ref-for-dom-audiodecoder-pending-flush-promises-slot④">[[pending flush promises]]</a></code>.</p>
        </ol>
+      <li data-md>
+       <p>Set <code class="idl"><a data-link-type="idl" href="#dom-audiodecoder-priming-samples-to-discard-slot" id="ref-for-dom-audiodecoder-priming-samples-to-discard-slot⑤">[[priming samples to discard]]</a></code> to <code>0</code>.</p>
      </ol>
     <dt><dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="close-audiodecoder">Close AudioDecoder</dfn> (with <var>exception</var>)
     <dd>
@@ -2676,12 +2722,12 @@ from <var>output</var>.</p>
 <var>encoderConfig</var>.<code class="idl"><a data-link-type="idl" href="#dom-audioencoderconfig-numberofchannels" id="ref-for-dom-audioencoderconfig-numberofchannels">numberOfChannels</a></code> to
 <var>outputConfig</var>.<code class="idl"><a data-link-type="idl" href="#dom-audiodecoderconfig-numberofchannels" id="ref-for-dom-audiodecoderconfig-numberofchannels">numberOfChannels</a></code>.</p>
           <li data-md>
-           <p>Assign <var>outputConfig</var>.<code class="idl"><a data-link-type="idl" href="#dom-audiodecoderconfig-description" id="ref-for-dom-audiodecoderconfig-description">description</a></code> with a
+           <p>Assign <var>outputConfig</var>.<code class="idl"><a data-link-type="idl" href="#dom-audiodecoderconfig-description" id="ref-for-dom-audiodecoderconfig-description①">description</a></code> with a
 sequence of codec specific bytes as determined by the
 <code class="idl"><a data-link-type="idl" href="#dom-audioencoder-codec-implementation-slot" id="ref-for-dom-audioencoder-codec-implementation-slot①①">[[codec implementation]]</a></code>. The User Agent <em class="rfc2119">MUST</em> ensure that the provided description
 could be used to correctly decode output.</p>
            <p class="note" role="note"><span class="marker">NOTE:</span> The codec specific requirements for populating the
-    <code class="idl"><a data-link-type="idl" href="#dom-audiodecoderconfig-description" id="ref-for-dom-audiodecoderconfig-description①">description</a></code> are described in the
+    <code class="idl"><a data-link-type="idl" href="#dom-audiodecoderconfig-description" id="ref-for-dom-audiodecoderconfig-description②">description</a></code> are described in the
     <a data-link-type="biblio" href="#biblio-webcodecs-codec-registry" title="WebCodecs Codec Registry">[WEBCODECS-CODEC-REGISTRY]</a>.</p>
          </ol>
         <li data-md>
@@ -3569,7 +3615,7 @@ none at all.</p>
   <c- b>required</c-> <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-DOMString" id="ref-for-idl-DOMString"><c- b>DOMString</c-></a> <a class="idl-code" data-link-type="dict-member" data-type="DOMString" href="#dom-audiodecoderconfig-codec" id="ref-for-dom-audiodecoderconfig-codec①"><c- g>codec</c-></a>;
   [<a class="idl-code" data-link-type="extended-attribute" href="https://webidl.spec.whatwg.org/#EnforceRange" id="ref-for-EnforceRange"><c- g>EnforceRange</c-></a>] <c- b>required</c-> <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-unsigned-long" id="ref-for-idl-unsigned-long①⓪"><c- b>unsigned</c-> <c- b>long</c-></a> <a class="idl-code" data-link-type="dict-member" data-type="unsigned long" href="#dom-audiodecoderconfig-samplerate" id="ref-for-dom-audiodecoderconfig-samplerate①"><c- g>sampleRate</c-></a>;
   [<a class="idl-code" data-link-type="extended-attribute" href="https://webidl.spec.whatwg.org/#EnforceRange" id="ref-for-EnforceRange①"><c- g>EnforceRange</c-></a>] <c- b>required</c-> <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-unsigned-long" id="ref-for-idl-unsigned-long①①"><c- b>unsigned</c-> <c- b>long</c-></a> <a class="idl-code" data-link-type="dict-member" data-type="unsigned long" href="#dom-audiodecoderconfig-numberofchannels" id="ref-for-dom-audiodecoderconfig-numberofchannels①"><c- g>numberOfChannels</c-></a>;
-  <a data-link-type="idl-name" href="https://webidl.spec.whatwg.org/#AllowSharedBufferSource" id="ref-for-AllowSharedBufferSource"><c- n>AllowSharedBufferSource</c-></a> <a class="idl-code" data-link-type="dict-member" data-type="AllowSharedBufferSource" href="#dom-audiodecoderconfig-description" id="ref-for-dom-audiodecoderconfig-description②"><c- g>description</c-></a>;
+  <a data-link-type="idl-name" href="https://webidl.spec.whatwg.org/#AllowSharedBufferSource" id="ref-for-AllowSharedBufferSource"><c- n>AllowSharedBufferSource</c-></a> <a class="idl-code" data-link-type="dict-member" data-type="AllowSharedBufferSource" href="#dom-audiodecoderconfig-description" id="ref-for-dom-audiodecoderconfig-description③"><c- g>description</c-></a>;
 };
 </pre>
    <p>To check if an <code class="idl"><a data-link-type="idl" href="#dictdef-audiodecoderconfig" id="ref-for-dictdef-audiodecoderconfig①②">AudioDecoderConfig</a></code> is a <dfn class="dfn-paneled" data-dfn-type="dfn" data-export id="valid-audiodecoderconfig">valid AudioDecoderConfig</dfn>,
@@ -3580,7 +3626,7 @@ none at all.</p>
 <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#strip-leading-and-trailing-ascii-whitespace" id="ref-for-strip-leading-and-trailing-ascii-whitespace">stripping leading and trailing ASCII whitespace</a>,
 return <code>false</code>.</p>
     <li data-md>
-     <p>If <code class="idl"><a data-link-type="idl" href="#dom-audiodecoderconfig-description" id="ref-for-dom-audiodecoderconfig-description③">description</a></code> is [<a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#buffersource-detached" id="ref-for-buffersource-detached">detached</a>], return
+     <p>If <code class="idl"><a data-link-type="idl" href="#dom-audiodecoderconfig-description" id="ref-for-dom-audiodecoderconfig-description④">description</a></code> is [<a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#buffersource-detached" id="ref-for-buffersource-detached">detached</a>], return
  false.</p>
     <li data-md>
      <p>If <code class="idl"><a data-link-type="idl" href="#dom-audiodecoderconfig-samplerate" id="ref-for-dom-audiodecoderconfig-samplerate②">sampleRate</a></code> or <code class="idl"><a data-link-type="idl" href="#dom-audiodecoderconfig-numberofchannels" id="ref-for-dom-audiodecoderconfig-numberofchannels②">numberOfChannels</a></code> are equal to zero, return <code>false</code>.</p>
@@ -9602,6 +9648,8 @@ participation on the mailing list and in the issues.</p>
      <li><a href="#dom-videocolorspaceinit-primaries">dict-member for VideoColorSpaceInit</a><span>, in § 9.9</span>
     </ul>
    <li><a href="#primary-image-track">Primary Image Track</a><span>, in § 1</span>
+   <li><a href="#priming-samples">Priming Samples</a><span>, in § 1</span>
+   <li><a href="#dom-audiodecoder-priming-samples-to-discard-slot">[[priming samples to discard]]</a><span>, in § 3.1</span>
    <li><a href="#process-the-control-message-queue">Process the control message queue</a><span>, in § 2.2</span>
    <li><a href="#dom-imagedecoder-progressive-frame-generations-slot">[[progressive frame generations]]</a><span>, in § 10.2.1</span>
    <li><a href="#progressive-image">Progressive Image</a><span>, in § 1</span>
@@ -11124,11 +11172,12 @@ let dfnPanelData = {
 "dom-audiodecoder-ondequeue": {"dfnID":"dom-audiodecoder-ondequeue","dfnText":"ondequeue","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-audiodecoder-ondequeue"}],"title":"3. AudioDecoder Interface"}],"url":"#dom-audiodecoder-ondequeue"},
 "dom-audiodecoder-output-callback-slot": {"dfnID":"dom-audiodecoder-output-callback-slot","dfnText":"[[output callback]]","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-audiodecoder-output-callback-slot"}],"title":"3.2. Constructors"},{"refs":[{"id":"ref-for-dom-audiodecoder-output-callback-slot\u2460"}],"title":"3.6. Algorithms"}],"url":"#dom-audiodecoder-output-callback-slot"},
 "dom-audiodecoder-pending-flush-promises-slot": {"dfnID":"dom-audiodecoder-pending-flush-promises-slot","dfnText":"[[pending flush promises]]","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-audiodecoder-pending-flush-promises-slot"}],"title":"3.2. Constructors"},{"refs":[{"id":"ref-for-dom-audiodecoder-pending-flush-promises-slot\u2460"},{"id":"ref-for-dom-audiodecoder-pending-flush-promises-slot\u2461"}],"title":"3.5. Methods"},{"refs":[{"id":"ref-for-dom-audiodecoder-pending-flush-promises-slot\u2462"},{"id":"ref-for-dom-audiodecoder-pending-flush-promises-slot\u2463"}],"title":"3.6. Algorithms"}],"url":"#dom-audiodecoder-pending-flush-promises-slot"},
+"dom-audiodecoder-priming-samples-to-discard-slot": {"dfnID":"dom-audiodecoder-priming-samples-to-discard-slot","dfnText":"[[priming samples to discard]]","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-audiodecoder-priming-samples-to-discard-slot"}],"title":"3.2. Constructors"},{"refs":[{"id":"ref-for-dom-audiodecoder-priming-samples-to-discard-slot\u2460"},{"id":"ref-for-dom-audiodecoder-priming-samples-to-discard-slot\u2461"}],"title":"3.5. Methods"},{"refs":[{"id":"ref-for-dom-audiodecoder-priming-samples-to-discard-slot\u2462"},{"id":"ref-for-dom-audiodecoder-priming-samples-to-discard-slot\u2463"},{"id":"ref-for-dom-audiodecoder-priming-samples-to-discard-slot\u2464"}],"title":"3.6. Algorithms"}],"url":"#dom-audiodecoder-priming-samples-to-discard-slot"},
 "dom-audiodecoder-reset": {"dfnID":"dom-audiodecoder-reset","dfnText":"reset()","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-audiodecoder-reset"}],"title":"3. AudioDecoder Interface"}],"url":"#dom-audiodecoder-reset"},
 "dom-audiodecoder-state": {"dfnID":"dom-audiodecoder-state","dfnText":"state","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-audiodecoder-state"}],"title":"3. AudioDecoder Interface"}],"url":"#dom-audiodecoder-state"},
 "dom-audiodecoder-state-slot": {"dfnID":"dom-audiodecoder-state-slot","dfnText":"[[state]]","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-audiodecoder-state-slot"}],"title":"3.2. Constructors"},{"refs":[{"id":"ref-for-dom-audiodecoder-state-slot\u2460"}],"title":"3.3. Attributes"},{"refs":[{"id":"ref-for-dom-audiodecoder-state-slot\u2461"},{"id":"ref-for-dom-audiodecoder-state-slot\u2462"},{"id":"ref-for-dom-audiodecoder-state-slot\u2463"},{"id":"ref-for-dom-audiodecoder-state-slot\u2464"}],"title":"3.5. Methods"},{"refs":[{"id":"ref-for-dom-audiodecoder-state-slot\u2465"},{"id":"ref-for-dom-audiodecoder-state-slot\u2466"},{"id":"ref-for-dom-audiodecoder-state-slot\u2467"}],"title":"3.6. Algorithms"}],"url":"#dom-audiodecoder-state-slot"},
 "dom-audiodecoderconfig-codec": {"dfnID":"dom-audiodecoderconfig-codec","dfnText":"codec","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-audiodecoderconfig-codec"}],"title":"5.6. Algorithms"},{"refs":[{"id":"ref-for-dom-audiodecoderconfig-codec\u2460"},{"id":"ref-for-dom-audiodecoderconfig-codec\u2461"},{"id":"ref-for-dom-audiodecoderconfig-codec\u2462"}],"title":"7.5. AudioDecoderConfig"}],"url":"#dom-audiodecoderconfig-codec"},
-"dom-audiodecoderconfig-description": {"dfnID":"dom-audiodecoderconfig-description","dfnText":"description","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-audiodecoderconfig-description"},{"id":"ref-for-dom-audiodecoderconfig-description\u2460"}],"title":"5.6. Algorithms"},{"refs":[{"id":"ref-for-dom-audiodecoderconfig-description\u2461"},{"id":"ref-for-dom-audiodecoderconfig-description\u2462"}],"title":"7.5. AudioDecoderConfig"}],"url":"#dom-audiodecoderconfig-description"},
+"dom-audiodecoderconfig-description": {"dfnID":"dom-audiodecoderconfig-description","dfnText":"description","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-audiodecoderconfig-description"}],"title":"3.5. Methods"},{"refs":[{"id":"ref-for-dom-audiodecoderconfig-description\u2460"},{"id":"ref-for-dom-audiodecoderconfig-description\u2461"}],"title":"5.6. Algorithms"},{"refs":[{"id":"ref-for-dom-audiodecoderconfig-description\u2462"},{"id":"ref-for-dom-audiodecoderconfig-description\u2463"}],"title":"7.5. AudioDecoderConfig"}],"url":"#dom-audiodecoderconfig-description"},
 "dom-audiodecoderconfig-numberofchannels": {"dfnID":"dom-audiodecoderconfig-numberofchannels","dfnText":"numberOfChannels","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-audiodecoderconfig-numberofchannels"}],"title":"5.6. Algorithms"},{"refs":[{"id":"ref-for-dom-audiodecoderconfig-numberofchannels\u2460"},{"id":"ref-for-dom-audiodecoderconfig-numberofchannels\u2461"}],"title":"7.5. AudioDecoderConfig"}],"url":"#dom-audiodecoderconfig-numberofchannels"},
 "dom-audiodecoderconfig-samplerate": {"dfnID":"dom-audiodecoderconfig-samplerate","dfnText":"sampleRate","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-audiodecoderconfig-samplerate"}],"title":"5.6. Algorithms"},{"refs":[{"id":"ref-for-dom-audiodecoderconfig-samplerate\u2460"},{"id":"ref-for-dom-audiodecoderconfig-samplerate\u2461"}],"title":"7.5. AudioDecoderConfig"}],"url":"#dom-audiodecoderconfig-samplerate"},
 "dom-audiodecoderinit-error": {"dfnID":"dom-audiodecoderinit-error","dfnText":"error","external":false,"refSections":[],"url":"#dom-audiodecoderinit-error"},
@@ -11585,6 +11634,7 @@ let dfnPanelData = {
 "output-videoframes": {"dfnID":"output-videoframes","dfnText":"Output VideoFrames","external":false,"refSections":[{"refs":[{"id":"ref-for-output-videoframes"},{"id":"ref-for-output-videoframes\u2460"}],"title":"4.5. Methods"}],"url":"#output-videoframes"},
 "planar": {"dfnID":"planar","dfnText":"planar","external":false,"refSections":[{"refs":[{"id":"ref-for-planar"},{"id":"ref-for-planar\u2460"}],"title":"9.2.5. Algorithms"},{"refs":[{"id":"ref-for-planar\u2461"},{"id":"ref-for-planar\u2462"},{"id":"ref-for-planar\u2463"},{"id":"ref-for-planar\u2464"},{"id":"ref-for-planar\u2465"},{"id":"ref-for-planar\u2466"}],"title":"9.3. Audio Sample Format"},{"refs":[{"id":"ref-for-planar\u2467"}],"title":"9.3.1. Arrangement of audio buffer"}],"url":"#planar"},
 "primary-image-track": {"dfnID":"primary-image-track","dfnText":"Primary Image Track","external":false,"refSections":[{"refs":[{"id":"ref-for-primary-image-track"},{"id":"ref-for-primary-image-track\u2460"}],"title":"10.2.5. Algorithms"}],"url":"#primary-image-track"},
+"priming-samples": {"dfnID":"priming-samples","dfnText":"Priming Samples","external":false,"refSections":[{"refs":[{"id":"ref-for-priming-samples"}],"title":"3.1. Internal Slots"},{"refs":[{"id":"ref-for-priming-samples\u2460"},{"id":"ref-for-priming-samples\u2461"}],"title":"3.5. Methods"}],"url":"#priming-samples"},
 "process-the-control-message-queue": {"dfnID":"process-the-control-message-queue","dfnText":"Process the control message queue","external":false,"refSections":[{"refs":[{"id":"ref-for-process-the-control-message-queue"}],"title":"2.2. Control Messages"},{"refs":[{"id":"ref-for-process-the-control-message-queue\u2460"},{"id":"ref-for-process-the-control-message-queue\u2461"},{"id":"ref-for-process-the-control-message-queue\u2462"},{"id":"ref-for-process-the-control-message-queue\u2463"},{"id":"ref-for-process-the-control-message-queue\u2464"}],"title":"3.5. Methods"},{"refs":[{"id":"ref-for-process-the-control-message-queue\u2465"},{"id":"ref-for-process-the-control-message-queue\u2466"},{"id":"ref-for-process-the-control-message-queue\u2467"},{"id":"ref-for-process-the-control-message-queue\u2468"},{"id":"ref-for-process-the-control-message-queue\u2460\u24ea"}],"title":"4.5. Methods"},{"refs":[{"id":"ref-for-process-the-control-message-queue\u2460\u2460"},{"id":"ref-for-process-the-control-message-queue\u2460\u2461"},{"id":"ref-for-process-the-control-message-queue\u2460\u2462"},{"id":"ref-for-process-the-control-message-queue\u2460\u2463"},{"id":"ref-for-process-the-control-message-queue\u2460\u2464"}],"title":"5.5. Methods"},{"refs":[{"id":"ref-for-process-the-control-message-queue\u2460\u2465"},{"id":"ref-for-process-the-control-message-queue\u2460\u2466"},{"id":"ref-for-process-the-control-message-queue\u2460\u2467"},{"id":"ref-for-process-the-control-message-queue\u2460\u2468"},{"id":"ref-for-process-the-control-message-queue\u2461\u24ea"}],"title":"6.5. Methods"},{"refs":[{"id":"ref-for-process-the-control-message-queue\u2461\u2460"},{"id":"ref-for-process-the-control-message-queue\u2461\u2461"},{"id":"ref-for-process-the-control-message-queue\u2461\u2462"}],"title":"10.2.2. Constructor"},{"refs":[{"id":"ref-for-process-the-control-message-queue\u2461\u2463"}],"title":"10.2.4. Methods"},{"refs":[{"id":"ref-for-process-the-control-message-queue\u2461\u2464"}],"title":"10.7.2. Attributes"}],"url":"#process-the-control-message-queue"},
 "progressive-image": {"dfnID":"progressive-image","dfnText":"Progressive Image","external":false,"refSections":[{"refs":[{"id":"ref-for-progressive-image"}],"title":"1. Definitions"},{"refs":[{"id":"ref-for-progressive-image\u2460"}],"title":"10.2.4. Methods"},{"refs":[{"id":"ref-for-progressive-image\u2461"},{"id":"ref-for-progressive-image\u2462"},{"id":"ref-for-progressive-image\u2463"}],"title":"10.4. ImageDecodeOptions Interface"}],"url":"#progressive-image"},
 "progressive-image-frame-generation": {"dfnID":"progressive-image-frame-generation","dfnText":"Progressive Image Frame Generation","external":false,"refSections":[{"refs":[{"id":"ref-for-progressive-image-frame-generation"}],"title":"10.2.1. Internal Slots"},{"refs":[{"id":"ref-for-progressive-image-frame-generation\u2460"},{"id":"ref-for-progressive-image-frame-generation\u2461"},{"id":"ref-for-progressive-image-frame-generation\u2462"}],"title":"10.2.5. Algorithms"},{"refs":[{"id":"ref-for-progressive-image-frame-generation\u2463"}],"title":"10.4. ImageDecodeOptions Interface"}],"url":"#progressive-image-frame-generation"},
@@ -12150,6 +12200,7 @@ let refsData = {
 "#dom-audiodecoder-ondequeue": {"displayText":"ondequeue","export":true,"for_":["AudioDecoder"],"level":"","normative":true,"shortname":"webcodecs","spec":"webcodecs","status":"local","text":"ondequeue","type":"attribute","url":"#dom-audiodecoder-ondequeue"},
 "#dom-audiodecoder-output-callback-slot": {"displayText":"[[output callback]]","export":true,"for_":["AudioDecoder"],"level":"","normative":true,"shortname":"webcodecs","spec":"webcodecs","status":"local","text":"[[output callback]]","type":"attribute","url":"#dom-audiodecoder-output-callback-slot"},
 "#dom-audiodecoder-pending-flush-promises-slot": {"displayText":"[[pending flush promises]]","export":true,"for_":["AudioDecoder"],"level":"","normative":true,"shortname":"webcodecs","spec":"webcodecs","status":"local","text":"[[pending flush promises]]","type":"attribute","url":"#dom-audiodecoder-pending-flush-promises-slot"},
+"#dom-audiodecoder-priming-samples-to-discard-slot": {"displayText":"[[priming samples to discard]]","export":true,"for_":["AudioDecoder"],"level":"","normative":true,"shortname":"webcodecs","spec":"webcodecs","status":"local","text":"[[priming samples to discard]]","type":"attribute","url":"#dom-audiodecoder-priming-samples-to-discard-slot"},
 "#dom-audiodecoder-reset": {"displayText":"reset()","export":true,"for_":["AudioDecoder"],"level":"","normative":true,"shortname":"webcodecs","spec":"webcodecs","status":"local","text":"reset()","type":"method","url":"#dom-audiodecoder-reset"},
 "#dom-audiodecoder-state": {"displayText":"state","export":true,"for_":["AudioDecoder"],"level":"","normative":true,"shortname":"webcodecs","spec":"webcodecs","status":"local","text":"state","type":"attribute","url":"#dom-audiodecoder-state"},
 "#dom-audiodecoder-state-slot": {"displayText":"[[state]]","export":true,"for_":["AudioDecoder"],"level":"","normative":true,"shortname":"webcodecs","spec":"webcodecs","status":"local","text":"[[state]]","type":"attribute","url":"#dom-audiodecoder-state-slot"},
@@ -12538,6 +12589,7 @@ let refsData = {
 "#output-videoframes": {"displayText":"output videoframes","export":true,"for_":[],"level":"","normative":true,"shortname":"webcodecs","spec":"webcodecs","status":"local","text":"output videoframes","type":"dfn","url":"#output-videoframes"},
 "#planar": {"displayText":"planar","export":true,"for_":[],"level":"","normative":true,"shortname":"webcodecs","spec":"webcodecs","status":"local","text":"planar","type":"dfn","url":"#planar"},
 "#primary-image-track": {"displayText":"primary image track","export":true,"for_":[],"level":"","normative":true,"shortname":"webcodecs","spec":"webcodecs","status":"local","text":"primary image track","type":"dfn","url":"#primary-image-track"},
+"#priming-samples": {"displayText":"priming samples","export":true,"for_":[],"level":"","normative":true,"shortname":"webcodecs","spec":"webcodecs","status":"local","text":"priming samples","type":"dfn","url":"#priming-samples"},
 "#process-the-control-message-queue": {"displayText":"process the control message queue","export":true,"for_":[],"level":"","normative":true,"shortname":"webcodecs","spec":"webcodecs","status":"local","text":"process the control message queue","type":"dfn","url":"#process-the-control-message-queue"},
 "#progressive-image": {"displayText":"progressive image","export":true,"for_":[],"level":"","normative":true,"shortname":"webcodecs","spec":"webcodecs","status":"local","text":"progressive image","type":"dfn","url":"#progressive-image"},
 "#progressive-image-frame-generation": {"displayText":"progressive image frame generation","export":true,"for_":[],"level":"","normative":true,"shortname":"webcodecs","spec":"webcodecs","status":"local","text":"progressive image frame generation","type":"dfn","url":"#progressive-image-frame-generation"},
