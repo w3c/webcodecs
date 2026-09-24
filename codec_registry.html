@@ -5,9 +5,9 @@
   <title>WebCodecs Codec Registry</title>
   <meta content="NOTE-ED" name="w3c-status">
   <link href="https://www.w3.org/StyleSheets/TR/2021/W3C-ED" rel="stylesheet">
-  <meta content="Bikeshed version 3c53a5b02, updated Thu Nov 27 17:03:30 2025 +0000" name="generator">
+  <meta content="Bikeshed version ea4009a02, updated Thu Sep 17 15:24:44 2026 -0700" name="generator">
   <link href="https://www.w3.org/TR/webcodecs-codec-registry/" rel="canonical">
-  <meta content="c954be0d337c7f50c2cfacf937e23032f5a80de1" name="revision">
+  <meta content="8f7384fb4749a39fa2df6eea37685dd1ede297d1" name="revision">
   <meta content="dark light" name="color-scheme">
   <link href="https://www.w3.org/StyleSheets/TR/2021/dark.css" media="(prefers-color-scheme: dark)" rel="stylesheet" type="text/css">
 <style>/* Boilerplate: style-autolinks */
@@ -303,7 +303,7 @@ pre .property::before, pre .property::after {
 </style>
 <style>/* Boilerplate: style-counters */
 body {
-    counter-reset: example figure issue;
+    counter-reset: example figure issue table;
 }
 .issue {
     counter-increment: issue;
@@ -328,6 +328,13 @@ figcaption {
 }
 figcaption:not(.no-marker)::before {
     content: "Figure " counter(figure) " ";
+}
+
+figure.table figcaption {
+    counter-increment: table;
+}
+figure.table figcaption:not(.no-marker)::before {
+    content: "Table " counter(table) " ";
 }
 </style>
 <style>/* Boilerplate: style-dfn-panel */
@@ -573,7 +580,7 @@ dfn > a.self-link::before      { content: "#"; }
 </p>
    <h1 class="no-ref p-name" id="title">WebCodecs Codec Registry</h1>
    <p id="w3c-state"><a href="https://www.w3.org/standards/types/#ED">Editor’s Draft</a>,
-    <time class="dt-updated" datetime="2026-02-12">12 February 2026</time></p>
+    <time class="dt-updated" datetime="2026-09-24">24 September 2026</time></p>
    <details open>
     <summary>More details about this document</summary>
     <div data-fill-with="spec-metadata">
@@ -589,7 +596,7 @@ dfn > a.self-link::before      { content: "#"; }
       <dd class="editor h-card p-author vcard" data-editor-id="139375"><span class="fn p-name">Eugene Zemtsov</span> (<a class="org p-org" href="https://www.google.com/">Google LLC</a>)
       <dt class="editor">Former Editors:
       <dd class="editor h-card p-author vcard" data-editor-id="65611"><span class="fn p-name">Bernard Aboba</span> (<a class="org p-org" href="https://www.microsoft.com/">Microsoft Corporation</a>)
-      <dd class="editor h-card p-author vcard" data-editor-id="114832"><span class="fn p-name">Chris Cunningham</span> (<a class="org p-org" href="https://www.google.com/">Google Inc.</a>)
+      <dd class="editor h-card p-author vcard" data-editor-id="114832"><span class="fn p-name">Chris Cunningham</span> (<a class="org p-org" href="https://www.google.com/">Google LLC</a>)
       <dt>Participate:
       <dd><a href="https://github.com/w3c/webcodecs">Git Repository.</a>
       <dd><a href="https://github.com/w3c/webcodecs/issues/new">File an issue.</a>
@@ -665,7 +672,7 @@ entry.</p>
      <a href="#references"><span class="secno"></span> <span class="content">References</span></a>
      <ol class="toc">
       <li><a href="#normative"><span class="secno"></span> <span class="content">Normative References</span></a>
-      <li><a href="#informative"><span class="secno"></span> <span class="content">Informative References</span></a>
+      <li><a href="#informative"><span class="secno"></span> <span class="content">Non-Normative References</span></a>
      </ol>
    </ol>
   </nav>
@@ -721,6 +728,8 @@ describing:</p>
      </ol>
     <li data-md>
      <p>Where applicable, a registration specification may include a section describing <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#dfn-partial-dictionary" id="ref-for-dfn-partial-dictionary">extensions to the dictionaries</a> used in the <code>configure()</code>, <code>decode()</code> and <code>encode()</code> methods of the decoder and encoder interfaces (e.g., <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webcodecs/#dictdef-audiodecoderconfig" id="ref-for-dictdef-audiodecoderconfig①">AudioDecoderConfig</a></code>, <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webcodecs/#dictdef-videodecoderconfig" id="ref-for-dictdef-videodecoderconfig①">VideoDecoderConfig</a></code>, <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webcodecs/#dictdef-audioencoderconfig" id="ref-for-dictdef-audioencoderconfig">AudioEncoderConfig</a></code>, <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webcodecs/#dictdef-videoencoderconfig" id="ref-for-dictdef-videoencoderconfig">VideoEncoderConfig</a></code>, <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webcodecs/#dictdef-videoencoderencodeoptions" id="ref-for-dictdef-videoencoderencodeoptions">VideoEncoderEncodeOptions</a></code>).</p>
+    <li data-md>
+     <p>Where applicable, an audio codec registration specification SHOULD describe how <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webcodecs/#audiodecoder" id="ref-for-audiodecoder">AudioDecoder</a></code>’s <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webcodecs/#dom-audiodecoder-priming-samples-to-discard-slot" id="ref-for-dom-audiodecoder-priming-samples-to-discard-slot">[[priming samples to discard]]</a></code> internal slot is initialized from the <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webcodecs/#dom-audiodecoderconfig-description" id="ref-for-dom-audiodecoderconfig-description">description</a></code> and updated from decoded chunks. If unspecified for an audio codec, the slot is initialized to <code>0</code> and not updated.</p>
    </ol>
    <p>Once consensus is reached by the Working Group, the registry editors will review and merge the pull request.</p>
    <p>Existing entries cannot be deleted or deprecated. They may be changed after
@@ -830,6 +839,7 @@ Considerations</a> in <a data-link-type="biblio" href="#biblio-webcodecs" title=
    <li>
     <a data-link-type="biblio">[WEBCODECS]</a> defines the following terms:
     <ul>
+     <li><span class="dfn-paneled" id="3f1fc6eb">AudioDecoder</span>
      <li><span class="dfn-paneled" id="08e6b53d">AudioDecoderConfig</span>
      <li><span class="dfn-paneled" id="c3b0b371">AudioEncoderConfig</span>
      <li><span class="dfn-paneled" id="ddafb265">EncodedAudioChunk</span>
@@ -837,8 +847,10 @@ Considerations</a> in <a data-link-type="biblio" href="#biblio-webcodecs" title=
      <li><span class="dfn-paneled" id="8d8392c1">VideoDecoderConfig</span>
      <li><span class="dfn-paneled" id="4c67f0b7">VideoEncoderConfig</span>
      <li><span class="dfn-paneled" id="6cce5d95">VideoEncoderEncodeOptions</span>
+     <li><span class="dfn-paneled" id="704ac11c">[[priming samples to discard]]</span>
      <li><span class="dfn-paneled" id="89df1b66">[[type]]</span>
      <li><span class="dfn-paneled" id="d8757731">Codec String</span>
+     <li><span class="dfn-paneled" id="8ca40a84">description</span>
     </ul>
    <li>
     <a data-link-type="biblio">[WEBIDL]</a> defines the following terms:
@@ -854,7 +866,7 @@ Considerations</a> in <a data-link-type="biblio" href="#biblio-webcodecs" title=
    <dt id="biblio-webidl">[WEBIDL]
    <dd>Edgar Chen; Timothy Gu. <a href="https://webidl.spec.whatwg.org/"><cite>Web IDL Standard</cite></a>. Living Standard. URL: <a href="https://webidl.spec.whatwg.org/">https://webidl.spec.whatwg.org/</a>
   </dl>
-  <h3 class="heading no-num no-ref settled" id="informative"><span class="content">Informative References</span><a class="self-link" href="#informative"></a></h3>
+  <h3 class="heading no-num no-ref settled" id="informative"><span class="content">Non-Normative References</span><a class="self-link" href="#informative"></a></h3>
   <dl>
    <dt id="biblio-webcodecs-aac-codec-registration">[WEBCODECS-AAC-CODEC-REGISTRATION]
    <dd>Paul Adenot; Eugene Zemtsov. <a href="https://w3c.github.io/webcodecs/aac_codec_registration.html"><cite>AAC WebCodecs Registration</cite></a>. URL: <a href="https://w3c.github.io/webcodecs/aac_codec_registration.html">https://w3c.github.io/webcodecs/aac_codec_registration.html</a>
@@ -1085,9 +1097,12 @@ function parseHTML(markup) {
 let dfnPanelData = {
 "08e6b53d": {"dfnID":"08e6b53d","dfnText":"AudioDecoderConfig","external":true,"refSections":[{"refs":[{"id":"ref-for-dictdef-audiodecoderconfig"},{"id":"ref-for-dictdef-audiodecoderconfig\u2460"}],"title":"2. Registration Entry Requirements"}],"url":"https://w3c.github.io/webcodecs/#dictdef-audiodecoderconfig"},
 "25947f98": {"dfnID":"25947f98","dfnText":"EncodedVideoChunk","external":true,"refSections":[{"refs":[{"id":"ref-for-encodedvideochunk"},{"id":"ref-for-encodedvideochunk\u2460"}],"title":"2. Registration Entry Requirements"}],"url":"https://w3c.github.io/webcodecs/#encodedvideochunk"},
+"3f1fc6eb": {"dfnID":"3f1fc6eb","dfnText":"AudioDecoder","external":true,"refSections":[{"refs":[{"id":"ref-for-audiodecoder"}],"title":"2. Registration Entry Requirements"}],"url":"https://w3c.github.io/webcodecs/#audiodecoder"},
 "4c67f0b7": {"dfnID":"4c67f0b7","dfnText":"VideoEncoderConfig","external":true,"refSections":[{"refs":[{"id":"ref-for-dictdef-videoencoderconfig"}],"title":"2. Registration Entry Requirements"}],"url":"https://w3c.github.io/webcodecs/#dictdef-videoencoderconfig"},
 "6cce5d95": {"dfnID":"6cce5d95","dfnText":"VideoEncoderEncodeOptions","external":true,"refSections":[{"refs":[{"id":"ref-for-dictdef-videoencoderencodeoptions"}],"title":"2. Registration Entry Requirements"}],"url":"https://w3c.github.io/webcodecs/#dictdef-videoencoderencodeoptions"},
+"704ac11c": {"dfnID":"704ac11c","dfnText":"[[priming samples to discard]]","external":true,"refSections":[{"refs":[{"id":"ref-for-dom-audiodecoder-priming-samples-to-discard-slot"}],"title":"2. Registration Entry Requirements"}],"url":"https://w3c.github.io/webcodecs/#dom-audiodecoder-priming-samples-to-discard-slot"},
 "89df1b66": {"dfnID":"89df1b66","dfnText":"[[type]]","external":true,"refSections":[{"refs":[{"id":"ref-for-dom-encodedvideochunk-type-slot"}],"title":"2. Registration Entry Requirements"}],"url":"https://w3c.github.io/webcodecs/#dom-encodedvideochunk-type-slot"},
+"8ca40a84": {"dfnID":"8ca40a84","dfnText":"description","external":true,"refSections":[{"refs":[{"id":"ref-for-dom-audiodecoderconfig-description"}],"title":"2. Registration Entry Requirements"}],"url":"https://w3c.github.io/webcodecs/#dom-audiodecoderconfig-description"},
 "8d8392c1": {"dfnID":"8d8392c1","dfnText":"VideoDecoderConfig","external":true,"refSections":[{"refs":[{"id":"ref-for-dictdef-videodecoderconfig"},{"id":"ref-for-dictdef-videodecoderconfig\u2460"}],"title":"2. Registration Entry Requirements"}],"url":"https://w3c.github.io/webcodecs/#dictdef-videodecoderconfig"},
 "a9789869": {"dfnID":"a9789869","dfnText":"partial dictionary","external":true,"refSections":[{"refs":[{"id":"ref-for-dfn-partial-dictionary"}],"title":"2. Registration Entry Requirements"}],"url":"https://webidl.spec.whatwg.org/#dfn-partial-dictionary"},
 "c3b0b371": {"dfnID":"c3b0b371","dfnText":"AudioEncoderConfig","external":true,"refSections":[{"refs":[{"id":"ref-for-dictdef-audioencoderconfig"}],"title":"2. Registration Entry Requirements"}],"url":"https://w3c.github.io/webcodecs/#dictdef-audioencoderconfig"},
@@ -1482,12 +1497,15 @@ function genLinkingSyntaxes(dfn) {
 "use strict";
 {
 let refsData = {
+"https://w3c.github.io/webcodecs/#audiodecoder": {"displayText":"AudioDecoder","export":true,"for_":[],"level":"1","normative":true,"shortname":"webcodecs","spec":"webcodecs","status":"current","text":"AudioDecoder","type":"interface","url":"https://w3c.github.io/webcodecs/#audiodecoder"},
 "https://w3c.github.io/webcodecs/#codec-string": {"displayText":"Codec String","export":true,"for_":[],"level":"1","normative":true,"shortname":"webcodecs","spec":"webcodecs","status":"current","text":"codec string","type":"dfn","url":"https://w3c.github.io/webcodecs/#codec-string"},
 "https://w3c.github.io/webcodecs/#dictdef-audiodecoderconfig": {"displayText":"AudioDecoderConfig","export":true,"for_":[],"level":"1","normative":true,"shortname":"webcodecs","spec":"webcodecs","status":"current","text":"AudioDecoderConfig","type":"dictionary","url":"https://w3c.github.io/webcodecs/#dictdef-audiodecoderconfig"},
 "https://w3c.github.io/webcodecs/#dictdef-audioencoderconfig": {"displayText":"AudioEncoderConfig","export":true,"for_":[],"level":"1","normative":true,"shortname":"webcodecs","spec":"webcodecs","status":"current","text":"AudioEncoderConfig","type":"dictionary","url":"https://w3c.github.io/webcodecs/#dictdef-audioencoderconfig"},
 "https://w3c.github.io/webcodecs/#dictdef-videodecoderconfig": {"displayText":"VideoDecoderConfig","export":true,"for_":[],"level":"1","normative":true,"shortname":"webcodecs","spec":"webcodecs","status":"current","text":"VideoDecoderConfig","type":"dictionary","url":"https://w3c.github.io/webcodecs/#dictdef-videodecoderconfig"},
 "https://w3c.github.io/webcodecs/#dictdef-videoencoderconfig": {"displayText":"VideoEncoderConfig","export":true,"for_":[],"level":"1","normative":true,"shortname":"webcodecs","spec":"webcodecs","status":"current","text":"VideoEncoderConfig","type":"dictionary","url":"https://w3c.github.io/webcodecs/#dictdef-videoencoderconfig"},
 "https://w3c.github.io/webcodecs/#dictdef-videoencoderencodeoptions": {"displayText":"VideoEncoderEncodeOptions","export":true,"for_":[],"level":"1","normative":true,"shortname":"webcodecs","spec":"webcodecs","status":"current","text":"VideoEncoderEncodeOptions","type":"dictionary","url":"https://w3c.github.io/webcodecs/#dictdef-videoencoderencodeoptions"},
+"https://w3c.github.io/webcodecs/#dom-audiodecoder-priming-samples-to-discard-slot": {"displayText":"[[priming samples to discard]]","export":true,"for_":["AudioDecoder"],"level":"1","normative":true,"shortname":"webcodecs","spec":"webcodecs","status":"current","text":"[[priming samples to discard]]","type":"attribute","url":"https://w3c.github.io/webcodecs/#dom-audiodecoder-priming-samples-to-discard-slot"},
+"https://w3c.github.io/webcodecs/#dom-audiodecoderconfig-description": {"displayText":"description","export":true,"for_":["AudioDecoderConfig"],"level":"1","normative":true,"shortname":"webcodecs","spec":"webcodecs","status":"current","text":"description","type":"dict-member","url":"https://w3c.github.io/webcodecs/#dom-audiodecoderconfig-description"},
 "https://w3c.github.io/webcodecs/#dom-encodedvideochunk-type-slot": {"displayText":"[[type]]","export":true,"for_":["EncodedVideoChunk"],"level":"1","normative":true,"shortname":"webcodecs","spec":"webcodecs","status":"current","text":"[[type]]","type":"attribute","url":"https://w3c.github.io/webcodecs/#dom-encodedvideochunk-type-slot"},
 "https://w3c.github.io/webcodecs/#encodedaudiochunk": {"displayText":"EncodedAudioChunk","export":true,"for_":[],"level":"1","normative":true,"shortname":"webcodecs","spec":"webcodecs","status":"current","text":"EncodedAudioChunk","type":"interface","url":"https://w3c.github.io/webcodecs/#encodedaudiochunk"},
 "https://w3c.github.io/webcodecs/#encodedvideochunk": {"displayText":"EncodedVideoChunk","export":true,"for_":[],"level":"1","normative":true,"shortname":"webcodecs","spec":"webcodecs","status":"current","text":"EncodedVideoChunk","type":"interface","url":"https://w3c.github.io/webcodecs/#encodedvideochunk"},
