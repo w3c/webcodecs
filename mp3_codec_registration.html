@@ -5,9 +5,9 @@
   <title>MP3 WebCodecs Registration</title>
   <meta content="NOTE-ED" name="w3c-status">
   <link href="https://www.w3.org/StyleSheets/TR/2021/W3C-ED" rel="stylesheet">
-  <meta content="Bikeshed version e74aa0952, updated Fri Jun 5 23:16:28 2026 +0000" name="generator">
+  <meta content="Bikeshed version ea4009a02, updated Thu Sep 17 15:24:44 2026 -0700" name="generator">
   <link href="https://www.w3.org/TR/webcodecs-mp3-codec-registration/" rel="canonical">
-  <meta content="86d0dec6f1f17b4d686a76c64d69dd628a29a132" name="revision">
+  <meta content="8f7384fb4749a39fa2df6eea37685dd1ede297d1" name="revision">
   <meta content="dark light" name="color-scheme">
   <link href="https://www.w3.org/StyleSheets/TR/2021/dark.css" media="(prefers-color-scheme: dark)" rel="stylesheet" type="text/css">
 <style>/* Boilerplate: style-autolinks */
@@ -580,7 +580,7 @@ dfn > a.self-link::before      { content: "#"; }
 </p>
    <h1 class="no-ref p-name" id="title">MP3 WebCodecs Registration</h1>
    <p id="w3c-state"><a href="https://www.w3.org/standards/types/#ED">Editor’s Draft</a>,
-    <time class="dt-updated" datetime="2026-06-08">8 June 2026</time></p>
+    <time class="dt-updated" datetime="2026-09-24">24 September 2026</time></p>
    <details open>
     <summary>More details about this document</summary>
     <div data-fill-with="spec-metadata">
@@ -660,8 +660,9 @@ WebCodecs are not required to support the MP3 codec.</p>
     <li><a href="#encodedaudiochunk-data"><span class="secno">2</span> <span class="content">EncodedAudioChunk data</span></a>
     <li><a href="#audiodecoderconfig-description"><span class="secno">3</span> <span class="content">AudioDecoderConfig description</span></a>
     <li><a href="#encodedaudiochunk-type"><span class="secno">4</span> <span class="content">EncodedAudioChunk type</span></a>
-    <li><a href="#privacy-considerations"><span class="secno">5</span> <span class="content">Privacy Considerations</span></a>
-    <li><a href="#security-considerations"><span class="secno">6</span> <span class="content">Security Considerations</span></a>
+    <li><a href="#priming-samples"><span class="secno">5</span> <span class="content">Priming Samples</span></a>
+    <li><a href="#privacy-considerations"><span class="secno">6</span> <span class="content">Privacy Considerations</span></a>
+    <li><a href="#security-considerations"><span class="secno">7</span> <span class="content">Security Considerations</span></a>
     <li>
      <a href="#w3c-conformance"><span class="secno"></span> <span class="content">Conformance</span></a>
      <ol class="toc">
@@ -704,10 +705,20 @@ mp3 is always "<code class="idl"><a data-link-type="idl" href="https://w3c.githu
    <p class="note" role="note"><span class="marker">NOTE:</span> Once the initialization has succeeded, any mp3 packet can be decoded at
     any time without error, but this might not result in the expected audio
     output.</p>
-   <h2 class="heading settled" data-level="5" id="privacy-considerations"><span class="secno">5. </span><span class="content">Privacy Considerations</span><a class="self-link" href="#privacy-considerations"></a></h2>
+   <h2 class="heading settled" data-level="5" id="priming-samples"><span class="secno">5. </span><span class="content">Priming Samples</span><a class="self-link" href="#priming-samples"></a></h2>
+   <p><code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webcodecs/#audiodecoder" id="ref-for-audiodecoder">AudioDecoder</a></code>’s <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webcodecs/#dom-audiodecoder-priming-samples-to-discard-slot" id="ref-for-dom-audiodecoder-priming-samples-to-discard-slot">[[priming samples to discard]]</a></code> internal slot
+is initialized to <code>0</code> upon configuration.</p>
+   <p>If the initial <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webcodecs/#encodedaudiochunk" id="ref-for-encodedaudiochunk④">EncodedAudioChunk</a></code> following configuration or reset contains
+an Info or Xing header frame specifying encoder delay,
+<code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webcodecs/#dom-audiodecoder-priming-samples-to-discard-slot" id="ref-for-dom-audiodecoder-priming-samples-to-discard-slot①">[[priming samples to discard]]</a></code> is set to that number of
+priming samples.</p>
+   <p>If a subsequent <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webcodecs/#encodedaudiochunk" id="ref-for-encodedaudiochunk⑤">EncodedAudioChunk</a></code> contains an Info or Xing header frame (such
+as in a concatenated MP3 stream or internet radio broadcast), it <em class="rfc2119">MUST NOT</em> update <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webcodecs/#dom-audiodecoder-priming-samples-to-discard-slot" id="ref-for-dom-audiodecoder-priming-samples-to-discard-slot②">[[priming samples to discard]]</a></code>. During an active decoding session, <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webcodecs/#dom-audiodecoder-priming-samples-to-discard-slot" id="ref-for-dom-audiodecoder-priming-samples-to-discard-slot③">[[priming samples to discard]]</a></code> is only re-initialized following a call to
+<code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webcodecs/#dom-audiodecoder-reset" id="ref-for-dom-audiodecoder-reset">reset()</a></code> or <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webcodecs/#dom-audiodecoder-configure" id="ref-for-dom-audiodecoder-configure">configure()</a></code>.</p>
+   <h2 class="heading settled" data-level="6" id="privacy-considerations"><span class="secno">6. </span><span class="content">Privacy Considerations</span><a class="self-link" href="#privacy-considerations"></a></h2>
    <p>Please refer to the section <a href="https://w3c.github.io/webcodecs/#privacy-considerations">Privacy
 Considerations</a> in <a data-link-type="biblio" href="#biblio-webcodecs" title="WebCodecs">[WEBCODECS]</a>.</p>
-   <h2 class="heading settled" data-level="6" id="security-considerations"><span class="secno">6. </span><span class="content">Security Considerations</span><a class="self-link" href="#security-considerations"></a></h2>
+   <h2 class="heading settled" data-level="7" id="security-considerations"><span class="secno">7. </span><span class="content">Security Considerations</span><a class="self-link" href="#security-considerations"></a></h2>
    <p>Please refer to the section <a href="https://w3c.github.io/webcodecs/#security-considerations">Security
 Considerations</a> in <a data-link-type="biblio" href="#biblio-webcodecs" title="WebCodecs">[WEBCODECS]</a>.</p>
   </main>
@@ -756,11 +767,15 @@ Considerations</a> in <a data-link-type="biblio" href="#biblio-webcodecs" title=
     <a data-link-type="biblio">[WEBCODECS]</a> defines the following terms:
     <ul>
      <li><span class="dfn-paneled" id="b2b50670">"key"</span>
+     <li><span class="dfn-paneled" id="3f1fc6eb">AudioDecoder</span>
      <li><span class="dfn-paneled" id="ddafb265">EncodedAudioChunk</span>
      <li><span class="dfn-paneled" id="590cc552">[[internal data]]</span>
+     <li><span class="dfn-paneled" id="704ac11c">[[priming samples to discard]]</span>
      <li><span class="dfn-paneled" id="e3c4cd34">[[type]]</span>
+     <li><span class="dfn-paneled" id="047355c1">configure(config)</span>
      <li><span class="dfn-paneled" id="8ca40a84">description</span>
      <li><span class="dfn-paneled" id="2f5dfcff">numberOfChannels</span>
+     <li><span class="dfn-paneled" id="8e529fed">reset()</span>
      <li><span class="dfn-paneled" id="9f7782ac">sampleRate</span>
     </ul>
   </ul>
@@ -979,12 +994,16 @@ function parseHTML(markup) {
 "use strict";
 {
 let dfnPanelData = {
+"047355c1": {"dfnID":"047355c1","dfnText":"configure(config)","external":true,"refSections":[{"refs":[{"id":"ref-for-dom-audiodecoder-configure"}],"title":"5. Priming Samples"}],"url":"https://w3c.github.io/webcodecs/#dom-audiodecoder-configure"},
 "2f5dfcff": {"dfnID":"2f5dfcff","dfnText":"numberOfChannels","external":true,"refSections":[{"refs":[{"id":"ref-for-dom-audiodecoderconfig-numberofchannels"}],"title":"3. AudioDecoderConfig description"}],"url":"https://w3c.github.io/webcodecs/#dom-audiodecoderconfig-numberofchannels"},
+"3f1fc6eb": {"dfnID":"3f1fc6eb","dfnText":"AudioDecoder","external":true,"refSections":[{"refs":[{"id":"ref-for-audiodecoder"}],"title":"5. Priming Samples"}],"url":"https://w3c.github.io/webcodecs/#audiodecoder"},
 "590cc552": {"dfnID":"590cc552","dfnText":"[[internal data]]","external":true,"refSections":[{"refs":[{"id":"ref-for-dom-encodedaudiochunk-internal-data-slot"}],"title":"Unnumbered Section"},{"refs":[{"id":"ref-for-dom-encodedaudiochunk-internal-data-slot\u2460"}],"title":"2. EncodedAudioChunk data"}],"url":"https://w3c.github.io/webcodecs/#dom-encodedaudiochunk-internal-data-slot"},
+"704ac11c": {"dfnID":"704ac11c","dfnText":"[[priming samples to discard]]","external":true,"refSections":[{"refs":[{"id":"ref-for-dom-audiodecoder-priming-samples-to-discard-slot"},{"id":"ref-for-dom-audiodecoder-priming-samples-to-discard-slot\u2460"},{"id":"ref-for-dom-audiodecoder-priming-samples-to-discard-slot\u2461"},{"id":"ref-for-dom-audiodecoder-priming-samples-to-discard-slot\u2462"}],"title":"5. Priming Samples"}],"url":"https://w3c.github.io/webcodecs/#dom-audiodecoder-priming-samples-to-discard-slot"},
 "8ca40a84": {"dfnID":"8ca40a84","dfnText":"description","external":true,"refSections":[{"refs":[{"id":"ref-for-dom-audiodecoderconfig-description"}],"title":"Unnumbered Section"},{"refs":[{"id":"ref-for-dom-audiodecoderconfig-description\u2460"}],"title":"3. AudioDecoderConfig description"}],"url":"https://w3c.github.io/webcodecs/#dom-audiodecoderconfig-description"},
+"8e529fed": {"dfnID":"8e529fed","dfnText":"reset()","external":true,"refSections":[{"refs":[{"id":"ref-for-dom-audiodecoder-reset"}],"title":"5. Priming Samples"}],"url":"https://w3c.github.io/webcodecs/#dom-audiodecoder-reset"},
 "9f7782ac": {"dfnID":"9f7782ac","dfnText":"sampleRate","external":true,"refSections":[{"refs":[{"id":"ref-for-dom-audiodecoderconfig-samplerate"}],"title":"3. AudioDecoderConfig description"}],"url":"https://w3c.github.io/webcodecs/#dom-audiodecoderconfig-samplerate"},
 "b2b50670": {"dfnID":"b2b50670","dfnText":"\"key\"","external":true,"refSections":[{"refs":[{"id":"ref-for-dom-encodedaudiochunktype-key"}],"title":"4. EncodedAudioChunk type"}],"url":"https://w3c.github.io/webcodecs/#dom-encodedaudiochunktype-key"},
-"ddafb265": {"dfnID":"ddafb265","dfnText":"EncodedAudioChunk","external":true,"refSections":[{"refs":[{"id":"ref-for-encodedaudiochunk"},{"id":"ref-for-encodedaudiochunk\u2460"}],"title":"Unnumbered Section"},{"refs":[{"id":"ref-for-encodedaudiochunk\u2461"}],"title":"2. EncodedAudioChunk data"},{"refs":[{"id":"ref-for-encodedaudiochunk\u2462"}],"title":"4. EncodedAudioChunk type"}],"url":"https://w3c.github.io/webcodecs/#encodedaudiochunk"},
+"ddafb265": {"dfnID":"ddafb265","dfnText":"EncodedAudioChunk","external":true,"refSections":[{"refs":[{"id":"ref-for-encodedaudiochunk"},{"id":"ref-for-encodedaudiochunk\u2460"}],"title":"Unnumbered Section"},{"refs":[{"id":"ref-for-encodedaudiochunk\u2461"}],"title":"2. EncodedAudioChunk data"},{"refs":[{"id":"ref-for-encodedaudiochunk\u2462"}],"title":"4. EncodedAudioChunk type"},{"refs":[{"id":"ref-for-encodedaudiochunk\u2463"},{"id":"ref-for-encodedaudiochunk\u2464"}],"title":"5. Priming Samples"}],"url":"https://w3c.github.io/webcodecs/#encodedaudiochunk"},
 "e3c4cd34": {"dfnID":"e3c4cd34","dfnText":"[[type]]","external":true,"refSections":[{"refs":[{"id":"ref-for-dom-encodedaudiochunk-type-slot"}],"title":"Unnumbered Section"},{"refs":[{"id":"ref-for-dom-encodedaudiochunk-type-slot\u2460"}],"title":"4. EncodedAudioChunk type"}],"url":"https://w3c.github.io/webcodecs/#dom-encodedaudiochunk-type-slot"},
 };
 
@@ -1374,6 +1393,10 @@ function genLinkingSyntaxes(dfn) {
 "use strict";
 {
 let refsData = {
+"https://w3c.github.io/webcodecs/#audiodecoder": {"displayText":"AudioDecoder","export":true,"for_":[],"level":"1","normative":true,"shortname":"webcodecs","spec":"webcodecs","status":"current","text":"AudioDecoder","type":"interface","url":"https://w3c.github.io/webcodecs/#audiodecoder"},
+"https://w3c.github.io/webcodecs/#dom-audiodecoder-configure": {"displayText":"configure(config)","export":true,"for_":["AudioDecoder"],"level":"1","normative":true,"shortname":"webcodecs","spec":"webcodecs","status":"current","text":"configure(config)","type":"method","url":"https://w3c.github.io/webcodecs/#dom-audiodecoder-configure"},
+"https://w3c.github.io/webcodecs/#dom-audiodecoder-priming-samples-to-discard-slot": {"displayText":"[[priming samples to discard]]","export":true,"for_":["AudioDecoder"],"level":"1","normative":true,"shortname":"webcodecs","spec":"webcodecs","status":"current","text":"[[priming samples to discard]]","type":"attribute","url":"https://w3c.github.io/webcodecs/#dom-audiodecoder-priming-samples-to-discard-slot"},
+"https://w3c.github.io/webcodecs/#dom-audiodecoder-reset": {"displayText":"reset()","export":true,"for_":["AudioDecoder"],"level":"1","normative":true,"shortname":"webcodecs","spec":"webcodecs","status":"current","text":"reset()","type":"method","url":"https://w3c.github.io/webcodecs/#dom-audiodecoder-reset"},
 "https://w3c.github.io/webcodecs/#dom-audiodecoderconfig-description": {"displayText":"description","export":true,"for_":["AudioDecoderConfig"],"level":"1","normative":true,"shortname":"webcodecs","spec":"webcodecs","status":"current","text":"description","type":"dict-member","url":"https://w3c.github.io/webcodecs/#dom-audiodecoderconfig-description"},
 "https://w3c.github.io/webcodecs/#dom-audiodecoderconfig-numberofchannels": {"displayText":"numberOfChannels","export":true,"for_":["AudioDecoderConfig"],"level":"1","normative":true,"shortname":"webcodecs","spec":"webcodecs","status":"current","text":"numberOfChannels","type":"dict-member","url":"https://w3c.github.io/webcodecs/#dom-audiodecoderconfig-numberofchannels"},
 "https://w3c.github.io/webcodecs/#dom-audiodecoderconfig-samplerate": {"displayText":"sampleRate","export":true,"for_":["AudioDecoderConfig"],"level":"1","normative":true,"shortname":"webcodecs","spec":"webcodecs","status":"current","text":"sampleRate","type":"dict-member","url":"https://w3c.github.io/webcodecs/#dom-audiodecoderconfig-samplerate"},
