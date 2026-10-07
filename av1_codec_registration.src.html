@@ -60,8 +60,10 @@ EncodedVideoChunk data {#encodedvideochunk-data}
 ================================================
 
 {{EncodedVideoChunk}} {{EncodedVideoChunk/[[internal data]]}} is expected to be
-data compliant to the "low-overhead bitstream format" as described in Section 5
-of [[AV1]].
+a sequence of Open Bitstream Units (OBUs) compliant to the "low-overhead
+bitstream format" (Section 5.2 of [[AV1]]) forming a single temporal unit
+(Section 7.5 of [[AV1]]), except that the initial `OBU_TEMPORAL_DELIMITER` OBU
+may be omitted.
 
 VideoDecoderConfig description {#videodecoderconfig-description}
 ================================================================
@@ -73,8 +75,10 @@ EncodedVideoChunk type {#encodedvideochunk-type}
 
 If an {{EncodedVideoChunk}}'s {{EncodedVideoChunk/[[type]]}} is
 {{EncodedVideoChunkType/key}}, then the {{EncodedVideoChunk}} is expected to
-contain a frame with a `frame_type` of `KEY_FRAME` as defined in Section
-6.8.2 of [[AV1]].
+contain an `OBU_SEQUENCE_HEADER` OBU before the first frame header, and the
+first frame header in the chunk is expected to have `show_existing_frame` equal
+to `0`, `frame_type` equal to `KEY_FRAME`, and `show_frame` equal to `1`, as
+defined in Section 6.8.2 and Section 7.5 of [[AV1]].
 
 VideoEncoderEncodeOptions extensions {#videoencoderencodeoptions-extensions}
 ==============================================================
