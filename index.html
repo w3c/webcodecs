@@ -7,7 +7,7 @@
   <link href="https://www.w3.org/StyleSheets/TR/2021/W3C-ED" rel="stylesheet">
   <meta content="Bikeshed version ea4009a02, updated Thu Sep 17 15:24:44 2026 -0700" name="generator">
   <link href="https://www.w3.org/TR/webcodecs/" rel="canonical">
-  <meta content="3d4b1131d8893362358c5eb73f317a80cf414c63" name="revision">
+  <meta content="6d8e3d3672020b5b7c4c1164903b5cb26fed5b24" name="revision">
   <meta content="dark light" name="color-scheme">
   <link href="https://www.w3.org/StyleSheets/TR/2021/dark.css" media="(prefers-color-scheme: dark)" rel="stylesheet" type="text/css">
 <style>
@@ -6830,13 +6830,13 @@ number and order of the planes. Each format is described in its own sub-section.
 where a single sample contains information for multiple pixels in the final
 image. <a data-link-type="dfn" href="#sub-sampling" id="ref-for-sub-sampling">Sub-sampling</a> can be horizontal, vertical or both, and has a <dfn class="dfn-paneled" data-dfn-type="dfn" data-lt="sub-sampling factor|factor" data-noexport id="sub-sampling-factor">factor</dfn>, that is the number of final pixels
 in the image that are derived from a <a data-link-type="dfn" href="#sub-sampling" id="ref-for-sub-sampling①">sub-sampled</a> sample.</p>
-   <div class="example" id="example-33b7b945"><a class="self-link" href="#example-33b7b945"></a>
+   <div class="example" id="example-662eb117"><a class="self-link" href="#example-662eb117"></a>
   If a <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe⑦⑤">VideoFrame</a></code> is in <code class="idl"><a data-link-type="idl" href="#dom-videopixelformat-i420" id="ref-for-dom-videopixelformat-i420①">I420</a></code> format, then the very first
   component of the second plane (the U plane) corresponds to four pixels, that are
-  the pixels in the top-left angle of the image. Consequently, the first
-  component of the second row corresponds to the four pixels below those initial
-  four top-left pixels. The <a data-link-type="dfn" href="#sub-sampling-factor" id="ref-for-sub-sampling-factor④">sub-sampling factor</a> is 2 in both the horizontal
-  and vertical direction.
+  the pixels in the top-left corner of the image. Consequently, the first
+  component of the second row of the U plane corresponds to the four pixels
+  below those initial four top-left pixels. The <a data-link-type="dfn" href="#sub-sampling-factor" id="ref-for-sub-sampling-factor④">sub-sampling factor</a> is 2 in
+  both the horizontal and vertical direction.
 </div>
    <p>If a <code class="idl"><a data-link-type="idl" href="#enumdef-videopixelformat" id="ref-for-enumdef-videopixelformat①③">VideoPixelFormat</a></code> has an alpha component, the format’s
 <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="equivalent-opaque-format">equivalent opaque format</dfn> is the same <code class="idl"><a data-link-type="idl" href="#enumdef-videopixelformat" id="ref-for-enumdef-videopixelformat①④">VideoPixelFormat</a></code>, without an
@@ -6849,7 +6849,7 @@ is its own <a data-link-type="dfn" href="#equivalent-opaque-format" id="ref-for-
      
     This format is composed of three distinct planes, one plane of Luma and two
     planes of Chroma, denoted Y, U and V, and present in this order. It is also
-    often refered to as Planar YUV 4:2:0.
+    often referred to as Planar YUV 4:2:0.
 
 
      <p>The U and V planes are <a data-link-type="dfn" href="#sub-sampling" id="ref-for-sub-sampling②">sub-sampled</a> horizontally and vertically by a
@@ -6916,7 +6916,7 @@ is its own <a data-link-type="dfn" href="#equivalent-opaque-format" id="ref-for-
      
     This format is composed of four distinct planes, one plane of Luma, two
     planes of Chroma, denoted Y, U and V, and one plane of Alpha values, all
-    present in this order. It is also often refered to as Planar YUV 4:2:0 with
+    present in this order. It is also often referred to as Planar YUV 4:2:0 with
     an alpha channel.
 
 
@@ -6989,14 +6989,14 @@ is its own <a data-link-type="dfn" href="#equivalent-opaque-format" id="ref-for-
      
     This format is composed of three distinct planes, one plane of Luma and two
     planes of Chroma, denoted Y, U and V, and present in this order. It is also
-    often refered to as Planar YUV 4:2:2.
+    often referred to as Planar YUV 4:2:2.
 
 
      <p>The U and V planes are <a data-link-type="dfn" href="#sub-sampling" id="ref-for-sub-sampling⑧">sub-sampled</a> horizontally by a <a data-link-type="dfn" href="#sub-sampling-factor" id="ref-for-sub-sampling-factor①①">factor</a> of 2
     compared to the Y plane, and not <a data-link-type="dfn" href="#sub-sampling" id="ref-for-sub-sampling⑨">sub-sampled</a> vertically.</p>
      <p>Each sample in this format is 8 bits.</p>
      <p>There are <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedwidth" id="ref-for-dom-videoframe-codedwidth②③">codedWidth</a></code> * <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedheight" id="ref-for-dom-videoframe-codedheight②③">codedHeight</a></code> samples
-    (and therefore bytes) in the Y and plane, arranged starting at the top left
+    (and therefore bytes) in the Y plane, arranged starting at the top left
     of the image, in <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedheight" id="ref-for-dom-videoframe-codedheight②④">codedHeight</a></code> rows of
     <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedwidth" id="ref-for-dom-videoframe-codedwidth②④">codedWidth</a></code> samples.</p>
      <p>The U and V planes have <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedheight" id="ref-for-dom-videoframe-codedheight②⑤">codedHeight</a></code> rows. Each row has a
@@ -7053,7 +7053,7 @@ is its own <a data-link-type="dfn" href="#equivalent-opaque-format" id="ref-for-
      
     This format is composed of four distinct planes, one plane of Luma, two
     planes of Chroma, denoted Y, U and V, and one plane of Alpha values, all
-    present in this order. It is also often refered to as Planar YUV 4:2:2 with
+    present in this order. It is also often referred to as Planar YUV 4:2:2 with
     an alpha channel.
 
 
@@ -7123,7 +7123,7 @@ is its own <a data-link-type="dfn" href="#equivalent-opaque-format" id="ref-for-
      
     This format is composed of three distinct planes, one plane of Luma and two
     planes of Chroma, denoted Y, U and V, and present in this order. It is also
-    often refered to as Planar YUV 4:4:4.
+    often referred to as Planar YUV 4:4:4.
 
 
      <p>This format does not use <a data-link-type="dfn" href="#sub-sampling" id="ref-for-sub-sampling②⓪">sub-sampling</a>.</p>
@@ -7208,14 +7208,14 @@ is its own <a data-link-type="dfn" href="#equivalent-opaque-format" id="ref-for-
      
     This format is composed of two distinct planes, one plane of Luma and then
     another plane for the two Chroma components. The two planes are present in
-    this order, and are refered to as respectively the Y plane and the UV plane.
+    this order, and are referred to as respectively the Y plane and the UV plane.
 
 
      <p>The U and V components are <a data-link-type="dfn" href="#sub-sampling" id="ref-for-sub-sampling②⑥">sub-sampled</a> horizontally and vertically by a
-    <a data-link-type="dfn" href="#sub-sampling-factor" id="ref-for-sub-sampling-factor①⑦">factor</a> of 2 compared to the components in the Y planes.</p>
+    <a data-link-type="dfn" href="#sub-sampling-factor" id="ref-for-sub-sampling-factor①⑦">factor</a> of 2 compared to the components in the Y plane.</p>
      <p>Each sample in this format is 8 bits.</p>
      <p>There are <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedwidth" id="ref-for-dom-videoframe-codedwidth⑤③">codedWidth</a></code> * <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedheight" id="ref-for-dom-videoframe-codedheight⑤③">codedHeight</a></code> samples
-    (and therefore bytes) in the Y and plane, arranged starting at the top left
+    (and therefore bytes) in the Y plane, arranged starting at the top left
     of the image, in <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedheight" id="ref-for-dom-videoframe-codedheight⑤④">codedHeight</a></code> rows of
     <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedwidth" id="ref-for-dom-videoframe-codedwidth⑤④">codedWidth</a></code> samples.</p>
      <p>The UV plane is composed of interleaved U and V values, in a number of
@@ -7263,7 +7263,7 @@ UVUVUVUVUVUVUVUV
      <p>There are <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedwidth" id="ref-for-dom-videoframe-codedwidth⑤⑥">codedWidth</a></code> * <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedheight" id="ref-for-dom-videoframe-codedheight⑤⑥">codedHeight</a></code> * 4 samples
     (and therefore bytes) in the single plane, arranged starting at the top
     left of the image, in <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedheight" id="ref-for-dom-videoframe-codedheight⑤⑦">codedHeight</a></code> rows of
-    <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedwidth" id="ref-for-dom-videoframe-codedwidth⑤⑦">codedWidth</a></code> samples.</p>
+    <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedwidth" id="ref-for-dom-videoframe-codedwidth⑤⑦">codedWidth</a></code> * 4 samples.</p>
      <p><code class="idl"><a data-link-type="idl" href="#dom-videopixelformat-rgba" id="ref-for-dom-videopixelformat-rgba⑥">RGBA</a></code>’s <a data-link-type="dfn" href="#equivalent-opaque-format" id="ref-for-equivalent-opaque-format①②">equivalent opaque format</a> is <code class="idl"><a data-link-type="idl" href="#dom-videopixelformat-rgbx" id="ref-for-dom-videopixelformat-rgbx⑥">RGBX</a></code>.</p>
     <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoPixelFormat" data-dfn-type="enum-value" data-export data-lt="&quot;RGBX&quot;|RGBX" id="dom-videopixelformat-rgbx"><code>RGBX</code></dfn>
     <dd>
@@ -7277,7 +7277,7 @@ UVUVUVUVUVUVUVUV
      <p>There are <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedwidth" id="ref-for-dom-videoframe-codedwidth⑤⑧">codedWidth</a></code> * <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedheight" id="ref-for-dom-videoframe-codedheight⑤⑧">codedHeight</a></code> * 4 samples
     (and therefore bytes) in the single plane, arranged starting at the top left
     of the image, in <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedheight" id="ref-for-dom-videoframe-codedheight⑤⑨">codedHeight</a></code> rows of
-    <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedwidth" id="ref-for-dom-videoframe-codedwidth⑤⑨">codedWidth</a></code> samples.</p>
+    <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedwidth" id="ref-for-dom-videoframe-codedwidth⑤⑨">codedWidth</a></code> * 4 samples.</p>
     <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoPixelFormat" data-dfn-type="enum-value" data-export data-lt="&quot;BGRA&quot;|BGRA" id="dom-videopixelformat-bgra"><code>BGRA</code></dfn>
     <dd>
      
@@ -7289,7 +7289,7 @@ UVUVUVUVUVUVUVUV
      <p>There are <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedwidth" id="ref-for-dom-videoframe-codedwidth⑥⓪">codedWidth</a></code> * <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedheight" id="ref-for-dom-videoframe-codedheight⑥⓪">codedHeight</a></code> * 4 samples
     (and therefore bytes) in the single plane, arranged starting at the top left
     of the image, in <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedheight" id="ref-for-dom-videoframe-codedheight⑥①">codedHeight</a></code> rows of
-    <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedwidth" id="ref-for-dom-videoframe-codedwidth⑥①">codedWidth</a></code> samples.</p>
+    <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedwidth" id="ref-for-dom-videoframe-codedwidth⑥①">codedWidth</a></code> * 4 samples.</p>
      <p><code class="idl"><a data-link-type="idl" href="#dom-videopixelformat-bgra" id="ref-for-dom-videopixelformat-bgra⑥">BGRA</a></code>’s <a data-link-type="dfn" href="#equivalent-opaque-format" id="ref-for-equivalent-opaque-format①③">equivalent opaque format</a> is <code class="idl"><a data-link-type="idl" href="#dom-videopixelformat-bgrx" id="ref-for-dom-videopixelformat-bgrx⑥">BGRX</a></code>.</p>
     <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoPixelFormat" data-dfn-type="enum-value" data-export data-lt="&quot;BGRX&quot;|BGRX" id="dom-videopixelformat-bgrx"><code>BGRX</code></dfn>
     <dd>
@@ -7303,7 +7303,7 @@ UVUVUVUVUVUVUVUV
      <p>There are <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedwidth" id="ref-for-dom-videoframe-codedwidth⑥②">codedWidth</a></code> * <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedheight" id="ref-for-dom-videoframe-codedheight⑥②">codedHeight</a></code> * 4 samples
     (and therefore bytes) in the single plane, arranged starting at the top left
     of the image, in <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedheight" id="ref-for-dom-videoframe-codedheight⑥③">codedHeight</a></code> rows of
-    <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedwidth" id="ref-for-dom-videoframe-codedwidth⑥③">codedWidth</a></code> samples.</p>
+    <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedwidth" id="ref-for-dom-videoframe-codedwidth⑥③">codedWidth</a></code> * 4 samples.</p>
    </dl>
    <h3 class="heading settled" data-level="9.9" id="video-color-space-interface"><span class="secno">9.9. </span><span class="content">Video Color Space Interface</span><a class="self-link" href="#video-color-space-interface"></a></h3>
 <pre class="def highlight idl">[<a class="idl-code" data-link-type="extended-attribute" href="https://webidl.spec.whatwg.org/#Exposed" id="ref-for-Exposed⑧"><c- g>Exposed</c-></a>=(<c- n>Window</c->,<c- n>DedicatedWorker</c->)]
