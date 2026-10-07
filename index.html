@@ -7,7 +7,7 @@
   <link href="https://www.w3.org/StyleSheets/TR/2021/W3C-ED" rel="stylesheet">
   <meta content="Bikeshed version ea4009a02, updated Thu Sep 17 15:24:44 2026 -0700" name="generator">
   <link href="https://www.w3.org/TR/webcodecs/" rel="canonical">
-  <meta content="6d8e3d3672020b5b7c4c1164903b5cb26fed5b24" name="revision">
+  <meta content="924a4f84b912a5630971e6ac3f53d960a448e2c4" name="revision">
   <meta content="dark light" name="color-scheme">
   <link href="https://www.w3.org/StyleSheets/TR/2021/dark.css" media="(prefers-color-scheme: dark)" rel="stylesheet" type="text/css">
 <style>
@@ -6439,7 +6439,10 @@ return <code>false</code>.</p>
          <p>Let <var>plane</var> be the Plane identified by <var>planeIndex</var> as defined by
 <var>format</var>.</p>
         <li data-md>
-         <p>Let <var>sampleBytes</var> be the number of bytes per sample for <var>plane</var>.</p>
+         <p>Let <var>sampleBytes</var> be the number of bytes per sample for <var>plane</var>,
+multiplied by the number of samples stored at each position of
+<var>plane</var> (for example, 2 for the UV plane of <code class="idl"><a data-link-type="idl" href="#dom-videopixelformat-nv12" id="ref-for-dom-videopixelformat-nv12">NV12</a></code> and 4 for
+<code class="idl"><a data-link-type="idl" href="#dom-videopixelformat-rgba" id="ref-for-dom-videopixelformat-rgba②">RGBA</a></code>).</p>
         <li data-md>
          <p>Let <var>sampleWidth</var> be the horizontal <a data-link-type="dfn" href="#sub-sampling-factor" id="ref-for-sub-sampling-factor②">sub-sampling factor</a> of each
 subsample for <var>plane</var>.</p>
@@ -6571,7 +6574,7 @@ follows:</p>
      <ol>
       <li data-md>
        <p>This algorithm <em class="rfc2119">MUST</em> be called only if <var>format</var>
-is equal to one of <code class="idl"><a data-link-type="idl" href="#dom-videopixelformat-rgba" id="ref-for-dom-videopixelformat-rgba②">RGBA</a></code>, <code class="idl"><a data-link-type="idl" href="#dom-videopixelformat-rgbx" id="ref-for-dom-videopixelformat-rgbx②">RGBX</a></code>, <code class="idl"><a data-link-type="idl" href="#dom-videopixelformat-bgra" id="ref-for-dom-videopixelformat-bgra②">BGRA</a></code>, <code class="idl"><a data-link-type="idl" href="#dom-videopixelformat-bgrx" id="ref-for-dom-videopixelformat-bgrx②">BGRX</a></code>.</p>
+is equal to one of <code class="idl"><a data-link-type="idl" href="#dom-videopixelformat-rgba" id="ref-for-dom-videopixelformat-rgba③">RGBA</a></code>, <code class="idl"><a data-link-type="idl" href="#dom-videopixelformat-rgbx" id="ref-for-dom-videopixelformat-rgbx②">RGBX</a></code>, <code class="idl"><a data-link-type="idl" href="#dom-videopixelformat-bgra" id="ref-for-dom-videopixelformat-bgra②">BGRA</a></code>, <code class="idl"><a data-link-type="idl" href="#dom-videopixelformat-bgrx" id="ref-for-dom-videopixelformat-bgrx②">BGRX</a></code>.</p>
       <li data-md>
        <p>Let <var>convertedFrame</var> be a new <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe⑤⑥">VideoFrame</a></code>, constructed as follows:</p>
        <ol>
@@ -6735,7 +6738,7 @@ invalid to specify planes that overlap.</p>
     <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="VideoFrameCopyToOptions" data-dfn-type="dict-member" data-export id="dom-videoframecopytooptions-format"><code>format</code></dfn>, <span> of type <a data-link-type="idl-name" href="#enumdef-videopixelformat" id="ref-for-enumdef-videopixelformat①①">VideoPixelFormat</a></span>
     <dd data-md>
      <p>A <code class="idl"><a data-link-type="idl" href="#enumdef-videopixelformat" id="ref-for-enumdef-videopixelformat①②">VideoPixelFormat</a></code> for the pixel data in the destination
-<code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#BufferSource" id="ref-for-BufferSource⑤">BufferSource</a></code>. Potential values are: <code class="idl"><a data-link-type="idl" href="#dom-videopixelformat-rgba" id="ref-for-dom-videopixelformat-rgba③">RGBA</a></code>, <code class="idl"><a data-link-type="idl" href="#dom-videopixelformat-rgbx" id="ref-for-dom-videopixelformat-rgbx③">RGBX</a></code>, <code class="idl"><a data-link-type="idl" href="#dom-videopixelformat-bgra" id="ref-for-dom-videopixelformat-bgra③">BGRA</a></code>,
+<code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#BufferSource" id="ref-for-BufferSource⑤">BufferSource</a></code>. Potential values are: <code class="idl"><a data-link-type="idl" href="#dom-videopixelformat-rgba" id="ref-for-dom-videopixelformat-rgba④">RGBA</a></code>, <code class="idl"><a data-link-type="idl" href="#dom-videopixelformat-rgbx" id="ref-for-dom-videopixelformat-rgbx③">RGBX</a></code>, <code class="idl"><a data-link-type="idl" href="#dom-videopixelformat-bgra" id="ref-for-dom-videopixelformat-bgra③">BGRA</a></code>,
 <code class="idl"><a data-link-type="idl" href="#dom-videopixelformat-bgrx" id="ref-for-dom-videopixelformat-bgrx③">BGRX</a></code>. If it does not <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#map-exists" id="ref-for-map-exists③⓪">exist</a>, the destination
 <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#BufferSource" id="ref-for-BufferSource⑥">BufferSource</a></code> will be in the same format as <code class="idl"><a data-link-type="idl" href="#dom-videoframe-format" id="ref-for-dom-videoframe-format⑥">format</a></code> .</p>
     <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="VideoFrameCopyToOptions" data-dfn-type="dict-member" data-export id="dom-videoframecopytooptions-colorspace"><code>colorSpace</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://html.spec.whatwg.org/multipage/canvas.html#predefinedcolorspace" id="ref-for-predefinedcolorspace①">PredefinedColorSpace</a></span>
@@ -6743,7 +6746,7 @@ invalid to specify planes that overlap.</p>
      <p>A <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/canvas.html#predefinedcolorspace" id="ref-for-predefinedcolorspace②">PredefinedColorSpace</a></code> that <em class="rfc2119">MUST</em> be used as
 a target color space for the pixel data in the destination
 <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#BufferSource" id="ref-for-BufferSource⑦">BufferSource</a></code>, but only if <code class="idl"><a data-link-type="idl" href="#dom-videoframecopytooptions-format" id="ref-for-dom-videoframecopytooptions-format①⓪">format</a></code> is one of
-<code class="idl"><a data-link-type="idl" href="#dom-videopixelformat-rgba" id="ref-for-dom-videopixelformat-rgba④">RGBA</a></code>, <code class="idl"><a data-link-type="idl" href="#dom-videopixelformat-rgbx" id="ref-for-dom-videopixelformat-rgbx④">RGBX</a></code>, <code class="idl"><a data-link-type="idl" href="#dom-videopixelformat-bgra" id="ref-for-dom-videopixelformat-bgra④">BGRA</a></code>, <code class="idl"><a data-link-type="idl" href="#dom-videopixelformat-bgrx" id="ref-for-dom-videopixelformat-bgrx④">BGRX</a></code>, otherwise it is ignored.
+<code class="idl"><a data-link-type="idl" href="#dom-videopixelformat-rgba" id="ref-for-dom-videopixelformat-rgba⑤">RGBA</a></code>, <code class="idl"><a data-link-type="idl" href="#dom-videopixelformat-rgbx" id="ref-for-dom-videopixelformat-rgbx④">RGBX</a></code>, <code class="idl"><a data-link-type="idl" href="#dom-videopixelformat-bgra" id="ref-for-dom-videopixelformat-bgra④">BGRA</a></code>, <code class="idl"><a data-link-type="idl" href="#dom-videopixelformat-bgrx" id="ref-for-dom-videopixelformat-bgrx④">BGRX</a></code>, otherwise it is ignored.
 If it does not <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#map-exists" id="ref-for-map-exists③①">exist</a>, <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/canvas.html#dom-predefinedcolorspace-srgb" id="ref-for-dom-predefinedcolorspace-srgb②">srgb</a></code> is used.</p>
    </dl>
    <h3 class="heading settled" data-level="9.6" id="videoframe-domrect"><span class="secno">9.6. </span><span class="content">DOMRects in VideoFrame</span><a class="self-link" href="#videoframe-domrect"></a></h3>
@@ -6815,9 +6818,9 @@ number and order of the planes. Each format is described in its own sub-section.
   <a class="idl-code" data-link-type="enum-value" href="#dom-videopixelformat-i444ap10" id="ref-for-dom-videopixelformat-i444ap10"><c- s>"I444AP10"</c-></a>,
   <a class="idl-code" data-link-type="enum-value" href="#dom-videopixelformat-i444ap12" id="ref-for-dom-videopixelformat-i444ap12"><c- s>"I444AP12"</c-></a>,
   // 4:2:0 Y, UV
-  <a class="idl-code" data-link-type="enum-value" href="#dom-videopixelformat-nv12" id="ref-for-dom-videopixelformat-nv12"><c- s>"NV12"</c-></a>,
+  <a class="idl-code" data-link-type="enum-value" href="#dom-videopixelformat-nv12" id="ref-for-dom-videopixelformat-nv12①"><c- s>"NV12"</c-></a>,
   // 4:4:4 RGBA
-  <a class="idl-code" data-link-type="enum-value" href="#dom-videopixelformat-rgba" id="ref-for-dom-videopixelformat-rgba⑤"><c- s>"RGBA"</c-></a>,
+  <a class="idl-code" data-link-type="enum-value" href="#dom-videopixelformat-rgba" id="ref-for-dom-videopixelformat-rgba⑥"><c- s>"RGBA"</c-></a>,
   // 4:4:4 RGBX (opaque)
   <a class="idl-code" data-link-type="enum-value" href="#dom-videopixelformat-rgbx" id="ref-for-dom-videopixelformat-rgbx⑤"><c- s>"RGBX"</c-></a>,
   // 4:4:4 BGRA
@@ -7264,7 +7267,7 @@ UVUVUVUVUVUVUVUV
     (and therefore bytes) in the single plane, arranged starting at the top
     left of the image, in <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedheight" id="ref-for-dom-videoframe-codedheight⑤⑦">codedHeight</a></code> rows of
     <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedwidth" id="ref-for-dom-videoframe-codedwidth⑤⑦">codedWidth</a></code> * 4 samples.</p>
-     <p><code class="idl"><a data-link-type="idl" href="#dom-videopixelformat-rgba" id="ref-for-dom-videopixelformat-rgba⑥">RGBA</a></code>’s <a data-link-type="dfn" href="#equivalent-opaque-format" id="ref-for-equivalent-opaque-format①②">equivalent opaque format</a> is <code class="idl"><a data-link-type="idl" href="#dom-videopixelformat-rgbx" id="ref-for-dom-videopixelformat-rgbx⑥">RGBX</a></code>.</p>
+     <p><code class="idl"><a data-link-type="idl" href="#dom-videopixelformat-rgba" id="ref-for-dom-videopixelformat-rgba⑦">RGBA</a></code>’s <a data-link-type="dfn" href="#equivalent-opaque-format" id="ref-for-equivalent-opaque-format①②">equivalent opaque format</a> is <code class="idl"><a data-link-type="idl" href="#dom-videopixelformat-rgbx" id="ref-for-dom-videopixelformat-rgbx⑥">RGBX</a></code>.</p>
     <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoPixelFormat" data-dfn-type="enum-value" data-export data-lt="&quot;RGBX&quot;|RGBX" id="dom-videopixelformat-rgbx"><code>RGBX</code></dfn>
     <dd>
      
@@ -11550,8 +11553,8 @@ let dfnPanelData = {
 "dom-videopixelformat-i444ap12": {"dfnID":"dom-videopixelformat-i444ap12","dfnText":"I444AP12","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-videopixelformat-i444ap12"},{"id":"ref-for-dom-videopixelformat-i444ap12\u2460"}],"title":"9.8. Pixel Format"}],"url":"#dom-videopixelformat-i444ap12"},
 "dom-videopixelformat-i444p10": {"dfnID":"dom-videopixelformat-i444p10","dfnText":"I444P10","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-videopixelformat-i444p10"},{"id":"ref-for-dom-videopixelformat-i444p10\u2460"}],"title":"9.8. Pixel Format"}],"url":"#dom-videopixelformat-i444p10"},
 "dom-videopixelformat-i444p12": {"dfnID":"dom-videopixelformat-i444p12","dfnText":"I444P12","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-videopixelformat-i444p12"},{"id":"ref-for-dom-videopixelformat-i444p12\u2460"}],"title":"9.8. Pixel Format"}],"url":"#dom-videopixelformat-i444p12"},
-"dom-videopixelformat-nv12": {"dfnID":"dom-videopixelformat-nv12","dfnText":"NV12","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-videopixelformat-nv12"}],"title":"9.8. Pixel Format"}],"url":"#dom-videopixelformat-nv12"},
-"dom-videopixelformat-rgba": {"dfnID":"dom-videopixelformat-rgba","dfnText":"RGBA","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-videopixelformat-rgba"}],"title":"9.4.5. Methods"},{"refs":[{"id":"ref-for-dom-videopixelformat-rgba\u2460"},{"id":"ref-for-dom-videopixelformat-rgba\u2461"}],"title":"9.4.6. Algorithms"},{"refs":[{"id":"ref-for-dom-videopixelformat-rgba\u2462"},{"id":"ref-for-dom-videopixelformat-rgba\u2463"}],"title":"9.5. VideoFrame CopyTo() Options"},{"refs":[{"id":"ref-for-dom-videopixelformat-rgba\u2464"},{"id":"ref-for-dom-videopixelformat-rgba\u2465"}],"title":"9.8. Pixel Format"}],"url":"#dom-videopixelformat-rgba"},
+"dom-videopixelformat-nv12": {"dfnID":"dom-videopixelformat-nv12","dfnText":"NV12","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-videopixelformat-nv12"}],"title":"9.4.6. Algorithms"},{"refs":[{"id":"ref-for-dom-videopixelformat-nv12\u2460"}],"title":"9.8. Pixel Format"}],"url":"#dom-videopixelformat-nv12"},
+"dom-videopixelformat-rgba": {"dfnID":"dom-videopixelformat-rgba","dfnText":"RGBA","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-videopixelformat-rgba"}],"title":"9.4.5. Methods"},{"refs":[{"id":"ref-for-dom-videopixelformat-rgba\u2460"},{"id":"ref-for-dom-videopixelformat-rgba\u2461"},{"id":"ref-for-dom-videopixelformat-rgba\u2462"}],"title":"9.4.6. Algorithms"},{"refs":[{"id":"ref-for-dom-videopixelformat-rgba\u2463"},{"id":"ref-for-dom-videopixelformat-rgba\u2464"}],"title":"9.5. VideoFrame CopyTo() Options"},{"refs":[{"id":"ref-for-dom-videopixelformat-rgba\u2465"},{"id":"ref-for-dom-videopixelformat-rgba\u2466"}],"title":"9.8. Pixel Format"}],"url":"#dom-videopixelformat-rgba"},
 "dom-videopixelformat-rgbx": {"dfnID":"dom-videopixelformat-rgbx","dfnText":"RGBX","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-videopixelformat-rgbx"}],"title":"9.4.5. Methods"},{"refs":[{"id":"ref-for-dom-videopixelformat-rgbx\u2460"},{"id":"ref-for-dom-videopixelformat-rgbx\u2461"}],"title":"9.4.6. Algorithms"},{"refs":[{"id":"ref-for-dom-videopixelformat-rgbx\u2462"},{"id":"ref-for-dom-videopixelformat-rgbx\u2463"}],"title":"9.5. VideoFrame CopyTo() Options"},{"refs":[{"id":"ref-for-dom-videopixelformat-rgbx\u2464"},{"id":"ref-for-dom-videopixelformat-rgbx\u2465"}],"title":"9.8. Pixel Format"}],"url":"#dom-videopixelformat-rgbx"},
 "dom-videotransfercharacteristics-bt709": {"dfnID":"dom-videotransfercharacteristics-bt709","dfnText":"bt709","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-videotransfercharacteristics-bt709"}],"title":"1. Definitions"},{"refs":[{"id":"ref-for-dom-videotransfercharacteristics-bt709\u2460"}],"title":"9.11. Video Transfer Characteristics"}],"url":"#dom-videotransfercharacteristics-bt709"},
 "dom-videotransfercharacteristics-hlg": {"dfnID":"dom-videotransfercharacteristics-hlg","dfnText":"hlg","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-videotransfercharacteristics-hlg"}],"title":"9.11. Video Transfer Characteristics"}],"url":"#dom-videotransfercharacteristics-hlg"},
@@ -12529,7 +12532,7 @@ let refsData = {
 "#dom-videopixelformat-i444ap12": {"displayText":"\"I444AP12\"","export":true,"for_":["VideoPixelFormat"],"level":"","normative":true,"shortname":"webcodecs","spec":"webcodecs","status":"local","text":"\"I444AP12\"","type":"enum-value","url":"#dom-videopixelformat-i444ap12"},
 "#dom-videopixelformat-i444p10": {"displayText":"\"I444P10\"","export":true,"for_":["VideoPixelFormat"],"level":"","normative":true,"shortname":"webcodecs","spec":"webcodecs","status":"local","text":"\"I444P10\"","type":"enum-value","url":"#dom-videopixelformat-i444p10"},
 "#dom-videopixelformat-i444p12": {"displayText":"\"I444P12\"","export":true,"for_":["VideoPixelFormat"],"level":"","normative":true,"shortname":"webcodecs","spec":"webcodecs","status":"local","text":"\"I444P12\"","type":"enum-value","url":"#dom-videopixelformat-i444p12"},
-"#dom-videopixelformat-nv12": {"displayText":"\"NV12\"","export":true,"for_":["VideoPixelFormat"],"level":"","normative":true,"shortname":"webcodecs","spec":"webcodecs","status":"local","text":"\"NV12\"","type":"enum-value","url":"#dom-videopixelformat-nv12"},
+"#dom-videopixelformat-nv12": {"displayText":"NV12","export":true,"for_":["VideoPixelFormat"],"level":"","normative":true,"shortname":"webcodecs","spec":"webcodecs","status":"local","text":"NV12","type":"enum-value","url":"#dom-videopixelformat-nv12"},
 "#dom-videopixelformat-rgba": {"displayText":"RGBA","export":true,"for_":["VideoPixelFormat"],"level":"","normative":true,"shortname":"webcodecs","spec":"webcodecs","status":"local","text":"RGBA","type":"enum-value","url":"#dom-videopixelformat-rgba"},
 "#dom-videopixelformat-rgbx": {"displayText":"RGBX","export":true,"for_":["VideoPixelFormat"],"level":"","normative":true,"shortname":"webcodecs","spec":"webcodecs","status":"local","text":"RGBX","type":"enum-value","url":"#dom-videopixelformat-rgbx"},
 "#dom-videotransfercharacteristics-bt709": {"displayText":"bt709","export":true,"for_":["VideoTransferCharacteristics"],"level":"","normative":true,"shortname":"webcodecs","spec":"webcodecs","status":"local","text":"bt709","type":"enum-value","url":"#dom-videotransfercharacteristics-bt709"},
