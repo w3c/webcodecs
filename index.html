@@ -7,7 +7,7 @@
   <link href="https://www.w3.org/StyleSheets/TR/2021/W3C-ED" rel="stylesheet">
   <meta content="Bikeshed version ea4009a02, updated Thu Sep 17 15:24:44 2026 -0700" name="generator">
   <link href="https://www.w3.org/TR/webcodecs/" rel="canonical">
-  <meta content="91160a493a2f59060c8b1ba4831e398f820c6e6d" name="revision">
+  <meta content="72fd17c131c8c46af55825cfee700e95d56d4a2f" name="revision">
   <meta content="dark light" name="color-scheme">
   <link href="https://www.w3.org/StyleSheets/TR/2021/dark.css" media="(prefers-color-scheme: dark)" rel="stylesheet" type="text/css">
 <style>
@@ -754,7 +754,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
 </p>
    <h1 class="no-ref p-name" id="title">WebCodecs</h1>
    <p id="w3c-state"><a href="https://www.w3.org/standards/types/#ED">Editor’s Draft</a>,
-    <time class="dt-updated" datetime="2026-09-21">21 September 2026</time></p>
+    <time class="dt-updated" datetime="2026-10-07">7 October 2026</time></p>
    <details open>
     <summary>More details about this document</summary>
     <div data-fill-with="spec-metadata">
@@ -6830,13 +6830,13 @@ number and order of the planes. Each format is described in its own sub-section.
 where a single sample contains information for multiple pixels in the final
 image. <a data-link-type="dfn" href="#sub-sampling" id="ref-for-sub-sampling">Sub-sampling</a> can be horizontal, vertical or both, and has a <dfn class="dfn-paneled" data-dfn-type="dfn" data-lt="sub-sampling factor|factor" data-noexport id="sub-sampling-factor">factor</dfn>, that is the number of final pixels
 in the image that are derived from a <a data-link-type="dfn" href="#sub-sampling" id="ref-for-sub-sampling①">sub-sampled</a> sample.</p>
-   <div class="example" id="example-33b7b945"><a class="self-link" href="#example-33b7b945"></a>
+   <div class="example" id="example-662eb117"><a class="self-link" href="#example-662eb117"></a>
   If a <code class="idl"><a data-link-type="idl" href="#videoframe" id="ref-for-videoframe⑦⑤">VideoFrame</a></code> is in <code class="idl"><a data-link-type="idl" href="#dom-videopixelformat-i420" id="ref-for-dom-videopixelformat-i420①">I420</a></code> format, then the very first
   component of the second plane (the U plane) corresponds to four pixels, that are
-  the pixels in the top-left angle of the image. Consequently, the first
-  component of the second row corresponds to the four pixels below those initial
-  four top-left pixels. The <a data-link-type="dfn" href="#sub-sampling-factor" id="ref-for-sub-sampling-factor④">sub-sampling factor</a> is 2 in both the horizontal
-  and vertical direction.
+  the pixels in the top-left corner of the image. Consequently, the first
+  component of the second row of the U plane corresponds to the four pixels
+  below those initial four top-left pixels. The <a data-link-type="dfn" href="#sub-sampling-factor" id="ref-for-sub-sampling-factor④">sub-sampling factor</a> is 2 in
+  both the horizontal and vertical direction.
 </div>
    <p>If a <code class="idl"><a data-link-type="idl" href="#enumdef-videopixelformat" id="ref-for-enumdef-videopixelformat①③">VideoPixelFormat</a></code> has an alpha component, the format’s
 <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="equivalent-opaque-format">equivalent opaque format</dfn> is the same <code class="idl"><a data-link-type="idl" href="#enumdef-videopixelformat" id="ref-for-enumdef-videopixelformat①④">VideoPixelFormat</a></code>, without an
@@ -6849,7 +6849,7 @@ is its own <a data-link-type="dfn" href="#equivalent-opaque-format" id="ref-for-
      
     This format is composed of three distinct planes, one plane of Luma and two
     planes of Chroma, denoted Y, U and V, and present in this order. It is also
-    often refered to as Planar YUV 4:2:0.
+    often referred to as Planar YUV 4:2:0.
 
 
      <p>The U and V planes are <a data-link-type="dfn" href="#sub-sampling" id="ref-for-sub-sampling②">sub-sampled</a> horizontally and vertically by a
@@ -6916,7 +6916,7 @@ is its own <a data-link-type="dfn" href="#equivalent-opaque-format" id="ref-for-
      
     This format is composed of four distinct planes, one plane of Luma, two
     planes of Chroma, denoted Y, U and V, and one plane of Alpha values, all
-    present in this order. It is also often refered to as Planar YUV 4:2:0 with
+    present in this order. It is also often referred to as Planar YUV 4:2:0 with
     an alpha channel.
 
 
@@ -6989,14 +6989,14 @@ is its own <a data-link-type="dfn" href="#equivalent-opaque-format" id="ref-for-
      
     This format is composed of three distinct planes, one plane of Luma and two
     planes of Chroma, denoted Y, U and V, and present in this order. It is also
-    often refered to as Planar YUV 4:2:2.
+    often referred to as Planar YUV 4:2:2.
 
 
      <p>The U and V planes are <a data-link-type="dfn" href="#sub-sampling" id="ref-for-sub-sampling⑧">sub-sampled</a> horizontally by a <a data-link-type="dfn" href="#sub-sampling-factor" id="ref-for-sub-sampling-factor①①">factor</a> of 2
     compared to the Y plane, and not <a data-link-type="dfn" href="#sub-sampling" id="ref-for-sub-sampling⑨">sub-sampled</a> vertically.</p>
      <p>Each sample in this format is 8 bits.</p>
      <p>There are <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedwidth" id="ref-for-dom-videoframe-codedwidth②③">codedWidth</a></code> * <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedheight" id="ref-for-dom-videoframe-codedheight②③">codedHeight</a></code> samples
-    (and therefore bytes) in the Y and plane, arranged starting at the top left
+    (and therefore bytes) in the Y plane, arranged starting at the top left
     of the image, in <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedheight" id="ref-for-dom-videoframe-codedheight②④">codedHeight</a></code> rows of
     <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedwidth" id="ref-for-dom-videoframe-codedwidth②④">codedWidth</a></code> samples.</p>
      <p>The U and V planes have <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedheight" id="ref-for-dom-videoframe-codedheight②⑤">codedHeight</a></code> rows. Each row has a
@@ -7053,7 +7053,7 @@ is its own <a data-link-type="dfn" href="#equivalent-opaque-format" id="ref-for-
      
     This format is composed of four distinct planes, one plane of Luma, two
     planes of Chroma, denoted Y, U and V, and one plane of Alpha values, all
-    present in this order. It is also often refered to as Planar YUV 4:2:2 with
+    present in this order. It is also often referred to as Planar YUV 4:2:2 with
     an alpha channel.
 
 
@@ -7094,7 +7094,7 @@ is its own <a data-link-type="dfn" href="#equivalent-opaque-format" id="ref-for-
      <p>The visible rectangle horizontal offset
     (<code class="idl"><a data-link-type="idl" href="#dom-videoframe-visiblerect" id="ref-for-dom-videoframe-visiblerect②④">visibleRect</a></code>.<code class="idl"><a data-link-type="idl" href="https://drafts.csswg.org/geometry-1/#dom-domrectinit-x" id="ref-for-dom-domrectinit-x①④">x</a></code>)
     <em class="rfc2119">MUST</em> be even.</p>
-     <p><code class="idl"><a data-link-type="idl" href="#dom-videopixelformat-i422ap10" id="ref-for-dom-videopixelformat-i422ap10①">I422AP10</a></code>’s <a data-link-type="dfn" href="#equivalent-opaque-format" id="ref-for-equivalent-opaque-format⑦">equivalent opaque format</a> is <code class="idl"><a data-link-type="idl" href="#dom-videopixelformat-i420p10" id="ref-for-dom-videopixelformat-i420p10②">I420P10</a></code>.</p>
+     <p><code class="idl"><a data-link-type="idl" href="#dom-videopixelformat-i422ap10" id="ref-for-dom-videopixelformat-i422ap10①">I422AP10</a></code>’s <a data-link-type="dfn" href="#equivalent-opaque-format" id="ref-for-equivalent-opaque-format⑦">equivalent opaque format</a> is <code class="idl"><a data-link-type="idl" href="#dom-videopixelformat-i422p10" id="ref-for-dom-videopixelformat-i422p10①">I422P10</a></code>.</p>
     <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoPixelFormat" data-dfn-type="enum-value" data-export data-lt="&quot;I422AP12&quot;|I422AP12" id="dom-videopixelformat-i422ap12"><code>I422AP12</code></dfn>
     <dd>
      
@@ -7117,13 +7117,13 @@ is its own <a data-link-type="dfn" href="#equivalent-opaque-format" id="ref-for-
      <p>The visible rectangle horizontal offset
     (<code class="idl"><a data-link-type="idl" href="#dom-videoframe-visiblerect" id="ref-for-dom-videoframe-visiblerect②⑤">visibleRect</a></code>.<code class="idl"><a data-link-type="idl" href="https://drafts.csswg.org/geometry-1/#dom-domrectinit-x" id="ref-for-dom-domrectinit-x①⑤">x</a></code>)
     <em class="rfc2119">MUST</em> be even.</p>
-     <p><code class="idl"><a data-link-type="idl" href="#dom-videopixelformat-i422ap10" id="ref-for-dom-videopixelformat-i422ap10②">I422AP10</a></code>’s <a data-link-type="dfn" href="#equivalent-opaque-format" id="ref-for-equivalent-opaque-format⑧">equivalent opaque format</a> is <code class="idl"><a data-link-type="idl" href="#dom-videopixelformat-i420p10" id="ref-for-dom-videopixelformat-i420p10③">I420P10</a></code>.</p>
+     <p><code class="idl"><a data-link-type="idl" href="#dom-videopixelformat-i422ap12" id="ref-for-dom-videopixelformat-i422ap12①">I422AP12</a></code>’s <a data-link-type="dfn" href="#equivalent-opaque-format" id="ref-for-equivalent-opaque-format⑧">equivalent opaque format</a> is <code class="idl"><a data-link-type="idl" href="#dom-videopixelformat-i422p12" id="ref-for-dom-videopixelformat-i422p12①">I422P12</a></code>.</p>
     <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoPixelFormat" data-dfn-type="enum-value" data-export data-lt="&quot;I444&quot;|I444" id="dom-videopixelformat-i444"><code>I444</code></dfn>
     <dd>
      
     This format is composed of three distinct planes, one plane of Luma and two
     planes of Chroma, denoted Y, U and V, and present in this order. It is also
-    often refered to as Planar YUV 4:4:4.
+    often referred to as Planar YUV 4:4:4.
 
 
      <p>This format does not use <a data-link-type="dfn" href="#sub-sampling" id="ref-for-sub-sampling②⓪">sub-sampling</a>.</p>
@@ -7202,20 +7202,20 @@ is its own <a data-link-type="dfn" href="#equivalent-opaque-format" id="ref-for-
      <p>There are <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedwidth" id="ref-for-dom-videoframe-codedwidth⑤①">codedWidth</a></code> * <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedheight" id="ref-for-dom-videoframe-codedheight⑤①">codedHeight</a></code> samples
     in all four planes, arranged starting at the top left of the image,
     in <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedheight" id="ref-for-dom-videoframe-codedheight⑤②">codedHeight</a></code> rows of <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedwidth" id="ref-for-dom-videoframe-codedwidth⑤②">codedWidth</a></code> samples.</p>
-     <p><code class="idl"><a data-link-type="idl" href="#dom-videopixelformat-i444ap10" id="ref-for-dom-videopixelformat-i444ap10②">I444AP10</a></code>’s <a data-link-type="dfn" href="#equivalent-opaque-format" id="ref-for-equivalent-opaque-format①①">equivalent opaque format</a> is <code class="idl"><a data-link-type="idl" href="#dom-videopixelformat-i444p10" id="ref-for-dom-videopixelformat-i444p10②">I444P10</a></code>.</p>
+     <p><code class="idl"><a data-link-type="idl" href="#dom-videopixelformat-i444ap12" id="ref-for-dom-videopixelformat-i444ap12①">I444AP12</a></code>’s <a data-link-type="dfn" href="#equivalent-opaque-format" id="ref-for-equivalent-opaque-format①①">equivalent opaque format</a> is <code class="idl"><a data-link-type="idl" href="#dom-videopixelformat-i444p12" id="ref-for-dom-videopixelformat-i444p12①">I444P12</a></code>.</p>
     <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoPixelFormat" data-dfn-type="enum-value" data-export data-lt="&quot;NV12&quot;|NV12" id="dom-videopixelformat-nv12"><code>NV12</code></dfn>
     <dd>
      
     This format is composed of two distinct planes, one plane of Luma and then
     another plane for the two Chroma components. The two planes are present in
-    this order, and are refered to as respectively the Y plane and the UV plane.
+    this order, and are referred to as respectively the Y plane and the UV plane.
 
 
      <p>The U and V components are <a data-link-type="dfn" href="#sub-sampling" id="ref-for-sub-sampling②⑥">sub-sampled</a> horizontally and vertically by a
-    <a data-link-type="dfn" href="#sub-sampling-factor" id="ref-for-sub-sampling-factor①⑦">factor</a> of 2 compared to the components in the Y planes.</p>
+    <a data-link-type="dfn" href="#sub-sampling-factor" id="ref-for-sub-sampling-factor①⑦">factor</a> of 2 compared to the components in the Y plane.</p>
      <p>Each sample in this format is 8 bits.</p>
      <p>There are <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedwidth" id="ref-for-dom-videoframe-codedwidth⑤③">codedWidth</a></code> * <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedheight" id="ref-for-dom-videoframe-codedheight⑤③">codedHeight</a></code> samples
-    (and therefore bytes) in the Y and plane, arranged starting at the top left
+    (and therefore bytes) in the Y plane, arranged starting at the top left
     of the image, in <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedheight" id="ref-for-dom-videoframe-codedheight⑤④">codedHeight</a></code> rows of
     <code class="idl"><a data-link-type="idl" href="#dom-videoframe-codedwidth" id="ref-for-dom-videoframe-codedwidth⑤④">codedWidth</a></code> samples.</p>
      <p>The UV plane is composed of interleaved U and V values, in a number of
@@ -10147,11 +10147,11 @@ participation on the mailing list and in the issues.</p>
    <dt id="biblio-streams">[STREAMS]
    <dd>Adam Rice; et al. <a href="https://streams.spec.whatwg.org/"><cite>Streams Standard</cite></a>. Living Standard. URL: <a href="https://streams.spec.whatwg.org/">https://streams.spec.whatwg.org/</a>
    <dt id="biblio-svg2">[SVG2]
-   <dd>Amelia Bellamy-Royds; et al. <a href="https://w3c.github.io/svgwg/svg2-draft/"><cite>Scalable Vector Graphics (SVG) 2</cite></a>. URL: <a href="https://w3c.github.io/svgwg/svg2-draft/">https://w3c.github.io/svgwg/svg2-draft/</a>
+   <dd>Karl Dubost; et al. <a href="https://w3c.github.io/svgwg/svg2-draft/"><cite>Scalable Vector Graphics (SVG) 2</cite></a>. URL: <a href="https://w3c.github.io/svgwg/svg2-draft/">https://w3c.github.io/svgwg/svg2-draft/</a>
    <dt id="biblio-webidl">[WEBIDL]
    <dd>Edgar Chen; Timothy Gu. <a href="https://webidl.spec.whatwg.org/"><cite>Web IDL Standard</cite></a>. Living Standard. URL: <a href="https://webidl.spec.whatwg.org/">https://webidl.spec.whatwg.org/</a>
    <dt id="biblio-webrtc-svc">[WebRTC-SVC]
-   <dd>Bernard Aboba. <a href="https://w3c.github.io/webrtc-svc/"><cite>Scalable Video Coding (SVC) Extension for WebRTC</cite></a>. URL: <a href="https://w3c.github.io/webrtc-svc/">https://w3c.github.io/webrtc-svc/</a>
+   <dd>Henrik Boström. <a href="https://w3c.github.io/webrtc-svc/"><cite>Scalable Video Coding (SVC) Extension for WebRTC</cite></a>. URL: <a href="https://w3c.github.io/webrtc-svc/">https://w3c.github.io/webrtc-svc/</a>
   </dl>
   <h3 class="heading no-num no-ref settled" id="informative"><span class="content">Non-Normative References</span><a class="self-link" href="#informative"></a></h3>
   <dl>
@@ -11536,20 +11536,20 @@ let dfnPanelData = {
 "dom-videopixelformat-i420a": {"dfnID":"dom-videopixelformat-i420a","dfnText":"I420A","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-videopixelformat-i420a"},{"id":"ref-for-dom-videopixelformat-i420a\u2460"}],"title":"9.8. Pixel Format"}],"url":"#dom-videopixelformat-i420a"},
 "dom-videopixelformat-i420ap10": {"dfnID":"dom-videopixelformat-i420ap10","dfnText":"I420AP10","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-videopixelformat-i420ap10"},{"id":"ref-for-dom-videopixelformat-i420ap10\u2460"}],"title":"9.8. Pixel Format"}],"url":"#dom-videopixelformat-i420ap10"},
 "dom-videopixelformat-i420ap12": {"dfnID":"dom-videopixelformat-i420ap12","dfnText":"I420AP12","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-videopixelformat-i420ap12"},{"id":"ref-for-dom-videopixelformat-i420ap12\u2460"}],"title":"9.8. Pixel Format"}],"url":"#dom-videopixelformat-i420ap12"},
-"dom-videopixelformat-i420p10": {"dfnID":"dom-videopixelformat-i420p10","dfnText":"I420P10","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-videopixelformat-i420p10"},{"id":"ref-for-dom-videopixelformat-i420p10\u2460"},{"id":"ref-for-dom-videopixelformat-i420p10\u2461"},{"id":"ref-for-dom-videopixelformat-i420p10\u2462"}],"title":"9.8. Pixel Format"}],"url":"#dom-videopixelformat-i420p10"},
+"dom-videopixelformat-i420p10": {"dfnID":"dom-videopixelformat-i420p10","dfnText":"I420P10","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-videopixelformat-i420p10"},{"id":"ref-for-dom-videopixelformat-i420p10\u2460"}],"title":"9.8. Pixel Format"}],"url":"#dom-videopixelformat-i420p10"},
 "dom-videopixelformat-i420p12": {"dfnID":"dom-videopixelformat-i420p12","dfnText":"I420P12","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-videopixelformat-i420p12"},{"id":"ref-for-dom-videopixelformat-i420p12\u2460"}],"title":"9.8. Pixel Format"}],"url":"#dom-videopixelformat-i420p12"},
 "dom-videopixelformat-i422": {"dfnID":"dom-videopixelformat-i422","dfnText":"I422","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-videopixelformat-i422"},{"id":"ref-for-dom-videopixelformat-i422\u2460"}],"title":"9.8. Pixel Format"}],"url":"#dom-videopixelformat-i422"},
 "dom-videopixelformat-i422a": {"dfnID":"dom-videopixelformat-i422a","dfnText":"I422A","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-videopixelformat-i422a"},{"id":"ref-for-dom-videopixelformat-i422a\u2460"}],"title":"9.8. Pixel Format"}],"url":"#dom-videopixelformat-i422a"},
-"dom-videopixelformat-i422ap10": {"dfnID":"dom-videopixelformat-i422ap10","dfnText":"I422AP10","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-videopixelformat-i422ap10"},{"id":"ref-for-dom-videopixelformat-i422ap10\u2460"},{"id":"ref-for-dom-videopixelformat-i422ap10\u2461"}],"title":"9.8. Pixel Format"}],"url":"#dom-videopixelformat-i422ap10"},
-"dom-videopixelformat-i422ap12": {"dfnID":"dom-videopixelformat-i422ap12","dfnText":"I422AP12","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-videopixelformat-i422ap12"}],"title":"9.8. Pixel Format"}],"url":"#dom-videopixelformat-i422ap12"},
-"dom-videopixelformat-i422p10": {"dfnID":"dom-videopixelformat-i422p10","dfnText":"I422P10","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-videopixelformat-i422p10"}],"title":"9.8. Pixel Format"}],"url":"#dom-videopixelformat-i422p10"},
-"dom-videopixelformat-i422p12": {"dfnID":"dom-videopixelformat-i422p12","dfnText":"I422P12","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-videopixelformat-i422p12"}],"title":"9.8. Pixel Format"}],"url":"#dom-videopixelformat-i422p12"},
+"dom-videopixelformat-i422ap10": {"dfnID":"dom-videopixelformat-i422ap10","dfnText":"I422AP10","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-videopixelformat-i422ap10"},{"id":"ref-for-dom-videopixelformat-i422ap10\u2460"}],"title":"9.8. Pixel Format"}],"url":"#dom-videopixelformat-i422ap10"},
+"dom-videopixelformat-i422ap12": {"dfnID":"dom-videopixelformat-i422ap12","dfnText":"I422AP12","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-videopixelformat-i422ap12"},{"id":"ref-for-dom-videopixelformat-i422ap12\u2460"}],"title":"9.8. Pixel Format"}],"url":"#dom-videopixelformat-i422ap12"},
+"dom-videopixelformat-i422p10": {"dfnID":"dom-videopixelformat-i422p10","dfnText":"I422P10","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-videopixelformat-i422p10"},{"id":"ref-for-dom-videopixelformat-i422p10\u2460"}],"title":"9.8. Pixel Format"}],"url":"#dom-videopixelformat-i422p10"},
+"dom-videopixelformat-i422p12": {"dfnID":"dom-videopixelformat-i422p12","dfnText":"I422P12","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-videopixelformat-i422p12"},{"id":"ref-for-dom-videopixelformat-i422p12\u2460"}],"title":"9.8. Pixel Format"}],"url":"#dom-videopixelformat-i422p12"},
 "dom-videopixelformat-i444": {"dfnID":"dom-videopixelformat-i444","dfnText":"I444","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-videopixelformat-i444"},{"id":"ref-for-dom-videopixelformat-i444\u2460"}],"title":"9.8. Pixel Format"}],"url":"#dom-videopixelformat-i444"},
 "dom-videopixelformat-i444a": {"dfnID":"dom-videopixelformat-i444a","dfnText":"I444A","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-videopixelformat-i444a"},{"id":"ref-for-dom-videopixelformat-i444a\u2460"}],"title":"9.8. Pixel Format"}],"url":"#dom-videopixelformat-i444a"},
-"dom-videopixelformat-i444ap10": {"dfnID":"dom-videopixelformat-i444ap10","dfnText":"I444AP10","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-videopixelformat-i444ap10"},{"id":"ref-for-dom-videopixelformat-i444ap10\u2460"},{"id":"ref-for-dom-videopixelformat-i444ap10\u2461"}],"title":"9.8. Pixel Format"}],"url":"#dom-videopixelformat-i444ap10"},
-"dom-videopixelformat-i444ap12": {"dfnID":"dom-videopixelformat-i444ap12","dfnText":"I444AP12","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-videopixelformat-i444ap12"}],"title":"9.8. Pixel Format"}],"url":"#dom-videopixelformat-i444ap12"},
-"dom-videopixelformat-i444p10": {"dfnID":"dom-videopixelformat-i444p10","dfnText":"I444P10","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-videopixelformat-i444p10"},{"id":"ref-for-dom-videopixelformat-i444p10\u2460"},{"id":"ref-for-dom-videopixelformat-i444p10\u2461"}],"title":"9.8. Pixel Format"}],"url":"#dom-videopixelformat-i444p10"},
-"dom-videopixelformat-i444p12": {"dfnID":"dom-videopixelformat-i444p12","dfnText":"I444P12","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-videopixelformat-i444p12"}],"title":"9.8. Pixel Format"}],"url":"#dom-videopixelformat-i444p12"},
+"dom-videopixelformat-i444ap10": {"dfnID":"dom-videopixelformat-i444ap10","dfnText":"I444AP10","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-videopixelformat-i444ap10"},{"id":"ref-for-dom-videopixelformat-i444ap10\u2460"}],"title":"9.8. Pixel Format"}],"url":"#dom-videopixelformat-i444ap10"},
+"dom-videopixelformat-i444ap12": {"dfnID":"dom-videopixelformat-i444ap12","dfnText":"I444AP12","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-videopixelformat-i444ap12"},{"id":"ref-for-dom-videopixelformat-i444ap12\u2460"}],"title":"9.8. Pixel Format"}],"url":"#dom-videopixelformat-i444ap12"},
+"dom-videopixelformat-i444p10": {"dfnID":"dom-videopixelformat-i444p10","dfnText":"I444P10","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-videopixelformat-i444p10"},{"id":"ref-for-dom-videopixelformat-i444p10\u2460"}],"title":"9.8. Pixel Format"}],"url":"#dom-videopixelformat-i444p10"},
+"dom-videopixelformat-i444p12": {"dfnID":"dom-videopixelformat-i444p12","dfnText":"I444P12","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-videopixelformat-i444p12"},{"id":"ref-for-dom-videopixelformat-i444p12\u2460"}],"title":"9.8. Pixel Format"}],"url":"#dom-videopixelformat-i444p12"},
 "dom-videopixelformat-nv12": {"dfnID":"dom-videopixelformat-nv12","dfnText":"NV12","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-videopixelformat-nv12"}],"title":"9.8. Pixel Format"}],"url":"#dom-videopixelformat-nv12"},
 "dom-videopixelformat-rgba": {"dfnID":"dom-videopixelformat-rgba","dfnText":"RGBA","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-videopixelformat-rgba"}],"title":"9.4.5. Methods"},{"refs":[{"id":"ref-for-dom-videopixelformat-rgba\u2460"},{"id":"ref-for-dom-videopixelformat-rgba\u2461"}],"title":"9.4.6. Algorithms"},{"refs":[{"id":"ref-for-dom-videopixelformat-rgba\u2462"},{"id":"ref-for-dom-videopixelformat-rgba\u2463"}],"title":"9.5. VideoFrame CopyTo() Options"},{"refs":[{"id":"ref-for-dom-videopixelformat-rgba\u2464"},{"id":"ref-for-dom-videopixelformat-rgba\u2465"}],"title":"9.8. Pixel Format"}],"url":"#dom-videopixelformat-rgba"},
 "dom-videopixelformat-rgbx": {"dfnID":"dom-videopixelformat-rgbx","dfnText":"RGBX","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-videopixelformat-rgbx"}],"title":"9.4.5. Methods"},{"refs":[{"id":"ref-for-dom-videopixelformat-rgbx\u2460"},{"id":"ref-for-dom-videopixelformat-rgbx\u2461"}],"title":"9.4.6. Algorithms"},{"refs":[{"id":"ref-for-dom-videopixelformat-rgbx\u2462"},{"id":"ref-for-dom-videopixelformat-rgbx\u2463"}],"title":"9.5. VideoFrame CopyTo() Options"},{"refs":[{"id":"ref-for-dom-videopixelformat-rgbx\u2464"},{"id":"ref-for-dom-videopixelformat-rgbx\u2465"}],"title":"9.8. Pixel Format"}],"url":"#dom-videopixelformat-rgbx"},
