@@ -940,23 +940,31 @@ Algorithms {#videodecoder-algorithms}
             {{VideoDecoderConfig/displayAspectHeight}} [=map/exist=] in the
             {{VideoDecoder/[[active decoder config]]}}, assign their values to
             |displayAspectWidth| and |displayAspectHeight| respectively.
-        4. Let |colorSpace| be the {{VideoColorSpace}} for |output| as detected
-            by the codec implementation. If no {{VideoColorSpace}} is detected,
-            let |colorSpace| be `undefined`.
+        4. Determine the [=internal color space=] of |output|'s
+            [=media resource=] as follows:
+            1. Between {{VideoDecoder/[[active decoder config]]}}'s
+                {{VideoDecoderConfig/colorSpace}} (if it [=map/exists=]) and the
+                color space detected by {{VideoDecoder/[[codec implementation]]}},
+                select the color space with the most specified (non-`null`)
+                {{VideoColorSpace/primaries}}, {{VideoColorSpace/transfer}}, and
+                {{VideoColorSpace/matrix}} components, breaking ties in favor of
+                {{VideoDecoderConfig/colorSpace}}.
+            2. {{VideoDecoder/[[codec implementation]]}}
+                <em class="rfc2119">MAY</em> modify the color space during
+                decoding (for example, when converting to an [=RGB format=]) or
+                fill in unspecified components as required by the codec or
+                platform.
 
-            NOTE: The codec implementation can detect a {{VideoColorSpace}} by
-                analyzing the bitstream. Detection is made on a best-effort
-                basis. The exact method of detection is implementer defined and
-                codec-specific.  Authors can override the detected
-                {{VideoColorSpace}} by providing a
-                {{VideoDecoderConfig/colorSpace}} in the {{VideoDecoderConfig}}.
+            NOTE: {{VideoDecoder/[[codec implementation]]}} detects an
+                [=internal color space=] from the bitstream on a best-effort,
+                codec- and platform-specific basis. Detected components that are
+                not `unspecified` count as specified components when comparing
+                with {{VideoDecoderConfig/colorSpace}}, even if they do not map
+                to a WebIDL enum value.
 
-        5. If {{VideoDecoderConfig/colorSpace}} [=map/exists=] in the
-            {{VideoDecoder/[[active decoder config]]}}, assign its value to
-            |colorSpace|. In that case, User Agents MAY replace `null` members
-            of |colorSpace| with the corresponding values detected by the codec
-            implementation.
-            FIXME: Properly specify the case of `null` members.
+        5. Let |colorSpace| be a new {{VideoColorSpace}} populated from the
+            [=internal color space=] of |output|'s [=media resource=], with any
+            unspecified or unrecognized components set to `null`.
         6. Assign the values of {{VideoDecoderConfig/rotation}} and
             {{VideoDecoderConfig/flip}} to |rotation| and |flip| respectively.
         7. Let |frame| be the result of running the [=Create a VideoFrame=]
@@ -1697,7 +1705,21 @@ Algorithms {#videoencoder-algorithms}
                 associated with |output| to `outputConfig.rotation`.
             7. Assign {{VideoFrame/[[flip]]}} from the {{VideoFrame}}
                 associated with |output| to `outputConfig.flip`.
-            8. Assign the remaining keys of `outputConfig` as determined by
+            8. Initialize `outputConfig.colorSpace` from the {{VideoFrame}}
+                associated with |output| as follows:
+                1. {{VideoEncoder/[[codec implementation]]}}
+                    <em class="rfc2119">MAY</em> modify the
+                    [=internal color space=] or fill in unspecified components
+                    to satisfy codec or platform requirements.
+                2. Let |encodedColorSpace| be the color space emitted by
+                    {{VideoEncoder/[[codec implementation]]}} if specified, or
+                    otherwise the [=internal color space=] after any
+                    modifications from step 1.
+                3. Set `outputConfig.colorSpace` to a new
+                    {{VideoColorSpaceInit}} populated from |encodedColorSpace|,
+                    with any unspecified or unrecognized components set to
+                    `null`.
+            9. Assign the remaining keys of `outputConfig` as determined by
                 {{VideoEncoder/[[codec implementation]]}}. The User Agent
                 <em class="rfc2119">MUST</em> ensure that the configuration is
                 completely described such that |outputConfig| could be used to
@@ -2096,7 +2118,9 @@ run these steps:
     Configures the {{VideoFrame}}.{{VideoFrame/colorSpace}} for {{VideoFrame}}s
     associated with this {{VideoDecoderConfig}}. If
     {{VideoDecoderConfig/colorSpace}} [=map/exists=], the provided values will
-    override any in-band values from the bitsream.
+    override any in-band values from the bitstream unless the decoder modifies
+    the color space or detects a more specified color space, as described in
+    [=Output VideoFrames=].
   </dd>
 
   <dt><dfn dict-member for=VideoDecoderConfig>hardwareAcceleration</dfn></dt>
@@ -2819,7 +2843,10 @@ NOTE: Authors are encouraged to call `close()` immediately when frames are
 ### Reference Counting ### {#raw-media-memory-model-reference-counting}
 
 A <dfn>media resource</dfn> is storage for the actual pixel data or the audio
-sample data described by a {{VideoFrame}} or {{AudioData}}.
+sample data described by a {{VideoFrame}} or {{AudioData}}. For video, a
+[=media resource=] has an associated underlying pixel format and an
+<dfn>internal color space</dfn> (e.g., [[H.273]] code points) which may be more
+expressive than {{VideoPixelFormat}} and {{VideoColorSpace}}.
 
 The {{AudioData}} {{AudioData/[[resource reference]]}} and {{VideoFrame}}
 {{VideoFrame/[[resource reference]]}} internal slots hold a reference to a
@@ -3536,7 +3563,12 @@ dictionary VideoFrameMetadata {
     from the {{EncodedVideoChunk}} corresponding to this {{VideoFrame}}.
 
 : <dfn attribute for=VideoFrame>[[color space]]</dfn>
-:: The {{VideoColorSpace}} associated with this frame.
+:: A {{VideoColorSpace}} describing the color space of the {{VideoFrame}}.
+    Individual members of {{VideoFrame/[[color space]]}} will be `null` whenever
+    the corresponding component of the underlying [=media resource=]'s
+    [=internal color space=] is unspecified or does not map to a value in
+    {{VideoColorPrimaries}}, {{VideoTransferCharacteristics}}, or
+    {{VideoMatrixCoefficients}}.
 
 : <dfn attribute for=VideoFrame>\[[metadata]]</dfn>
 :: The {{VideoFrameMetadata}} associated with this frame.
@@ -3836,7 +3868,11 @@ dictionary VideoFrameMetadata {
     {{VideoFrame/[[duration]]}}.
 
 : <dfn attribute for=VideoFrame>colorSpace</dfn>
-:: The {{VideoColorSpace}} associated with this frame.
+:: The {{VideoColorSpace}} associated with this frame. Individual members will
+    be `null` whenever the corresponding component of the underlying
+    [=media resource=]'s [=internal color space=] is unspecified or does not map
+    to a value in {{VideoColorPrimaries}}, {{VideoTransferCharacteristics}}, or
+    {{VideoMatrixCoefficients}}.
 
     The {{VideoFrame/colorSpace}} getter steps are to return
     {{VideoFrame/[[color space]]}}.
@@ -4012,11 +4048,6 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
 : <dfn for=VideoFrame>Pick Color Space</dfn> (with |overrideColorSpace| and |format|)
 :: 1. If |overrideColorSpace| is provided, return a new {{VideoColorSpace}}
         constructed with |overrideColorSpace|.
-
-        User Agents <em class="rfc2119">MAY</em> replace `null` members of the
-        provided |overrideColorSpace| with guessed values as determined by implementer
-        defined heuristics.
-
     2. Otherwise, if {{VideoFrame/[[format]]}} is an [=RGB format=] return a new
         instance of the [=sRGB Color Space=]
     3. Otherwise, return a new instance of the [=REC709 Color Space=].
@@ -4471,6 +4502,17 @@ When rendered, for example by {{CanvasDrawImage}}
 {{CanvasDrawImage/drawImage()}}, a {{VideoFrame}} <em class="rfc2119">MUST</em>
 be converted to a color space compatible with the rendering target, unless color
 conversion is explicitly disabled.
+
+When applying color space conversion (for rendering or in
+[=VideoFrame/Convert to RGB frame=]), User Agents <em class="rfc2119">MUST</em>
+use the [=media resource=]'s [=internal color space=] if its
+{{VideoColorSpace/primaries}}, {{VideoColorSpace/transfer}}, and
+{{VideoColorSpace/matrix}} components are specified, treating an unspecified
+{{VideoColorSpace/fullRange}} as `true` when the [=media resource=] uses an
+[=RGB format=] and `false` otherwise. Otherwise, User Agents
+<em class="rfc2119">MUST</em> treat the source color space as the
+[=sRGB Color Space=] when the [=media resource=] uses an [=RGB format=], and as
+the [=REC709 Color Space=] otherwise.
 
 Color space conversion during {{ImageBitmap}} construction is controlled by
 {{ImageBitmapOptions}} {{ImageBitmapOptions/colorSpaceConversion}}. Setting this
