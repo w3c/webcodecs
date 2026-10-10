@@ -3893,60 +3893,66 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
         VideoFrameCopyToOptions=] algorithm with |options|.
     4. If |combinedLayout| is an exception, return a promise rejected with
         |combinedLayout|.
-    5. If `destination.byteLength` is less than |combinedLayout|'s [=combined
+    5. If |destination| is [=BufferSource/detached=], return a promise rejected
+        with a {{TypeError}}.
+    6. If `destination.byteLength` is less than |combinedLayout|'s [=combined
         buffer layout/allocationSize=], return a promise rejected with a
         {{TypeError}}.
-    6. If |options|.{{VideoFrameCopyToOptions/format}} is equal to one of
-        {{RGBA}}, {{RGBX}}, {{BGRA}}, {{BGRX}} then:
-          1. Let |newOptions| be the result of running the <a>Clone Configuration</a>
-               algorithm with |options|.
-          2. Assign `undefined` to |newOptions|.{{VideoFrameCopyToOptions/format}}.
-          3. Let |rgbFrame| be the result of running the [=VideoFrame/Convert to RGB frame=]
-               algorithm with [=this=], |options|.{{VideoFrameCopyToOptions/format}},
-               and |options|.{{VideoFrameCopyToOptions/colorSpace}}.
-          4. Return the result of calling {{VideoFrame/copyTo()}} on |rgbFrame| with
-               |destination| and |newOptions|.
-    7. Let |p| be a new {{Promise}}.
-    8. Let |copyStepsQueue| be the result of starting a new [=parallel queue=].
-    9. Let |planeLayouts| be a new [=list=].
-    10. Enqueue the following steps to |copyStepsQueue|:
-        1. Let resource be the [=media resource=] referenced by
-            {{VideoFrame/[[resource reference]]}}.
-        2. Let |numPlanes| be the number of planes as defined by
-            {{VideoFrame/[[format]]}}.
-        3. Let |planeIndex| be `0`.
-        4. While |planeIndex| is less than |combinedLayout|'s |numPlanes|:
-            1. Let |sourceStride| be the stride of the plane in |resource| as
-                identified by |planeIndex|.
-            2. Let |computedLayout| be the [=computed plane layout=] in
-                |combinedLayout|'s [=combined buffer layout/computedLayouts=] at
-                the position of |planeIndex|
-            3. Let |sourceOffset| be the product of multiplying
-                |computedLayout|'s [=computed plane layout/sourceTop=] by
-                |sourceStride|
-            4. Add |computedLayout|'s [=computed plane layout/sourceLeftBytes=]
-                to |sourceOffset|.
-            5. Let |destinationOffset| be |computedLayout|'s
-                [=computed plane layout/destinationOffset=].
-            6. Let |rowBytes| be |computedLayout|'s
-                [=computed plane layout/sourceWidthBytes=].
-            7. Let |layout| be a new {{PlaneLayout}}, with
-                {{PlaneLayout/offset}} set to |destinationOffset| and
-                {{PlaneLayout/stride}} set to |rowBytes|.
-            8. Let |row| be `0`.
-            9. While |row| is less than |computedLayout|'s
-                [=computed plane layout/sourceHeight=]:
-                1. Copy |rowBytes| bytes from |resource| starting at
-                    |sourceOffset| to |destination| starting at
-                    |destinationOffset|.
-                2. Increment |sourceOffset| by |sourceStride|.
-                3. Increment |destinationOffset| by |computedLayout|'s
-                    [=computed plane layout/destinationStride=].
-                4. Increment |row| by `1`.
-            10. Increment |planeIndex| by `1`.
-            11. Append |layout| to |planeLayouts|.
-        5. [=Queue a task=] to [=resolve=] |p| with |planeLayouts|.
-    11. Return |p|.
+    7. Let |resource| be the [=media resource=] referenced by
+        {{VideoFrame/[[resource reference]]}}.
+    8. Let |planeLayouts| be a new [=list=].
+    9. For each |computedLayout| of |combinedLayout|'s
+        [=combined buffer layout/computedLayouts=]:
+        1. Let |layout| be a new {{PlaneLayout}}, with
+            {{PlaneLayout/offset}} set to |computedLayout|'s
+            [=computed plane layout/destinationOffset=] and
+            {{PlaneLayout/stride}} set to |computedLayout|'s
+            [=computed plane layout/destinationStride=].
+        2. Append |layout| to |planeLayouts|.
+    10. Let |targetFormat| be |options|.{{VideoFrameCopyToOptions/format}} if it
+        [=map/exists=], and `undefined` otherwise.
+    11. Let |targetColorSpace| be the result of running the <a>Convert
+        PredefinedColorSpace to VideoColorSpace</a> algorithm with
+        |options|.{{VideoFrameCopyToOptions/colorSpace}}.
+    12. Let |baseOffset| be `destination.byteOffset` if |destination| is an
+        {{ArrayBufferView}}, and `0` otherwise.
+    13. Let |sharedDataBlock| be |destination|'s
+        [=BufferSource/underlying buffer=]'s `[[ArrayBufferData]]` if
+        |destination|'s [=BufferSource/underlying buffer=] is a
+        {{SharedArrayBuffer}}, and `null` otherwise.
+    14. Let |p| be a new {{Promise}}.
+    15. Run the following steps [=in parallel=]:
+        1. If |targetFormat| is equal to one of {{RGBA}}, {{RGBX}}, {{BGRA}},
+            {{BGRX}}, then:
+            1. Set |resource| to a new [=media resource=] with the same coded
+                width and coded height as |resource|, containing the result of
+                converting its pixels into pixel format |targetFormat| and
+                color space |targetColorSpace|.
+
+                NOTE: User Agents only need to convert the pixel region covered
+                    by |combinedLayout|.
+        2. Wait until |resource| is available in CPU memory.
+        3. If |sharedDataBlock| is not `null`:
+            1. Run the [=VideoFrame/Copy Planes=] algorithm with |resource|,
+                |combinedLayout|, |sharedDataBlock|, and |baseOffset|.
+            2. [=Queue a task=] to [=resolve=] |p| with |planeLayouts|.
+        4. Otherwise, [=queue a task=] to run the following steps:
+            1. If |destination| is [=BufferSource/detached=] or
+                `destination.byteLength` is less than |combinedLayout|'s
+                [=combined buffer layout/allocationSize=], [=reject=] |p|
+                with a {{TypeError}} and abort these steps.
+            2. Let |offset| be `destination.byteOffset` if |destination| is an
+                {{ArrayBufferView}}, and `0` otherwise.
+            3. Run the [=VideoFrame/Copy Planes=] algorithm with |resource|,
+                |combinedLayout|, |destination|'s
+                [=BufferSource/underlying buffer=]'s `[[ArrayBufferData]]`, and
+                |offset|.
+            4. [=Resolve=] |p| with |planeLayouts|.
+
+        NOTE: When |sharedDataBlock| is `null` and |resource| is already
+            accessible in CPU memory, User Agents can run [=VideoFrame/Copy
+            Planes=] synchronously before returning |p| to avoid an extra copy.
+    16. Return |p|.
 
 : <dfn method for=VideoFrame>clone()</dfn>
 :: Creates a new {{VideoFrame}} with a reference to the same
@@ -4395,32 +4401,33 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
     3. If |colorSpace| is equal to {{display-p3}} return a new instance of the
         [=Display P3 Color Space=]
 
-: <dfn for=VideoFrame>Convert to RGB frame</dfn> (with |frame|, |format| and |colorSpace|)
- :: 1. This algorithm <em class="rfc2119">MUST</em> be called only if |format|
-        is equal to one of {{RGBA}}, {{RGBX}}, {{BGRA}}, {{BGRX}}.
-    2. Let |convertedFrame| be a new {{VideoFrame}}, constructed as follows:
-        1. Assign `false` to {{platform object/[[Detached]]}}.
-        2. Assign |format| to {{VideoFrame/[[format]]}}.
-        3. Let |width| be |frame|'s {{VideoFrame/[[visible width]]}}.
-        4. Let |height| be |frame|'s {{VideoFrame/[[visible height]]}}.
-        5. Assign |width|, |height|, 0, 0, |width|, |height|, |width|, and
-            |height| to {{VideoFrame/[[coded width]]}},
-            {{VideoFrame/[[coded height]]}}, {{VideoFrame/[[visible left]]}},
-            {{VideoFrame/[[visible top]]}}, {{VideoFrame/[[visible width]]}},
-            and {{VideoFrame/[[visible height]]}} respectively.
-        6. Assign |frame|'s {{VideoFrame/[[duration]]}} and |frame|'s
-            {{VideoFrame/[[timestamp]]}} to {{VideoFrame/[[duration]]}} and
-            {{VideoFrame/[[timestamp]]}} respectively.
-        7. Assign the result of running the <a>Convert
-            PredefinedColorSpace to VideoColorSpace</a> algorithm with
-            |colorSpace| to {{VideoFrame/[[color space]]}}.
-        8. Let |resource| be a new [=media resource=] containing the result of
-            conversion of [=media resource=] referenced by |frame|'s
-            {{VideoFrame/[[resource reference]]}} into a color space and pixel
-            format specified by {{VideoFrame/[[color space]]}} and
-            {{VideoFrame/[[format]]}} respectively.
-        9. Assign the reference to |resource| to {{VideoFrame/[[resource reference]]}}
-    3. Return |convertedFrame|.
+: <dfn for=VideoFrame>Copy Planes</dfn> (with |resource|, |combinedLayout|, |dataBlock|, and |baseOffset|)
+:: 1. Let |planeIndex| be `0`.
+    2. While |planeIndex| is less than |combinedLayout|'s [=combined buffer layout/computedLayouts=]'s [=list/size=]:
+        1. Let |sourceStride| be the stride of the plane in |resource| as
+            identified by |planeIndex|.
+        2. Let |computedLayout| be |combinedLayout|'s
+            [=combined buffer layout/computedLayouts=][|planeIndex|].
+        3. Let |sourceOffset| be the product of multiplying
+            |computedLayout|'s [=computed plane layout/sourceTop=] by
+            |sourceStride|.
+        4. Add |computedLayout|'s [=computed plane layout/sourceLeftBytes=]
+            to |sourceOffset|.
+        5. Let |destinationOffset| be the sum of |baseOffset| and
+            |computedLayout|'s [=computed plane layout/destinationOffset=].
+        6. Let |rowBytes| be |computedLayout|'s
+            [=computed plane layout/sourceWidthBytes=].
+        7. Let |row| be `0`.
+        8. While |row| is less than |computedLayout|'s
+            [=computed plane layout/sourceHeight=]:
+            1. Copy |rowBytes| bytes from |resource| starting at
+                |sourceOffset| to |dataBlock| starting at
+                |destinationOffset|.
+            2. Increment |sourceOffset| by |sourceStride|.
+            3. Increment |destinationOffset| by |computedLayout|'s
+                [=computed plane layout/destinationStride=].
+            4. Increment |row| by `1`.
+        9. Increment |planeIndex| by `1`.
 
 : <dfn for=VideoFrame>Copy VideoFrame metadata</dfn> (with |metadata|)
 :: 1. Let |metadataCopySerialized| be [$StructuredSerialize$](|metadata|).
@@ -4491,7 +4498,7 @@ dictionary VideoFrameCopyToOptions {
   DOMRectInit rect;
   sequence<PlaneLayout> layout;
   VideoPixelFormat format;
-  PredefinedColorSpace colorSpace;
+  PredefinedColorSpace colorSpace = "srgb";
 };
 </xmp>
 
@@ -4529,7 +4536,6 @@ will enforce the following requirements:
     a target color space for the pixel data in the destination
     {{BufferSource}}, but only if {{VideoFrameCopyToOptions/format}} is one of
     {{RGBA}}, {{RGBX}}, {{BGRA}}, {{BGRX}}, otherwise it is ignored.
-    If it does not [=map/exist=], {{srgb}} is used.
 
 
 DOMRects in VideoFrame {#videoframe-domrect}
