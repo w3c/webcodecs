@@ -5,9 +5,9 @@
   <title>AV1 WebCodecs Registration</title>
   <meta content="NOTE-ED" name="w3c-status">
   <link href="https://www.w3.org/StyleSheets/TR/2021/W3C-ED" rel="stylesheet">
-  <meta content="Bikeshed version e74aa0952, updated Fri Jun 5 23:16:28 2026 +0000" name="generator">
+  <meta content="Bikeshed version ea4009a02, updated Thu Sep 17 15:24:44 2026 -0700" name="generator">
   <link href="https://www.w3.org/TR/webcodecs-av1-codec-registration/" rel="canonical">
-  <meta content="86d0dec6f1f17b4d686a76c64d69dd628a29a132" name="revision">
+  <meta content="97421577cdffa6deee258e7beedea692e012f6c6" name="revision">
   <meta content="dark light" name="color-scheme">
   <link href="https://www.w3.org/StyleSheets/TR/2021/dark.css" media="(prefers-color-scheme: dark)" rel="stylesheet" type="text/css">
 <style>/* Boilerplate: style-autolinks */
@@ -730,7 +730,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
 </p>
    <h1 class="no-ref p-name" id="title">AV1 WebCodecs Registration</h1>
    <p id="w3c-state"><a href="https://www.w3.org/standards/types/#ED">Editor’s Draft</a>,
-    <time class="dt-updated" datetime="2026-06-08">8 June 2026</time></p>
+    <time class="dt-updated" datetime="2026-10-13">13 October 2026</time></p>
    <details open>
     <summary>More details about this document</summary>
     <div data-fill-with="spec-metadata">
@@ -845,15 +845,19 @@ WebCodecs are not required to support the AV1 codec.</p>
 suffix as described in Section 5 of <a data-link-type="biblio" href="#biblio-av1-isobmff" title="AV1 Codec ISO Media File Format Binding">[AV1-ISOBMFF]</a>.</p>
    <h2 class="heading settled" data-level="2" id="encodedvideochunk-data"><span class="secno">2. </span><span class="content">EncodedVideoChunk data</span><a class="self-link" href="#encodedvideochunk-data"></a></h2>
    <p><code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webcodecs/#encodedvideochunk" id="ref-for-encodedvideochunk②">EncodedVideoChunk</a></code> <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webcodecs/#dom-encodedvideochunk-internal-data-slot" id="ref-for-dom-encodedvideochunk-internal-data-slot①">[[internal data]]</a></code> is expected to be
-data compliant to the "low-overhead bitstream format" as described in Section 5
-of <a data-link-type="biblio" href="#biblio-av1" title="AV1 Bitstream &amp; Decoding Process Specification">[AV1]</a>.</p>
+a sequence of Open Bitstream Units (OBUs) compliant to the "low-overhead
+bitstream format" (Section 5.2 of <a data-link-type="biblio" href="#biblio-av1" title="AV1 Bitstream &amp; Decoding Process Specification">[AV1]</a>) forming a single temporal unit
+(Section 7.5 of <a data-link-type="biblio" href="#biblio-av1" title="AV1 Bitstream &amp; Decoding Process Specification">[AV1]</a>), except that the initial <code>OBU_TEMPORAL_DELIMITER</code> OBU
+may be omitted.</p>
    <h2 class="heading settled" data-level="3" id="videodecoderconfig-description"><span class="secno">3. </span><span class="content">VideoDecoderConfig description</span><a class="self-link" href="#videodecoderconfig-description"></a></h2>
    <p><code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webcodecs/#dom-videodecoderconfig-description" id="ref-for-dom-videodecoderconfig-description①">description</a></code> is not used for this codec.</p>
    <h2 class="heading settled" data-level="4" id="encodedvideochunk-type"><span class="secno">4. </span><span class="content">EncodedVideoChunk type</span><a class="self-link" href="#encodedvideochunk-type"></a></h2>
    <p>If an <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webcodecs/#encodedvideochunk" id="ref-for-encodedvideochunk③">EncodedVideoChunk</a></code>’s <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webcodecs/#dom-encodedvideochunk-type-slot" id="ref-for-dom-encodedvideochunk-type-slot①">[[type]]</a></code> is
 <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webcodecs/#dom-encodedvideochunktype-key" id="ref-for-dom-encodedvideochunktype-key">key</a></code>, then the <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webcodecs/#encodedvideochunk" id="ref-for-encodedvideochunk④">EncodedVideoChunk</a></code> is expected to
-contain a frame with a <code>frame_type</code> of <code>KEY_FRAME</code> as defined in Section
-6.8.2 of <a data-link-type="biblio" href="#biblio-av1" title="AV1 Bitstream &amp; Decoding Process Specification">[AV1]</a>.</p>
+contain an <code>OBU_SEQUENCE_HEADER</code> OBU before the first frame header, and the
+first frame header in the chunk is expected to have <code>show_existing_frame</code> equal
+to <code>0</code>, <code>frame_type</code> equal to <code>KEY_FRAME</code>, and <code>show_frame</code> equal to <code>1</code>, as
+defined in Section 6.8.2 and Section 7.5 of <a data-link-type="biblio" href="#biblio-av1" title="AV1 Bitstream &amp; Decoding Process Specification">[AV1]</a>.</p>
    <h2 class="heading settled" data-level="5" id="videoencoderencodeoptions-extensions"><span class="secno">5. </span><span class="content">VideoEncoderEncodeOptions extensions</span><a class="self-link" href="#videoencoderencodeoptions-extensions"></a></h2>
 <pre class="def highlight idl"><c- b>partial</c-> <c- b>dictionary</c-> <a class="idl-code" data-link-type="dictionary" href="https://w3c.github.io/webcodecs/#dictdef-videoencoderencodeoptions" id="ref-for-dictdef-videoencoderencodeoptions①"><c- g>VideoEncoderEncodeOptions</c-></a> {
   <a data-link-type="idl-name" href="#dictdef-videoencoderencodeoptionsforav1" id="ref-for-dictdef-videoencoderencodeoptionsforav1"><c- n>VideoEncoderEncodeOptionsForAv1</c-></a> <a class="idl-code" data-link-type="dict-member" data-type="VideoEncoderEncodeOptionsForAv1" href="#dom-videoencoderencodeoptions-av1" id="ref-for-dom-videoencoderencodeoptions-av1"><c- g>av1</c-></a>;
