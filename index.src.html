@@ -342,6 +342,9 @@ Internal Slots {#audiodecoder-internal-slots}
 : <dfn attribute for=AudioDecoder id="dom-audiodecoder-priming-samples-to-discard-slot">[[priming samples to discard]]</dfn>
 :: An integer representing the number of [=priming samples=] remaining to be
     discarded from decoded audio outputs.
+: <dfn attribute for=AudioDecoder>[[reset generation]]</dfn>
+:: An integer tracking the number of times this {{AudioDecoder}} has been
+    reset.
 
 Constructors {#audiodecoder-constructors}
 -----------------------------------------
@@ -363,7 +366,8 @@ Constructors {#audiodecoder-constructors}
 12. Assign a new [=list=] to {{AudioDecoder/[[pending flush promises]]}}.
 13. Assign `false` to {{AudioDecoder/[[dequeue event scheduled]]}}.
 14. Assign `0` to {{AudioDecoder/[[priming samples to discard]]}}.
-15. Return d.
+15. Assign `0` to {{AudioDecoder/[[reset generation]]}}.
+16. Return d.
 
 Attributes {#audiodecoder-attributes}
 -------------------------------------
@@ -456,7 +460,8 @@ Methods {#audiodecoder-methods}
         assign `true` to {{AudioDecoder/[[codec saturated]]}}.
     3. Decrement {{AudioDecoder/[[decodeQueueSize]]}} and run the
         [=AudioDecoder/Schedule Dequeue Event=] algorithm.
-    4. Enqueue the following steps to the {{AudioDecoder/[[codec work queue]]}}:
+    4. Let |resetGeneration| be {{AudioDecoder/[[reset generation]]}}.
+    5. Enqueue the following steps to the {{AudioDecoder/[[codec work queue]]}}:
         1. If |chunk| contains [=priming samples=] information, update
             {{AudioDecoder/[[priming samples to discard]]}} as defined by the
             codec's registration in the [[WEBCODECS-CODEC-REGISTRY]].
@@ -472,8 +477,9 @@ Methods {#audiodecoder-methods}
         5. Let |decoded outputs| be a [=list=] of decoded audio data outputs
             emitted by {{AudioDecoder/[[codec implementation]]}}.
         6. If |decoded outputs| is not empty, [=queue a task=] to run the
-            [=Output AudioData=] algorithm with |decoded outputs|.
-    5. Return `"processed"`.
+            [=Output AudioData=] algorithm with |decoded outputs| and
+            |resetGeneration|.
+    6. Return `"processed"`.
   </dd>
 
   <dt><dfn method for=AudioDecoder>flush()</dfn></dt>
@@ -493,18 +499,21 @@ Methods {#audiodecoder-methods}
 
     [=Running a control message=] to flush the codec means performing these
     steps with |promise|.
-    1. Enqueue the following steps to the {{AudioDecoder/[[codec work queue]]}}:
+    1. Let |resetGeneration| be {{AudioDecoder/[[reset generation]]}}.
+    2. Enqueue the following steps to the {{AudioDecoder/[[codec work queue]]}}:
         1. Signal {{AudioDecoder/[[codec implementation]]}} to emit all
             [=internal pending outputs=].
         2. Let |decoded outputs| be a [=list=] of decoded audio data outputs
             emitted by {{AudioDecoder/[[codec implementation]]}}.
         3. [=Queue a task=] to perform these steps:
             1. If |decoded outputs| is not empty, run the [=Output AudioData=]
-                algorithm with |decoded outputs|.
-            2. Remove |promise| from
+                algorithm with |decoded outputs| and |resetGeneration|.
+            2. If {{AudioDecoder/[[reset generation]]}} is not equal to
+                |resetGeneration|, abort these steps.
+            3. Remove |promise| from
                 {{AudioDecoder/[[pending flush promises]]}}.
-            3. [=Resolve=] |promise|.
-    2. Return `"processed"`.
+            4. [=Resolve=] |promise|.
+    3. Return `"processed"`.
   </dd>
 
   <dt><dfn method for=AudioDecoder>reset()</dfn></dt>
@@ -568,16 +577,18 @@ Algorithms {#audiodecoder-algorithms}
         1. Fire a simple event named {{AudioDecoder/dequeue}} at [=this=].
         2. Assign `false` to {{AudioDecoder/[[dequeue event scheduled]]}}.
   </dd>
-  <dt><dfn>Output AudioData</dfn> (with |outputs|)</dt>
+  <dt><dfn>Output AudioData</dfn> (with |outputs| and |resetGeneration|)</dt>
   <dd>
     Run these steps:
     1. For each |output| in |outputs|:
-        1. Let |discardedFrames| be the lesser of the number of frames of
+        1. If {{AudioDecoder/[[reset generation]]}} is not equal to
+            |resetGeneration|, return.
+        2. Let |discardedFrames| be the lesser of the number of frames of
             |output| and {{AudioDecoder/[[priming samples to discard]]}}.
-        2. Decrement {{AudioDecoder/[[priming samples to discard]]}} by
+        3. Decrement {{AudioDecoder/[[priming samples to discard]]}} by
             |discardedFrames|.
-        3. Remove the first |discardedFrames| frames from |output|.
-        4. If the number of frames of |output| is greater than 0:
+        4. Remove the first |discardedFrames| frames from |output|.
+        5. If the number of frames of |output| is greater than 0:
             1. Let |data| be an {{AudioData}}, initialized as follows:
                 1. Assign `false` to {{platform object/[[Detached]]}}.
                 2. Let |resource| be the [=media resource=] described by |output|.
@@ -606,17 +617,18 @@ Algorithms {#audiodecoder-algorithms}
     Run these steps:
     1. If {{AudioDecoder/[[state]]}} is `"closed"`, throw an {{InvalidStateError}}.
     2. Set {{AudioDecoder/[[state]]}} to `"unconfigured"`.
-    3. Signal {{AudioDecoder/[[codec implementation]]}} to cease producing
+    3. Increment {{AudioDecoder/[[reset generation]]}}.
+    4. Signal {{AudioDecoder/[[codec implementation]]}} to cease producing
         output for the previous configuration.
-    4. Remove all [=control messages=] from the
+    5. Remove all [=control messages=] from the
         {{AudioDecoder/[[control message queue]]}}.
-    5. If {{AudioDecoder/[[decodeQueueSize]]}} is greater than zero:
+    6. If {{AudioDecoder/[[decodeQueueSize]]}} is greater than zero:
         1. Set {{AudioDecoder/[[decodeQueueSize]]}} to zero.
         2. Run the [=AudioDecoder/Schedule Dequeue Event=] algorithm.
-    6. For each |promise| in {{AudioDecoder/[[pending flush promises]]}}:
+    7. For each |promise| in {{AudioDecoder/[[pending flush promises]]}}:
         1. [=Reject=] |promise| with |exception|.
         2. Remove |promise| from {{AudioDecoder/[[pending flush promises]]}}.
-    7. Set {{AudioDecoder/[[priming samples to discard]]}} to `0`.
+    8. Set {{AudioDecoder/[[priming samples to discard]]}} to `0`.
   </dd>
   <dt><dfn>Close AudioDecoder</dfn> (with |exception|)</dt>
   <dd>
@@ -697,6 +709,9 @@ Internal Slots {#videodecoder-internal-slots}
 : <dfn attribute for=VideoDecoder>[[dequeue event scheduled]]</dfn>
 :: A boolean indicating whether a {{VideoDecoder/dequeue}} event is already
     scheduled to fire. Used to avoid event spam.
+: <dfn attribute for=VideoDecoder>[[reset generation]]</dfn>
+:: An integer tracking the number of times this {{VideoDecoder}} has been
+    reset.
 
 
 Constructors {#videodecoder-constructors}
@@ -719,7 +734,8 @@ Constructors {#videodecoder-constructors}
 12. Assign `0` to {{VideoDecoder/[[decodeQueueSize]]}}.
 13. Assign a new [=list=] to {{VideoDecoder/[[pending flush promises]]}}.
 14. Assign `false` to {{VideoDecoder/[[dequeue event scheduled]]}}.
-15. Return d.
+15. Assign `0` to {{VideoDecoder/[[reset generation]]}}.
+16. Return d.
 
 Attributes {#videodecoder-attributes}
 -------------------------------------
@@ -818,7 +834,8 @@ Methods {#videodecoder-methods}
         assign `true` to {{VideoDecoder/[[codec saturated]]}}.
     3. Decrement {{VideoDecoder/[[decodeQueueSize]]}} and run the
         [=VideoDecoder/Schedule Dequeue Event=] algorithm.
-    4. Enqueue the following steps to the {{VideoDecoder/[[codec work queue]]}}:
+    4. Let |resetGeneration| be {{VideoDecoder/[[reset generation]]}}.
+    5. Enqueue the following steps to the {{VideoDecoder/[[codec work queue]]}}:
         1. Attempt to use {{VideoDecoder/[[codec implementation]]}} to decode
             the chunk.
         2. If decoding results in an error, [=queue a task=] to run the
@@ -832,8 +849,9 @@ Methods {#videodecoder-methods}
             emitted by {{VideoDecoder/[[codec implementation]]}} in
             presentation order.
         5. If |decoded outputs| is not empty, [=queue a task=] to run the
-            [=Output VideoFrame=] algorithm with |decoded outputs|.
-    5. Return `"processed"`.
+            [=Output VideoFrame=] algorithm with |decoded outputs| and
+            |resetGeneration|.
+    6. Return `"processed"`.
   </dd>
 
   <dt><dfn method for=VideoDecoder>flush()</dfn></dt>
@@ -853,18 +871,21 @@ Methods {#videodecoder-methods}
 
     [=Running a control message=] to flush the codec means performing these
     steps with |promise|.
-    1. Enqueue the following steps to the {{VideoDecoder/[[codec work queue]]}}:
+    1. Let |resetGeneration| be {{VideoDecoder/[[reset generation]]}}.
+    2. Enqueue the following steps to the {{VideoDecoder/[[codec work queue]]}}:
         1. Signal {{VideoDecoder/[[codec implementation]]}} to emit all
             [=internal pending outputs=].
         2. Let |decoded outputs| be a [=list=] of decoded video data outputs
             emitted by {{VideoDecoder/[[codec implementation]]}}.
         3. [=Queue a task=] to perform these steps:
             1. If |decoded outputs| is not empty, run the [=Output VideoFrame=]
-                algorithm with |decoded outputs|.
-            2. Remove |promise| from
+                algorithm with |decoded outputs| and |resetGeneration|.
+            2. If {{VideoDecoder/[[reset generation]]}} is not equal to
+                |resetGeneration|, abort these steps.
+            3. Remove |promise| from
                 {{VideoDecoder/[[pending flush promises]]}}.
-            3. [=Resolve=] |promise|.
-    2. Return `"processed"`.
+            4. [=Resolve=] |promise|.
+    3. Return `"processed"`.
   </dd>
 
   <dt><dfn method for=VideoDecoder>reset()</dfn></dt>
@@ -928,19 +949,21 @@ Algorithms {#videodecoder-algorithms}
         1. Fire a simple event named {{VideoDecoder/dequeue}} at [=this=].
         2. Assign `false` to {{VideoDecoder/[[dequeue event scheduled]]}}.
   </dd>
-  <dt><dfn>Output VideoFrames</dfn> (with |outputs|)</dt>
+  <dt><dfn>Output VideoFrames</dfn> (with |outputs| and |resetGeneration|)</dt>
   <dd>
     Run these steps:
     1. For each |output| in |outputs|:
-        1. Let |timestamp| and |duration| be the
+        1. If {{VideoDecoder/[[reset generation]]}} is not equal to
+            |resetGeneration|, return.
+        2. Let |timestamp| and |duration| be the
             {{EncodedVideoChunk/timestamp}} and {{EncodedVideoChunk/duration}}
             from the {{EncodedVideoChunk}} associated with |output|.
-        2. Let |displayAspectWidth| and |displayAspectHeight| be undefined.
-        3. If {{VideoDecoderConfig/displayAspectWidth}} and
+        3. Let |displayAspectWidth| and |displayAspectHeight| be undefined.
+        4. If {{VideoDecoderConfig/displayAspectWidth}} and
             {{VideoDecoderConfig/displayAspectHeight}} [=map/exist=] in the
             {{VideoDecoder/[[active decoder config]]}}, assign their values to
             |displayAspectWidth| and |displayAspectHeight| respectively.
-        4. Let |colorSpace| be the {{VideoColorSpace}} for |output| as detected
+        5. Let |colorSpace| be the {{VideoColorSpace}} for |output| as detected
             by the codec implementation. If no {{VideoColorSpace}} is detected,
             let |colorSpace| be `undefined`.
 
@@ -951,33 +974,34 @@ Algorithms {#videodecoder-algorithms}
                 {{VideoColorSpace}} by providing a
                 {{VideoDecoderConfig/colorSpace}} in the {{VideoDecoderConfig}}.
 
-        5. If {{VideoDecoderConfig/colorSpace}} [=map/exists=] in the
+        6. If {{VideoDecoderConfig/colorSpace}} [=map/exists=] in the
             {{VideoDecoder/[[active decoder config]]}}, assign its value to
             |colorSpace|. In that case, User Agents MAY replace `null` members
             of |colorSpace| with the corresponding values detected by the codec
             implementation.
             FIXME: Properly specify the case of `null` members.
-        6. Assign the values of {{VideoDecoderConfig/rotation}} and
+        7. Assign the values of {{VideoDecoderConfig/rotation}} and
             {{VideoDecoderConfig/flip}} to |rotation| and |flip| respectively.
-        7. Let |frame| be the result of running the [=Create a VideoFrame=]
+        8. Let |frame| be the result of running the [=Create a VideoFrame=]
             algorithm with |output|, |timestamp|, |duration|,
             |displayAspectWidth|, |displayAspectHeight|, |colorSpace|,
             |rotation|, and |flip|.
-        8. Invoke {{VideoDecoder/[[output callback]]}} with |frame|.
+        9. Invoke {{VideoDecoder/[[output callback]]}} with |frame|.
   </dd>
   <dt><dfn>Reset VideoDecoder</dfn> (with |exception|)</dt>
   <dd>
     Run these steps:
     1. If {{VideoDecoder/state}} is `"closed"`, throw an {{InvalidStateError}}.
     2. Set {{VideoDecoder/state}} to `"unconfigured"`.
-    3. Signal {{VideoDecoder/[[codec implementation]]}} to cease producing
+    3. Increment {{VideoDecoder/[[reset generation]]}}.
+    4. Signal {{VideoDecoder/[[codec implementation]]}} to cease producing
         output for the previous configuration.
-    4. Remove all [=control messages=] from the
+    5. Remove all [=control messages=] from the
         {{VideoDecoder/[[control message queue]]}}.
-    5. If {{VideoDecoder/[[decodeQueueSize]]}} is greater than zero:
+    6. If {{VideoDecoder/[[decodeQueueSize]]}} is greater than zero:
         1. Set {{VideoDecoder/[[decodeQueueSize]]}} to zero.
         2. Run the [=VideoDecoder/Schedule Dequeue Event=] algorithm.
-    6. For each |promise| in {{VideoDecoder/[[pending flush promises]]}}:
+    7. For each |promise| in {{VideoDecoder/[[pending flush promises]]}}:
         1. [=Reject=] |promise| with |exception|.
         2. Remove |promise| from {{VideoDecoder/[[pending flush promises]]}}.
   </dd>
@@ -1062,6 +1086,9 @@ Internal Slots {#audioencoder-internal-slots}
 : <dfn attribute for=AudioEncoder>[[dequeue event scheduled]]</dfn>
 :: A boolean indicating whether a {{AudioEncoder/dequeue}} event is already
     scheduled to fire. Used to avoid event spam.
+: <dfn attribute for=AudioEncoder>[[reset generation]]</dfn>
+:: An integer tracking the number of times this {{AudioEncoder}} has been
+    reset.
 
 Constructors {#audioencoder-constructors}
 -----------------------------------------
@@ -1083,7 +1110,8 @@ Constructors {#audioencoder-constructors}
 12. Assign `0` to {{AudioEncoder/[[encodeQueueSize]]}}.
 13. Assign a new [=list=] to {{AudioEncoder/[[pending flush promises]]}}.
 14. Assign `false` to {{AudioEncoder/[[dequeue event scheduled]]}}.
-15. Return e.
+15. Assign `0` to {{AudioEncoder/[[reset generation]]}}.
+16. Return e.
 
 Attributes {#audioencoder-attributes}
 -------------------------------------
@@ -1166,7 +1194,8 @@ Methods {#audioencoder-methods}
         assign `true` to {{AudioEncoder/[[codec saturated]]}}.
     3. Decrement {{AudioEncoder/[[encodeQueueSize]]}} and run the
         [=AudioEncoder/Schedule Dequeue Event=] algorithm.
-    4. Enqueue the following steps to the {{AudioEncoder/[[codec work queue]]}}:
+    4. Let |resetGeneration| be {{AudioEncoder/[[reset generation]]}}.
+    5. Enqueue the following steps to the {{AudioEncoder/[[codec work queue]]}}:
         1. Attempt to use {{AudioEncoder/[[codec implementation]]}} to encode
             the [=media resource=] described by |dataClone|.
         2. If encoding results in an error, [=queue a task=] to run the
@@ -1179,8 +1208,9 @@ Methods {#audioencoder-methods}
         4. Let |encoded outputs| be a [=list=] of encoded audio data outputs
             emitted by {{AudioEncoder/[[codec implementation]]}}.
         5. If |encoded outputs| is not empty, [=queue a task=] to run the
-            [=Output EncodedAudioChunks=] algorithm with |encoded outputs|.
-    5. Return `"processed"`.
+            [=Output EncodedAudioChunks=] algorithm with |encoded outputs| and
+            |resetGeneration|.
+    6. Return `"processed"`.
   </dd>
 
   <dt><dfn method for=AudioEncoder>flush()</dfn></dt>
@@ -1199,18 +1229,22 @@ Methods {#audioencoder-methods}
 
     [=Running a control message=] to flush the codec means performing these
     steps with |promise|.
-    1. Enqueue the following steps to the {{AudioEncoder/[[codec work queue]]}}:
+    1. Let |resetGeneration| be {{AudioEncoder/[[reset generation]]}}.
+    2. Enqueue the following steps to the {{AudioEncoder/[[codec work queue]]}}:
         1. Signal {{AudioEncoder/[[codec implementation]]}} to emit all
             [=internal pending outputs=].
         2. Let |encoded outputs| be a [=list=] of encoded audio data outputs
             emitted by {{AudioEncoder/[[codec implementation]]}}.
         3. [=Queue a task=] to perform these steps:
             1. If |encoded outputs| is not empty, run the
-                [=Output EncodedAudioChunks=] algorithm with |encoded outputs|.
-            2. Remove |promise| from
+                [=Output EncodedAudioChunks=] algorithm with |encoded outputs|
+                and |resetGeneration|.
+            2. If {{AudioEncoder/[[reset generation]]}} is not equal to
+                |resetGeneration|, abort these steps.
+            3. Remove |promise| from
                 {{AudioEncoder/[[pending flush promises]]}}.
-            3. [=Resolve=] |promise|.
-    2. Return `"processed"`.
+            4. [=Resolve=] |promise|.
+    3. Return `"processed"`.
   </dd>
 
   <dt><dfn method for=AudioEncoder>reset()</dfn></dt>
@@ -1274,11 +1308,13 @@ Algorithms {#audioencoder-algorithms}
         1. Fire a simple event named {{AudioEncoder/dequeue}} at [=this=].
         2. Assign `false` to {{AudioEncoder/[[dequeue event scheduled]]}}.
   </dd>
-  <dt><dfn>Output EncodedAudioChunks</dfn> (with |outputs|)</dt>
+  <dt><dfn>Output EncodedAudioChunks</dfn> (with |outputs| and |resetGeneration|)</dt>
   <dd>
     Run these steps:
     1. For each |output| in |outputs|:
-        1. Let |chunkInit| be an {{EncodedAudioChunkInit}} with the following
+        1. If {{AudioEncoder/[[reset generation]]}} is not equal to
+            |resetGeneration|, return.
+        2. Let |chunkInit| be an {{EncodedAudioChunkInit}} with the following
             keys:
             1. Let {{EncodedAudioChunkInit/data}} contain the encoded audio data
                 from |output|.
@@ -1290,12 +1326,12 @@ Algorithms {#audioencoder-algorithms}
             4. Let {{EncodedAudioChunkInit/duration}} be the
                 {{AudioData/duration}} from the AudioData associated with
                 |output|.
-        2. Let |chunk| be a new {{EncodedAudioChunk}} constructed with
+        3. Let |chunk| be a new {{EncodedAudioChunk}} constructed with
             |chunkInit|.
-        3. Let |chunkMetadata| be a new {{EncodedAudioChunkMetadata}}.
-        4. Let |encoderConfig| be the
+        4. Let |chunkMetadata| be a new {{EncodedAudioChunkMetadata}}.
+        5. Let |encoderConfig| be the
             {{AudioEncoder/[[active encoder config]]}}.
-        5. Let |outputConfig| be a new {{AudioDecoderConfig}} that describes
+        6. Let |outputConfig| be a new {{AudioDecoderConfig}} that describes
             |output|. Initialize |outputConfig| as follows:
             1. Assign |encoderConfig|.{{AudioEncoderConfig/codec}} to
                 |outputConfig|.{{AudioDecoderConfig/codec}}.
@@ -1314,13 +1350,13 @@ Algorithms {#audioencoder-algorithms}
                     {{AudioDecoderConfig/description}} are described in the
                     [[WEBCODECS-CODEC-REGISTRY]].
 
-        6. If |outputConfig| and {{AudioEncoder/[[active output config]]}} are
+        7. If |outputConfig| and {{AudioEncoder/[[active output config]]}} are
             not [=equal dictionaries=]:
             1. Assign |outputConfig| to
                 |chunkMetadata|.{{EncodedAudioChunkMetadata/decoderConfig}}.
             2. Assign |outputConfig| to
                 {{AudioEncoder/[[active output config]]}}.
-        7. Invoke {{AudioEncoder/[[output callback]]}} with |chunk| and
+        8. Invoke {{AudioEncoder/[[output callback]]}} with |chunk| and
             |chunkMetadata|.
   </dd>
   <dt><dfn>Reset AudioEncoder</dfn> (with |exception|)</dt>
@@ -1328,16 +1364,17 @@ Algorithms {#audioencoder-algorithms}
     Run these steps:
     1. If {{AudioEncoder/[[state]]}} is `"closed"`, throw an {{InvalidStateError}}.
     2. Set {{AudioEncoder/[[state]]}} to `"unconfigured"`.
-    3. Set {{AudioEncoder/[[active encoder config]]}} to `null`.
-    4. Set {{AudioEncoder/[[active output config]]}} to `null`.
-    5. Signal {{AudioEncoder/[[codec implementation]]}} to cease producing
+    3. Increment {{AudioEncoder/[[reset generation]]}}.
+    4. Set {{AudioEncoder/[[active encoder config]]}} to `null`.
+    5. Set {{AudioEncoder/[[active output config]]}} to `null`.
+    6. Signal {{AudioEncoder/[[codec implementation]]}} to cease producing
         output for the previous configuration.
-    6. Remove all [=control messages=] from the
+    7. Remove all [=control messages=] from the
         {{AudioEncoder/[[control message queue]]}}.
-    7. If {{AudioEncoder/[[encodeQueueSize]]}} is greater than zero:
+    8. If {{AudioEncoder/[[encodeQueueSize]]}} is greater than zero:
         1. Set {{AudioEncoder/[[encodeQueueSize]]}} to zero.
         2. Run the [=AudioEncoder/Schedule Dequeue Event=] algorithm.
-    8. For each |promise| in {{AudioEncoder/[[pending flush promises]]}}:
+    9. For each |promise| in {{AudioEncoder/[[pending flush promises]]}}:
         1. [=Reject=] |promise| with |exception|.
         2. Remove |promise| from {{AudioEncoder/[[pending flush promises]]}}.
   </dd>
@@ -1442,6 +1479,9 @@ Internal Slots {#videoencoder-internal-slots}
 :: An integer and boolean pair indicating the {{VideoFrame/[[flip]]}} and
     {{VideoFrame/[[rotation]]}} of the first {{VideoFrame}} given to
     {{VideoEncoder/encode()}} after {{VideoEncoder/configure()}}.
+: <dfn attribute for=VideoEncoder>[[reset generation]]</dfn>
+:: An integer tracking the number of times this {{VideoEncoder}} has been
+    reset.
 
 Constructors {#videoencoder-constructors}
 -----------------------------------------
@@ -1463,7 +1503,8 @@ Constructors {#videoencoder-constructors}
 12. Assign `0` to {{VideoEncoder/[[encodeQueueSize]]}}.
 13. Assign a new [=list=] to {{VideoEncoder/[[pending flush promises]]}}.
 14. Assign `false` to {{VideoEncoder/[[dequeue event scheduled]]}}.
-15. Return e.
+15. Assign `0` to {{VideoEncoder/[[reset generation]]}}.
+16. Return e.
 
 Attributes {#videoencoder-attributes}
 -------------------------------------
@@ -1553,7 +1594,8 @@ Methods {#videoencoder-methods}
         assign `true` to {{VideoEncoder/[[codec saturated]]}}.
     3. Decrement {{VideoEncoder/[[encodeQueueSize]]}} and run the
         [=VideoEncoder/Schedule Dequeue Event=] algorithm.
-    4. Enqueue the following steps to the {{VideoEncoder/[[codec work queue]]}}:
+    4. Let |resetGeneration| be {{VideoEncoder/[[reset generation]]}}.
+    5. Enqueue the following steps to the {{VideoEncoder/[[codec work queue]]}}:
         1. Attempt to use {{VideoEncoder/[[codec implementation]]}} to encode
             the |frameClone| according to |options|.
         2. If encoding results in an error, [=queue a task=] to run the
@@ -1566,8 +1608,9 @@ Methods {#videoencoder-methods}
         4. Let |encoded outputs| be a [=list=] of encoded video data outputs
             emitted by {{VideoEncoder/[[codec implementation]]}}.
         5. If |encoded outputs| is not empty, [=queue a task=] to run the
-            [=Output EncodedVideoChunks=] algorithm with |encoded outputs|.
-    5. Return `"processed"`.
+            [=Output EncodedVideoChunks=] algorithm with |encoded outputs| and
+            |resetGeneration|.
+    6. Return `"processed"`.
   </dd>
 
   <dt><dfn method for=VideoEncoder>flush()</dfn></dt>
@@ -1586,18 +1629,22 @@ Methods {#videoencoder-methods}
 
     [=Running a control message=] to flush the codec means performing these
     steps with |promise|:
-    1. Enqueue the following steps to the {{VideoEncoder/[[codec work queue]]}}:
+    1. Let |resetGeneration| be {{VideoEncoder/[[reset generation]]}}.
+    2. Enqueue the following steps to the {{VideoEncoder/[[codec work queue]]}}:
         1. Signal {{VideoEncoder/[[codec implementation]]}} to emit all
             [=internal pending outputs=].
         2. Let |encoded outputs| be a [=list=] of encoded video data outputs
             emitted by {{VideoEncoder/[[codec implementation]]}}.
         3. [=Queue a task=] to perform these steps:
             1. If |encoded outputs| is not empty, run the
-                [=Output EncodedVideoChunks=] algorithm with |encoded outputs|.
-            2. Remove |promise| from
+                [=Output EncodedVideoChunks=] algorithm with |encoded outputs|
+                and |resetGeneration|.
+            2. If {{VideoEncoder/[[reset generation]]}} is not equal to
+                |resetGeneration|, abort these steps.
+            3. Remove |promise| from
                 {{VideoEncoder/[[pending flush promises]]}}.
-            3. [=Resolve=] |promise|.
-    2. Return `"processed"`.
+            4. [=Resolve=] |promise|.
+    3. Return `"processed"`.
   </dd>
 
   <dt><dfn method for=VideoEncoder>reset()</dfn></dt>
@@ -1661,11 +1708,13 @@ Algorithms {#videoencoder-algorithms}
         1. Fire a simple event named {{VideoEncoder/dequeue}} at [=this=].
         2. Assign `false` to {{VideoEncoder/[[dequeue event scheduled]]}}.
   </dd>
-  <dt><dfn>Output EncodedVideoChunks</dfn> (with |outputs|)</dt>
+  <dt><dfn>Output EncodedVideoChunks</dfn> (with |outputs| and |resetGeneration|)</dt>
   <dd>
     Run these steps:
     1. For each |output| in |outputs|:
-        1. Let |chunkInit| be an {{EncodedVideoChunkInit}} with the following
+        1. If {{VideoEncoder/[[reset generation]]}} is not equal to
+            |resetGeneration|, return.
+        2. Let |chunkInit| be an {{EncodedVideoChunkInit}} with the following
             keys:
             1. Let {{EncodedVideoChunkInit/data}} contain the encoded video data
                 from |output|.
@@ -1677,12 +1726,12 @@ Algorithms {#videoencoder-algorithms}
             4. Let {{EncodedVideoChunkInit/duration}} be the
                 {{VideoFrame/[[duration]]}} from the {{VideoFrame}} associated
                 with |output|.
-        2. Let |chunk| be a new {{EncodedVideoChunk}} constructed with
+        3. Let |chunk| be a new {{EncodedVideoChunk}} constructed with
             |chunkInit|.
-        3. Let |chunkMetadata| be a new {{EncodedVideoChunkMetadata}}.
-        4. Let |encoderConfig| be the
+        4. Let |chunkMetadata| be a new {{EncodedVideoChunkMetadata}}.
+        5. Let |encoderConfig| be the
             {{VideoEncoder/[[active encoder config]]}}.
-        5. Let |outputConfig| be a {{VideoDecoderConfig}} that describes
+        6. Let |outputConfig| be a {{VideoDecoderConfig}} that describes
             |output|. Initialize |outputConfig| as follows:
             1. Assign `encoderConfig.codec` to `outputConfig.codec`.
             2. Assign `encoderConfig.width` to
@@ -1707,13 +1756,13 @@ Algorithms {#videoencoder-algorithms}
                     {{VideoDecoderConfig/description}} are described in the
                     [[WEBCODECS-CODEC-REGISTRY]].
 
-        6. If |outputConfig| and {{VideoEncoder/[[active output config]]}} are
+        7. If |outputConfig| and {{VideoEncoder/[[active output config]]}} are
             not <a>equal dictionaries</a>:
             1. Assign |outputConfig| to
                 |chunkMetadata|.{{EncodedVideoChunkMetadata/decoderConfig}}.
             2. Assign |outputConfig| to
                 {{VideoEncoder/[[active output config]]}}.
-        7. If |encoderConfig|.{{VideoEncoderConfig/scalabilityMode}}
+        8. If |encoderConfig|.{{VideoEncoderConfig/scalabilityMode}}
             describes multiple [=temporal layers=]:
             1. Let |svc| be a new {{SvcOutputMetadata}} instance.
             2. Let |temporal_layer_id| be the zero-based index describing the
@@ -1722,11 +1771,11 @@ Algorithms {#videoencoder-algorithms}
                 |svc|.{{SvcOutputMetadata/temporalLayerId}}.
             4. Assign |svc| to
                 |chunkMetadata|.{{EncodedVideoChunkMetadata/svc}}.
-        8. If |encoderConfig|.{{VideoEncoderConfig/alpha}} is set to `"keep"`:
+        9. If |encoderConfig|.{{VideoEncoderConfig/alpha}} is set to `"keep"`:
             1. Let |alphaSideData| be the encoded alpha data in |output|.
             2. Assign |alphaSideData| to
                 |chunkMetadata|.{{EncodedVideoChunkMetadata/alphaSideData}}.
-        9. Invoke {{VideoEncoder/[[output callback]]}} with |chunk| and
+        10. Invoke {{VideoEncoder/[[output callback]]}} with |chunk| and
             |chunkMetadata|.
   </dd>
   <dt><dfn>Reset VideoEncoder</dfn> (with |exception|)</dt>
@@ -1734,16 +1783,17 @@ Algorithms {#videoencoder-algorithms}
     Run these steps:
     1. If {{VideoEncoder/[[state]]}} is `"closed"`, throw an {{InvalidStateError}}.
     2. Set {{VideoEncoder/[[state]]}} to `"unconfigured"`.
-    3. Set {{VideoEncoder/[[active encoder config]]}} to `null`.
-    4. Set {{VideoEncoder/[[active output config]]}} to `null`.
-    5. Signal {{VideoEncoder/[[codec implementation]]}} to cease producing
+    3. Increment {{VideoEncoder/[[reset generation]]}}.
+    4. Set {{VideoEncoder/[[active encoder config]]}} to `null`.
+    5. Set {{VideoEncoder/[[active output config]]}} to `null`.
+    6. Signal {{VideoEncoder/[[codec implementation]]}} to cease producing
         output for the previous configuration.
-    6. Remove all [=control messages=] from the
+    7. Remove all [=control messages=] from the
         {{VideoEncoder/[[control message queue]]}}.
-    7. If {{VideoEncoder/[[encodeQueueSize]]}} is greater than zero:
+    8. If {{VideoEncoder/[[encodeQueueSize]]}} is greater than zero:
         1. Set {{VideoEncoder/[[encodeQueueSize]]}} to zero.
         2. Run the [=VideoEncoder/Schedule Dequeue Event=] algorithm.
-    8. For each |promise| in {{VideoEncoder/[[pending flush promises]]}}:
+    9. For each |promise| in {{VideoEncoder/[[pending flush promises]]}}:
         1. [=Reject=] |promise| with |exception|.
         2. Remove |promise| from {{VideoEncoder/[[pending flush promises]]}}.
   </dd>
