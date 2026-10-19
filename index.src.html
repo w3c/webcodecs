@@ -194,6 +194,29 @@ Definitions {#definitions}
     will become unsaturated after making sufficient progress on the current
     workload.
 
+: <dfn>Presentation Timestamp</dfn>
+:: An integer value, in microseconds, indicating when a {{VideoFrame}},
+    {{AudioData}}, {{EncodedVideoChunk}}, or {{EncodedAudioChunk}} is expected
+    to be presented (rendered) relative to other frames or chunks in the same
+    media sequence.
+
+    The origin (zero point) of the timestamp is defined by the media itself and
+    does not necessarily correspond to wall-clock time, nor is it guaranteed to
+    be shared across different media sources or tracks.
+
+    <div class='note'>
+      NOTE: Because the origin is determined by the producer:
+      * For pre-recorded or animated media, it typically represents time elapsed
+          from the start of the clip or presentation.
+      * For live capture sources, it typically reflects the capture time
+          relative to a monotonic clock, so that preserving relative timestamp
+          deltas during playback reproduces the original capture timing.
+      * Within WebCodecs, decoders and encoders preserve presentation timestamps
+          between encoded chunks and decoded frames or audio data, and encoders
+          can use the relative timing between timestamps to guide rate control.
+
+    </div>
+
 <dfn>Codec Processing Model</dfn> {#codec-processing-model-section}
 ===================================================================
 
@@ -2617,7 +2640,7 @@ enum EncodedAudioChunkType {
 : <dfn attribute for=EncodedAudioChunk>\[[type]]</dfn>
 :: Describes whether the chunk is a [=key chunk=].
 : <dfn attribute for=EncodedAudioChunk>\[[timestamp]]</dfn>
-:: The presentation timestamp, given in microseconds.
+:: The [=presentation timestamp=], given in microseconds.
 : <dfn attribute for=EncodedAudioChunk>\[[duration]]</dfn>
 :: The presentation duration, given in microseconds.
 : <dfn attribute for=EncodedAudioChunk>[[byte length]]</dfn>
@@ -2723,7 +2746,7 @@ enum EncodedVideoChunkType {
 : <dfn attribute for=EncodedVideoChunk>\[[type]]</dfn>
 :: The {{EncodedVideoChunkType}} of this {{EncodedVideoChunk}};
 : <dfn attribute for=EncodedVideoChunk>\[[timestamp]]</dfn>
-:: The presentation timestamp, given in microseconds.
+:: The [=presentation timestamp=], given in microseconds.
 : <dfn attribute for=EncodedVideoChunk>\[[duration]]</dfn>
 :: The presentation duration, given in microseconds.
 : <dfn attribute for=EncodedVideoChunk>[[byte length]]</dfn>
@@ -2917,7 +2940,7 @@ dictionary AudioDataInit {
 :: The number of audio channels for this {{AudioData}}.
 
 : <dfn attribute for=AudioData>\[[timestamp]]</dfn>
-:: The presentation timestamp, in microseconds, for this {{AudioData}}.
+:: The [=presentation timestamp=], in microseconds, for this {{AudioData}}.
 
 ### Constructors ###{#audiodata-constructors}
 <dfn constructor for=AudioData title="AudioData(init)">
@@ -2985,7 +3008,7 @@ dictionary AudioDataInit {
     {{AudioData/[[number of channels]]}}.
 
 : <dfn attribute for=AudioData>timestamp</dfn>
-:: The presentation timestamp, in microseconds, for this {{AudioData}}.
+:: The [=presentation timestamp=], in microseconds, for this {{AudioData}}.
 
     The {{AudioData/numberOfChannels}} getter steps are to return
     {{AudioData/[[timestamp]]}}.
@@ -3528,12 +3551,10 @@ dictionary VideoFrameMetadata {
     adjustments.
 
 : <dfn attribute for=VideoFrame>\[[duration]]</dfn>
-:: The presentation duration, given in microseconds. The duration is copied
-        from the {{EncodedVideoChunk}} corresponding to this {{VideoFrame}}.
+:: The presentation duration, given in microseconds.
 
 : <dfn attribute for=VideoFrame>\[[timestamp]]</dfn>
-::  The presentation timestamp, given in microseconds. The timestamp is copied
-    from the {{EncodedVideoChunk}} corresponding to this {{VideoFrame}}.
+:: The [=presentation timestamp=], given in microseconds.
 
 : <dfn attribute for=VideoFrame>[[color space]]</dfn>
 :: The {{VideoColorSpace}} associated with this frame.
@@ -3820,17 +3841,13 @@ dictionary VideoFrameMetadata {
     {{VideoFrame/[[display height]]}}.
 
 : <dfn attribute for=VideoFrame>timestamp</dfn>
-:: The presentation timestamp, given in microseconds. For decode,
-    timestamp is copied from the {{EncodedVideoChunk}} corresponding
-    to this {{VideoFrame}}. For encode, timestamp is copied to the
-    {{EncodedVideoChunk}}s corresponding to this {{VideoFrame}}.
+:: The [=presentation timestamp=], given in microseconds.
 
     The {{VideoFrame/timestamp}} getter steps are to return
     {{VideoFrame/[[timestamp]]}}.
 
 : <dfn attribute for=VideoFrame>duration</dfn>
-:: The presentation duration, given in microseconds. The duration is copied
-    from the {{EncodedVideoChunk}} corresponding to this VideoFrame.
+:: The presentation duration, given in microseconds.
 
     The {{VideoFrame/duration}} getter steps are to return
     {{VideoFrame/[[duration]]}}.
@@ -5810,7 +5827,7 @@ interface ImageDecoder {
         2. Let |duration| be the presentation duration for |output| as
             described by |encodedFrame|. If |encodedFrame| does not have a
             duration, assign `null` to |duration|.
-        3. Let |timestamp| be the presentation timestamp for |output| as
+        3. Let |timestamp| be the [=presentation timestamp=] for |output| as
             described by |encodedFrame|. If |encodedFrame| does not have a
             timestamp:
                 1. If |encodedFrame| is a still image assign `0` to |timestamp|.
@@ -5879,7 +5896,7 @@ interface ImageDecoder {
     15. Let |duration| be the presentation duration for |output| as
         described by |encodedFrame|. If |encodedFrame| does not describe a
         duration, assign `null` to |duration|.
-    16. Let |timestamp| be the presentation timestamp for |output| as
+    16. Let |timestamp| be the [=presentation timestamp=] for |output| as
         described by |encodedFrame|. If |encodedFrame| does not have a
         timestamp:
             1. If |encodedFrame| is a still image assign `0` to |timestamp|.
