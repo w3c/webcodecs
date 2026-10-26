@@ -1857,6 +1857,12 @@ Run these steps:
 
 5. Otherwise, return false.
 
+NOTE: To reduce fingerprinting entropy, User Agents can limit the configurations
+    they provide to a common baseline subset (including codec-specific
+    extensions in [[WEBCODECS-CODEC-REGISTRY]]). Because both
+    `isConfigSupported()` and `configure()` invoke this algorithm, both reflect
+    the same supported set. See [[#privacy-capability-fingerprinting]].
+
 <dfn>Clone Configuration</dfn> (with |config|) {#clone-config}
 --------------------------------------------------------------
 
@@ -6333,46 +6339,152 @@ Privacy Considerations{#privacy-considerations}
 <div class=non-normative>
 This section is non-normative.
 
-The primary privacy impact is an increased ability to fingerprint users by
-querying for different codec capabilities to establish a codec feature profile.
-Much of this profile is already exposed by existing APIs. Such profiles are very
-unlikely to be uniquely identifying, but can be used with other metrics to
-create a fingerprint.
+The primary privacy impact of WebCodecs is an increased surface for
+fingerprinting a user's device and observing hardware characteristics through
+three main vectors: probing supported codec configurations, inspecting encoded
+or decoded output bytes, and measuring codec timing or resource limits. While
+similar signals are partially exposed by higher-level media APIs, WebCodecs
+provides more direct, lower-level access that makes collecting these signals
+easier.
+</div>
 
-An attacker can accumulate a codec feature profile by calling
-`IsConfigSupported()` methods with a number of different configuration
-dictionaries. Similarly, an attacker can attempt to `configure()` a codec with
-different configuration dictionaries and observe which configurations are
-accepted.
+Codec Capability Fingerprinting{#privacy-capability-fingerprinting}
+-------------------------------------------------------------------
 
-Attackers can also use existing APIs to establish much of the codec feature
-profile. For example, the [[media-capabilities]] {{decodingInfo()}} API
-describes what types of decoders are supported and its {{powerEfficient}}
-attribute can signal when a decoder uses hardware acceleration. Similarly, the
-[[WebRTC]] {{RTCRtpSender/getCapabilities()}} API can be used to determine what
-types of encoders are supported and the {{RTCPeerConnection/getStats()}} API can
-be used to determine when an encoder uses hardware acceleration. WebCodecs will
-expose some additional information in the form of low level codec features.
+<div class=non-normative>
+A site can accumulate a codec feature profile by calling
+{{AudioDecoder/isConfigSupported()|AudioDecoder.isConfigSupported()}},
+{{VideoDecoder/isConfigSupported()|VideoDecoder.isConfigSupported()}},
+{{AudioEncoder/isConfigSupported()|AudioEncoder.isConfigSupported()}}, or
+{{VideoEncoder/isConfigSupported()|VideoEncoder.isConfigSupported()}} with
+various configuration dictionaries (including codec-specific dictionary
+extensions defined in specifications listed in the [[WEBCODECS-CODEC-REGISTRY]]),
+or by calling {{ImageDecoder/isTypeSupported()|ImageDecoder.isTypeSupported()}}
+with various MIME type strings. Similarly, a site can pass different
+configuration dictionaries to `configure()` or different MIME type strings to
+the {{ImageDecoder}} constructor and observe whether the codec asynchronously
+fails with {{NotSupportedError}} (via the error callback or rejected
+{{ImageTrackList/ready|tracks.ready}} and
+{{ImageDecoder/decode()|ImageDecoder.decode()}} promises).
 
-A codec feature profile alone is unlikely to be uniquely identifying. Underlying
-codecs are often implemented entirely in software (be it part of the User Agent
-binary or part of the operating system), such that all users who run that
-software will have a common set of capabilities. Additionally, underlying codecs
-are often implemented with hardware acceleration, but such hardware is mass
-produced and devices of a particular class and manufacture date (e.g. flagship
-phones manufactured in 2020) will often have common capabilities. There will be
-outliers (some users can be running outdated versions of software codecs or use
-a rare mix of custom assembled hardware), but most of the time a given codec
-feature profile is shared by a large group of users.
+Existing APIs already expose portions of a device's codec feature profile. For
+example, the [[media-capabilities]] {{decodingInfo()}} API describes supported
+decoder configurations and its {{powerEfficient}} attribute can indicate
+hardware acceleration, while the [[WebRTC]] {{RTCRtpSender/getCapabilities()}}
+API reveals supported codec profiles. Although {{RTCPeerConnection/getStats()}}
+can also expose encoder and decoder implementation details and power efficiency,
+[[WEBRTC-STATS]] only allows exposing hardware-identifying statistics in
+capturing contexts (when media capture is active), whereas WebCodecs is
+available without media capture or user permission. As other specifications
+restrict passive hardware exposure, this overlap is shrinking, and WebCodecs
+additionally exposes finer-grained low-level codec parameters.
 
-Segmenting groups of users by codec feature profile still amounts to a bit of
-entropy that can be combined with other metrics to uniquely identify a user.
-User Agents <em class="rfc2119">MAY</em> partially mitigate this by returning an
-error whenever a site attempts to exhaustively probe for codec capabilities.
-Additionally, User Agents <em class="rfc2119">MAY</em> implement a "privacy
-budget", which depletes as authors use WebCodecs and other identifying APIs.
-Upon exhaustion of the privacy budget, codec capabilities could be reduced to a
-common baseline or prompt for user approval.
+Whether a codec feature profile helps distinguish a device depends on how the
+underlying codecs are provided. Codecs bundled directly with the User Agent
+binary generally expose uniform capabilities across users of the same User Agent
+version and CPU architecture, whereas codecs provided by the operating system or
+backed by dedicated hardware vary across operating system versions, GPU models,
+and driver versions. Although mass-produced device classes (e.g. phones or
+laptops of the same model generation) often share identical profiles, devices
+with uncommon hardware combinations, driver versions, or operating system
+configurations stand out as outliers. Even when shared by a group of users, a
+codec feature profile contributes entropy that can be combined with other
+signals to fingerprint a user.
+
+As specified in [[#hardware-acceleration]], {{HardwareAcceleration}} values are
+hints that User Agents can ignore for reasons of user privacy, and acceptance or
+rejection of a {{HardwareAcceleration}} preference is constrained so that it
+reveals no additional information beyond what is already exposed by
+[[media-capabilities]] (or is expected to be ignored when [[media-capabilities]]
+is omitted to prevent fingerprinting).
+
+User Agents can further mitigate capability fingerprinting by exposing only a
+common baseline subset of supported capabilities across devices, similar to
+[[media-capabilities]], or by throttling or reporting configurations as
+unsupported when a site attempts to exhaustively probe configurations. Baseline
+restrictions apply equally to core configuration members and to codec-specific
+extensions defined in the [[WEBCODECS-CODEC-REGISTRY]], and need to be applied
+consistently across `isConfigSupported()` and `configure()` so that
+`configure()` cannot be used as a fallback probing oracle.
+</div>
+
+Codec Output Fingerprinting{#privacy-output-fingerprinting}
+-----------------------------------------------------------
+
+<div class=non-normative>
+Processing identical inputs on different devices, even with the same User Agent
+version, can produce different output bytes:
+
+* For encoding, compressed bitstreams vary across hardware encoders, GPU
+    drivers, operating system media frameworks, software encoder rate-control
+    and motion-estimation heuristics, and CPU-architecture-specific
+    optimizations.
+* For decoding, conforming decoders for modern video codecs (such as AVC, HEVC,
+    VP8, VP9, and AV1) produce bit-exact reconstructed YUV samples in their
+    native format, so video decode differences arise primarily from output frame
+    format and alignment metadata (e.g. {{VideoFrame/format|VideoFrame.format}},
+    {{VideoFrame/codedWidth|VideoFrame.codedWidth}},
+    {{VideoFrame/codedHeight|VideoFrame.codedHeight}}, and
+    {{VideoFrame/colorSpace|VideoFrame.colorSpace}}) and from post-decode pixel
+    format or color space conversions (such as during
+    {{VideoFrame/copyTo()|VideoFrame.copyTo()}}). Decode outputs can also differ
+    directly when using codecs whose specifications do not mandate
+    bit-exactness, such as floating-point audio decoders (e.g. MP3, AAC, Vorbis,
+    and Opus) or image decoders in {{ImageDecoder}} (e.g. JPEG inverse DCT
+    implementations, scaling via {{ImageDecoderInit/desiredWidth}} and
+    {{ImageDecoderInit/desiredHeight}}, and platform color management).
+
+While output differences are also observable via [[WebRTC]] loopback or
+[[MEDIASTREAM-RECORDING]] combined with canvas readback, WebCodecs provides
+direct byte-level access to encoded bitstreams
+({{EncodedAudioChunk/copyTo()|EncodedAudioChunk.copyTo()}},
+{{EncodedVideoChunk/copyTo()|EncodedVideoChunk.copyTo()}}) and decoded media
+data ({{AudioData/copyTo()|AudioData.copyTo()}},
+{{VideoFrame/copyTo()|VideoFrame.copyTo()}}), making active fingerprinting via
+output checksums simpler to perform.
+
+Unlike raw capture or canvas rendering APIs where subtle noise injection is
+sometimes applied to perturb output checksums, perturbing encoder inputs or
+decoder outputs is poorly suited to WebCodecs: high-frequency input noise
+degrades compression efficiency and visual quality without masking structural
+bitstream differences (such as header parameters, coding structure, and packet
+sizes) that still identify the underlying encoder, while perturbing decoded
+samples breaks lossless codecs and multi-stage media processing workflows. In
+heightened privacy modes, User Agents can reduce hardware- and driver-specific
+output variation by ignoring {{HardwareAcceleration}} preferences and using a
+bundled software codec implementation where available (cross-architecture
+differences can remain if the software implementation is not bit-exact across
+CPU architectures).
+</div>
+
+Timing and Resource Side-Channels{#privacy-timing-side-channels}
+----------------------------------------------------------------
+
+<div class=non-normative>
+Measuring the latency and throughput of `encode()`, `decode()`, and `flush()`
+operations (particularly in combination with {{HardwareAcceleration}}
+preferences) allows a site to profile the performance characteristics of the
+user's CPU and GPU hardware. Although timing measurements are already possible
+through {{MediaSource}}, [[MEDIASTREAM-RECORDING]], and [[WebRTC]], frame-level
+submission and output callbacks in WebCodecs make fine-grained timing
+observation more direct.
+
+Additionally, observing dynamic resource limits can leak information about the
+underlying hardware or concurrent activity on the user's device. For example,
+retaining {{VideoFrame}} instances until decoding stalls can reveal hardware or
+driver buffer pool sizes. Similarly, concurrent media usage in other
+applications or tabs (such as an active video call) can be inferred if hardware
+codec instances are exhausted during new configuration attempts, or by
+[=inactive=] or [=background=] codecs observing [=reclaim a codec|codec
+reclamation=] ({{QuotaExceededError}}, see [[#resource-reclamation]]).
+
+User Agents can mitigate timing and resource side-channels by ignoring
+{{HardwareAcceleration}} preferences, silently falling back to software codecs
+where available when hardware codec instances are exhausted, coarsening
+completion timing to limit fine-grained per-frame latency side-channels, pacing
+or throttling excessive or background codec operations to limit aggregate
+throughput profiling and background monitoring, and normalizing or virtualizing
+buffer pool limits across devices.
 </div>
 
 Best Practices for Authors Using WebCodecs{#best-practices-developers}
