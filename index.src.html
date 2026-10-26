@@ -52,6 +52,7 @@ spec: html; urlPrefix: https://html.spec.whatwg.org/multipage/;
     for: media;
         type: dfn; text: current playback position; url: media.html#current-playback-position
     type: dfn; text: live; url: infrastructure.html#live
+    type: dfn; text: premultiplied alpha; url: canvas.html#premultiplied-alpha-and-the-2d-rendering-context
 
 spec: webrtc-svc; urlPrefix: https://www.w3.org/TR/webrtc-svc/
     type: dfn; text: scalability mode identifier; url:#scalabilitymodes*
@@ -1578,7 +1579,20 @@ Methods {#videoencoder-methods}
         [=VideoEncoder/Schedule Dequeue Event=] algorithm.
     4. Enqueue the following steps to the {{VideoEncoder/[[codec work queue]]}}:
         1. Attempt to use {{VideoEncoder/[[codec implementation]]}} to encode
-            the |frameClone| according to |options|.
+            the |frameClone| according to |options|:
+            * If the [=media resource=] referenced by |frameClone|'s
+                {{VideoFrame/[[resource reference]]}} stores premultiplied color
+                components, its color components
+                <em class="rfc2119">MUST</em> be converted to [=unpremultiplied=]
+                form using the [=media resource=]'s alpha samples prior to
+                encoding (even if
+                |frameClone|'s {{VideoFrame/[[has alpha]]}} is `false` or
+                {{VideoEncoder/[[active encoder config]]}}'s
+                {{VideoEncoderConfig/alpha}} is {{AlphaOption/discard}}).
+            * If |frameClone|'s {{VideoFrame/[[has alpha]]}} is `false`, any
+                alpha component in the [=media resource=]
+                <em class="rfc2119">MUST</em> be ignored (treating |frameClone|
+                as fully opaque).
         2. If encoding results in an error, [=queue a task=] to run the
             [=Close VideoEncoder=] algorithm with {{EncodingError}} and return.
         3. If {{VideoEncoder/[[codec saturated]]}} equals `true` and
@@ -2315,7 +2329,7 @@ To check if a {{VideoEncoderConfig}} is a <dfn>valid VideoEncoderConfig</dfn>,
     class="rfc2119">SHOULD</em> be kept or discarded prior to encoding. If
     {{VideoEncoderConfig/alpha}} is equal to {{AlphaOption/discard}}, alpha data
     is always discarded, regardless of a {{VideoFrame}}'s
-    {{VideoFrame/[[format]]}}.
+    {{VideoFrame/[[format]]}} or {{VideoFrame/[[has alpha]]}}.
   </dd>
 
   <dt><dfn dict-member for=VideoEncoderConfig>scalabilityMode</dfn></dt>
@@ -2478,7 +2492,9 @@ with alpha channels, for a variety of different operations.
   <dt><dfn enum-value for=AlphaOption>discard</dfn></dt>
   <dd>
     Indicates that the user agent <em class="rfc2119">SHOULD</em> ignore or
-    remove {{VideoFrame}}'s alpha channel data.
+    remove {{VideoFrame}}'s alpha channel data. Discarding alpha does not change
+    a {{VideoFrame}}'s color components: they remain the [=unpremultiplied=]
+    values the frame would have if its alpha channel were preserved.
   </dd>
 </dl>
 
@@ -3512,6 +3528,10 @@ dictionary VideoFrameMetadata {
     Will be `null` whenever the underlying format does not map to a
     {{VideoPixelFormat}} or when {{platform object/[[Detached]]}} is `true`.
 
+: <dfn attribute for=VideoFrame>[[has alpha]]</dfn>
+:: A boolean indicating whether the {{VideoFrame}} includes an alpha
+    component.
+
 : <dfn attribute for=VideoFrame>[[coded width]]</dfn>
 :: Width of the {{VideoFrame}} in pixels, potentially including non-visible
     padding, and prior to considering potential ratio adjustments.
@@ -3674,9 +3694,10 @@ dictionary VideoFrameMetadata {
 14. If |init|.{{VideoFrameBufferInit/transfer}} contains an {{ArrayBuffer}}
     referenced by |data| the User Agent <em class="rfc2119">MAY</em> choose to:
     1. Let |resource| be a new [=media resource=] referencing pixel data in
-        |data|.
+        |data|, interpreted according to |init|.{{VideoFrameBufferInit/format}}.
 15. Otherwise:
-    1. Let |resource| be a new [=media resource=] containing a copy of |data|.
+    1. Let |resource| be a new [=media resource=] containing a copy of |data|,
+        interpreted according to |init|.{{VideoFrameBufferInit/format}}.
         Use {{VideoFrameBufferInit/visibleRect}} and {{VideoFrameBufferInit/layout}}
         to determine where in |data| the pixels for each plane reside.
 
@@ -3751,10 +3772,13 @@ dictionary VideoFrameMetadata {
         value to |colorSpace|.
     11. Assign |init|'s {{VideoFrameBufferInit/format}} to
         {{VideoFrame/[[format]]}}.
-    12. Assign the result of running the [=VideoFrame/Pick Color Space=]
+    12. If |init|'s {{VideoFrameBufferInit/format}} has an alpha component,
+        assign `true` to {{VideoFrame/[[has alpha]]}}; otherwise, assign `false`
+        to {{VideoFrame/[[has alpha]]}}.
+    13. Assign the result of running the [=VideoFrame/Pick Color Space=]
         algorithm, with |colorSpace| and {{VideoFrame/[[format]]}}, to
         {{VideoFrame/[[color space]]}}.
-    13. Assign the result of calling [=Copy VideoFrame metadata=]
+    14. Assign the result of calling [=Copy VideoFrame metadata=]
         with |init|'s {{VideoFrameBufferInit/metadata}} to
         |frame|.{{VideoFrame/[[metadata]]}}.
 22. Return |frame|.
@@ -3955,7 +3979,12 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
                 [=computed plane layout/sourceHeight=]:
                 1. Copy |rowBytes| bytes from |resource| starting at
                     |sourceOffset| to |destination| starting at
-                    |destinationOffset|.
+                    |destinationOffset|. If |resource| stores premultiplied
+                    color components, the color components written to
+                    |destination| <em class="rfc2119">MUST</em> instead be the
+                    [=unpremultiplied=] form of the corresponding samples in
+                    |resource|, computed using |resource|'s alpha samples (even
+                    when [=this=]'s {{VideoFrame/[[has alpha]]}} is `false`).
                 2. Increment |sourceOffset| by |sourceStride|.
                 3. Increment |destinationOffset| by |computedLayout|'s
                     [=computed plane layout/destinationStride=].
@@ -3997,31 +4026,36 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
         2. Let |resource| be the [=media resource=] described by |output|.
         3. Let |resourceReference| be a reference to |resource|.
         4. Assign |resourceReference| to {{VideoFrame/[[resource reference]]}}.
-        5. If |output| uses a recognized {{VideoPixelFormat}}, assign that format to
+        5. If |output| uses a recognized {{VideoPixelFormat}} (regardless of
+            whether Red, Green, and Blue components in |resource| are
+            premultiplied by alpha), assign that format to
             {{VideoFrame/[[format]]}}. Otherwise, assign `null` to
             {{VideoFrame/[[format]]}}.
-        6. Let |codedWidth| and |codedHeight| be the coded width and height of the
-            |output| in pixels.
+        6. If |resource| has an alpha component, assign `true` to
+            {{VideoFrame/[[has alpha]]}}; otherwise, assign `false` to
+            {{VideoFrame/[[has alpha]]}}.
+        7. Let |codedWidth| and |codedHeight| be the coded width and height of
+            the |output| in pixels.
         8. Let |visibleLeft|, |visibleTop|, |visibleWidth|, and |visibleHeight| be
             the left, top, width and height for the visible rectangle of |output|.
-        7. Let |displayWidth| and |displayHeight| be the display size of
+        9. Let |displayWidth| and |displayHeight| be the display size of
             |output| in pixels.
-        8. If |displayAspectWidth| and |displayAspectHeight| are provided,
+        10. If |displayAspectWidth| and |displayAspectHeight| are provided,
             increase |displayWidth| or |displayHeight| until the ratio of
             |displayWidth| to |displayHeight| matches the ratio of
             |displayAspectWidth| to |displayAspectHeight|.
-        9. Assign |codedWidth|, |codedHeight|, |visibleLeft|, |visibleTop|,
+        11. Assign |codedWidth|, |codedHeight|, |visibleLeft|, |visibleTop|,
             |visibleWidth|, |visibleHeight|, |displayWidth|, and
             |displayHeight| to {{VideoFrame/[[coded width]]}},
             {{VideoFrame/[[coded height]]}}, {{VideoFrame/[[visible left]]}},
             {{VideoFrame/[[visible top]]}}, {{VideoFrame/[[visible width]]}},
             and {{VideoFrame/[[visible height]]}} respectively.
-        10. Assign |duration| and |timestamp| to {{VideoFrame/[[duration]]}} and
+        12. Assign |duration| and |timestamp| to {{VideoFrame/[[duration]]}} and
             {{VideoFrame/[[timestamp]]}} respectively.
-        11. Assign {{VideoFrame/[[color space]]}} with the result of running the
+        13. Assign {{VideoFrame/[[color space]]}} with the result of running the
             [=VideoFrame/Pick Color Space=] algorithm, with |colorSpace| and
             {{VideoFrame/[[format]]}}.
-        12. Assign {{VideoFrame/rotation}} and {{VideoFrame/flip}} to |rotation|
+        14. Assign {{VideoFrame/rotation}} and {{VideoFrame/flip}} to |rotation|
             and |flip| respectively.
     2. Return |frame|.
 
@@ -4084,9 +4118,9 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
 : <dfn for=VideoFrame>Initialize Frame From Other Frame</dfn> (with |init|,
     |frame|, and |otherFrame|)
 :: 1. Let |format| be |otherFrame|.{{VideoFrame/format}}.
-    2. If |init|.{{VideoFrameInit/alpha}} is {{AlphaOption/discard}},
-        assign |otherFrame|.{{VideoFrame/format}}'s [=equivalent opaque format=]
-        |format|.
+    2. If |init|.{{VideoFrameInit/alpha}} is {{AlphaOption/discard}} and
+        |format| is not `null`, assign |format|'s [=equivalent opaque format=]
+        to |format|.
     3. Let |validInit| be the result of running the [=Validate VideoFrameInit=]
         algorithm with |format| and |otherFrame|'s
         {{VideoFrame/[[coded width]]}} and {{VideoFrame/[[coded height]]}}.
@@ -4117,38 +4151,48 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
         |otherFrame|'s {{VideoFrame/timestamp}} to
         |frame|'s {{VideoFrame/[[timestamp]]}}.
     14. Assign |format| to |frame|.{{VideoFrame/[[format]]}}.
-    15. Assign the result of calling [=Copy VideoFrame metadata=]
+    15. If |otherFrame|'s {{VideoFrame/[[has alpha]]}} is `true` and
+        |init|.{{VideoFrameInit/alpha}} is {{AlphaOption/keep}}, assign `true`
+        to |frame|'s {{VideoFrame/[[has alpha]]}}; otherwise, assign `false` to
+        |frame|'s {{VideoFrame/[[has alpha]]}}.
+    16. Assign the result of calling [=Copy VideoFrame metadata=]
         with |init|'s {{VideoFrameInit/metadata}} to |frame|.{{VideoFrame/[[metadata]]}}.
 
 : <dfn for=VideoFrame>Initialize Frame With Resource</dfn> (with
     |init|,  |frame|, |resource|, |codedWidth|, |codedHeight|, |baseRotation|,
     |baseFlip|, |defaultDisplayWidth|, and |defaultDisplayHeight|)
 :: 1. Let |format| be `null`.
-    2. If |resource| uses a recognized {{VideoPixelFormat}}, assign the
-        {{VideoPixelFormat}} of |resource| to |format|.
+    2. If |resource| uses a recognized {{VideoPixelFormat}} (regardless of
+        whether Red, Green, and Blue components in |resource| are premultiplied
+        by alpha), assign the {{VideoPixelFormat}} of |resource| to |format|.
     3. Let |validInit| be the result of running the [=Validate VideoFrameInit=]
         algorithm with |format|, |width| and |height|.
     4. If |validInit| is `false`, throw a  {{TypeError}}.
     5. Assign a new reference for |resource| to |frame|'s
         {{VideoFrame/[[resource reference]]}}.
-    6. If |init|.{{VideoFrameInit/alpha}} is {{AlphaOption/discard}}, assign
-        |format|'s [=equivalent opaque format=] to |format|.
+    6. If |init|.{{VideoFrameInit/alpha}} is {{AlphaOption/discard}} and
+        |format| is not `null`, assign |format|'s [=equivalent opaque format=]
+        to |format|.
     7. Assign |format| to {{VideoFrame/[[format]]}}
-    8. Assign |codedWidth| and |codedHeight| to |frame|'s
+    8. If |resource| has an alpha component and
+        |init|.{{VideoFrameInit/alpha}} is {{AlphaOption/keep}}, assign `true`
+        to |frame|'s {{VideoFrame/[[has alpha]]}}; otherwise, assign `false` to
+        |frame|'s {{VideoFrame/[[has alpha]]}}.
+    9. Assign |codedWidth| and |codedHeight| to |frame|'s
         {{VideoFrame/[[coded width]]}} and {{VideoFrame/[[coded height]]}}
         respectively.
-    9. Let |defaultVisibleRect| be a new {{DOMRect}} constructed with
+    10. Let |defaultVisibleRect| be a new {{DOMRect}} constructed with
         «[ "x:" → `0`, "y" → `0`, "width" → |codedWidth|, "height" → |codedHeight| ]»
-    10. Run the [=VideoFrame/Initialize Visible Rect, Orientation, and Display Size=]
+    11. Run the [=VideoFrame/Initialize Visible Rect, Orientation, and Display Size=]
         algorithm with |init|, |frame|, |defaultVisibleRect|,
         |defaultDisplayWidth|, and |defaultDisplayHeight|.
-    11. Assign `init`.{{VideoFrameInit/duration}} to
+    12. Assign `init`.{{VideoFrameInit/duration}} to
         |frame|'s {{VideoFrame/[[duration]]}}.
-    12. Assign `init`.{{VideoFrameInit/timestamp}} to
+    13. Assign `init`.{{VideoFrameInit/timestamp}} to
         |frame|'s {{VideoFrame/[[timestamp]]}}.
-    13. If |resource| has a known {{VideoColorSpace}}, assign its value to
+    14. If |resource| has a known {{VideoColorSpace}}, assign its value to
         {{VideoFrame/[[color space]]}}.
-    14. Otherwise, assign a new {{VideoColorSpace}}, constructed with an empty
+    15. Otherwise, assign a new {{VideoColorSpace}}, constructed with an empty
         {{VideoColorSpaceInit}}, to {{VideoFrame/[[color space]]}}.
 
 : <dfn for=VideoFrame>Initialize Visible Rect, Orientation, and Display Size</dfn>
@@ -4226,7 +4270,8 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
         {{VideoFrame/[[visible top]]}}, {{VideoFrame/[[visible width]]}},
         {{VideoFrame/[[visible height]]}}, {{VideoFrame/[[rotation]]}},
         {{VideoFrame/[[display width]]}}, and {{VideoFrame/[[display height]]}}.
-    5. Assign `false` to |frame|'s {{VideoFrame/[[flip]]}}.
+    5. Assign `false` to |frame|'s {{VideoFrame/[[flip]]}} and
+        {{VideoFrame/[[has alpha]]}}.
     6. Assign a new {{VideoFrameMetadata}} to |frame|.{{VideoFrame/[[metadata]]}}.
 
 : <dfn for=VideoFrame>Parse Rotation</dfn> (with |rotation|)
@@ -4418,25 +4463,42 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
     2. Let |convertedFrame| be a new {{VideoFrame}}, constructed as follows:
         1. Assign `false` to {{platform object/[[Detached]]}}.
         2. Assign |format| to {{VideoFrame/[[format]]}}.
-        3. Let |width| be |frame|'s {{VideoFrame/[[visible width]]}}.
-        4. Let |height| be |frame|'s {{VideoFrame/[[visible height]]}}.
-        5. Assign |width|, |height|, 0, 0, |width|, |height|, |width|, and
+        3. If |format| is {{RGBA}} or {{BGRA}}, assign `true` to
+            {{VideoFrame/[[has alpha]]}}; otherwise, assign `false` to
+            {{VideoFrame/[[has alpha]]}}.
+        4. Let |width| be |frame|'s {{VideoFrame/[[visible width]]}}.
+        5. Let |height| be |frame|'s {{VideoFrame/[[visible height]]}}.
+        6. Assign |width|, |height|, 0, 0, |width|, |height|, |width|, and
             |height| to {{VideoFrame/[[coded width]]}},
             {{VideoFrame/[[coded height]]}}, {{VideoFrame/[[visible left]]}},
             {{VideoFrame/[[visible top]]}}, {{VideoFrame/[[visible width]]}},
             and {{VideoFrame/[[visible height]]}} respectively.
-        6. Assign |frame|'s {{VideoFrame/[[duration]]}} and |frame|'s
+        7. Assign |frame|'s {{VideoFrame/[[duration]]}} and |frame|'s
             {{VideoFrame/[[timestamp]]}} to {{VideoFrame/[[duration]]}} and
             {{VideoFrame/[[timestamp]]}} respectively.
-        7. Assign the result of running the <a>Convert
+        8. Assign the result of running the <a>Convert
             PredefinedColorSpace to VideoColorSpace</a> algorithm with
             |colorSpace| to {{VideoFrame/[[color space]]}}.
-        8. Let |resource| be a new [=media resource=] containing the result of
-            conversion of [=media resource=] referenced by |frame|'s
-            {{VideoFrame/[[resource reference]]}} into a color space and pixel
-            format specified by {{VideoFrame/[[color space]]}} and
-            {{VideoFrame/[[format]]}} respectively.
-        9. Assign the reference to |resource| to {{VideoFrame/[[resource reference]]}}
+        9. Let |sourceResource| be the [=media resource=] referenced by
+            |frame|'s {{VideoFrame/[[resource reference]]}}.
+        10. Let |hasAlpha| be |frame|'s {{VideoFrame/[[has alpha]]}}.
+        11. Let |resource| be a new [=media resource=] containing the result of
+            converting |sourceResource| into the color space and pixel format
+            specified by {{VideoFrame/[[color space]]}} and |format|
+            respectively:
+            * If |sourceResource| stores premultiplied color components, its
+                color components <em class="rfc2119">MUST</em> be converted to
+                [=unpremultiplied=] form using |sourceResource|'s alpha samples
+                prior to color space conversion (even if |hasAlpha| is `false`
+                or |format| is {{RGBX}} or {{BGRX}}). Otherwise, the color
+                components of |resource| are computed from |sourceResource|'s
+                [=unpremultiplied=] color components.
+            * If |format| is {{RGBA}} or {{BGRA}}: if |hasAlpha| is `true`, the
+                alpha samples of |resource| are converted from
+                |sourceResource|'s alpha component; otherwise, each alpha sample
+                of |resource| <em class="rfc2119">MUST</em> be `255`.
+        12. Assign the reference to |resource| to
+            {{VideoFrame/[[resource reference]]}}
     3. Return |convertedFrame|.
 
 : <dfn for=VideoFrame>Copy VideoFrame metadata</dfn> (with |metadata|)
@@ -4493,10 +4555,29 @@ Color space conversion during {{ImageBitmap}} construction is controlled by
 {{ImageBitmapOptions}} {{ImageBitmapOptions/colorSpaceConversion}}. Setting this
 value to {{ColorSpaceConversion/"none"}} disables color space conversion.
 
-The rendering of a {{VideoFrame}} is produced from the [=media resource=] by
-applying any necessary color space conversion, cropping to the
-{{VideoFrame/visibleRect}}, rotating clockwise by {{VideoFrame/rotation}}
-degrees, and flipping horizontally if {{VideoFrame/flip}} is `true`.
+NOTE: Alpha premultiplication during {{ImageBitmap}} construction is controlled
+by {{ImageBitmapOptions}} {{ImageBitmapOptions/premultiplyAlpha}}, as defined in
+[[HTML]].
+
+The rendering of a {{VideoFrame}} is produced from its [=media resource=] as
+follows:
+1. If the [=media resource=] stores premultiplied color components and either
+    the {{VideoFrame}}'s {{VideoFrame/[[has alpha]]}} is `false`, color space
+    conversion is performed, or the rendering target expects
+    [=unpremultiplied=] color components, the color components
+    <em class="rfc2119">MUST</em> first be converted to [=unpremultiplied=]
+    form using the [=media resource=]'s alpha samples.
+2. If the {{VideoFrame}}'s {{VideoFrame/[[has alpha]]}} is `false`, any alpha
+    component in the [=media resource=] is ignored and the frame is treated as
+    fully opaque.
+3. Any necessary color space conversion is applied (operating on
+    [=unpremultiplied=] color components), followed by premultiplication by
+    alpha if the {{VideoFrame}}'s {{VideoFrame/[[has alpha]]}} is `true`, the
+    rendering target expects [=premultiplied alpha=], and the color components
+    are [=unpremultiplied=].
+4. The image is cropped to the {{VideoFrame/visibleRect}}, rotated clockwise by
+    {{VideoFrame/rotation}} degrees, and flipped horizontally if
+    {{VideoFrame/flip}} is `true`.
 
 VideoFrame CopyTo() Options {#videoframe-copyto-options}
 ------------------------------------------------------------
@@ -4644,6 +4725,58 @@ in the image that are derived from a [=sub-sampled=] sample.
   both the horizontal and vertical direction.
 </div>
 
+If a {{VideoPixelFormat}} has an alpha component, its color components (Luma
+and Chroma, or Red, Green, and Blue) use
+<dfn lt="unpremultiplied alpha|unpremultiplied|straight alpha">unpremultiplied
+alpha</dfn> (also known as straight alpha): they are not multiplied by the
+alpha component, in contrast to [=premultiplied alpha=]. An alpha sample of `0`
+represents full transparency, and the maximum representable unsigned integer
+value for the sample's bit depth (`255` for 8-bit samples, `1023` for 10-bit
+samples, and `4095` for 12-bit samples) represents full opacity.
+
+A [=media resource=] with Red, Green, Blue, and Alpha components (such as
+{{RGBA}}, {{BGRA}}, or an RGB resource whose format does not map to a
+{{VideoPixelFormat}}) <em class="rfc2119">MAY</em> store premultiplied color
+components internally only when it is initialized from one of the following:
+* A source that uses [=premultiplied alpha=], for example a
+    {{CanvasImageSource}} whose pixel data uses [=premultiplied alpha=].
+* A decoded image.
+
+All other [=media resource=]s <em class="rfc2119">MUST</em> store
+[=unpremultiplied=] color components. This includes:
+* Any [=media resource=] with Luma and Chroma components, such as {{I420A}},
+    {{I420AP10}}, {{I420AP12}}, {{I422A}}, {{I422AP10}}, {{I422AP12}},
+    {{I444A}}, {{I444AP10}}, {{I444AP12}}, or a YUV resource whose format does
+    not map to a {{VideoPixelFormat}}.
+* Any [=media resource=] initialized from an {{AllowSharedBufferSource}} via
+    {{VideoFrame/VideoFrame(data, init)}}.
+* Any [=media resource=] initialized from a {{CanvasImageSource}} whose pixel
+    data is [=unpremultiplied=], for example an {{ImageBitmap}} created with
+    {{ImageBitmapOptions/premultiplyAlpha}} set to {{PremultiplyAlpha/"none"}}.
+
+When converting Red, Green, and Blue color components from a
+[=premultiplied alpha=] representation to [=unpremultiplied=] form:
+* Let a pixel's normalized alpha value be its alpha component mapped to the
+    range `[0.0, 1.0]` (for an unsigned integer alpha sample, the alpha sample
+    divided by the maximum representable value for its bit depth, e.g., `255`
+    for 8-bit samples).
+* If the normalized alpha value of a pixel is `0.0`, its [=unpremultiplied=]
+    Red, Green, and Blue components <em class="rfc2119">MUST</em> be `0` (or
+    `0.0`).
+* If the normalized alpha value of a pixel is greater than `0.0`, each
+    premultiplied color component is divided by the normalized alpha value and
+    clamped to the representable component range (for example, `[0, 255]` for
+    8-bit unsigned integer components). The intermediate precision and rounding
+    of this conversion are implementation-defined.
+
+NOTE: Pixel data in an {{AllowSharedBufferSource}}, whether supplied to the
+{{VideoFrame/VideoFrame(data, init)}} constructor or produced by
+{{VideoFrame/copyTo()}}, always uses [=unpremultiplied=] color components,
+regardless of how the User Agent stores the [=media resource=] internally
+(including when a {{VideoFrame}} is constructed from an {{ImageBitmap}}
+created with {{ImageBitmapOptions/premultiplyAlpha}} set to
+{{PremultiplyAlpha/"premultiply"}}).
+
 If a {{VideoPixelFormat}} has an alpha component, the format's
 <dfn>equivalent opaque format</dfn> is the same {{VideoPixelFormat}}, without an
 alpha component. If a {{VideoPixelFormat}} does not have an alpha component, it
@@ -4732,8 +4865,8 @@ Integer values are unsigned unless otherwise specified.
   <dd>
     This format is composed of four distinct planes, one plane of Luma, two
     planes of Chroma, denoted Y, U and V, and one plane of Alpha values, all
-    present in this order. It is also often referred to as Planar YUV 4:2:0 with
-    an alpha channel.
+    present in this order. The Y, U, and V components are [=unpremultiplied=].
+    It is also often referred to as Planar YUV 4:2:0 with an alpha channel.
 
     The U and V planes are [=sub-sampled=] horizontally and vertically by a
     [=factor=] of 2 compared to the Y and Alpha planes.
@@ -4761,7 +4894,7 @@ Integer values are unsigned unless otherwise specified.
   <dd>
     This format is composed of four distinct planes, one plane of Luma, two
     planes of Chroma, denoted Y, U and V, and one plane of Alpha values, all
-    present in this order.
+    present in this order. The Y, U, and V components are [=unpremultiplied=].
 
     The U and V planes are [=sub-sampled=] horizontally and vertically by a
     [=factor=] of 2 compared to the Y and Alpha planes.
@@ -4789,7 +4922,7 @@ Integer values are unsigned unless otherwise specified.
   <dd>
     This format is composed of four distinct planes, one plane of Luma, two
     planes of Chroma, denoted Y, U and V, and one plane of Alpha values, all
-    present in this order.
+    present in this order. The Y, U, and V components are [=unpremultiplied=].
 
     The U and V planes are [=sub-sampled=] horizontally and vertically by a
     [=factor=] of 2 compared to the Y and Alpha planes.
@@ -4890,8 +5023,8 @@ Integer values are unsigned unless otherwise specified.
   <dd>
     This format is composed of four distinct planes, one plane of Luma, two
     planes of Chroma, denoted Y, U and V, and one plane of Alpha values, all
-    present in this order. It is also often referred to as Planar YUV 4:2:2 with
-    an alpha channel.
+    present in this order. The Y, U, and V components are [=unpremultiplied=].
+    It is also often referred to as Planar YUV 4:2:2 with an alpha channel.
 
     The U and V planes are [=sub-sampled=] horizontally by a [=factor=] of 2
     compared to the Y and Alpha planes, and not [=sub-sampled=] vertically.
@@ -4918,7 +5051,7 @@ Integer values are unsigned unless otherwise specified.
   <dd>
     This format is composed of four distinct planes, one plane of Luma, two
     planes of Chroma, denoted Y, U and V, and one plane of Alpha values, all
-    present in this order.
+    present in this order. The Y, U, and V components are [=unpremultiplied=].
 
     The U and V planes are [=sub-sampled=] horizontally by a [=factor=] of 2
     compared to the Y and Alpha planes, and not [=sub-sampled=] vertically.
@@ -4945,7 +5078,7 @@ Integer values are unsigned unless otherwise specified.
   <dd>
     This format is composed of four distinct planes, one plane of Luma, two
     planes of Chroma, denoted Y, U and V, and one plane of Alpha values, all
-    present in this order.
+    present in this order. The Y, U, and V components are [=unpremultiplied=].
 
     The U and V planes are [=sub-sampled=] horizontally by a [=factor=] of 2
     compared to the Y and Alpha planes, and not [=sub-sampled=] vertically.
@@ -5015,7 +5148,7 @@ Integer values are unsigned unless otherwise specified.
   <dd>
     This format is composed of four distinct planes, one plane of Luma, two
     planes of Chroma, denoted Y, U and V, and one plane of Alpha values, all
-    present in this order.
+    present in this order. The Y, U, and V components are [=unpremultiplied=].
 
     This format does not use [=sub-sampling=].
 
@@ -5032,7 +5165,7 @@ Integer values are unsigned unless otherwise specified.
   <dd>
     This format is composed of four distinct planes, one plane of Luma, two
     planes of Chroma, denoted Y, U and V, and one plane of Alpha values, all
-    present in this order.
+    present in this order. The Y, U, and V components are [=unpremultiplied=].
 
     This format does not use [=sub-sampling=].
 
@@ -5049,7 +5182,7 @@ Integer values are unsigned unless otherwise specified.
   <dd>
     This format is composed of four distinct planes, one plane of Luma, two
     planes of Chroma, denoted Y, U and V, and one plane of Alpha values, all
-    present in this order.
+    present in this order. The Y, U, and V components are [=unpremultiplied=].
 
     This format does not use [=sub-sampling=].
 
@@ -5118,7 +5251,8 @@ Integer values are unsigned unless otherwise specified.
   <dt><dfn enum-value for=VideoPixelFormat>RGBA</dfn></dt>
   <dd>
     This format is composed of a single plane, that encodes four components:
-    Red, Green, Blue, and an alpha value, present in this order.
+    Red, Green, Blue, and an alpha value, present in this order. The Red, Green,
+    and Blue components are [=unpremultiplied=].
 
     Each sample in this format is 8 bits, and each pixel is therefore 32 bits.
 
@@ -5145,7 +5279,8 @@ Integer values are unsigned unless otherwise specified.
   <dt><dfn enum-value for=VideoPixelFormat>BGRA</dfn></dt>
   <dd>
     This format is composed of a single plane, that encodes four components:
-    Blue, Green, Red, and an alpha value, present in this order.
+    Blue, Green, Red, and an alpha value, present in this order. The Blue,
+    Green, and Red components are [=unpremultiplied=].
 
     Each sample in this format is 8 bits.
 
