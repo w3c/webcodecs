@@ -7,7 +7,7 @@
   <link href="https://www.w3.org/StyleSheets/TR/2021/W3C-ED" rel="stylesheet">
   <meta content="Bikeshed version 49e9fdd4f, updated Tue Oct 13 14:27:53 2026 -0700" name="generator">
   <link href="https://www.w3.org/TR/webcodecs/" rel="canonical">
-  <meta content="b26d3747ad6d160392998f49a9bf4c1dd783c14a" name="revision">
+  <meta content="2b849bb51569b88d627ffc2a2069253bffc9c5ae" name="revision">
   <meta content="dark light" name="color-scheme">
   <link href="https://www.w3.org/StyleSheets/TR/2021/dark.css" media="(prefers-color-scheme: dark)" rel="stylesheet" type="text/css">
 <style>
@@ -3874,6 +3874,8 @@ return <code>false</code>.</p>
      <p>If <code class="idl"><a data-link-type="idl" href="#dom-videoencoderconfig-displaywidth" id="ref-for-dom-videoencoderconfig-displaywidth①">displayWidth</a></code> = 0 or
 <code class="idl"><a data-link-type="idl" href="#dom-videoencoderconfig-displayheight" id="ref-for-dom-videoencoderconfig-displayheight①">displayHeight</a></code> = 0, return <code>false</code>.</p>
     <li data-md>
+     <p>If <code class="idl"><a data-link-type="idl" href="#dom-videoencoderconfig-bitrate" id="ref-for-dom-videoencoderconfig-bitrate①">bitrate</a></code> = 0, return <code>false</code>.</p>
+    <li data-md>
      <p>Return <code>true</code>.</p>
    </ol>
    <dl>
@@ -4128,7 +4130,7 @@ encoding quality. In this mode:</p>
 improve quality.</p>
       <li data-md>
        <p>User Agents <em class="rfc2119">MUST</em> not drop frames to achieve the
-target <code class="idl"><a data-link-type="idl" href="#dom-videoencoderconfig-bitrate" id="ref-for-dom-videoencoderconfig-bitrate①">bitrate</a></code> and/or
+target <code class="idl"><a data-link-type="idl" href="#dom-videoencoderconfig-bitrate" id="ref-for-dom-videoencoderconfig-bitrate②">bitrate</a></code> and/or
 <code class="idl"><a data-link-type="idl" href="#dom-videoencoderconfig-framerate" id="ref-for-dom-videoencoderconfig-framerate②">framerate</a></code>.</p>
       <li data-md>
        <p><code class="idl"><a data-link-type="idl" href="#dom-videoencoderconfig-framerate" id="ref-for-dom-videoencoderconfig-framerate③">framerate</a></code> <em class="rfc2119">SHOULD</em> not be
@@ -4145,7 +4147,7 @@ mode:</p>
 latency.</p>
       <li data-md>
        <p>User Agents <em class="rfc2119">MAY</em> drop frames to achieve the target
-<code class="idl"><a data-link-type="idl" href="#dom-videoencoderconfig-bitrate" id="ref-for-dom-videoencoderconfig-bitrate②">bitrate</a></code> and/or <code class="idl"><a data-link-type="idl" href="#dom-videoencoderconfig-framerate" id="ref-for-dom-videoencoderconfig-framerate④">framerate</a></code>.</p>
+<code class="idl"><a data-link-type="idl" href="#dom-videoencoderconfig-bitrate" id="ref-for-dom-videoencoderconfig-bitrate③">bitrate</a></code> and/or <code class="idl"><a data-link-type="idl" href="#dom-videoencoderconfig-framerate" id="ref-for-dom-videoencoderconfig-framerate④">framerate</a></code>.</p>
       <li data-md>
        <p><code class="idl"><a data-link-type="idl" href="#dom-videoencoderconfig-framerate" id="ref-for-dom-videoencoderconfig-framerate⑤">framerate</a></code> <em class="rfc2119">SHOULD</em> be used
 as a target deadline for emitting encoded chunks.</p>
@@ -4183,12 +4185,12 @@ keys and values. For nested dictionaries, apply this definition recursively.
 </pre>
    <dl>
     <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoEncoderBitrateMode" data-dfn-type="enum-value" data-export data-lt="&quot;constant&quot;|constant" id="dom-videoencoderbitratemode-constant"><code>constant</code></dfn>
-    <dd>Encode at a constant bitrate. See <code class="idl"><a data-link-type="idl" href="#dom-videoencoderconfig-bitrate" id="ref-for-dom-videoencoderconfig-bitrate③">bitrate</a></code>.
+    <dd>Encode at a constant bitrate. See <code class="idl"><a data-link-type="idl" href="#dom-videoencoderconfig-bitrate" id="ref-for-dom-videoencoderconfig-bitrate④">bitrate</a></code>.
     <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoEncoderBitrateMode" data-dfn-type="enum-value" data-export data-lt="&quot;variable&quot;|variable" id="dom-videoencoderbitratemode-variable"><code>variable</code></dfn>
     <dd>
     Encode using a variable bitrate, allowing more space to be used for
     complex signals and less space for less complex signals.
-    See <code class="idl"><a data-link-type="idl" href="#dom-videoencoderconfig-bitrate" id="ref-for-dom-videoencoderconfig-bitrate④">bitrate</a></code>.
+    See <code class="idl"><a data-link-type="idl" href="#dom-videoencoderconfig-bitrate" id="ref-for-dom-videoencoderconfig-bitrate⑤">bitrate</a></code>.
   
     <dt><dfn class="dfn-paneled idl-code" data-dfn-for="VideoEncoderBitrateMode" data-dfn-type="enum-value" data-export data-lt="&quot;quantizer&quot;|quantizer" id="dom-videoencoderbitratemode-quantizer"><code>quantizer</code></dfn>
     <dd>
@@ -11467,7 +11469,7 @@ let dfnPanelData = {
 "dom-videoencoderbitratemode-quantizer": {"dfnID":"dom-videoencoderbitratemode-quantizer","dfnText":"quantizer","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-videoencoderbitratemode-quantizer"}],"title":"7.14. VideoEncoderBitrateMode"}],"url":"#dom-videoencoderbitratemode-quantizer"},
 "dom-videoencoderbitratemode-variable": {"dfnID":"dom-videoencoderbitratemode-variable","dfnText":"variable","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-videoencoderbitratemode-variable"}],"title":"7.14. VideoEncoderBitrateMode"}],"url":"#dom-videoencoderbitratemode-variable"},
 "dom-videoencoderconfig-alpha": {"dfnID":"dom-videoencoderconfig-alpha","dfnText":"alpha","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-videoencoderconfig-alpha"}],"title":"6.6. Algorithms"},{"refs":[{"id":"ref-for-dom-videoencoderconfig-alpha\u2460"},{"id":"ref-for-dom-videoencoderconfig-alpha\u2461"}],"title":"7.8. VideoEncoderConfig"}],"url":"#dom-videoencoderconfig-alpha"},
-"dom-videoencoderconfig-bitrate": {"dfnID":"dom-videoencoderconfig-bitrate","dfnText":"bitrate","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-videoencoderconfig-bitrate"}],"title":"7.8. VideoEncoderConfig"},{"refs":[{"id":"ref-for-dom-videoencoderconfig-bitrate\u2460"},{"id":"ref-for-dom-videoencoderconfig-bitrate\u2461"}],"title":"7.11. Latency Mode"},{"refs":[{"id":"ref-for-dom-videoencoderconfig-bitrate\u2462"},{"id":"ref-for-dom-videoencoderconfig-bitrate\u2463"}],"title":"7.14. VideoEncoderBitrateMode"}],"url":"#dom-videoencoderconfig-bitrate"},
+"dom-videoencoderconfig-bitrate": {"dfnID":"dom-videoencoderconfig-bitrate","dfnText":"bitrate","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-videoencoderconfig-bitrate"},{"id":"ref-for-dom-videoencoderconfig-bitrate\u2460"}],"title":"7.8. VideoEncoderConfig"},{"refs":[{"id":"ref-for-dom-videoencoderconfig-bitrate\u2461"},{"id":"ref-for-dom-videoencoderconfig-bitrate\u2462"}],"title":"7.11. Latency Mode"},{"refs":[{"id":"ref-for-dom-videoencoderconfig-bitrate\u2463"},{"id":"ref-for-dom-videoencoderconfig-bitrate\u2464"}],"title":"7.14. VideoEncoderBitrateMode"}],"url":"#dom-videoencoderconfig-bitrate"},
 "dom-videoencoderconfig-bitratemode": {"dfnID":"dom-videoencoderconfig-bitratemode","dfnText":"bitrateMode","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-videoencoderconfig-bitratemode"}],"title":"7.8. VideoEncoderConfig"}],"url":"#dom-videoencoderconfig-bitratemode"},
 "dom-videoencoderconfig-codec": {"dfnID":"dom-videoencoderconfig-codec","dfnText":"codec","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-videoencoderconfig-codec"},{"id":"ref-for-dom-videoencoderconfig-codec\u2460"}],"title":"7.8. VideoEncoderConfig"}],"url":"#dom-videoencoderconfig-codec"},
 "dom-videoencoderconfig-contenthint": {"dfnID":"dom-videoencoderconfig-contenthint","dfnText":"contentHint","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-videoencoderconfig-contenthint"},{"id":"ref-for-dom-videoencoderconfig-contenthint\u2460"}],"title":"7.8. VideoEncoderConfig"}],"url":"#dom-videoencoderconfig-contenthint"},
