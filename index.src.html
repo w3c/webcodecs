@@ -6367,17 +6367,15 @@ fails with {{NotSupportedError}} (via the error callback or rejected
 {{ImageTrackList/ready|tracks.ready}} and
 {{ImageDecoder/decode()|ImageDecoder.decode()}} promises).
 
-Existing APIs already expose portions of a device's codec feature profile. For
-example, the [[media-capabilities]] {{decodingInfo()}} API describes supported
-decoder configurations and its {{powerEfficient}} attribute can indicate
-hardware acceleration, while the [[WebRTC]] {{RTCRtpSender/getCapabilities()}}
-API reveals supported codec profiles. Although {{RTCPeerConnection/getStats()}}
-can also expose encoder and decoder implementation details and power efficiency,
-[[WEBRTC-STATS]] only allows exposing hardware-identifying statistics in
-capturing contexts (when media capture is active), whereas WebCodecs is
-available without media capture or user permission. As other specifications
-restrict passive hardware exposure, this overlap is shrinking, and WebCodecs
-additionally exposes finer-grained low-level codec parameters.
+Much of a device's codec feature profile is already exposed by existing APIs.
+For example, the [[media-capabilities]] {{decodingInfo()}} and
+{{encodingInfo()}} APIs describe supported codec configurations and their
+{{powerEfficient}} attribute can indicate hardware acceleration, while the
+[[WebRTC]] {{RTCRtpSender/getCapabilities()}} API reveals supported codec
+profiles (and {{RTCPeerConnection/getStats()}} in [[WEBRTC-STATS]] exposes
+hardware implementation details in capturing contexts). Beyond what those APIs
+already reveal, WebCodecs mainly adds low-level configuration parameters (such
+as specific pixel formats, bitrate modes, or codec-specific options).
 
 Whether a codec feature profile helps distinguish a device depends on how the
 underlying codecs are provided. Codecs bundled directly with the User Agent
@@ -6434,27 +6432,26 @@ version, can produce different output bytes:
     implementations, scaling via {{ImageDecoderInit/desiredWidth}} and
     {{ImageDecoderInit/desiredHeight}}, and platform color management).
 
-While output differences are also observable via [[WebRTC]] loopback or
-[[MEDIASTREAM-RECORDING]] combined with canvas readback, WebCodecs provides
-direct byte-level access to encoded bitstreams
-({{EncodedAudioChunk/copyTo()|EncodedAudioChunk.copyTo()}},
-{{EncodedVideoChunk/copyTo()|EncodedVideoChunk.copyTo()}}) and decoded media
-data ({{AudioData/copyTo()|AudioData.copyTo()}},
-{{VideoFrame/copyTo()|VideoFrame.copyTo()}}), making active fingerprinting via
-output checksums simpler to perform.
+Because User Agents share the same underlying codecs across WebCodecs,
+[[WebRTC]], [[MEDIASTREAM-RECORDING]], {{HTMLMediaElement}} with `<canvas>`,
+and [[WEBAUDIO]], the output bytes accessible via
+{{EncodedAudioChunk/copyTo()|EncodedAudioChunk.copyTo()}},
+{{EncodedVideoChunk/copyTo()|EncodedVideoChunk.copyTo()}},
+{{AudioData/copyTo()|AudioData.copyTo()}}, and
+{{VideoFrame/copyTo()|VideoFrame.copyTo()}} reflect the same implementation
+characteristics that are already observable through those existing APIs.
+Moreover, codec outputs are consistent across large cohorts of users with the
+same device class, operating system, or User Agent build rather than being
+unique to an individual user.
 
-Unlike raw capture or canvas rendering APIs where subtle noise injection is
-sometimes applied to perturb output checksums, perturbing encoder inputs or
-decoder outputs is poorly suited to WebCodecs: high-frequency input noise
-degrades compression efficiency and visual quality without masking structural
-bitstream differences (such as header parameters, coding structure, and packet
-sizes) that still identify the underlying encoder, while perturbing decoded
-samples breaks lossless codecs and multi-stage media processing workflows. In
-heightened privacy modes, User Agents can reduce hardware- and driver-specific
-output variation by ignoring {{HardwareAcceleration}} preferences and using a
-bundled software codec implementation where available (cross-architecture
-differences can remain if the software implementation is not bit-exact across
-CPU architectures).
+In heightened privacy modes, User Agents can substantially reduce hardware- and
+driver-specific output variation by ignoring {{HardwareAcceleration}}
+preferences and routing operations to a bundled software codec implementation
+where available, producing uniform output across devices that share the same
+User Agent build and CPU architecture. Selecting a consistent software codec
+avoids the compression efficiency, visual quality, and lossless-workflow
+tradeoffs that would come from injecting synthetic noise into encoder inputs or
+decoder outputs.
 </div>
 
 Timing and Resource Side-Channels{#privacy-timing-side-channels}
