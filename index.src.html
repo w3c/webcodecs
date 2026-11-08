@@ -3668,7 +3668,9 @@ dictionary VideoFrameMetadata {
 8. If |init|.{{VideoFrameBufferInit/layout}} [=map/exists=], assign its value
     to |optLayout|.
 9. Let |combinedLayout| be the result of running the [=VideoFrame/Compute
-    Layout and Allocation Size=] algorithm with |parsedRect|,
+    Layout and Allocation Size=] algorithm with «[ "x" → `0`, "y" → `0`,
+    "width" → |init|.{{VideoFrameBufferInit/codedWidth}},
+    "height" → |init|.{{VideoFrameBufferInit/codedHeight}} ]»,
     |init|.{{VideoFrameBufferInit/format}}, and |optLayout|.
 10. If |combinedLayout| is an exception, throw |combinedLayout|.
 11. If `data.byteLength` is less than |combinedLayout|’s
