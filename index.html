@@ -5,9 +5,9 @@
   <title>WebCodecs</title>
   <meta content="ED" name="w3c-status">
   <link href="https://www.w3.org/StyleSheets/TR/2021/W3C-ED" rel="stylesheet">
-  <meta content="Bikeshed version 49e9fdd4f, updated Tue Oct 13 14:27:53 2026 -0700" name="generator">
+  <meta content="Bikeshed version e0b165ae4, updated Mon Nov 2 15:16:49 2026 -0800" name="generator">
   <link href="https://www.w3.org/TR/webcodecs/" rel="canonical">
-  <meta content="5762c7bc0764a3c8dae5d63237a76a3c127d2803" name="revision">
+  <meta content="0755634aa34990590a17993da5a5ce661674bb89" name="revision">
   <meta content="dark light" name="color-scheme">
   <link href="https://www.w3.org/StyleSheets/TR/2021/dark.css" media="(prefers-color-scheme: dark)" rel="stylesheet" type="text/css">
 <style>
@@ -384,14 +384,17 @@ figure.table figcaption:not(.no-marker)::before {
     height: auto;
     max-height: 500px;
     overflow: auto;
+    margin: 0;
     padding: 0.5em 0.75em;
     font: small Helvetica Neue, sans-serif, Droid Sans Fallback;
     background: var(--dfnpanel-bg);
     color: var(--dfnpanel-text);
     border: outset 0.2em;
     white-space: normal; /* in case it's moved into a pre */
+    inset: auto;
+    position-area: bottom span-right;
+    position-try-fallbacks: flip-block, flip-inline, flip-block flip-inline;
 }
-.dfn-panel:not(.on) { display: none; }
 .dfn-panel * { margin: 0; padding: 0; text-indent: 0; }
 .dfn-panel > b { display: block; }
 .dfn-panel a { color: var(--dfnpanel-text); }
@@ -411,6 +414,9 @@ figure.table figcaption:not(.no-marker)::before {
 .dfn-panel.activated {
     display: inline-block;
     position: fixed;
+    position-area: none;
+    top: auto;
+    right: auto;
     left: 8px;
     bottom: 2em;
     margin: 0 auto;
@@ -467,7 +473,8 @@ figure.table figcaption:not(.no-marker)::before {
     opacity: 1;
 }
 
-.dfn-paneled[role="button"] { cursor: help; }
+.dfn-paneled { cursor: help; }
+.dfn-paneled > .dfn-panelbutton { all: unset; }
 
 .highlighted {
     animation: target-fade 3s;
@@ -754,7 +761,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
 </p>
    <h1 class="no-ref p-name" id="title">WebCodecs</h1>
    <p id="w3c-state"><a href="https://www.w3.org/standards/types/#ED">Editor’s Draft</a>,
-    <time class="dt-updated" datetime="2026-11-02">2 November 2026</time></p>
+    <time class="dt-updated" datetime="2026-11-08">8 November 2026</time></p>
    <details open>
     <summary>More details about this document</summary>
     <div data-fill-with="spec-metadata">
@@ -5488,7 +5495,9 @@ value to <var>overrideRect</var>.</p>
      <p>If <var>init</var>.<code class="idl"><a data-link-type="idl" href="#dom-videoframebufferinit-layout" id="ref-for-dom-videoframebufferinit-layout">layout</a></code> <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#map-exists" id="ref-for-map-exists①②">exists</a>, assign its value
 to <var>optLayout</var>.</p>
     <li data-md>
-     <p>Let <var>combinedLayout</var> be the result of running the <a data-link-type="dfn" href="#videoframe-compute-layout-and-allocation-size" id="ref-for-videoframe-compute-layout-and-allocation-size">Compute Layout and Allocation Size</a> algorithm with <var>parsedRect</var>,
+     <p>Let <var>combinedLayout</var> be the result of running the <a data-link-type="dfn" href="#videoframe-compute-layout-and-allocation-size" id="ref-for-videoframe-compute-layout-and-allocation-size">Compute Layout and Allocation Size</a> algorithm with «[ "x" → <code>0</code>, "y" → <code>0</code>,
+"width" → <var>init</var>.<code class="idl"><a data-link-type="idl" href="#dom-videoframebufferinit-codedwidth" id="ref-for-dom-videoframebufferinit-codedwidth③">codedWidth</a></code>,
+"height" → <var>init</var>.<code class="idl"><a data-link-type="idl" href="#dom-videoframebufferinit-codedheight" id="ref-for-dom-videoframebufferinit-codedheight①">codedHeight</a></code> ]»,
 <var>init</var>.<code class="idl"><a data-link-type="idl" href="#dom-videoframebufferinit-format" id="ref-for-dom-videoframebufferinit-format①">format</a></code>, and <var>optLayout</var>.</p>
     <li data-md>
      <p>If <var>combinedLayout</var> is an exception, throw <var>combinedLayout</var>.</p>
@@ -6060,19 +6069,19 @@ not finite, return <code>false</code>.</p>
     <dd data-md>
      <ol>
       <li data-md>
-       <p>If <code class="idl"><a data-link-type="idl" href="#dom-videoframebufferinit-codedwidth" id="ref-for-dom-videoframebufferinit-codedwidth③">codedWidth</a></code> = 0 or
-<code class="idl"><a data-link-type="idl" href="#dom-videoframebufferinit-codedheight" id="ref-for-dom-videoframebufferinit-codedheight①">codedHeight</a></code> = 0,return <code>false</code>.</p>
+       <p>If <code class="idl"><a data-link-type="idl" href="#dom-videoframebufferinit-codedwidth" id="ref-for-dom-videoframebufferinit-codedwidth④">codedWidth</a></code> = 0 or
+<code class="idl"><a data-link-type="idl" href="#dom-videoframebufferinit-codedheight" id="ref-for-dom-videoframebufferinit-codedheight②">codedHeight</a></code> = 0,return <code>false</code>.</p>
       <li data-md>
        <p>If any attribute of <code class="idl"><a data-link-type="idl" href="#dom-videoframebufferinit-visiblerect" id="ref-for-dom-videoframebufferinit-visiblerect⑥">visibleRect</a></code> is negative or
 not finite, return <code>false</code>.</p>
       <li data-md>
        <p>If <code class="idl"><a data-link-type="idl" href="#dom-videoframebufferinit-visiblerect" id="ref-for-dom-videoframebufferinit-visiblerect⑦">visibleRect</a></code>.<code class="idl"><a data-link-type="idl" href="https://drafts.csswg.org/geometry-1/#dom-domrectinit-y" id="ref-for-dom-domrectinit-y①">y</a></code> +
 <code class="idl"><a data-link-type="idl" href="#dom-videoframebufferinit-visiblerect" id="ref-for-dom-videoframebufferinit-visiblerect⑧">visibleRect</a></code>.<code class="idl"><a data-link-type="idl" href="https://drafts.csswg.org/geometry-1/#dom-domrectinit-height" id="ref-for-dom-domrectinit-height③">height</a></code> >
-<code class="idl"><a data-link-type="idl" href="#dom-videoframebufferinit-codedheight" id="ref-for-dom-videoframebufferinit-codedheight②">codedHeight</a></code>, return <code>false</code>.</p>
+<code class="idl"><a data-link-type="idl" href="#dom-videoframebufferinit-codedheight" id="ref-for-dom-videoframebufferinit-codedheight③">codedHeight</a></code>, return <code>false</code>.</p>
       <li data-md>
        <p>If <code class="idl"><a data-link-type="idl" href="#dom-videoframebufferinit-visiblerect" id="ref-for-dom-videoframebufferinit-visiblerect⑨">visibleRect</a></code>.<code class="idl"><a data-link-type="idl" href="https://drafts.csswg.org/geometry-1/#dom-domrectinit-x" id="ref-for-dom-domrectinit-x①">x</a></code> +
 <code class="idl"><a data-link-type="idl" href="#dom-videoframebufferinit-visiblerect" id="ref-for-dom-videoframebufferinit-visiblerect①⓪">visibleRect</a></code>.<code class="idl"><a data-link-type="idl" href="https://drafts.csswg.org/geometry-1/#dom-domrectinit-width" id="ref-for-dom-domrectinit-width③">width</a></code> >
-<code class="idl"><a data-link-type="idl" href="#dom-videoframebufferinit-codedwidth" id="ref-for-dom-videoframebufferinit-codedwidth④">codedWidth</a></code>, return <code>false</code>.</p>
+<code class="idl"><a data-link-type="idl" href="#dom-videoframebufferinit-codedwidth" id="ref-for-dom-videoframebufferinit-codedwidth⑤">codedWidth</a></code>, return <code>false</code>.</p>
       <li data-md>
        <p>If only one of <code class="idl"><a data-link-type="idl" href="#dom-videoframebufferinit-displaywidth" id="ref-for-dom-videoframebufferinit-displaywidth①">displayWidth</a></code> or
 <code class="idl"><a data-link-type="idl" href="#dom-videoframebufferinit-displayheight" id="ref-for-dom-videoframebufferinit-displayheight①">displayHeight</a></code> <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#map-exists" id="ref-for-map-exists②①">exists</a>, return <code>false</code>.</p>
@@ -11647,8 +11656,8 @@ let dfnPanelData = {
 "dom-videoframe-visible-top-slot": {"dfnID":"dom-videoframe-visible-top-slot","dfnText":"[[visible top]]","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-videoframe-visible-top-slot"}],"title":"9.4.1. Internal Slots"},{"refs":[{"id":"ref-for-dom-videoframe-visible-top-slot\u2460"}],"title":"9.4.2. Constructors"},{"refs":[{"id":"ref-for-dom-videoframe-visible-top-slot\u2461"}],"title":"9.4.3. Attributes"},{"refs":[{"id":"ref-for-dom-videoframe-visible-top-slot\u2462"},{"id":"ref-for-dom-videoframe-visible-top-slot\u2463"},{"id":"ref-for-dom-videoframe-visible-top-slot\u2464"},{"id":"ref-for-dom-videoframe-visible-top-slot\u2465"}],"title":"9.4.6. Algorithms"}],"url":"#dom-videoframe-visible-top-slot"},
 "dom-videoframe-visible-width-slot": {"dfnID":"dom-videoframe-visible-width-slot","dfnText":"[[visible width]]","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-videoframe-visible-width-slot"}],"title":"7.8. VideoEncoderConfig"},{"refs":[{"id":"ref-for-dom-videoframe-visible-width-slot\u2460"},{"id":"ref-for-dom-videoframe-visible-width-slot\u2461"},{"id":"ref-for-dom-videoframe-visible-width-slot\u2462"},{"id":"ref-for-dom-videoframe-visible-width-slot\u2463"}],"title":"9.4.2. Constructors"},{"refs":[{"id":"ref-for-dom-videoframe-visible-width-slot\u2464"}],"title":"9.4.3. Attributes"},{"refs":[{"id":"ref-for-dom-videoframe-visible-width-slot\u2465"},{"id":"ref-for-dom-videoframe-visible-width-slot\u2466"},{"id":"ref-for-dom-videoframe-visible-width-slot\u2467"},{"id":"ref-for-dom-videoframe-visible-width-slot\u2468"},{"id":"ref-for-dom-videoframe-visible-width-slot\u2460\u24ea"}],"title":"9.4.6. Algorithms"}],"url":"#dom-videoframe-visible-width-slot"},
 "dom-videoframe-visiblerect": {"dfnID":"dom-videoframe-visiblerect","dfnText":"visibleRect","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-videoframe-visiblerect"}],"title":"9.4. VideoFrame Interface"},{"refs":[{"id":"ref-for-dom-videoframe-visiblerect\u2460"}],"title":"9.4.2. Constructors"},{"refs":[{"id":"ref-for-dom-videoframe-visiblerect\u2461"}],"title":"9.4.3. Attributes"},{"refs":[{"id":"ref-for-dom-videoframe-visiblerect\u2462"},{"id":"ref-for-dom-videoframe-visiblerect\u2463"}],"title":"9.4.6. Algorithms"},{"refs":[{"id":"ref-for-dom-videoframe-visiblerect\u2464"}],"title":"9.4.8. Rendering"},{"refs":[{"id":"ref-for-dom-videoframe-visiblerect\u2465"}],"title":"9.5. VideoFrame CopyTo() Options"},{"refs":[{"id":"ref-for-dom-videoframe-visiblerect\u2466"}],"title":"9.6. DOMRects in VideoFrame"},{"refs":[{"id":"ref-for-dom-videoframe-visiblerect\u2467"},{"id":"ref-for-dom-videoframe-visiblerect\u2468"},{"id":"ref-for-dom-videoframe-visiblerect\u2460\u24ea"},{"id":"ref-for-dom-videoframe-visiblerect\u2460\u2460"},{"id":"ref-for-dom-videoframe-visiblerect\u2460\u2461"},{"id":"ref-for-dom-videoframe-visiblerect\u2460\u2462"},{"id":"ref-for-dom-videoframe-visiblerect\u2460\u2463"},{"id":"ref-for-dom-videoframe-visiblerect\u2460\u2464"},{"id":"ref-for-dom-videoframe-visiblerect\u2460\u2465"},{"id":"ref-for-dom-videoframe-visiblerect\u2460\u2466"},{"id":"ref-for-dom-videoframe-visiblerect\u2460\u2467"},{"id":"ref-for-dom-videoframe-visiblerect\u2460\u2468"},{"id":"ref-for-dom-videoframe-visiblerect\u2461\u24ea"},{"id":"ref-for-dom-videoframe-visiblerect\u2461\u2460"},{"id":"ref-for-dom-videoframe-visiblerect\u2461\u2461"},{"id":"ref-for-dom-videoframe-visiblerect\u2461\u2462"},{"id":"ref-for-dom-videoframe-visiblerect\u2461\u2463"},{"id":"ref-for-dom-videoframe-visiblerect\u2461\u2464"},{"id":"ref-for-dom-videoframe-visiblerect\u2461\u2465"},{"id":"ref-for-dom-videoframe-visiblerect\u2461\u2466"}],"title":"9.8. Pixel Format"}],"url":"#dom-videoframe-visiblerect"},
-"dom-videoframebufferinit-codedheight": {"dfnID":"dom-videoframebufferinit-codedheight","dfnText":"codedHeight","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-videoframebufferinit-codedheight"}],"title":"9.4.2. Constructors"},{"refs":[{"id":"ref-for-dom-videoframebufferinit-codedheight\u2460"},{"id":"ref-for-dom-videoframebufferinit-codedheight\u2461"}],"title":"9.4.6. Algorithms"}],"url":"#dom-videoframebufferinit-codedheight"},
-"dom-videoframebufferinit-codedwidth": {"dfnID":"dom-videoframebufferinit-codedwidth","dfnText":"codedWidth","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-videoframebufferinit-codedwidth"},{"id":"ref-for-dom-videoframebufferinit-codedwidth\u2460"},{"id":"ref-for-dom-videoframebufferinit-codedwidth\u2461"}],"title":"9.4.2. Constructors"},{"refs":[{"id":"ref-for-dom-videoframebufferinit-codedwidth\u2462"},{"id":"ref-for-dom-videoframebufferinit-codedwidth\u2463"}],"title":"9.4.6. Algorithms"}],"url":"#dom-videoframebufferinit-codedwidth"},
+"dom-videoframebufferinit-codedheight": {"dfnID":"dom-videoframebufferinit-codedheight","dfnText":"codedHeight","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-videoframebufferinit-codedheight"},{"id":"ref-for-dom-videoframebufferinit-codedheight\u2460"}],"title":"9.4.2. Constructors"},{"refs":[{"id":"ref-for-dom-videoframebufferinit-codedheight\u2461"},{"id":"ref-for-dom-videoframebufferinit-codedheight\u2462"}],"title":"9.4.6. Algorithms"}],"url":"#dom-videoframebufferinit-codedheight"},
+"dom-videoframebufferinit-codedwidth": {"dfnID":"dom-videoframebufferinit-codedwidth","dfnText":"codedWidth","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-videoframebufferinit-codedwidth"},{"id":"ref-for-dom-videoframebufferinit-codedwidth\u2460"},{"id":"ref-for-dom-videoframebufferinit-codedwidth\u2461"},{"id":"ref-for-dom-videoframebufferinit-codedwidth\u2462"}],"title":"9.4.2. Constructors"},{"refs":[{"id":"ref-for-dom-videoframebufferinit-codedwidth\u2463"},{"id":"ref-for-dom-videoframebufferinit-codedwidth\u2464"}],"title":"9.4.6. Algorithms"}],"url":"#dom-videoframebufferinit-codedwidth"},
 "dom-videoframebufferinit-colorspace": {"dfnID":"dom-videoframebufferinit-colorspace","dfnText":"colorSpace","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-videoframebufferinit-colorspace"}],"title":"9.4.2. Constructors"}],"url":"#dom-videoframebufferinit-colorspace"},
 "dom-videoframebufferinit-displayheight": {"dfnID":"dom-videoframebufferinit-displayheight","dfnText":"displayHeight","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-videoframebufferinit-displayheight"}],"title":"9.4.2. Constructors"},{"refs":[{"id":"ref-for-dom-videoframebufferinit-displayheight\u2460"},{"id":"ref-for-dom-videoframebufferinit-displayheight\u2461"}],"title":"9.4.6. Algorithms"}],"url":"#dom-videoframebufferinit-displayheight"},
 "dom-videoframebufferinit-displaywidth": {"dfnID":"dom-videoframebufferinit-displaywidth","dfnText":"displayWidth","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-videoframebufferinit-displaywidth"}],"title":"9.4.2. Constructors"},{"refs":[{"id":"ref-for-dom-videoframebufferinit-displaywidth\u2460"},{"id":"ref-for-dom-videoframebufferinit-displaywidth\u2461"}],"title":"9.4.6. Algorithms"}],"url":"#dom-videoframebufferinit-displaywidth"},
@@ -11839,16 +11848,6 @@ let dfnPanelData = {
 
 document.addEventListener("DOMContentLoaded", ()=>{
     genAllDfnPanels();
-
-    document.body.addEventListener("click", (e) => {
-        // If not handled already, just hide all dfn panels.
-        hideAllDfnPanels();
-    });
-});
-
-window.addEventListener("resize", () => {
-    // Pin any visible dfn panel
-    queryAll(".dfn-panel.on, .dfn-panel.activated").forEach(el=>positionDfnPanel(el));
 });
 
 function genAllDfnPanels() {
@@ -11860,16 +11859,17 @@ function genAllDfnPanels() {
             continue;
         }
         dfn.panelData = panelData;
-        insertDfnPopupAction(dfn);
+        genDfnPanel(dfn, panelData);
     }
 }
 
 function genDfnPanel(dfn, { dfnID, url, dfnText, refSections, external }) {
-    const dfnPanel = mk.aside({
-        class: "dfn-panel on",
+    const dfnPanel = mk.dialog({
+        class: "dfn-panel",
         id: `infopanel-for-${dfnID}`,
+        popover: "hint",
         "data-for": dfnID,
-        "aria-labelled-by":`infopaneltitle-for-${dfnID}`,
+        "aria-labelledby": `infopaneltitle-for-${dfnID}`,
         },
         mk.span({id:`infopaneltitle-for-${dfnID}`, style:"display:none"},
             `Info about the '${dfnText}' ${external?"external":""} reference.`),
@@ -11901,106 +11901,34 @@ function genDfnPanel(dfn, { dfnID, url, dfnText, refSections, external }) {
         event.stopPropagation();
         refocusOnTarget(event);
     });
-    dfnPanel.addEventListener('keydown', (event) => {
-        if(event.keyCode == 27) { // Escape key
-            hideDfnPanel({dfnPanel});
-            event.stopPropagation();
-            event.preventDefault();
+
+    dfnPanel.addEventListener('toggle', event=>{
+        if(event.newState == "closed") {
+            unpinDfnPanel(dfnPanel);
         }
     });
 
     dfnPanel.dfn = dfn;
     dfn.dfnPanel = dfnPanel;
+    dfn.after(dfnPanel);
+    const button = mk.button(
+        {
+            class:"dfn-panelbutton",
+            "popovertarget":dfnPanel.id
+        },
+        ...dfn.childNodes
+    );
+    dfn.append(button);
     return dfnPanel;
-}
-
-
-
-function hideAllDfnPanels() {
-    // Delete the currently-active dfn panel.
-    queryAll(".dfn-panel").forEach(dfnPanel=>hideDfnPanel({dfnPanel}));
-}
-
-function showDfnPanel(dfn) {
-    hideAllDfnPanels(); // Only display one at a time.
-
-    dfn.setAttribute("aria-expanded", "true");
-
-    const dfnPanel = genDfnPanel(dfn, dfn.panelData);
-
-    // Give the dfn a unique tabindex, and then
-    // give all the tabbable panel bits successive indexes.
-    let tabIndex = 100;
-    dfn.tabIndex = tabIndex++;
-    const tabbable = dfnPanel.querySelectorAll(":is(a, button)");
-    for (const el of tabbable) {
-        el.tabIndex = tabIndex++;
-    }
-
-    append(document.body, dfnPanel);
-    positionDfnPanel(dfnPanel);
-}
-
-function positionDfnPanel(dfnPanel) {
-    const dfn = dfnPanel.dfn;
-    const dfnPos = getBounds(dfn);
-    dfnPanel.style.top = dfnPos.bottom + "px";
-    dfnPanel.style.left = dfnPos.left + "px";
-
-    const panelPos = dfnPanel.getBoundingClientRect();
-    const panelMargin = 8;
-    const maxRight = document.body.parentNode.clientWidth - panelMargin;
-    if (panelPos.right > maxRight) {
-        const overflowAmount = panelPos.right - maxRight;
-        const newLeft = Math.max(panelMargin, dfnPos.left - overflowAmount);
-        dfnPanel.style.left = newLeft + "px";
-    }
 }
 
 function pinDfnPanel(dfnPanel) {
     // Switch it to "activated" state, which pins it.
     dfnPanel.classList.add("activated");
-    dfnPanel.style.position = "fixed";
-    dfnPanel.style.left = null;
-    dfnPanel.style.top = null;
 }
 
-function hideDfnPanel({dfn, dfnPanel}) {
-    if(!dfnPanel) dfnPanel = dfn.dfnPanel;
-    if(!dfn) dfn = dfnPanel.dfn;
-    dfn.dfnPanel = undefined;
-    dfnPanel.dfn = undefined;
-    dfn.setAttribute("aria-expanded", "false");
-    dfn.tabIndex = undefined;
-    dfnPanel.remove()
-}
-
-function toggleDfnPanel(dfn) {
-    if(dfn.dfnPanel) {
-        hideDfnPanel(dfn);
-    } else {
-        showDfnPanel(dfn);
-    }
-}
-
-function insertDfnPopupAction(dfn) {
-    dfn.setAttribute('role', 'button');
-    dfn.setAttribute('aria-expanded', 'false')
-    dfn.tabIndex = 0;
-    dfn.classList.add('has-dfn-panel');
-    dfn.addEventListener('click', (event) => {
-        toggleDfnPanel(dfn);
-        event.stopPropagation();
-    });
-    dfn.addEventListener('keypress', (event) => {
-        const kc = event.keyCode;
-        // 32->Space, 13->Enter
-        if(kc == 32 || kc == 13) {
-            toggleDfnPanel(dfn);
-            event.stopPropagation();
-            event.preventDefault();
-        }
-    });
+function unpinDfnPanel(dfnPanel) {
+    dfnPanel.classList.remove("activated");
 }
 
 function refocusOnTarget(event) {
@@ -12010,21 +11938,6 @@ function refocusOnTarget(event) {
         // This is needed after browser scrolls to the destination.
         target.focus();
     });
-}
-
-// TODO: shared util
-// Returns the root-level absolute position {left and top} of element.
-function getBounds(el, relativeTo=document.body) {
-    const relativeRect = relativeTo.getBoundingClientRect();
-    const elRect = el.getBoundingClientRect();
-    const top = elRect.top - relativeRect.top;
-    const left = elRect.left - relativeRect.left;
-    return {
-        top,
-        left,
-        bottom: top + elRect.height,
-        right: left + elRect.width,
-    }
 }
 
 function scrollToTargetAndHighlight(event) {
