@@ -1,0 +1,96 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1070" height="420" viewBox="0 0 1070 420">
+  <style>
+    text { font-family: Helvetica, Arial, sans-serif; font-size: 18px; fill: #333; }
+    .title { font-weight: bold; }
+    .mono { font-family: Menlo, Consolas, "DejaVu Sans Mono", monospace; }
+    .dim { stroke: #5e5e5e; stroke-width: 1.5; fill: none; marker-start: url(#tick); marker-end: url(#tick); }
+    .ext { stroke: #9e9e9e; stroke-width: 1; stroke-dasharray: 4 3; fill: none; }
+    .flow { stroke: #5e5e5e; stroke-width: 3; fill: none; marker-end: url(#arrow); }
+    .outline { stroke: #333; stroke-width: 2.5; fill: none; }
+  </style>
+  <defs>
+    <marker id="tick" viewBox="0 0 10 10" refX="10" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse">
+      <path d="M0 0L10 5L0 10z" fill="#5e5e5e"/>
+    </marker>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerUnits="userSpaceOnUse" markerWidth="16" markerHeight="16" orient="auto">
+      <path d="M0 0L10 5L0 10z" fill="#5e5e5e"/>
+    </marker>
+    <pattern id="hatch" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+      <rect width="8" height="8" fill="#f2f2f2"/>
+      <line x1="0" y1="0" x2="0" y2="8" stroke="#bdbdbd" stroke-width="2"/>
+    </pattern>
+    <!-- The picture as intended to be displayed, 213.33x120. The media
+         resource holds it squeezed horizontally to 160x120, because its
+         pixels are wider than they are tall. -->
+    <g id="picture">
+      <rect width="213.33" height="72" fill="#83bbe5"/>
+      <rect y="72" width="213.33" height="48" fill="#5abaa7"/>
+      <circle cx="45" cy="32" r="16" fill="#ffdf71" stroke="#5e5e5e" stroke-width="1.5" vector-effect="non-scaling-stroke"/>
+      <path d="M138.67 58L158.67 40L178.67 58z" fill="#ff8f80" stroke="#5e5e5e" stroke-width="1.5" vector-effect="non-scaling-stroke"/>
+      <rect x="143.67" y="58" width="30" height="26" fill="#ff8f80" stroke="#5e5e5e" stroke-width="1.5" vector-effect="non-scaling-stroke"/>
+      <rect x="154.67" y="70" width="8" height="14" fill="#5e5e5e"/>
+    </g>
+  </defs>
+
+  <rect width="1070" height="420" fill="#fff"/>
+
+  <!-- Panel 1: media resource, coded size and visible rectangle. -->
+  <text class="title" x="180" y="30" text-anchor="middle">Media resource</text>
+
+  <rect x="60" y="110" width="240" height="185" fill="url(#hatch)" stroke="#5e5e5e" stroke-width="2"/>
+  <use xlink:href="#picture" transform="translate(90 140) scale(0.75 1)"/>
+  <rect class="outline" x="90" y="140" width="160" height="120"/>
+
+  <path class="dim" d="M60 92H300"/>
+  <text class="mono" x="180" y="82" text-anchor="middle">codedWidth</text>
+  <path class="dim" d="M40 110V295"/>
+  <text class="mono" transform="translate(30 202.5) rotate(-90)" text-anchor="middle">codedHeight</text>
+
+  <path class="ext" d="M60 295V326M90 260V326M250 260V326"/>
+  <path class="dim" d="M60 318H90"/>
+  <path class="dim" d="M90 318H250"/>
+  <text class="mono" x="75" y="342" text-anchor="middle">x</text>
+  <text class="mono" x="170" y="342" text-anchor="middle">width</text>
+
+  <path class="ext" d="M300 110H330M250 140H330M250 260H330"/>
+  <path class="dim" d="M322 110V140"/>
+  <path class="dim" d="M322 140V260"/>
+  <text class="mono" x="332" y="131">y</text>
+  <text class="mono" x="332" y="206">height</text>
+
+  <text class="mono" x="195" y="372" text-anchor="middle">visibleRect: x, y, width, height</text>
+  <rect x="60" y="384" width="24" height="16" fill="url(#hatch)" stroke="#5e5e5e" stroke-width="1"/>
+  <text x="92" y="398">not displayed</text>
+
+  <!-- Crop and scale to the display aspect ratio. -->
+  <path class="flow" d="M405 200H498"/>
+  <text x="452" y="186" text-anchor="middle">crop, scale</text>
+
+  <!-- Panel 2: display size with rotation = 0. -->
+  <text class="title" x="626.67" y="30" text-anchor="middle">rotation = 0</text>
+
+  <use xlink:href="#picture" x="520" y="140"/>
+  <rect class="outline" x="520" y="140" width="213.33" height="120"/>
+
+  <path class="dim" d="M520 122H733.33"/>
+  <text class="mono" x="626.67" y="112" text-anchor="middle">displayWidth</text>
+  <path class="ext" d="M733.33 140H763M733.33 260H763"/>
+  <path class="dim" d="M755 140V260"/>
+  <text class="mono" transform="translate(778 200) rotate(-90)" text-anchor="middle">displayHeight</text>
+
+  <!-- Rotate. -->
+  <path class="flow" d="M800 200H870"/>
+  <text x="835" y="186" text-anchor="middle">rotate</text>
+
+  <!-- Panel 3: display size with rotation = 90. -->
+  <text class="title" x="950" y="30" text-anchor="middle">rotation = 90</text>
+
+  <use xlink:href="#picture" transform="translate(1010 93.33) rotate(90)"/>
+  <rect class="outline" x="890" y="93.33" width="120" height="213.33"/>
+
+  <path class="dim" d="M890 78H1010"/>
+  <text class="mono" x="950" y="68" text-anchor="middle">displayWidth</text>
+  <path class="ext" d="M1010 93.33H1040M1010 306.67H1040"/>
+  <path class="dim" d="M1032 93.33V306.67"/>
+  <text class="mono" transform="translate(1055 200) rotate(-90)" text-anchor="middle">displayHeight</text>
+</svg>

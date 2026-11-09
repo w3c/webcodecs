@@ -3520,25 +3520,23 @@ dictionary VideoFrameMetadata {
     {{VideoPixelFormat}} or when {{platform object/[[Detached]]}} is `true`.
 
 : <dfn attribute for=VideoFrame>[[coded width]]</dfn>
-:: Width of the {{VideoFrame}} in pixels, potentially including non-visible
-    padding, and prior to considering potential ratio adjustments.
+:: The [=coded width=] of the {{VideoFrame}}.
 
 : <dfn attribute for=VideoFrame>[[coded height]]</dfn>
-:: Height of the {{VideoFrame}} in pixels, potentially including non-visible
-    padding, and prior to considering potential ratio adjustments.
+:: The [=coded height=] of the {{VideoFrame}}.
 
 : <dfn attribute for=VideoFrame>[[visible left]]</dfn>
-:: The number of pixels defining the left offset of the visible rectangle.
+:: The number of pixels defining the left offset of the [=visible rectangle=].
 
 : <dfn attribute for=VideoFrame>[[visible top]]</dfn>
-:: The number of pixels defining the top offset of the visible rectangle.
+:: The number of pixels defining the top offset of the [=visible rectangle=].
 
 : <dfn attribute for=VideoFrame>[[visible width]]</dfn>
-:: The width of pixels to include in visible rectangle, starting from
+:: The width of pixels to include in [=visible rectangle=], starting from
     {{VideoFrame/[[visible left]]}}.
 
 : <dfn attribute for=VideoFrame>[[visible height]]</dfn>
-:: The height of pixels to include in visible rectangle, starting from
+:: The height of pixels to include in [=visible rectangle=], starting from
     {{VideoFrame/[[visible top]]}}.
 
 : <dfn attribute for=VideoFrame>\[[rotation]]</dfn>
@@ -3550,12 +3548,10 @@ dictionary VideoFrameMetadata {
     Flip is applied after rotation.
 
 : <dfn attribute for=VideoFrame>[[display width]]</dfn>
-:: Width of the {{VideoFrame}} when displayed after applying aspect ratio
-    adjustments.
+:: The [=display width=] of the {{VideoFrame}}.
 
 : <dfn attribute for=VideoFrame>[[display height]]</dfn>
-:: Height of the {{VideoFrame}} when displayed after applying aspect ratio
-    adjustments.
+:: The [=display height=] of the {{VideoFrame}}.
 
 : <dfn attribute for=VideoFrame>\[[duration]]</dfn>
 :: The presentation duration, given in microseconds.
@@ -3690,27 +3686,24 @@ dictionary VideoFrameMetadata {
         to determine where in |data| the pixels for each plane reside.
 
         The User Agent <em class="rfc2119">MAY</em> choose to allocate
-        |resource| with a larger coded size and plane strides to improve memory
-        alignment. Increases will be reflected by {{VideoFrame/codedWidth}} and
-        {{VideoFrame/codedHeight}}.  Additionally, the User Agent <em
-        class="rfc2119">MAY</em> use {{VideoFrameBufferInit/visibleRect}} to
-        copy only the visible rectangle.  It <em class="rfc2119">MAY</em> also
-        reposition the visible rectangle within |resource|. The final position
-        will be reflected by {{VideoFrame/visibleRect}}.
+        |resource| with a larger [=coded size=] and plane [=strides=] to improve
+        memory alignment. Increases will be reflected by
+        {{VideoFrame/codedWidth}} and {{VideoFrame/codedHeight}}. Additionally,
+        the User Agent <em class="rfc2119">MAY</em> use
+        {{VideoFrameBufferInit/visibleRect}} to copy only the
+        [=visible rectangle=]. It <em class="rfc2119">MAY</em> also reposition
+        the [=visible rectangle=] within |resource|. The final position will be
+        reflected by {{VideoFrame/visibleRect}}.
 
 16. For each |transferable| in |init|.{{VideoFrameBufferInit/transfer}}:
     1. Perform [DetachArrayBuffer](https://tc39.es/ecma262/#sec-detacharraybuffer)
         on |transferable|
-17. Let |resourceCodedWidth| be the coded width of |resource|.
-18. Let |resourceCodedHeight| be the coded height of |resource|.
-19. Let |resourceVisibleLeft| be the left offset for the visible rectangle of
+17. Let |resourceCodedWidth| be the [=coded width=] of |resource|.
+18. Let |resourceCodedHeight| be the [=coded height=] of |resource|.
+19. Let |resourceVisibleLeft| be the left offset for the [=visible rectangle=]
+    of |resource|.
+20. Let |resourceVisibleTop| be the top offset for the [=visible rectangle=] of
     |resource|.
-20. Let |resourceVisibleTop| be the top offset for the visible rectangle of
-    |resource|.
-
-    ISSUE: The spec <em class="rfc2119">SHOULD</em> provide definitions (and
-      possibly diagrams) for coded size, visible rectangle, and display size.
-      See [#166](https://github.com/w3c/webcodecs/issues/166).
 
 21. Let |frame| be a new {{VideoFrame}} object initialized as follows:
     1. Assign |resourceCodedWidth|, |resourceCodedHeight|,
@@ -3779,15 +3772,13 @@ dictionary VideoFrameMetadata {
     {{VideoFrame/[[format]]}}.
 
 : <dfn attribute for=VideoFrame>codedWidth</dfn>
-:: Width of the {{VideoFrame}} in pixels, potentially including non-visible
-    padding, and prior to considering potential ratio adjustments.
+:: The [=coded width=] of the {{VideoFrame}}.
 
     The {{VideoFrame/codedWidth}} getter steps are to return
     {{VideoFrame/[[coded width]]}}.
 
 : <dfn attribute for=VideoFrame>codedHeight</dfn>
-:: Height of the {{VideoFrame}} in pixels, potentially including non-visible
-    padding, and prior to considering potential ratio adjustments.
+:: The [=coded height=] of the {{VideoFrame}}.
 
     The {{VideoFrame/codedHeight}} getter steps are to return
     {{VideoFrame/[[coded height]]}}.
@@ -3809,8 +3800,8 @@ dictionary VideoFrameMetadata {
     3. Return |rect|.
 
 : <dfn attribute for=VideoFrame>visibleRect</dfn>
-:: A {{DOMRectReadOnly}} describing the visible rectangle of pixels for this
-    {{VideoFrame}}.
+:: A {{DOMRectReadOnly}} describing the [=visible rectangle=] of pixels for
+    this {{VideoFrame}}.
 
     The {{VideoFrame/visibleRect}} getter steps are:
     1. If {{platform object/[[Detached]]}} is `true`, return `null`.
@@ -3836,15 +3827,13 @@ dictionary VideoFrameMetadata {
     The {{VideoFrame/flip}} getter steps are to return {{VideoFrame/[[flip]]}}.
 
 : <dfn attribute for=VideoFrame>displayWidth</dfn>
-:: Width of the VideoFrame when displayed after applying rotation and aspect
-    ratio adjustments.
+:: The [=display width=] of the {{VideoFrame}}.
 
     The {{VideoFrame/displayWidth}} getter steps are to return
     {{VideoFrame/[[display width]]}}.
 
 : <dfn attribute for=VideoFrame>displayHeight</dfn>
-:: Height of the VideoFrame when displayed after applying rotation and aspect
-    ratio adjustments.
+:: The [=display height=] of the {{VideoFrame}}.
 
     The {{VideoFrame/displayHeight}} getter steps are to return
     {{VideoFrame/[[display height]]}}.
@@ -3942,8 +3931,8 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
             {{VideoFrame/[[format]]}}.
         3. Let |planeIndex| be `0`.
         4. While |planeIndex| is less than |combinedLayout|'s |numPlanes|:
-            1. Let |sourceStride| be the stride of the plane in |resource| as
-                identified by |planeIndex|.
+            1. Let |sourceStride| be the [=stride=] of the plane in |resource|
+                as identified by |planeIndex|.
             2. Let |computedLayout| be the [=computed plane layout=] in
                 |combinedLayout|'s [=combined buffer layout/computedLayouts=] at
                 the position of |planeIndex|
@@ -4009,10 +3998,11 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
         5. If |output| uses a recognized {{VideoPixelFormat}}, assign that format to
             {{VideoFrame/[[format]]}}. Otherwise, assign `null` to
             {{VideoFrame/[[format]]}}.
-        6. Let |codedWidth| and |codedHeight| be the coded width and height of the
-            |output| in pixels.
+        6. Let |codedWidth| and |codedHeight| be the [=coded width=] and
+            [=coded height=] of the |output|.
         8. Let |visibleLeft|, |visibleTop|, |visibleWidth|, and |visibleHeight| be
-            the left, top, width and height for the visible rectangle of |output|.
+            the left, top, width and height for the [=visible rectangle=] of
+            |output|.
         7. Let |displayWidth| and |displayHeight| be the display size of
             |output| in pixels.
         8. If |displayAspectWidth| and |displayAspectHeight| are provided,
@@ -4504,8 +4494,128 @@ value to {{ColorSpaceConversion/"none"}} disables color space conversion.
 
 The rendering of a {{VideoFrame}} is produced from the [=media resource=] by
 applying any necessary color space conversion, cropping to the
-{{VideoFrame/visibleRect}}, rotating clockwise by {{VideoFrame/rotation}}
-degrees, and flipping horizontally if {{VideoFrame/flip}} is `true`.
+[=visible rectangle=], rotating clockwise by {{VideoFrame/rotation}}
+degrees, flipping horizontally if {{VideoFrame/flip}} is `true`, and scaling to
+the [=display size=].
+
+VideoFrame Dimensions and Memory Layout {#videoframe-dimensions}
+----------------------------------------------------------------
+The pixel data of a {{VideoFrame}}, and the way it is presented, are described
+by the following sizes and rectangles. Unless specified otherwise, they are
+measured in pixels, from the top-left corner of the pixel data held by the
+[=media resource=].
+
+: <dfn>Coded size</dfn>
+:: The <dfn>coded width</dfn> and <dfn>coded height</dfn> of the pixel data
+    held by the [=media resource=]. Along with the {{VideoPixelFormat}}, they
+    determine the number of rows of each plane, and the number of samples in
+    each row, as described in [[#pixel-format]]. The [=coded size=] can be
+    larger than the [=visible rectangle=], for example because a codec operates
+    on blocks of pixels (such as macroblocks of 16 by 16 pixels), or because
+    the User Agent adds padding to improve memory alignment. The [=coded size=]
+    is exposed by {{VideoFrame/codedWidth}}, {{VideoFrame/codedHeight}}, and
+    {{VideoFrame/codedRect}}.
+
+: <dfn>Visible rectangle</dfn>
+:: The rectangle of pixels, within the [=coded size=], that holds the picture
+    to be displayed. It is described by a left offset, a top offset, a width,
+    and a height. The sum of its left offset and width is less than or equal to
+    the [=coded width=], and the sum of its top offset and height is less than
+    or equal to the [=coded height=]. Pixels outside of the
+    [=visible rectangle=] are not displayed. The [=visible rectangle=] is
+    exposed by {{VideoFrame/visibleRect}}.
+
+    NOTE: Codecs and containers often describe the [=visible rectangle=] with
+        cropping parameters. Constructing a {{VideoFrame}} from another
+        {{VideoFrame}} with a different {{VideoFrameInit/visibleRect}} crops it
+        without copying its pixel data.
+
+: <dfn>Display size</dfn>
+:: The <dfn>display width</dfn> and <dfn>display height</dfn> at which the
+    {{VideoFrame}} is intended to be presented. The [=display size=] is the
+    size of the [=visible rectangle=] after scaling it to account for the
+    aspect ratio of its pixels, and then rotating it by
+    {{VideoFrame/rotation}}: when {{VideoFrame/rotation}} is `90` or `270`, the
+    [=display width=] corresponds to the scaled height of the
+    [=visible rectangle=], and the [=display height=] to its scaled width.
+    {{VideoFrame/flip}} does not change the [=display size=]. The
+    [=display size=] is exposed by {{VideoFrame/displayWidth}} and
+    {{VideoFrame/displayHeight}}.
+
+    NOTE: The scaling is determined by the bitstream, by
+        {{VideoDecoderConfig/displayAspectWidth}} and
+        {{VideoDecoderConfig/displayAspectHeight}} when decoding, or by
+        {{VideoFrameInit/displayWidth}} and {{VideoFrameInit/displayHeight}}
+        when constructing a {{VideoFrame}}. When pixels are square, the
+        [=display size=] is the size of the [=visible rectangle=], with its
+        width and height swapped if {{VideoFrame/rotation}} is `90` or `270`.
+
+: <dfn>Stride</dfn>
+:: The number of bytes from the start of a row of a plane to the start of the
+    next row of the same plane. The [=stride=] of a plane is greater than or
+    equal to the number of bytes occupied by the samples of one of its rows.
+    The remaining bytes of each row, if any, are padding. Unlike the
+    [=coded size=], that is measured in pixels and applies to the whole frame,
+    a [=stride=] is measured in bytes and applies to a single plane.
+
+    The [=stride=] of the planes of the [=media resource=] is not exposed. A
+    {{PlaneLayout}} describes the [=stride=] of a plane in a buffer provided by
+    the author: the buffer that pixel data is read from when constructing a
+    {{VideoFrame}} with {{VideoFrameBufferInit/layout}}, or the buffer that
+    pixel data is written to by {{VideoFrame/copyTo()}} with
+    {{VideoFrameCopyToOptions/layout}}.
+
+<div class='note'>
+NOTE: The following diagram illustrates the [=coded size=], the
+    [=visible rectangle=], and the [=display size=] of a {{VideoFrame}} whose
+    pixels are wider than they are tall, with a {{VideoFrame/rotation}} of `0`
+    and of `90`.
+
+<img alt="On the left, a rectangle of codedWidth by codedHeight pixels, in
+    which the visible rectangle is placed at offset x, y, with a size of width
+    by height. The area outside of the visible rectangle is not displayed. In
+    the middle, with a rotation of 0, the visible rectangle is scaled
+    horizontally, to a size of displayWidth by displayHeight. On the right,
+    with a rotation of 90, the scaled picture is rotated clockwise, and its
+    displayWidth and displayHeight are swapped compared to the middle."
+    src="images/videoframe_dimensions.svg" width="749" height="294">
+</div>
+
+<div class='note'>
+NOTE: The following diagram illustrates the memory layout of the planes of an
+    {{I420}} {{VideoFrame}} with a [=coded size=] of 12 by 8 pixels, and a
+    [=visible rectangle=] of 10 by 6 pixels at offset (0, 0). The planes have
+    a [=stride=] larger than the number of bytes of samples in their rows.
+
+<img alt="The Y plane has codedHeight rows of codedWidth samples, followed by
+    padding bytes that complete each row up to the stride of the plane. The U
+    and V planes are sub-sampled by a factor of 2 in both directions: they have
+    codedHeight divided by 2 rows of codedWidth divided by 2 samples, rounded
+    up, followed by padding bytes up to the stride of the plane. The visible
+    rectangle covers the top-left samples of each plane."
+    src="images/videoframe_planes.svg" width="752" height="400">
+</div>
+
+<div class=example>
+  An H.264 bitstream has pictures of 1440 by 1080 pixels, and signals that its
+  pixels are a third wider than they are tall, so that its pictures are
+  intended to be displayed at 1920 by 1080 pixels. H.264 encodes pictures in
+  macroblocks of 16 by 16 pixels, so its pictures are encoded with a height of
+  1088 pixels, and the bitstream signals that the bottom 8 rows of pixels are
+  to be cropped. A {{VideoFrame}} decoded from this bitstream can have:
+  * a [=coded size=] of 1440 by 1088 pixels ({{VideoFrame/codedWidth}} and
+      {{VideoFrame/codedHeight}}),
+  * a [=visible rectangle=] of 1440 by 1080 pixels at offset (0, 0)
+      ({{VideoFrame/visibleRect}}),
+  * a [=display size=] of 1920 by 1080 pixels ({{VideoFrame/displayWidth}} and
+      {{VideoFrame/displayHeight}}). With a {{VideoFrame/rotation}} of `90`, the
+      [=display size=] would be 1080 by 1920 pixels.
+
+  If its format is {{I420}}, its Y plane has 1088 rows of 1440 samples, and its
+  U and V planes have 544 rows of 720 samples. A User Agent that aligns rows of
+  pixel data to multiples of 64 bytes would use a [=stride=] of 1472 bytes for
+  the Y plane, and of 768 bytes for the U and V planes.
+</div>
 
 VideoFrame CopyTo() Options {#videoframe-copyto-options}
 ------------------------------------------------------------
@@ -4565,7 +4675,7 @@ dimensions for a rectangle of pixels. {{DOMRectInit}} is used with
 {{VideoFrame/copyTo()}} and {{VideoFrame/allocationSize()}} to describe the
 dimensions of the source rectangle. {{VideoFrame}} defines
 {{VideoFrame/codedRect}} and {{VideoFrame/visibleRect}} for convenient copying
-of the coded size and visible region respectively.
+of the [=coded size=] and [=visible rectangle=] respectively.
 
 NOTE: VideoFrame pixels are only addressable by integer numbers. All floating
     point values provided to {{DOMRectInit}} will be truncated.
@@ -4591,8 +4701,8 @@ dictionary PlaneLayout {
 :: The offset in bytes where the given plane begins within a {{BufferSource}}.
 
 : <dfn dict-member for=PlaneLayout>stride</dfn>
-:: The number of bytes, including padding, used by each row of the plane within
-    a {{BufferSource}}.
+:: The [=stride=] of the plane within a {{BufferSource}}, i.e. the number of
+    bytes, including padding, used by each row of the plane.
 
 Pixel Format{#pixel-format}
 ---------------------------
