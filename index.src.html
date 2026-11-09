@@ -5926,7 +5926,9 @@ interface ImageDecoder {
 
 : <dfn for=ImageDecoder>Resolve Decode</dfn> (with |promise| and |result|)
 :: 1. [=Queue a task=] to perform these steps:
-        1. If {{ImageDecoder/[[closed]]}}, abort these steps.
+        1. If {{ImageDecoder/[[closed]]}} is `true` or |promise| is not an
+            element of {{ImageDecoder/[[pending decode promises]]}}, abort these
+            steps.
         2. Assert that |promise| is an element of
             {{ImageDecoder/[[pending decode promises]]}}.
         3. Remove |promise| from {{ImageDecoder/[[pending decode promises]]}}.
@@ -5939,7 +5941,9 @@ interface ImageDecoder {
             {{RangeError}}. Otherwise, let |exception| be an
             {{InvalidStateError}} {{DOMException}}.
     3. [=Queue a task=] to perform these steps:
-        1. If {{ImageDecoder/[[closed]]}}, abort these steps.
+        1. If {{ImageDecoder/[[closed]]}} is `true` or |promise| is not an
+            element of {{ImageDecoder/[[pending decode promises]]}}, abort these
+            steps.
         2. Assert that |promise| is an element of
             {{ImageDecoder/[[pending decode promises]]}}.
         3. Remove |promise| from {{ImageDecoder/[[pending decode promises]]}}.
