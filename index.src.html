@@ -3654,7 +3654,7 @@ dictionary VideoFrameMetadata {
 1. If |init| is not a [=valid VideoFrameBufferInit=], throw a {{TypeError}}.
 2. Let |defaultRect| be «[ "x:" → `0`, "y" → `0`,
     "width" → |init|.{{VideoFrameBufferInit/codedWidth}}, "height" →
-        |init|.{{VideoFrameBufferInit/codedWidth}} ]».
+        |init|.{{VideoFrameBufferInit/codedHeight}} ]».
 3. Let |overrideRect| be `undefined`.
 4. If |init|.{{VideoFrameBufferInit/visibleRect}} [=map/exists=], assign its
     value to |overrideRect|.
@@ -4019,19 +4019,22 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
             increase |displayWidth| or |displayHeight| until the ratio of
             |displayWidth| to |displayHeight| matches the ratio of
             |displayAspectWidth| to |displayAspectHeight|.
-        9. Assign |codedWidth|, |codedHeight|, |visibleLeft|, |visibleTop|,
+        9. If |rotation| is `90` or `270`, swap |displayWidth| and
+            |displayHeight|.
+        10. Assign |codedWidth|, |codedHeight|, |visibleLeft|, |visibleTop|,
             |visibleWidth|, |visibleHeight|, |displayWidth|, and
             |displayHeight| to {{VideoFrame/[[coded width]]}},
             {{VideoFrame/[[coded height]]}}, {{VideoFrame/[[visible left]]}},
             {{VideoFrame/[[visible top]]}}, {{VideoFrame/[[visible width]]}},
-            and {{VideoFrame/[[visible height]]}} respectively.
-        10. Assign |duration| and |timestamp| to {{VideoFrame/[[duration]]}} and
+            {{VideoFrame/[[visible height]]}}, {{VideoFrame/[[display width]]}},
+            and {{VideoFrame/[[display height]]}} respectively.
+        11. Assign |duration| and |timestamp| to {{VideoFrame/[[duration]]}} and
             {{VideoFrame/[[timestamp]]}} respectively.
-        11. Assign {{VideoFrame/[[color space]]}} with the result of running the
+        12. Assign {{VideoFrame/[[color space]]}} with the result of running the
             [=VideoFrame/Pick Color Space=] algorithm, with |colorSpace| and
             {{VideoFrame/[[format]]}}.
-        12. Assign {{VideoFrame/rotation}} and {{VideoFrame/flip}} to |rotation|
-            and |flip| respectively.
+        13. Assign |rotation| and |flip| to {{VideoFrame/[[rotation]]}} and
+            {{VideoFrame/[[flip]]}} respectively.
     2. Return |frame|.
 
 
@@ -4136,7 +4139,7 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
     2. If |resource| uses a recognized {{VideoPixelFormat}}, assign the
         {{VideoPixelFormat}} of |resource| to |format|.
     3. Let |validInit| be the result of running the [=Validate VideoFrameInit=]
-        algorithm with |format|, |width| and |height|.
+        algorithm with |format|, |codedWidth| and |codedHeight|.
     4. If |validInit| is `false`, throw a  {{TypeError}}.
     5. Assign a new reference for |resource| to |frame|'s
         {{VideoFrame/[[resource reference]]}}.
@@ -4149,8 +4152,8 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
     9. Let |defaultVisibleRect| be a new {{DOMRect}} constructed with
         «[ "x:" → `0`, "y" → `0`, "width" → |codedWidth|, "height" → |codedHeight| ]»
     10. Run the [=VideoFrame/Initialize Visible Rect, Orientation, and Display Size=]
-        algorithm with |init|, |frame|, |defaultVisibleRect|,
-        |defaultDisplayWidth|, and |defaultDisplayHeight|.
+        algorithm with |init|, |frame|, |defaultVisibleRect|, |baseRotation|,
+        |baseFlip|, |defaultDisplayWidth|, and |defaultDisplayHeight|.
     11. Assign `init`.{{VideoFrameInit/duration}} to
         |frame|'s {{VideoFrame/[[duration]]}}.
     12. Assign `init`.{{VideoFrameInit/timestamp}} to
