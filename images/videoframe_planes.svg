@@ -1,0 +1,91 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="940" height="500" viewBox="0 0 940 500">
+  <style>
+    text { font-family: Helvetica, Arial, sans-serif; font-size: 18px; fill: #333; }
+    .title { font-weight: bold; }
+    .mono { font-family: Menlo, Consolas, "DejaVu Sans Mono", monospace; }
+    .dim { stroke: #5e5e5e; stroke-width: 1.5; fill: none; marker-start: url(#tick); marker-end: url(#tick); }
+    .ext { stroke: #9e9e9e; stroke-width: 1; stroke-dasharray: 4 3; fill: none; }
+    .grid { stroke: #5e5e5e; stroke-width: 1; fill: none; }
+    .border { stroke: #333; stroke-width: 2; fill: none; }
+    .visible { fill: #83bbe5; }
+    .coded { fill: #d6e8f5; }
+    .padding { fill: url(#hatch); }
+  </style>
+  <defs>
+    <marker id="tick" viewBox="0 0 10 10" refX="10" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse">
+      <path d="M0 0L10 5L0 10z" fill="#5e5e5e"/>
+    </marker>
+    <pattern id="hatch" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+      <rect width="8" height="8" fill="#f2f2f2"/>
+      <line x1="0" y1="0" x2="0" y2="8" stroke="#bdbdbd" stroke-width="2"/>
+    </pattern>
+    <!-- Grid lines for cells of 28x28: 16 columns by 8 rows, and 8 columns by
+         4 rows. -->
+    <pattern id="cells" width="28" height="28" patternUnits="userSpaceOnUse">
+      <path d="M28 0V28H0" class="grid"/>
+    </pattern>
+  </defs>
+
+  <rect width="940" height="500" fill="#fff"/>
+
+  <!-- Y plane: codedWidth = 12, codedHeight = 8, visible rectangle 10x6 at
+       (0, 0), stride = 16 bytes. -->
+  <text class="title" x="294" y="40" text-anchor="middle">Y plane</text>
+  <g transform="translate(70 110)">
+    <rect class="coded" width="336" height="224"/>
+    <rect class="visible" width="280" height="168"/>
+    <rect class="padding" x="336" width="112" height="224"/>
+    <rect width="448" height="224" fill="url(#cells)"/>
+    <path class="border" d="M336 0V224"/>
+    <rect class="border" width="448" height="224"/>
+  </g>
+
+  <path class="dim" d="M70 92H406"/>
+  <text x="238" y="80" text-anchor="middle"><tspan class="mono">codedWidth</tspan> samples</text>
+  <path class="ext" d="M518 110H548M518 334H548"/>
+  <path class="dim" d="M540 110V334"/>
+  <text transform="translate(564 222) rotate(-90)" text-anchor="middle"><tspan class="mono">codedHeight</tspan></text>
+  <path class="dim" d="M70 356H518"/>
+  <text x="294" y="380" text-anchor="middle">stride (bytes)</text>
+
+  <!-- U plane: sub-sampled by 2 in both directions: 6 samples per row, 4
+       rows, visible rectangle 5x3 at (0, 0), stride = 8 bytes. -->
+  <text class="title" x="762" y="40" text-anchor="middle">U plane</text>
+  <g transform="translate(650 110)">
+    <rect class="coded" width="168" height="112"/>
+    <rect class="visible" width="140" height="84"/>
+    <rect class="padding" x="168" width="56" height="112"/>
+    <rect width="224" height="112" fill="url(#cells)"/>
+    <path class="border" d="M168 0V112"/>
+    <rect class="border" width="224" height="112"/>
+  </g>
+
+  <path class="dim" d="M650 92H818"/>
+  <text x="734" y="80" text-anchor="middle">&#8968;<tspan class="mono">codedWidth</tspan> / 2&#8969; samples</text>
+  <path class="ext" d="M874 110H904M874 222H904"/>
+  <path class="dim" d="M896 110V222"/>
+  <text transform="translate(920 166) rotate(-90)" text-anchor="middle">&#8968;<tspan class="mono">codedHeight</tspan> / 2&#8969;</text>
+  <path class="dim" d="M650 244H874"/>
+  <text x="762" y="268" text-anchor="middle">stride (bytes)</text>
+
+  <!-- V plane: same layout as the U plane. -->
+  <text class="title" x="762" y="318" text-anchor="middle">V plane</text>
+  <g transform="translate(650 334)">
+    <rect class="coded" width="168" height="112"/>
+    <rect class="visible" width="140" height="84"/>
+    <rect class="padding" x="168" width="56" height="112"/>
+    <rect width="224" height="112" fill="url(#cells)"/>
+    <path class="border" d="M168 0V112"/>
+    <rect class="border" width="224" height="112"/>
+  </g>
+
+  <!-- Legend. -->
+  <rect class="visible" x="70" y="424" width="24" height="16" stroke="#5e5e5e" stroke-width="1"/>
+  <text x="102" y="438">visible rectangle</text>
+  <rect class="coded" x="70" y="452" width="24" height="16" stroke="#5e5e5e" stroke-width="1"/>
+  <text x="102" y="466">outside of the visible rectangle</text>
+  <rect class="padding" x="380" y="424" width="24" height="16" stroke="#5e5e5e" stroke-width="1"/>
+  <text x="412" y="438">padding</text>
+  <rect x="380" y="452" width="24" height="16" fill="#fff" stroke="#5e5e5e" stroke-width="1"/>
+  <text x="412" y="466">one cell is one byte</text>
+</svg>
