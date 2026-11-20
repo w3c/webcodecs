@@ -4384,17 +4384,16 @@ A <dfn>computed plane layout</dfn> is a [=struct=] that consists of:
         17. Let |earlierPlaneIndex| be `0`.
         18. While |earlierPlaneIndex| is less than |planeIndex|.
             1. Let |earlierLayout| be `computedLayouts[earlierPlaneIndex]`.
-            2. If `endOffsets[planeIndex]` is less than or equal to
-                |earlierLayout|'s [=computed plane layout/destinationOffset=] or
-                if `endOffsets[earlierPlaneIndex]` is less than or equal to
+            2. If `endOffsets[planeIndex]` is greater than
+                |earlierLayout|'s [=computed plane layout/destinationOffset=] and
+                `endOffsets[earlierPlaneIndex]` is greater than
                 |computedLayout|'s [=computed plane layout/destinationOffset=],
-                continue.
+                return a {{TypeError}}.
 
-                NOTE: If plane A ends before plane B starts, they do not
+                NOTE: If plane A ends at or before plane B starts, they do not
                     overlap.
 
-            3. Otherwise, return a {{TypeError}}.
-            4. Increment |earlierPlaneIndex| by `1`.
+            3. Increment |earlierPlaneIndex| by `1`.
         19. Append |computedLayout| to |computedLayouts|.
         20. Increment |planeIndex| by `1`.
     8. Let |combinedLayout| be a new [=combined buffer layout=], initialized as
