@@ -2175,11 +2175,11 @@ run these steps:
 1. If {{AudioEncoderConfig/codec}} is empty after
     [=strip leading and trailing ASCII whitespace|stripping leading and trailing ASCII whitespace=],
     return `false`.
-2. If the {{AudioEncoderConfig}} has a codec-specific extension and the corresponding
+2. If {{AudioEncoderConfig/sampleRate}} or {{AudioEncoderConfig/numberOfChannels}} are
+     equal to zero, return `false`.
+3. If the {{AudioEncoderConfig}} has a codec-specific extension and the corresponding
     registration in the [[WEBCODECS-CODEC-REGISTRY]] defines steps to check whether
     the extension is a valid extension, return the result of running those steps.
-3. If {{AudioEncoderConfig/sampleRate}} or {{AudioEncoderConfig/numberOfChannels}} are
-     equal to zero, return `false`.
 4. Return `true`.
 
 <dl>
