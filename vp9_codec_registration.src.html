@@ -37,7 +37,7 @@ Markup Shorthands:css no, markdown yes, dfn yes
 <pre class='biblio'>
 {
   "VP9": {
-    "href": "https://storage.googleapis.com/downloads.webmproject.org/docs/vp9/vp9-bitstream-specification-v0.6-20160331-draft.pdf",
+    "href": "https://storage.googleapis.com/downloads.webmproject.org/docs/vp9/vp9-bitstream-specification-v0.7-20170222-draft.pdf",
     "title": "VP9 Bitstream & Decoding Process Specification",
     "publisher": "The WebM Project"
   },
@@ -59,7 +59,14 @@ EncodedVideoChunk data {#encodedvideochunk-data}
 ================================================
 
 {{EncodedVideoChunk}} {{EncodedVideoChunk/[[internal data]]}} is expected to be
-a frame as described in Section 6 of [[VP9]].
+a single frame as described in Section 6 of [[VP9]], or a superframe as
+described in Annex B of [[VP9]].
+
+Each {{EncodedVideoChunk}} is expected to contain exactly one shown frame (a
+frame where `show_frame` is `1` or `show_existing_frame` is `1`, as defined in
+Section 7.2 of [[VP9]]). Unshown frames (such as alternate reference frames,
+where both `show_frame` and `show_existing_frame` are `0`) are expected to be
+bundled together with a shown frame into a superframe.
 
 VideoDecoderConfig description {#videodecoderconfig-description}
 ================================================================
@@ -70,9 +77,9 @@ EncodedVideoChunk type {#encodedvideochunk-type}
 ================================================
 
 If an {{EncodedVideoChunk}}'s {{EncodedVideoChunk/[[type]]}} is
-{{EncodedVideoChunkType/key}}, then the {{EncodedVideoChunk}} is expected to
-contain a frame with a `frame_type` of `KEY_FRAME` as defined in Section
-7.2 of [[VP9]].
+{{EncodedVideoChunkType/key}}, then the first frame in the
+{{EncodedVideoChunk}} is expected to have `show_existing_frame` equal to `0` and
+`frame_type` equal to `KEY_FRAME`, as defined in Section 7.2 of [[VP9]].
 
 VideoEncoderEncodeOptions extensions {#videoencoderencodeoptions-extensions}
 ==============================================================
